@@ -488,7 +488,7 @@ img, svg { display: block; }
 .about__intro {
   text-align: center;
   max-width: 640px;
-  margin: 0 auto 56px;
+  margin: 0 auto 44px;
 }
 .section-label {
   display: inline-block;
@@ -503,13 +503,8 @@ img, svg { display: block; }
   font-family: var(--serif);
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   letter-spacing: -.02em;
-  margin-bottom: 18px;
+  margin-bottom: 0;
   line-height: 1.2;
-}
-.about__intro p {
-  font-size: .95rem;
-  color: rgba(255,255,255,.65);
-  line-height: 1.8;
 }
 
 .about__steps {
@@ -567,6 +562,108 @@ img, svg { display: block; }
   padding: 6px 16px;
   font-size: .8rem;
   font-weight: 500;
+}
+
+/* Climate Transition Focus card */
+.focus-card {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  grid-template-rows: auto auto;
+  gap: 0 28px;
+  background: linear-gradient(135deg, rgba(74,222,128,.07) 0%, rgba(5,150,105,.12) 100%);
+  border: 1px solid rgba(74,222,128,.25);
+  border-radius: var(--r-xl);
+  padding: 36px 40px;
+  margin-top: 48px;
+  align-items: start;
+}
+.focus-card__icon {
+  grid-row: span 2;
+  padding-top: 4px;
+}
+.focus-card__icon svg {
+  width: 56px;
+  height: 56px;
+}
+.focus-card__body h3 {
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  color: #fff;
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
+}
+.focus-card__body p {
+  font-size: .9rem;
+  color: rgba(255,255,255,.65);
+  line-height: 1.8;
+}
+.focus-card__tags {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* ── CONTACT ── */
+.contact {
+  background: var(--cream);
+  padding: 80px 0;
+}
+.contact__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+.section-label-dark {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--emerald);
+  margin-bottom: 14px;
+}
+.contact__text h2 {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+.contact__text p {
+  font-size: .95rem;
+  color: var(--ink-70);
+  max-width: 440px;
+  line-height: 1.75;
+}
+.linkedin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #0a66c2;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 600;
+  padding: 16px 32px;
+  border-radius: 100px;
+  white-space: nowrap;
+  transition: all .2s ease;
+  box-shadow: 0 4px 20px rgba(10,102,194,.25);
+  flex-shrink: 0;
+}
+.linkedin-btn svg {
+  width: 22px;
+  height: 22px;
+}
+.linkedin-btn:hover {
+  background: #004182;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(10,102,194,.35);
 }
 
 /* ── FOOTER ── */
@@ -722,6 +819,10 @@ img, svg { display: block; }
   .posts-grid { grid-template-columns: repeat(2, 1fr); }
   .card--featured { grid-column: span 2; }
   .step__arrow { display: none; }
+  .focus-card { grid-template-columns: 1fr; gap: 16px; }
+  .focus-card__icon { grid-row: auto; }
+  .focus-card__tags { grid-column: 1; }
+  .contact__inner { flex-direction: column; align-items: flex-start; gap: 32px; }
 }
 @media (max-width: 640px) {
   .nav__links { display: none; }
@@ -734,4 +835,6 @@ img, svg { display: block; }
   .modal-title { font-size: 1.35rem; }
   .about__steps { gap: 16px; }
   .step { min-width: 100%; max-width: 100%; }
+  .focus-card { padding: 24px 20px; }
+  .linkedin-btn { width: 100%; justify-content: center; }
 }
