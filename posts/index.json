@@ -1,17 +1,3 @@
 {
-  "posts": [
-    {
-      "id": "test-esg-system-check-1778750956",
-      "title": "Test: ESG System Check",
-      "date": "2026-05-14",
-      "category": "CPCB / EPR",
-      "source": "cpcb.nic.in",
-      "summary": "This is a test post verifying the GitHub publishing pipeline works end-to-end.",
-      "link": "https://cpcb.nic.in",
-      "sections": {
-        "summary": "Test summary",
-        "our_take": "System is working correctly."
-      }
-    }
-  ]
+  "posts": []
 }
