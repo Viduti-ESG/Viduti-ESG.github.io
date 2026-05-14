@@ -91,6 +91,7 @@ const ACCENT = {
   'Portal Announcement':       '#38bdf8',
   'SEBI / BRSR':               '#60a5fa',
   'MoEFCC':                    '#4ade80',
+  'BEE / Energy Efficiency':   '#f97316',
   'ISSB / IFRS Sustainability': '#c084fc',
   'EU CSRD / EFRAG':           '#fbbf24',
   'GHG Protocol':              '#f87171',
