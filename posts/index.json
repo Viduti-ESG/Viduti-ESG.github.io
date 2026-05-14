@@ -1,6 +1,44 @@
 {
   "posts": [
     {
+      "id": "gc-35e8982b",
+      "title": "E-Waste Third Amendment Rules, 2024: EPR Certificate Trading Platform and Price Bands Explained",
+      "date": "2026-05-13",
+      "category": "E-Waste Rules",
+      "source": "cpcb.nic.in",
+      "summary": "On 8 March 2024, the Ministry of Environment, Forest and Climate Change notified the E-Waste (Management) Amendment Rules, 2024 — the third amendment to the 2022 framework. The amendment introduces a government-regulated marketplace for trading Extended Producer Responsibility (EPR) certificates wit",
+      "link": "https://cpcb.nic.in/uploads/Projects/E-Waste/E-waste-Third-Amendment-Rules-2024.pdf",
+      "sections": {
+        "summary": "On 8 March 2024, the Ministry of Environment, Forest and Climate Change notified the E-Waste (Management) Amendment Rules, 2024 — the third amendment to the 2022 framework. The amendment introduces a government-regulated marketplace for trading Extended Producer Responsibility (EPR) certificates with statutory floor and ceiling prices, permits up to nine months of relief on return-filing timelines, and clarifies the definition of 'dismantler'. For producers, recyclers and refurbishers of electrical and electronic equipment (EEE), this fundamentally changes how EPR obligations can be met and monetised.",
+        "what_changed": "The amendment makes four substantive changes to the E-Waste (Management) Rules, 2022. First, the definition of 'dismantler' is rewritten to mean any person or entity engaged in dismantling used EEE in accordance with Central Pollution Control Board (CPCB) guidelines — tightening linkage to CPCB standards. Second, a new Rule 9A empowers the Central Government to extend return-filing deadlines by up to nine months in the public interest or to enable effective implementation. Third, and most importantly, Rule 15 is expanded (sub-rules 7–10) to authorise the creation of one or more government-approved platforms for the exchange and transfer of EPR certificates between registered producers and recyclers. Fourth, the CPCB will fix a price band for these certificates: the ceiling price equals 100% of the environmental compensation payable for non-fulfilment of EPR obligations under Rule 22, and the floor equals 30% of that compensation. All trades must occur within this band.",
+        "who_is_affected": [
+          "Producers, manufacturers and importers of electrical and electronic equipment registered under the EPR regime",
+          "Authorised recyclers of e-waste who generate EPR certificates",
+          "Refurbishers of used EEE registered with CPCB",
+          "Dismantlers of used EEE and their components",
+          "Bulk consumers of EEE (indirectly, through supply chain compliance flow-down)",
+          "Sectors most exposed: consumer electronics, IT hardware, telecom equipment, medical devices, large appliances, lighting, and solar PV manufacturers (where applicable)"
+        ],
+        "key_obligations": [
+          "Effective date: 8 March 2024 (date of Gazette publication)",
+          "Dismantlers must align operations with CPCB guidelines under the revised Rule 3(f) definition",
+          "EPR certificate trading must occur only on government-approved platforms once notified, at prices between 30% and 100% of the applicable environmental compensation",
+          "Producers falling short of EPR targets will need to purchase certificates within this regulated band — making non-compliance costs more predictable but also floor-priced",
+          "Watch for CPCB operational guidelines on platform functioning, registration, and price-discovery mechanics (expected in subsequent notifications)",
+          "Return-filing relaxations (up to 9 months) are not automatic — they require a specific government order"
+        ],
+        "climate_angle": "India's EPR framework for e-waste is converging with global circular economy and producer-responsibility regimes seen in the EU (WEEE Directive), Japan, and South Korea. A regulated EPR certificate market mirrors carbon-credit market design — creating a price signal for circularity. For companies reporting under BRSR Core, ISSB IFRS S2, or preparing for CSRD-aligned disclosures, e-waste recovery rates and EPR compliance are increasingly material data points under resource use, circular economy, and Scope 3 upstream/downstream metrics. The 30%–100% price band also serves as a hedge: it caps the worst-case compliance liability while preventing certificate prices from collapsing — which protects investments in formal recycling capacity, a sector critical to India's transition away from informal, polluting e-waste handling.",
+        "what_to_do": [
+          "Map your current EPR position: quantify the gap between EPR targets and actual collection/recycling certificates held for FY24 and FY25",
+          "Model your compliance cost under both scenarios — buying certificates at the 30% floor versus the 100% ceiling — and build this into FY25 budgets",
+          "Engage with registered recyclers now to lock in long-term certificate supply agreements before the exchange platform becomes operational and prices tighten",
+          "Update internal compliance SOPs to reflect the revised 'dismantler' definition and ensure downstream partners hold valid CPCB authorisations",
+          "Brief the board and audit committee: EPR cost exposure is now a quantifiable, market-priced liability that should be disclosed in BRSR and risk registers"
+        ],
+        "our_take": "The introduction of a regulated EPR certificate exchange is the most consequential development in India's e-waste regime since the 2022 rules themselves. By anchoring certificate prices to environmental compensation, the government has done something subtle but powerful: it has converted EPR from a paper-compliance exercise into a financial instrument with a transparent price band. This will reward producers who invest early in formal recycling partnerships and penalise those who treat EPR as an afterthought. Expect CPCB to issue detailed platform-operation guidelines within the next 6–12 months, and expect certificate prices to drift upward as targets escalate. Companies that build EPR strategy into their broader circular economy and ESG roadmap — rather than handling it as a standalone compliance task — will have a clear cost and reputational advantage."
+      }
+    },
+    {
       "id": "approved-35e8982b",
       "title": "E-Waste (Management) Second Amendment Rules, 2023: Refrigerants, RoHS Expansion & New Compliance Frontiers",
       "date": "2026-05-13",
