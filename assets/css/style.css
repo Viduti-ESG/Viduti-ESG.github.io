@@ -401,99 +401,164 @@ img, svg { display: block; }
   100% { background-position: -100% 0; }
 }
 
-/* Post card — gradient border technique */
+/* ── POST CARD ── */
 .card {
+  --accent: #34d399;          /* set per-card via JS */
   position: relative;
   border-radius: var(--r-lg);
   cursor: pointer;
-  transition: transform .2s ease, box-shadow .2s ease;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Gradient border */
-  background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
-    linear-gradient(135deg, rgba(0,200,255,.15), rgba(129,140,248,.1), rgba(0,0,0,0)) border-box;
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+/* Left accent bar (::before) — coloured with --accent */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20px; bottom: 20px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+  opacity: .7;
+  transition: opacity .2s, top .2s, bottom .2s;
 }
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 0 1px rgba(0,200,255,.2);
-  background:
-    linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
-    linear-gradient(135deg, rgba(0,200,255,.4), rgba(129,140,248,.3)) border-box;
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  box-shadow: 0 24px 64px rgba(0,0,0,.45), 0 0 0 0 var(--accent);
 }
-.card:hover .card__read { color: var(--cyan); }
-
-.card__stripe { height: 3px; width: 100%; flex-shrink: 0; }
+.card:hover::before { top: 0; bottom: 0; opacity: 1; border-radius: 0; }
 
 .card__body {
-  padding: 20px 22px 18px;
+  padding: 24px 24px 20px 28px;   /* extra left pad clears the accent bar */
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
 }
+
 .card__meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 10px;
 }
 .card__tag {
-  font-size: .68rem;
+  font-size: .65rem;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: 100px;
+  /* colour, background and border set inline by JS */
 }
 .card__date {
-  font-size: .73rem;
+  font-size: .72rem;
   color: var(--text-40);
   margin-left: auto;
   font-variant-numeric: tabular-nums;
+  letter-spacing: .01em;
 }
+
 .card__title {
   font-family: var(--serif);
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   color: #fff;
   line-height: 1.38;
-  flex: 1;
+  letter-spacing: -.01em;
 }
+.card:hover .card__title { color: var(--accent); }
+
 .card__summary {
-  font-size: .82rem;
+  font-size: .84rem;
   color: var(--text-70);
-  line-height: 1.65;
+  line-height: 1.7;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 .card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 14px;
+  padding: 14px 24px 20px 28px;
   border-top: 1px solid var(--border);
   margin-top: auto;
 }
 .card__read {
-  font-size: .76rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
   font-weight: 600;
-  color: var(--text-40);
-  transition: color .15s;
+  color: var(--accent);
+  opacity: .7;
+  transition: opacity .15s, gap .2s;
 }
+.card:hover .card__read { opacity: 1; gap: 10px; }
+.card__read::after { content: "→"; }
+
 .card__source {
   font-size: .7rem;
   color: var(--text-20);
+  font-family: monospace;
 }
 
-/* Featured card */
-.card--featured { grid-column: span 2; }
-.card--featured .card__title { font-size: 1.35rem; }
-.card--featured .card__summary { -webkit-line-clamp: 4; }
+/* ── FEATURED CARD (first post, full width) ── */
+.card--featured {
+  grid-column: 1 / -1;                /* full grid width */
+  flex-direction: row;
+  min-height: 220px;
+}
+.card--featured::before {
+  top: 0; bottom: 0;
+  border-radius: 0;
+}
+
+/* Left colour panel on featured */
+.card--featured .card__panel {
+  width: 6px;
+  flex-shrink: 0;
+  background: var(--accent);
+  opacity: .8;
+}
+
+.card--featured .card__body {
+  padding: 32px 36px 0 32px;
+  gap: 14px;
+}
+.card--featured .card__title {
+  font-size: 1.6rem;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+}
+.card--featured .card__summary {
+  -webkit-line-clamp: 3;
+  font-size: .9rem;
+  max-width: 780px;
+}
+.card--featured .card__footer {
+  padding: 16px 36px 28px 32px;
+}
+.card--featured .card__read {
+  font-size: .85rem;
+}
+
+/* Featured "FEATURED" eyebrow label */
+.card__eyebrow {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: .6;
+  margin-bottom: -4px;
+}
 
 /* Empty */
 .empty {
@@ -858,7 +923,7 @@ img, svg { display: block; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .11em;
-  color: var(--cyan);
+  color: var(--accent, var(--cyan));
   margin: 22px 0 6px;
 }
 .modal-label:first-of-type { margin-top: 0; }
