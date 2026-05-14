@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Viduti ESG Intelligence — daily regulatory tracking for climate transition, BRSR, EPR, CSRD and more." />
+  <title>Viduti ESG Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="/" class="nav__logo">
+        <span class="logo-leaf">&#9652;</span>
+        Viduti <span class="logo-accent">ESG</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="#insights">Insights</a></li>
+        <li><a href="#categories">Topics</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+      <a href="#insights" class="btn btn--primary nav__cta">Latest Updates</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__bg-grid"></div>
+    <div class="container hero__content">
+      <div class="hero__badge">
+        <span class="pulse-dot"></span>
+        Daily ESG Intelligence
+      </div>
+      <h1 class="hero__title">
+        Stay Ahead of<br />
+        <span class="gradient-text">Climate Transition</span>
+      </h1>
+      <p class="hero__sub">
+        Regulatory updates, compliance alerts, and analysis on CPCB, SEBI BRSR,
+        MoEFCC, EU CSRD, ISSB and more — curated daily for Indian businesses navigating climate risk.
+      </p>
+      <div class="hero__actions">
+        <a href="#insights" class="btn btn--primary btn--lg">Read Latest Insights</a>
+        <a href="#about" class="btn btn--ghost btn--lg">Learn More</a>
+      </div>
+      <div class="hero__stats">
+        <div class="stat">
+          <span class="stat__num" id="stat-posts">—</span>
+          <span class="stat__label">Insights Published</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num">6+</span>
+          <span class="stat__label">Regulatory Sources</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num">Daily</span>
+          <span class="stat__label">Update Frequency</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORY PILLS -->
+  <section class="categories" id="categories">
+    <div class="container">
+      <div class="categories__scroll">
+        <button class="pill pill--active" data-filter="all">All Topics</button>
+        <button class="pill" data-filter="CPCB / EPR">EPR &amp; Plastic</button>
+        <button class="pill" data-filter="SEBI / BRSR">SEBI BRSR</button>
+        <button class="pill" data-filter="MoEFCC">MoEFCC</button>
+        <button class="pill" data-filter="ISSB / IFRS Sustainability">ISSB / IFRS</button>
+        <button class="pill" data-filter="EU CSRD / EFRAG">EU CSRD</button>
+        <button class="pill" data-filter="GHG Protocol">GHG Protocol</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- POSTS GRID -->
+  <main class="insights" id="insights">
+    <div class="container">
+      <div class="section-header">
+        <h2>Latest Insights</h2>
+        <p>AI-curated analysis of regulatory developments affecting Indian businesses</p>
+      </div>
+      <div class="posts-grid" id="posts-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon">&#127807;</div>
+        <h3>No insights yet</h3>
+        <p>The daily agent runs at 2 AM and will publish the first batch soon.</p>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </main>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container about__inner">
+      <div class="about__text">
+        <h2>What is Viduti ESG?</h2>
+        <p>
+          Viduti ESG is an automated intelligence platform tracking regulatory and market
+          developments at the intersection of business and climate transition.
+        </p>
+        <p>
+          Every night, our agent scrapes official portals — CPCB, SEBI, MoEFCC, IFRS,
+          EFRAG, and the GHG Protocol — extracts compliance documents, and generates
+          plain-English analysis using Claude AI, so Indian corporates and sustainability
+          professionals wake up to actionable intelligence, not raw PDFs.
+        </p>
+        <div class="about__sources">
+          <span class="source-tag">CPCB EPR</span>
+          <span class="source-tag">SEBI BRSR</span>
+          <span class="source-tag">MoEFCC</span>
+          <span class="source-tag">IFRS S1 &amp; S2</span>
+          <span class="source-tag">EU CSRD</span>
+          <span class="source-tag">GHG Protocol</span>
+          <span class="source-tag">SBTi</span>
+        </div>
+      </div>
+      <div class="about__card">
+        <div class="about__card-icon">&#9736;</div>
+        <h3>Climate Transition Focus</h3>
+        <p>We track regulations that force companies to change how they operate, source, report, and invest — across supply chains, emissions, and disclosures.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="logo-leaf">&#9652;</span>
+        Viduti <span class="logo-accent">ESG</span>
+        <p>Daily climate regulatory intelligence for Indian business.</p>
+      </div>
+      <div class="footer__meta">
+        <p>Updated nightly via automated agent &bull; Powered by Claude AI</p>
+        <p class="footer__copy">&copy; <span id="year"></span> Viduti ESG Intelligence. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- POST MODAL -->
+  <div class="modal-backdrop hidden" id="modal-backdrop">
+    <div class="modal" id="modal">
+      <button class="modal__close" id="modal-close" aria-label="Close">&times;</button>
+      <div class="modal__body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
