@@ -6,9 +6,38 @@
       "date": "2026-05-13",
       "category": "E-Waste Rules",
       "source": "cpcb.nic.in",
-      "summary": "",
+      "summary": "On 24 July 2023, the Ministry of Environment, Forest and Climate Change notified the E-Waste (Management) Second Amendment Rules, 2023, introducing two transformative changes: mandatory safe and sustainable management of refrigerants from air-conditioning and refrigeration equipment (both at manufac",
       "link": "https://cpcb.nic.in/uploads/Projects/E-Waste/E-waste-Second-Amendment-Rules-2023.pdf",
-      "sections": {}
+      "sections": {
+        "summary": "On 24 July 2023, the Ministry of Environment, Forest and Climate Change notified the E-Waste (Management) Second Amendment Rules, 2023, introducing two transformative changes: mandatory safe and sustainable management of refrigerants from air-conditioning and refrigeration equipment (both at manufacturing and end-of-life stages), and a significant expansion of the Restriction of Hazardous Substances (RoHS) regime through new Schedules II-A, II-B and II-C. Producers, recyclers and refurbishers of electrical and electronic equipment (EEE) must now factor refrigerant destruction, conversion factors for multiple recycling end-products, and a phased RoHS roadmap extending to 1 April 2025 and 1 April 2028 into their compliance plans.",
+        "what_changed": "The amendment modifies the E-Waste (Management) Rules, 2022 in five substantive ways. First, it inserts new obligations under Rules 5, 7 and 9 requiring manufacturers, refurbishers and recyclers of refrigeration and air-conditioning (RAC) appliances to ensure safe, accountable and sustainable management of refrigerants — both during manufacturing and from end-of-life equipment — using CPCB-approved destruction technologies. This is the first time refrigerant lifecycle management has been formally embedded in India's e-waste regime, directly linking the rules to climate change mitigation via control of high-GWP gases such as HFCs. Second, Rule 14 is amended to allow CPCB to prescribe 'conversion factors' for issuing Extended Producer Responsibility (EPR) certificates where recycling generates multiple end-products — closing a long-standing gap in EPR accounting. Third, Rule 16 (RoHS) is restructured: the existing Schedule II is split, a new Schedule II-A lists medical and laboratory monitoring/control equipment exempted from RoHS limits, Schedule II-B retains the categories already in scope, and a new Schedule II-C brings additional EEE categories (including a broader set of IT and telecom products) under RoHS from 1 April 2025, with a further transition window for components and spares until 1 April 2028.",
+        "who_is_affected": [
+          "Manufacturers of refrigerators, air-conditioners and other RAC appliances (Schedule II-B categories CEEW3, CEEW4 and related products)",
+          "Producers and importers of IT and telecom equipment, including newly notified categories under Schedule II-C",
+          "Refurbishers handling old RAC equipment that contains refrigerant charges",
+          "Authorised e-waste recyclers and dismantlers, especially those producing multiple end-products from a single waste stream",
+          "Medical device and laboratory equipment manufacturers (now formally listed under Schedule II-A exemptions)",
+          "Producer Responsibility Organisations (PROs) and EPR consultants managing certificate issuance on the CPCB EPR portal",
+          "HVAC service providers and refrigerant reclaim/destruction facility operators"
+        ],
+        "key_obligations": [
+          "Immediate (from 25 July 2023): RAC manufacturers must ensure safe, accountable and sustainable management of refrigerants generated during manufacturing, using CPCB-approved destruction technologies",
+          "Immediate: Refurbishers and recyclers must ensure refrigerants recovered from old RAC equipment are managed and destroyed per CPCB guidelines",
+          "Ongoing: EPR certificates for recycling operations with multiple end-products will be issued based on CPCB-notified conversion factors, subject to Steering Committee approval",
+          "1 April 2025: RoHS Rule 16(1) limits on hazardous substances extend to all EEE categories newly listed in Schedule II-C",
+          "1 April 2028: RoHS limits extend to components, consumables, parts and spares of Schedule II-C equipment (where compatible substitutes are available)",
+          "Continuing exemption: Schedule II-A items (ionising radiation detectors, MRI superconductors, X-ray tube components, specific medical/lab sensors and electrodes) remain outside RoHS limits"
+        ],
+        "climate_angle": "Embedding refrigerant management within the e-waste framework is a significant climate move. HFC and HCFC refrigerants used in RAC equipment have global warming potentials hundreds to thousands of times that of CO2, and India's Kigali Amendment commitments require a phased HFC phase-down starting 2028. By making destruction of vented or recovered refrigerants a legal obligation under e-waste rules, India is operationalising its Kigali pathway through producer accountability — a direct convergence of circular economy regulation with climate mitigation. For companies reporting under BRSR Core, ISSB IFRS S2 or the EU CSRD, this creates a new, auditable Scope 1/Scope 3 data point: refrigerant emissions avoided through certified destruction. It also tightens supply chain expectations for Indian exporters whose EU customers must comply with the F-Gas Regulation and the recast WEEE/RoHS Directives. Expect physical-risk-linked scrutiny too: as climate change drives higher cooling demand, the refrigerant footprint of India's appliance industry becomes a material transition risk that investors and lenders will increasingly price in.",
+        "what_to_do": [
+          "Map your refrigerant flows: quantify refrigerants charged during manufacturing, recovered from end-of-life appliances, and currently vented or sent to informal handlers — and identify CPCB-approved destruction partners",
+          "Update EPR plans and PRO contracts to incorporate refrigerant management obligations and the upcoming conversion-factor methodology for multi-output recycling",
+          "Conduct a RoHS gap assessment against the new Schedule II-C list — particularly for IT/telecom products — and lock in a substitution roadmap with suppliers ahead of the 1 April 2025 deadline",
+          "Engage component and spares suppliers now on RoHS-compliant alternatives so that the 2028 transition for parts is not bottlenecked by upstream availability",
+          "Strengthen disclosures: add refrigerant destruction volumes, GWP-weighted emissions avoided, and RoHS compliance status to your BRSR, sustainability report and investor ESG datapack"
+        ],
+        "our_take": "This amendment is quietly one of the most consequential ESG regulations of 2023 for India's appliance and electronics industry. By weaving refrigerant lifecycle management into e-waste rules, the government has created a producer-led enforcement mechanism for climate-relevant gases that previously fell between the cracks of the Ozone Depleting Substances Rules and voluntary industry programmes. The introduction of conversion factors for EPR certificates also signals that CPCB is maturing the EPR market — from a tonnage-based credit system toward a more granular, end-product-aware accounting framework that will reward genuine recyclers and squeeze out paper-trail operators. Expect CPCB guidelines on approved destruction technologies and conversion factors to follow shortly; companies that wait for those notifications before acting will find themselves scrambling in 2024. The smart play is to treat refrigerant management and Schedule II-C readiness as a single strategic programme aligned with Kigali, BRSR Core and global RoHS/WEEE expectations."
+      }
     }
   ]
 }
