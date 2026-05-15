@@ -74,8 +74,11 @@ function renderPage(p) {
   }
   empty.classList.add('hidden');
 
+  const canFeature = filtered.length >= 3;
+  grid.classList.toggle('posts-grid--two', !canFeature && filtered.length === 2);
+
   slice.forEach((post, i) => {
-    const card = makeCard(post, i === 0 && page === 1 && activeFilter === 'all');
+    const card = makeCard(post, canFeature && i === 0 && page === 1 && activeFilter === 'all');
     grid.appendChild(card);
   });
   renderPagination();

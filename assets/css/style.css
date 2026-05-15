@@ -386,6 +386,7 @@ img, svg { display: block; }
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
+.posts-grid--two { grid-template-columns: repeat(2, 1fr); }
 
 /* Skeleton */
 .skel {
