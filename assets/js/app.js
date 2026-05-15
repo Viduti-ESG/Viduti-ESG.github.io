@@ -98,6 +98,10 @@ const ACCENT = {
   'ISSB / IFRS Sustainability': '#c084fc',
   'EU CSRD / EFRAG':           '#fbbf24',
   'GHG Protocol':              '#f87171',
+  'GRI':                       '#06b6d4',
+  'CDP':                       '#818cf8',
+  'SBTi':                      '#a3e635',
+  'TNFD':                      '#2dd4bf',
   'Daily Digest':              '#38bdf8',
 };
 function accent(cat) { return ACCENT[cat] || '#94a3b8'; }
