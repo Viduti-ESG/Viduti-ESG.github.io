@@ -92,9 +92,8 @@ img, svg { display: block; }
 }
 .nav__logo span { color: var(--cyan); }
 .logo-mark {
-  width: 28px;
-  color: var(--cyan);
-  filter: drop-shadow(0 0 7px rgba(0,200,255,.65));
+  width: 38px;
+  filter: drop-shadow(0 0 8px rgba(52,211,153,.55));
 }
 
 .nav__links {

@@ -29,11 +29,34 @@
 <header class="site-header" id="site-header">
   <nav class="nav container">
     <a href="/" class="nav__logo">
-      <svg class="logo-mark" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M3 17 Q9 3 25 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="25" cy="5" r="2" fill="currentColor"/>
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="gc-bar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dd4a8"/>
+            <stop offset="100%" stop-color="#0e7a56"/>
+          </linearGradient>
+          <linearGradient id="gc-leaf" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#86efac"/>
+            <stop offset="100%" stop-color="#22c55e"/>
+          </linearGradient>
+        </defs>
+        <!-- Root network -->
+        <path d="M7 32 Q4 36 1 39 M12 33 Q10 36 7 39 M20 32 Q20 37 20 40 M28 33 Q30 36 33 39 M33 32 Q36 36 39 39" stroke="#34d399" stroke-width="0.75" stroke-linecap="round" opacity="0.3"/>
+        <!-- Bars (dome arrangement, bottom y=32) -->
+        <rect x="2"  y="22" width="5" height="10" rx="1" fill="url(#gc-bar)" opacity="0.6"/>
+        <rect x="9"  y="15" width="5" height="17" rx="1" fill="url(#gc-bar)" opacity="0.75"/>
+        <rect x="16" y="8"  width="5" height="24" rx="1" fill="url(#gc-bar)" opacity="0.95"/>
+        <rect x="23" y="13" width="5" height="19" rx="1" fill="url(#gc-bar)" opacity="0.82"/>
+        <rect x="30" y="21" width="5" height="11" rx="1" fill="url(#gc-bar)" opacity="0.65"/>
+        <!-- Leaves -->
+        <path d="M2 21 Q-4 13 3 6 Q8 13 2 21Z"    fill="url(#gc-leaf)" opacity="0.8"/>
+        <path d="M18.5 8 Q14 0 18.5 -2 Q23 1 18.5 8Z" fill="url(#gc-leaf)" opacity="0.7"/>
+        <path d="M35 20 Q43 12 35 5 Q30 12 35 20Z" fill="url(#gc-leaf)" opacity="0.8"/>
+        <!-- Trend arrow -->
+        <path d="M2 30 L36 3" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="36,3 34,8 30,4" fill="#00c8ff"/>
       </svg>
-      Green<span>Curve</span>
+      Green <span>Curve</span>
     </a>
     <ul class="nav__links" role="list">
       <li><a href="#insights">Insights</a></li>
