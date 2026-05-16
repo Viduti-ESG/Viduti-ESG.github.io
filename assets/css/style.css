@@ -90,9 +90,16 @@ img, svg { display: block; }
   letter-spacing: -.01em;
   flex-shrink: 0;
 }
-.nav__logo span { color: var(--cyan); }
+.nav__logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+}
+.nav__logo-accent { color: var(--cyan); }
 .logo-mark {
-  height: 50px;
+  height: 44px;
   width: auto;
   object-fit: contain;
 }
