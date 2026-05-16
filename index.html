@@ -29,58 +29,68 @@
 <header class="site-header" id="site-header">
   <nav class="nav container">
     <a href="/" class="nav__logo">
-      <svg class="logo-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <linearGradient id="nb" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#68d5b0"/>
-            <stop offset="100%" stop-color="#0e7a56"/>
+            <stop offset="0%"   stop-color="#72d8b8"/>
+            <stop offset="100%" stop-color="#186850"/>
           </linearGradient>
           <linearGradient id="ns" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stop-color="rgba(255,255,255,0.28)"/>
+            <stop offset="0%"   stop-color="rgba(255,255,255,0.36)"/>
             <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
           </linearGradient>
-          <linearGradient id="nl" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"   stop-color="#86efac"/>
-            <stop offset="100%"  stop-color="#15803d"/>
+          <linearGradient id="nl" x1="0.2" y1="0" x2="0.8" y2="1">
+            <stop offset="0%"   stop-color="#82e0bc"/>
+            <stop offset="100%" stop-color="#196644"/>
           </linearGradient>
-          <linearGradient id="nr" x1="1" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#86efac"/>
-            <stop offset="100%" stop-color="#15803d"/>
+          <linearGradient id="nr" x1="0.8" y1="0" x2="0.2" y2="1">
+            <stop offset="0%"   stop-color="#82e0bc"/>
+            <stop offset="100%" stop-color="#196644"/>
           </linearGradient>
         </defs>
         <!-- Root network -->
-        <g stroke="#1e7a4a" stroke-linecap="round" fill="none" opacity="0.5">
-          <path d="M22 33 Q17 37 11 41" stroke-width="1.2"/>
-          <path d="M22 33 Q22 38 22 42" stroke-width="1.2"/>
-          <path d="M22 33 Q27 37 33 41" stroke-width="1.2"/>
-          <path d="M11 40 Q22 43 33 40" stroke-width="0.7"/>
-          <circle cx="22" cy="33" r="1.5" fill="#2aaa72" opacity="0.7"/>
-          <circle cx="11" cy="40" r="1"   fill="#2aaa72" opacity="0.5"/>
-          <circle cx="33" cy="40" r="1"   fill="#2aaa72" opacity="0.5"/>
+        <g fill="none" stroke="#2aaa72" stroke-linecap="round" opacity="0.55">
+          <path d="M24 36 Q19 40 13 44" stroke-width="1.4"/>
+          <path d="M24 36 Q24 41 24 46" stroke-width="1.4"/>
+          <path d="M24 36 Q29 40 35 44" stroke-width="1.4"/>
+          <line x1="13" y1="44" x2="35" y2="44" stroke-width="0.9"/>
+          <path d="M16 44 L24 48 L32 44" stroke-width="0.8" opacity="0.7"/>
         </g>
-        <!-- Bars (dome, bottom y=33) -->
-        <rect x="3"  y="24" width="6" height="9"  rx="1" fill="url(#nb)"/>
-        <rect x="3"  y="24" width="2.5" height="9" rx="1" fill="url(#ns)"/>
-        <rect x="11" y="17" width="6" height="16" rx="1" fill="url(#nb)"/>
-        <rect x="11" y="17" width="2.5" height="16" rx="1" fill="url(#ns)"/>
-        <rect x="19" y="9"  width="6" height="24" rx="1" fill="url(#nb)"/>
-        <rect x="19" y="9"  width="2.5" height="24" rx="1" fill="url(#ns)"/>
-        <rect x="27" y="14" width="6" height="19" rx="1" fill="url(#nb)"/>
-        <rect x="27" y="14" width="2.5" height="19" rx="1" fill="url(#ns)"/>
-        <rect x="35" y="21" width="6" height="12" rx="1" fill="url(#nb)"/>
-        <rect x="35" y="21" width="2.5" height="12" rx="1" fill="url(#ns)"/>
-        <!-- Leaves -->
-        <path d="M3 23 Q-4 15 3 8 Q8 15 3 23Z"    fill="url(#nl)" opacity="0.85"/>
-        <path d="M11 17 Q5 9 10 4 Q15 10 11 17Z"  fill="url(#nl)" opacity="0.75"/>
-        <path d="M22 9 Q18 1 22 -1 Q26 2 22 9Z"   fill="url(#nl)" opacity="0.75"/>
-        <path d="M29 14 Q35 6 30 2 Q25 8 29 14Z"  fill="url(#nr)" opacity="0.75"/>
-        <path d="M41 21 Q48 13 41 7 Q36 13 41 21Z" fill="url(#nr)" opacity="0.85"/>
-        <!-- Trend arrow: from (3,31) to (40,5) -->
-        <path d="M3 31 L40 5" stroke="#1e2d45" stroke-width="3.2" stroke-linecap="round"/>
-        <path d="M3 31 L40 5" stroke="rgba(255,255,255,0.12)" stroke-width="1.2" stroke-linecap="round"/>
-        <!-- Arrowhead tip=(40,5), unit≈(0.737,-0.676), perp=(0.676,0.737) -->
-        <!-- back 8px: (34.1,10.4); half-w 4px: P1=(36.8,13.3) P2=(31.4,7.5) -->
-        <polygon points="40,5 37,13 31,7" fill="#1e2d45"/>
+        <circle cx="24" cy="36" r="1.8" fill="#2aaa72" opacity="0.8"/>
+        <circle cx="13" cy="44" r="1.2" fill="#2aaa72" opacity="0.6"/>
+        <circle cx="35" cy="44" r="1.2" fill="#2aaa72" opacity="0.6"/>
+        <!-- 5 bars dome shape, bottom y=36 -->
+        <rect x="2"  y="26" width="7" height="10" rx="1" fill="url(#nb)"/>
+        <rect x="2"  y="26" width="2.5" height="10" rx="1" fill="url(#ns)"/>
+        <rect x="11" y="18" width="7" height="18" rx="1" fill="url(#nb)"/>
+        <rect x="11" y="18" width="2.5" height="18" rx="1" fill="url(#ns)"/>
+        <rect x="20" y="9"  width="7" height="27" rx="1" fill="url(#nb)"/>
+        <rect x="20" y="9"  width="2.5" height="27" rx="1" fill="url(#ns)"/>
+        <rect x="29" y="15" width="7" height="21" rx="1" fill="url(#nb)"/>
+        <rect x="29" y="15" width="2.5" height="21" rx="1" fill="url(#ns)"/>
+        <rect x="38" y="23" width="7" height="13" rx="1" fill="url(#nb)"/>
+        <rect x="38" y="23" width="2.5" height="13" rx="1" fill="url(#ns)"/>
+        <!-- Panel lines on tallest bar -->
+        <line x1="21" y1="20" x2="26" y2="20" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
+        <line x1="21" y1="28" x2="26" y2="28" stroke="rgba(255,255,255,0.12)" stroke-width="0.8"/>
+        <!-- Leaves — left 2 + top 1 + right 2 -->
+        <path d="M2,25  Q-5,17 2,10 Q7,17 2,25Z"    fill="url(#nl)" opacity="0.88"/>
+        <path d="M11,18 Q5,10 10,5  Q15,11 11,18Z"  fill="url(#nl)" opacity="0.78"/>
+        <path d="M23,9  Q19,2 23,0  Q27,3 23,9Z"    fill="url(#nl)" opacity="0.78"/>
+        <path d="M37,15 Q43,7 37,3  Q32,9 37,15Z"   fill="url(#nr)" opacity="0.78"/>
+        <path d="M45,23 Q53,15 45,9 Q40,15 45,23Z"  fill="url(#nr)" opacity="0.88"/>
+        <!-- Arrow — from (3,34) to (43,6), adapted for dark bg (light steel) -->
+        <path d="M3,34 L38,7"   stroke="#4a6480" stroke-width="4.5" stroke-linecap="butt"/>
+        <path d="M3,34 L38,7"   stroke="#7a9ab8" stroke-width="2"   stroke-linecap="butt"/>
+        <path d="M3,34 L38,7"   stroke="rgba(200,225,255,0.15)" stroke-width="0.8" stroke-linecap="butt"/>
+        <!-- Rivets -->
+        <circle cx="13" cy="28" r="2" fill="#2c3e58" stroke="rgba(150,190,230,0.5)" stroke-width="0.8"/>
+        <circle cx="23" cy="21" r="2" fill="#2c3e58" stroke="rgba(150,190,230,0.5)" stroke-width="0.8"/>
+        <circle cx="33" cy="14" r="2" fill="#2c3e58" stroke="rgba(150,190,230,0.5)" stroke-width="0.8"/>
+        <!-- Arrowhead tip=(43,6) — dir(40,-28)/|48.8|=(0.820,-0.573) perp=(0.573,0.820) -->
+        <!-- back 9: (43-7.4,6+5.2)=(35.6,11.2)→(36,11) half-w5: P1=(38.9,15.3) P2=(33.1,7.2) -->
+        <polygon points="43,6 39,15 33,7" fill="#4a6480"/>
+        <polygon points="43,6 39,15 33,7" fill="rgba(130,170,210,0.2)"/>
       </svg>
       Green <span>Curve</span>
     </a>
