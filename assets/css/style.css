@@ -95,10 +95,6 @@ img, svg { display: block; }
   height: 50px;
   width: auto;
   object-fit: contain;
-  border-radius: 10px;
-  background: #fff;
-  padding: 4px 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.35);
 }
 
 .nav__links {
