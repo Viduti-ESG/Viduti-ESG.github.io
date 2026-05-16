@@ -82,9 +82,10 @@ async function loadPosts() {
 function buildBadges() {
   document.querySelectorAll('.topic').forEach(btn => {
     const f     = btn.dataset.filter;
+    const cats  = TOPIC_MAP[f] || [f];
     const count = f === 'all'
       ? allPosts.length
-      : allPosts.filter(p => p.category === f).length;
+      : allPosts.filter(p => cats.includes(p.category)).length;
 
     let badge = btn.querySelector('.topic__count');
     if (!badge) {
@@ -115,7 +116,8 @@ document.querySelectorAll('.topic').forEach(btn => {
 });
 
 function applyFilter(f) {
-  let base = f === 'all' ? [...allPosts] : allPosts.filter(p => p.category === f);
+  const cats = TOPIC_MAP[f] || [f];
+  let base = f === 'all' ? [...allPosts] : allPosts.filter(p => cats.includes(p.category));
   if (searchQuery) {
     base = base.filter(p =>
       (p.title    || '').toLowerCase().includes(searchQuery) ||
@@ -157,6 +159,25 @@ function renderPage(p) {
   });
   renderPagination();
 }
+
+/* ── TOPIC → CATEGORY MAPPING ── */
+const TOPIC_MAP = {
+  'CPCB / EPR': [
+    'CPCB / EPR', 'Plastic Waste Rules', 'E-Waste Rules',
+    'Battery Waste Rules', 'Urgent Notice / EPR', 'Portal Announcement',
+  ],
+  'SEBI / BRSR':               ['SEBI / BRSR'],
+  'MoEFCC':                    ['MoEFCC'],
+  'BEE / Energy Efficiency':   ['BEE / Energy Efficiency'],
+  'ISSB / IFRS Sustainability': ['ISSB / IFRS Sustainability'],
+  'EU CSRD / EFRAG':           ['EU CSRD / EFRAG'],
+  'GHG Protocol':              ['GHG Protocol'],
+  'GRI':                       ['GRI'],
+  'CDP':                       ['CDP'],
+  'SBTi':                      ['SBTi'],
+  'TNFD':                      ['TNFD'],
+  'Daily Digest':              ['Daily Digest'],
+};
 
 /* ── ACCENT COLOUR PER CATEGORY ── */
 const ACCENT = {
