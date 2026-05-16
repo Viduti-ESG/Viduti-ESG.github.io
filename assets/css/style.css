@@ -92,10 +92,13 @@ img, svg { display: block; }
 }
 .nav__logo span { color: var(--cyan); }
 .logo-mark {
-  width: 42px;
-  height: 42px;
+  height: 50px;
+  width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 6px rgba(52,211,153,.35));
+  border-radius: 10px;
+  background: #fff;
+  padding: 4px 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.35);
 }
 
 .nav__links {
