@@ -94,7 +94,7 @@ function buildBadges() {
       btn.appendChild(badge);
     }
     badge.textContent = count;
-    if (count === 0 && f !== 'all') btn.style.opacity = '0.35';
+    if (f !== 'all') btn.style.display = count === 0 ? 'none' : '';
   });
 }
 
