@@ -4,7 +4,7 @@ const PER_PAGE   = 9;
 let allPosts     = [];
 let filtered     = [];
 let page         = 1;
-let activeFilter = 'all';
+let activeFilter = 'Daily Digest';
 let searchQuery  = '';
 
 /* DOM refs */
@@ -94,7 +94,8 @@ function buildBadges() {
       btn.appendChild(badge);
     }
     badge.textContent = count;
-    if (f !== 'all') btn.style.display = count === 0 ? 'none' : '';
+    if (count === 0 && f !== 'Daily Digest') btn.style.opacity = '0.4';
+    else btn.style.opacity = '';
   });
 }
 
@@ -152,7 +153,7 @@ function renderPage(p) {
   grid.classList.toggle('posts-grid--two', !canFeature && filtered.length === 2);
 
   slice.forEach((post, i) => {
-    const card = makeCard(post, canFeature && i === 0 && page === 1 && activeFilter === 'all');
+    const card = makeCard(post, canFeature && i === 0 && page === 1);
     card.style.animationDelay = `${i * 60}ms`;
     card.classList.add('card--appear');
     grid.appendChild(card);
