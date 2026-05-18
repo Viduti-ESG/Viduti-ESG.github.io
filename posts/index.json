@@ -1,6 +1,44 @@
 {
   "posts": [
     {
+      "id": "gc-35e8982bb3e681b0834dff58fdf6fbf4",
+      "title": "Draft Plastic Waste Management Rules, 2022: Tightening EPR and Expanding Producer Accountability",
+      "date": "2026-05-13",
+      "category": "Plastic Waste Rules",
+      "source": "cpcb.nic.in",
+      "summary": "The Ministry of Environment, Forest and Climate Change (MoEFCC) has published the Draft Plastic Waste Management (Third Amendment) Rules, 2021 — building on the EPR framework already issued in October 2021. The amendments sharpen definitions around plastic packaging, biodegradable plastics, recycler",
+      "link": "https://cpcb.nic.in/uploads/plasticwaste/draft-pwmrules-2022.pdf",
+      "sections": {
+        "summary": "The Ministry of Environment, Forest and Climate Change (MoEFCC) has published the Draft Plastic Waste Management (Third Amendment) Rules, 2021 — building on the EPR framework already issued in October 2021. The amendments sharpen definitions around plastic packaging, biodegradable plastics, recyclers, and waste-to-energy processors, and explicitly bring importers and brand owners under a more rigorous Extended Producer Responsibility (EPR) regime. For Indian manufacturers, importers, brand owners, and recyclers, this signals a tighter, more enforceable plastic circularity regime — one that is converging with global packaging and waste regulations.",
+        "what_changed": "The draft notification proposes substantive amendments to the Plastic Waste Management Rules, 2016. It refines several key definitions — including 'brand owner', 'importer', 'plastic packaging', 'biodegradable plastic', 'recycler', and 'plastic waste processor' — and introduces new categories such as 'pre-consumer plastic packaging waste', 'post-consumer plastic packaging waste', 'end-of-life disposal', 'waste-to-energy', and 'use of recycled plastic'. Crucially, Rule 9 has been rewritten so that Producers, Importers and Brand Owners (PIBOs) must discharge EPR obligations in accordance with the regulations notified under the rules (i.e., the EPR Guidelines for Plastic Packaging notified in October 2021 vide G.S.R. 722(E)). The amendment also clarifies the jurisdiction of the Central Pollution Control Board (CPCB) — which will now register entities operating in more than two states or UTs — versus State Pollution Control Boards/Committees.",
+        "who_is_affected": [
+          "Producers of plastic packaging — including manufacturers of rigid, flexible, multi-layered and compostable plastic packaging",
+          "Importers of plastic-packaged products, plastic raw material, carry bags, and multi-layered packaging",
+          "Brand owners (FMCG, e-commerce, food & beverage, personal care, pharma, electronics) selling goods in plastic packaging under a registered brand/trademark",
+          "Plastic waste recyclers and processors, including waste-to-energy units, co-processors (cement kilns), waste-to-oil units, and industrial composters",
+          "Urban Local Bodies and waste management operators in the collection and segregation value chain",
+          "Companies operating across multiple states — who will now register centrally with CPCB rather than individual SPCBs"
+        ],
+        "key_obligations": [
+          "PIBOs must discharge EPR obligations strictly in line with the EPR Guidelines for Plastic Packaging (G.S.R. 722(E), 6 October 2021) — covering collection, recycling, reuse, and end-of-life disposal targets",
+          "Use of recycled plastic content in new packaging will become a measurable obligation (Category I rigid plastics carry mandatory recycled content targets from FY 2025-26 onwards under the parent EPR notification)",
+          "Mandatory registration on the CPCB centralised online portal for entities operating in more than two states/UTs; SPCB registration for state-level operators",
+          "Track and report pre-consumer and post-consumer plastic packaging waste separately",
+          "Biodegradable plastics must be certified by CPCB against BIS standards — no visible, distinguishable or toxic residue permitted",
+          "Public comments on the draft were invited within 60 days of publication (18 January 2022); final notification has subsequently shaped the active EPR regime — companies should align with the latest consolidated EPR Guidelines"
+        ],
+        "climate_angle": "Plastic waste is no longer a standalone environmental issue — it sits squarely at the intersection of climate transition, circular economy, and supply chain resilience. Recycled content mandates directly reduce Scope 3 emissions associated with virgin plastic production, which is one of the most carbon- and fossil-fuel-intensive material categories. The recognition of 'waste-to-energy' and 'co-processing in cement kilns' as legitimate end-of-life pathways also aligns India's framework with the EU Packaging and Packaging Waste Regulation (PPWR) and converges with ISSB S2 and CSRD ESRS E5 (Resource Use and Circular Economy) disclosure expectations. Global brand owners sourcing from India will increasingly require EPR compliance evidence as part of supplier due diligence, making this a market-access issue, not just a compliance issue.",
+        "what_to_do": [
+          "Conduct a full plastic packaging audit — map every SKU by category (rigid, flexible, multi-layered, compostable) and quantify annual tonnage placed on the market",
+          "Register or update registration on the CPCB EPR portal; determine whether central or state-level registration applies based on geographic footprint",
+          "Build a verified supply chain of recyclers and Plastic Waste Processors capable of issuing EPR certificates — and lock in multi-year contracts before market tightness drives prices up",
+          "Set internal recycled content targets aligned with the FY 2025-26 and FY 2026-27 mandates for Category I and II packaging; engage R&D and procurement early",
+          "Integrate plastic waste KPIs into BRSR Principle 6 disclosures and align reporting with ISSB/CSRD circular economy metrics for global investor readiness"
+        ],
+        "our_take": "This draft was a precursor to one of India's most consequential environmental compliance regimes. The EPR framework for plastic packaging has since matured into a quasi-market mechanism with tradable EPR certificates, environmental compensation for shortfalls, and CPCB-led enforcement. Companies that treated plastic waste as a back-office compliance task are now scrambling — while early movers who invested in reverse logistics, recycler partnerships, and recycled-content R&D are turning compliance into competitive advantage. Expect further tightening: stricter audits, real recycled-content verification (not just paper certificates), and eventual alignment with the Global Plastics Treaty currently under negotiation. The window for low-cost compliance is closing — boards should treat plastic circularity as a core element of their climate transition plan, not a peripheral EHS line item."
+      }
+    },
+    {
       "id": "lightrock-s-500m-accelerate7-fund-what-india-s-clean-energy--1779014650",
       "title": "Lightrock's $500M Accelerate7 Fund: What India's Clean Energy Companies, CFOs, and ESG Investors Must Understand About the New Emerging Market Capital Playbook",
       "date": "2026-05-17",
