@@ -1,13 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Static pages -->
   <url>
     <loc>https://viduti-esg.github.io/</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-esg-index-inclusion-as-a-capital-strategy-what-indian-cfos-a-1779170913</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-australia-raises-sustainability-reporting-thresholds-what-in-1779170913</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-crew-carbon-s-25m-raise-signals-a-convergence-of-wastewater--1779170913</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-hsbc-s-4-billion-china-cleantech-facility-what-india-s-cfos--1779170913</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-bbva-s-99-renewable-electricity-and-83-scope-1-2-reduction-t-1779170913</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e681b0834dff58fdf6fbf4</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-lightrock-s-500m-accelerate7-fund-what-india-s-clean-energy--1779014650</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-ftse-russell-planetrics-climate-scenario-indices-why-indian--1779014650</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-sunraycer-s-901m-texas-solar-storage-finance-close-what-the--1779014650</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-crux-s-500m-nuveen-facility-what-the-u-s-tax-equity-market-s-1779014650</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e681b3b326fe9fdfa95cdb</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e681538131c85497d33262</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982b</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-approved-35e8982b</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 
 </urlset>
