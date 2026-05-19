@@ -311,7 +311,48 @@ const SECTION_ORDER = [
   ['Our Take',                    'our_take'],
 ];
 
+function _injectArticleSchema(post) {
+  const existing = document.getElementById('ld-article');
+  if (existing) existing.remove();
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.summary || '',
+    "datePublished": post.date,
+    "dateModified": post.date,
+    "author": { "@type": "Organization", "name": "Green Curve Research" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Green Curve",
+      "logo": { "@type": "ImageObject", "url": "https://viduti-esg.github.io/assets/img/logo.png" }
+    },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://viduti-esg.github.io/" },
+    "keywords": post.category + ", ESG India, climate compliance",
+    "articleSection": post.category
+  };
+  const el = document.createElement('script');
+  el.type = 'application/ld+json';
+  el.id   = 'ld-article';
+  el.textContent = JSON.stringify(schema);
+  document.head.appendChild(el);
+}
+
+function _updateMeta(name, content, prop) {
+  const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
+  let el = document.querySelector(sel);
+  if (!el) { el = document.createElement('meta'); prop ? el.setAttribute('property', name) : el.setAttribute('name', name); document.head.appendChild(el); }
+  el.setAttribute('content', content);
+}
+
 function openModal(post) {
+  _injectArticleSchema(post);
+  _updateMeta('description', (post.summary || '').slice(0, 160));
+  _updateMeta('og:title',       post.title, true);
+  _updateMeta('og:description', (post.summary || '').slice(0, 200), true);
+  _updateMeta('twitter:title',       post.title, true);
+  _updateMeta('twitter:description', (post.summary || '').slice(0, 200), true);
+
   const ac   = accent(post.category);
   const secs = post.sections || {};
   const box  = document.getElementById('modal-box');
@@ -369,6 +410,13 @@ function buildSections(secs, fallbackSummary) {
 function closeModal() {
   overlay.classList.add('hidden');
   document.body.style.overflow = '';
+  const ldArt = document.getElementById('ld-article');
+  if (ldArt) ldArt.remove();
+  _updateMeta('description', 'Green Curve delivers daily ESG and climate transition intelligence for Indian businesses — CPCB EPR, SEBI BRSR, MoEFCC, BEE, ISSB IFRS S1/S2, EU CSRD, GHG Protocol, GRI, CDP, SBTi and TNFD. Expert analysis every morning.');
+  _updateMeta('og:title',       'Green Curve — ESG & Climate Compliance Intelligence for India', true);
+  _updateMeta('og:description', 'Daily ESG and climate compliance intelligence for Indian businesses. Expert analysis across 13+ regulatory sources.', true);
+  _updateMeta('twitter:title',       'Green Curve — ESG & Climate Compliance Intelligence for India', true);
+  _updateMeta('twitter:description', 'Daily ESG and climate compliance intelligence for Indian businesses. Expert analysis across 13+ regulatory sources.', true);
 }
 
 overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
