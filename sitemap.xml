@@ -3,9 +3,37 @@
 
   <url>
     <loc>https://viduti-esg.github.io/</loc>
-    <lastmod>2026-05-19</lastmod>
+    <lastmod>2026-05-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e6812bb8bde702db389abc</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e68118b5ecfd629c8b8ccd</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e681a489eddddea4b9b98b</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e6816cb871c0668e09027e</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <url>
