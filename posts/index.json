@@ -1,6 +1,160 @@
 {
   "posts": [
     {
+      "id": "gc-35e8982bb3e6812bb8bde702db389abc",
+      "title": "CPCB Extends Interim Relief for Importers of 85 EEE Items: EPR Registration Deadline Now 30 June 2023",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "The Central Pollution Control Board (CPCB) has issued a clarificatory letter dated 9 May 2023 to the Customs authorities, extending interim arrangements for releasing imported consignments of producers of 85 categories of Electrical and Electronic Equipment (EEE) under the E-Waste (Management) Rules",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=UmVwb3J0RmlsZXMvMTUzMl8xNjgzNjM0OTg1X21lZGlhcGhvdG8xNDY1Ni5wZGY=",
+      "sections": {
+        "summary": "The Central Pollution Control Board (CPCB) has issued a clarificatory letter dated 9 May 2023 to the Customs authorities, extending interim arrangements for releasing imported consignments of producers of 85 categories of Electrical and Electronic Equipment (EEE) under the E-Waste (Management) Rules, 2022. Producers may continue to clear consignments on the basis of an undertaking until 30 June 2023, after which EPR Registration Certificates from the CPCB EPR Portal will be mandatory. Producers of 21 additional EEE items whose old EPR Authorisation has expired also get a parallel reprieve until the same date.",
+        "what_changed": "When the E-Waste (Management) Rules, 2022 came into force on 1 April 2023, they replaced the 2016 Rules and introduced a new EPR Portal-based registration regime for producers, manufacturers, refurbishers and recyclers. The transition created a real-world bottleneck: imported consignments of EEE products were being held up at ports because many producers had not yet received their new EPR Registration Certificates. Through its 9 May 2023 letter to the Central Board of Indirect Taxes & Customs (CBIC), CPCB has clarified three things. First, the interim arrangement allowing release of consignments against an undertaking (originally communicated on 13 April 2023) stands extended until 30 June 2023. Second, the 30-day window earlier specified for submitting the EPR Registration Certificate has been replaced with a fixed cut-off date of 30 June 2023, counted from the date of undertaking submitted to Customs. Third, for 21 EEE categories (ITEW1–ITEW16 and CEEW1–CEEW5) whose EPR Authorisation under the 2016 Rules has expired, Customs may release consignments if producers submit an acknowledgement of fresh application on the EPR Portal along with the lapsed EPRA, again valid till 30 June 2023.",
+        "who_is_affected": [
+          "Producers and importers of 85 newly notified EEE categories under the 2022 Rules — covering IT and Telecom Equipment (ITEW17–ITEW27), Consumer Electricals and Electronics (CEEW6–CEEW19), Large and Small Electrical Equipment (LSEEW1–LSEEW34), Electrical and Electronic Tools (EETW1–EETW8), Toys, Leisure and Sports Equipment (TLSEW1–TLSEW6), Medical Devices (MDW1–MDW10) and Laboratory Instruments (LIW1–LIW2)",
+          "Producers of 21 legacy EEE categories (ITEW1–ITEW16 and CEEW1–CEEW5) whose EPR Authorisation under the 2016 Rules has expired",
+          "Customs House Agents (CHAs), freight forwarders and logistics partners handling EEE shipments at Indian ports",
+          "Consumer electronics, IT hardware, medical device, laboratory equipment and small/large appliance brands importing finished or semi-finished EEE",
+          "Compliance, EHS, supply chain and trade-finance teams responsible for clearing imports"
+        ],
+        "key_obligations": [
+          "Until 30 June 2023: Producers may secure release of imported EEE consignments by submitting an undertaking to Customs along with the Bill of Entry",
+          "From 1 July 2023 onwards: Release of consignments will require a valid EPR Registration Certificate generated from the CPCB EPR Portal — no further extensions are indicated",
+          "Producers with expired EPRA (under 2016 Rules) for 21 EEE items: must submit a copy of the expired authorisation plus an acknowledgement of fresh application on the CPCB EPR Portal — also valid only till 30 June 2023",
+          "CPCB is maintaining a record of all undertakings submitted; producers should expect compliance verification post-deadline",
+          "CBIC has been asked to nominate a single point of contact to share compliance status with CPCB"
+        ],
+        "climate_angle": "The 2022 E-Waste Rules represent India's most consequential shift toward a circular economy for electronics, introducing a digital, certificate-traded EPR framework comparable to producer responsibility regimes in the EU under the WEEE Directive and emerging schemes in Southeast Asia. For Indian operations of global companies, e-waste compliance is increasingly material under ISSB IFRS S2 (climate-related disclosures around resource use and transition risk) and CSRD/ESRS E5 (Resource Use and Circular Economy). Failure to clear imports or maintain EPR registration is no longer a routine customs hiccup — it directly affects working capital, demurrage costs, and Scope 3 inventory disclosures. Supply chain leaders should treat EPR registration with the same rigour as BIS certification or BRSR data assurance: as a structural license-to-operate issue tied to India's broader low-carbon, circular-economy transition.",
+        "what_to_do": [
+          "Confirm immediately whether your products fall under any of the 85 new EEE categories or the 21 legacy categories — map your SKUs to the CPCB code list",
+          "If not already done, apply on the CPCB EPR Portal (eprewastecpcb.in) for registration as a Producer; track application status weekly",
+          "For shipments already at port, file the prescribed undertaking with Customs along with the Bill of Entry to avoid demurrage between now and 30 June 2023",
+          "Maintain a central register of all undertakings submitted, with linkage to Bill of Entry numbers, to support CPCB record-keeping and audit trails",
+          "Brief logistics partners, CHAs and treasury teams that interim relief expires on 30 June 2023 — plan import schedules accordingly and budget for potential port holding costs if registration is delayed"
+        ],
+        "our_take": "This letter is a pragmatic but firm signal from CPCB: the regulator is willing to absorb short-term transition pain, but is closing the door on open-ended relief. The 30 June 2023 cut-off is unusually specific and replaces the rolling 30-day window — a deliberate move to force producers off interim undertakings and onto the formal EPR Portal. We expect CPCB to begin reconciling undertakings against registrations from Q3 FY24, and producers who continue to import without certification beyond June face the dual risk of consignment seizure and reputational exposure under the new EPR-credit trading mechanism. Boards and CFOs should now treat EPR compliance as a board-level supply chain risk, not a back-office filing — particularly with BRSR Core assurance, ISSB-aligned disclosures, and customer-led Scope 3 inquiries all converging in FY24–25."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e68118b5ecfd629c8b8ccd",
+      "title": "CPCB Greenlights Customs Release for 85 EEE Item Importers: Undertaking-Based Clearance Under E-Waste Rules 2022",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "The Central Pollution Control Board (CPCB) has written to the Central Board of Excise and Customs allowing the release of imported consignments of 85 categories of Electrical and Electronic Equipment (EEE) covered under the new E-Waste (Management) Rules, 2022, subject to an undertaking from the Pro",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=UmVwb3J0RmlsZXMvMTUyNl8xNjgxNDA5MDkzX21lZGlhcGhvdG8yNzIwNS5wZGY=",
+      "sections": {
+        "summary": "The Central Pollution Control Board (CPCB) has written to the Central Board of Excise and Customs allowing the release of imported consignments of 85 categories of Electrical and Electronic Equipment (EEE) covered under the new E-Waste (Management) Rules, 2022, subject to an undertaking from the Producer/Importer. This is a transitional relief because the EPR Portal — which Producers must register on — was still under upgradation and expected to go live by 30th April 2023. Importers must submit their EPR Registration Certificate within one month of giving the undertaking.",
+        "what_changed": "Effective 1st April 2023, the E-Waste (Management) Rules, 2022 require every Producer of EEE — including Importers — to register with CPCB on the EPR (Extended Producer Responsibility) Portal before placing products on the Indian market. Because the EPR Portal was not yet operational on the rules' effective date, importers of 85 specified EEE categories faced the risk of consignments being held at ports. CPCB has therefore directed Customs to release such consignments against a signed undertaking from the Producer, with the condition that the actual online EPR Registration Certificate is produced within 30 days. A copy of the undertaking must also be emailed to CPCB at ewaste2.cpcb@gov.in from the company's authorised email ID.",
+        "who_is_affected": [
+          "Importers and domestic Producers of any of the 85 notified EEE items under the 2022 Rules",
+          "IT & Telecom Equipment manufacturers/importers (ITEW 17 to ITEW 27) — laptops, servers, routers, mobile devices and related equipment",
+          "Consumer Electricals & Electronics (CEEW 6 to CEEW 19) — televisions, refrigerators, washing machines, air conditioners and similar appliances",
+          "Large and Small Electrical & Electronic Equipment (LSEEW 1 to LSEEW 34) — a wide range of household and commercial appliances",
+          "Electrical & Electronic Tools (EETW 1 to EETW 8), Toys, Leisure & Sports Equipment (TLSEW 1 to TLSEW 6)",
+          "Medical Devices (MDW 1 to MDW 10) and Laboratory Instruments (LIW 1 to LIW 2)",
+          "Customs Houses, Customs Brokers (CHAs) and logistics partners handling these consignments"
+        ],
+        "key_obligations": [
+          "E-Waste (Management) Rules, 2022 came into force from 1st April 2023, replacing the 2016 Rules",
+          "EPR Portal expected to be operational by 30th April 2023 — Producers must register thereafter",
+          "Imported consignments will be released by Customs only against a signed undertaking on Producer company letterhead (format prescribed by CPCB)",
+          "A copy of the undertaking must be emailed to ewaste2.cpcb@gov.in from the company's authorised email ID",
+          "EPR Registration Certificate must be obtained and submitted to Customs within 1 month of giving the undertaking",
+          "Failure to comply may attract penalties under the Environment (Protection) Act and impact future import clearances"
+        ],
+        "climate_angle": "The 2022 E-Waste Rules mark India's decisive shift to a fully digital, certificate-based EPR regime aligned with global circular economy norms. For multinationals reporting under ISSB (IFRS S2), CSRD or CDP, EPR registration data feeds directly into Scope 3 downstream emissions, product end-of-life disclosures and circularity KPIs. Mismanaged e-waste is also a material physical and reputational risk: hazardous leachates, informal sector burning and lost critical minerals (cobalt, lithium, rare earths) undermine both India's net-zero commitments and corporate supply chain resilience. Companies that treat EPR as a paperwork exercise will struggle when European importers, under CSRD and the upcoming Digital Product Passport, demand verifiable take-back and recycling data from their Indian supply chains.",
+        "what_to_do": [
+          "Map every SKU your company imports or manufactures against the 85 EEE codes (ITEW, CEEW, LSEEW, EETW, TLSEW, MDW, LIW) to confirm applicability",
+          "Issue the prescribed undertaking on company letterhead for any in-transit or pending consignments and email a copy to ewaste2.cpcb@gov.in from an authorised ID before approaching Customs",
+          "Initiate EPR registration on the CPCB portal as soon as it goes live (30th April 2023) — assign a single owner internally and gather KYC, product specs, and projected sales/import volumes in advance",
+          "Engage a CPCB-registered PRO or recycler early and lock in EPR target compliance for FY 2023-24, including back-calculations under the new collection targets",
+          "Brief Customs Brokers and logistics partners on the undertaking-based release process to avoid demurrage; set up an internal tracker to ensure the EPR Certificate is filed with Customs within 30 days"
+        ],
+        "our_take": "This CPCB letter is a pragmatic, one-time bridge — not a relaxation. The 30-day clock starts ticking the moment an importer signs the undertaking, and CPCB will almost certainly cross-check undertakings against final EPR registrations once the portal stabilises. We expect tighter enforcement, denial of future clearances for defaulters, and progressively higher EPR collection targets year on year. Companies that move now to consolidate their product master, EPR data architecture and PRO relationships will not only avoid port delays but also be ready for the next wave — a Digital Product Passport-style traceability regime that India is likely to converge towards by 2026."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e681a489eddddea4b9b98b",
+      "title": "Plastic Waste Management (2nd Amendment) Rules 2022: EPR Tightens for Producers, Importers & Brand Owners",
+      "date": "2026-05-13",
+      "category": "Plastic Waste Rules",
+      "source": "cpcb.nic.in",
+      "summary": "On 6 July 2022, the Ministry of Environment, Forest and Climate Change (MoEFCC) notified the Plastic Waste Management (Second Amendment) Rules, 2022, significantly strengthening the Extended Producer Responsibility (EPR) framework for plastic packaging. The amendment introduces clear definitions for",
+      "link": "https://cpcb.nic.in/uploads/plasticwaste/2-amendment-pwmrules-2022.pdf",
+      "sections": {
+        "summary": "On 6 July 2022, the Ministry of Environment, Forest and Climate Change (MoEFCC) notified the Plastic Waste Management (Second Amendment) Rules, 2022, significantly strengthening the Extended Producer Responsibility (EPR) framework for plastic packaging. The amendment introduces clear definitions for biodegradable plastics, recycled content use, end-of-life disposal, and post-consumer packaging waste, and requires Producers, Importers and Brand Owners (PIBOs) to register with CPCB and meet EPR targets per Schedule-II guidelines. For Indian companies, this is the operational backbone of India's plastic circularity push — and non-registration or non-compliance now carries direct regulatory and reputational exposure.",
+        "what_changed": "The amendment modifies the Plastic Waste Management Rules, 2016 by inserting and replacing several definitions in Rule 3 and rewriting key compliance obligations in Rules 4, 9 and 10. New definitions added include 'biodegradable plastic' (excluding compostable plastic, certified by CPCB and compliant with Indian standards), 'plastic packaging', 'post-consumer plastic packaging waste', 'pre-consumer plastic packaging waste', 'recycler', 'reuse', 'use of recycled plastic', 'waste-to-energy' and 'end-of-life disposal' (including co-processing in cement/steel kilns and waste-to-oil). The definition of 'importer' is broadened to cover anyone importing plastic packaging, packaged products, carry bags, multi-layered packaging or plastic sheets. The compostable plastics standard is upgraded from IS 17088:2008 to IS/ISO 17088:2021, and biodegradable plastics are now brought under the same certification and labelling regime. Rule 9 is rewritten so that Producers, Importers and Brand Owners must discharge EPR for plastic packaging strictly per Schedule-II guidelines, and CPCB becomes the single registration authority for any entity operating in more than two States/UTs.",
+        "who_is_affected": [
+          "Producers of plastic packaging (manufacturers of rigid, flexible, multi-layered and compostable/biodegradable packaging)",
+          "Brand Owners using plastic packaging or trademarks on packaged goods — FMCG, food & beverage, e-commerce, pharma, personal care, apparel",
+          "Importers of plastic packaging, packaged products, carry bags, multi-layered packaging and plastic sheets",
+          "Plastic Waste Processors — recyclers, co-processors (cement, steel and similar industries), waste-to-energy and waste-to-oil operators",
+          "Manufacturers and sellers of compostable and biodegradable plastics (now both require CPCB certification)",
+          "MSMEs in packaging supply chains — typically captured through brand owner EPR obligations"
+        ],
+        "key_obligations": [
+          "Effective date: 7 July 2022 (date of publication in the Gazette)",
+          "Mandatory registration of PIBOs on the CPCB centralised EPR portal — CPCB is the registration authority if operations span more than two States/UTs; State PCBs/PCCs otherwise",
+          "Discharge EPR targets for plastic packaging in line with Schedule-II categories — including recycling, reuse, use of recycled plastic content and end-of-life disposal targets",
+          "Biodegradable plastic manufacturers and sellers must obtain CPCB certification and comply with IS/ISO 17088:2021 (same regime as compostable plastics)",
+          "Brand owners must now factor 'trademarks' explicitly into their EPR scope — captive/private-label packaging cannot be excluded",
+          "Maintain annual filings, audited records and traceability of post-consumer and pre-consumer plastic packaging waste",
+          "Non-registration or non-compliance attracts environmental compensation as per CPCB guidelines under Rule 13(2)"
+        ],
+        "climate_angle": "Plastic packaging is both a climate and a circularity issue. Virgin plastic production is fossil-fuel intensive — roughly 4-8% of global oil demand — and end-of-life mismanagement releases methane and black carbon. By mandating recycled content use, reuse and structured end-of-life disposal (including co-processing in cement kilns, which substitutes thermal coal), the amendment directly intersects with Scope 3 emissions reduction pathways for FMCG, retail and e-commerce companies. It also aligns India with global disclosure frameworks: ISSB's IFRS S2 expects disclosure of resource use and circular-economy metrics, the EU's CSRD/ESRS E5 requires reporting on resource inflows, outflows and waste, and the EU Packaging and Packaging Waste Regulation (PPWR) sets recycled-content thresholds that will affect Indian exporters. Companies that build robust EPR data systems now will find themselves materially better prepared for BRSR Core assurance, CBAM-adjacent scrutiny, and investor questions on plastic footprint.",
+        "what_to_do": [
+          "Complete or update CPCB EPR portal registration immediately — map whether your operations span more than two States/UTs to determine the correct registering authority",
+          "Conduct a plastic packaging baseline audit: quantify Category I-IV packaging volumes (rigid, flexible, multi-layered, compostable/biodegradable) introduced into the market in the previous two financial years",
+          "Re-paper contracts with co-packers, contract manufacturers and private-label suppliers to allocate EPR liability, recycled-content sourcing and reporting responsibilities",
+          "Build a recycled-content procurement roadmap — identify GST-registered, CPCB-recognised recyclers and lock in supply for upcoming Schedule-II recycled content obligations",
+          "If you sell compostable or biodegradable plastics, secure fresh CPCB certification against IS/ISO 17088:2021 and update labelling and marketing claims to avoid greenwashing risk",
+          "Integrate EPR KPIs into your BRSR Principle 2 and Principle 6 disclosures and align internal data systems with ISSB / ESRS E5 readiness"
+        ],
+        "our_take": "The Second Amendment is the regulatory scaffolding that converts India's plastic EPR from an aspirational policy into an enforceable, target-based regime. The most consequential shift is subtle but profound: by explicitly including 'trademarks' under brand owner scope, broadening the definition of 'importer', and making CPCB the single-window registrar for multi-state operators, MoEFCC has closed the most common loopholes used to dilute EPR liability. Expect CPCB to follow up with stricter audit protocols, environmental compensation orders, and public dashboards that name non-compliant brand owners — a reputational risk that boards should no longer ignore. Companies that treat this as a paperwork exercise will be caught flat-footed; those that integrate plastic circularity into procurement, product design and climate disclosure will find it becomes a competitive moat as global packaging regulations (EU PPWR, UK Plastic Packaging Tax, UN Plastics Treaty) converge over the next 24 months."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e6816cb871c0668e09027e",
+      "title": "Guidelines on Extended Producer Responsibility for Plastic Packaging",
+      "date": "2026-05-13",
+      "category": "Plastic Waste Rules",
+      "source": "cpcb.nic.in",
+      "summary": "The Ministry of Environment, Forest and Climate Change has notified the Plastic Waste Management (Amendment) Rules, 2022, introducing legally binding Extended Producer Responsibility (EPR) guidelines for plastic packaging. Producers, Importers, and Brand Owners (PIBOs) are now accountable for the en",
+      "link": "https://cpcb.nic.in/uploads/plasticwaste/PWM-Amendment-Rules-2022.pdf",
+      "sections": {
+        "summary": "The Ministry of Environment, Forest and Climate Change has notified the Plastic Waste Management (Amendment) Rules, 2022, introducing legally binding Extended Producer Responsibility (EPR) guidelines for plastic packaging. Producers, Importers, and Brand Owners (PIBOs) are now accountable for the end-of-life management of plastic packaging they place in the market, with specific collection, recycling, reuse, and recycled-content targets. This shifts plastic waste from a municipal problem to a producer obligation — and creates a new compliance regime that will reshape packaging strategy across FMCG, e-commerce, retail, and manufacturing.",
+        "what_changed": "On 16 February 2022, the Ministry amended the Plastic Waste Management Rules, 2016, by inserting a new Schedule II that codifies EPR for plastic packaging. Previously, EPR was referenced in the 2016 Rules but operationalised through periodic, non-binding guidelines. The amendment makes Schedule II the legal basis for EPR — meaning targets, timelines, registration, and reporting are now enforceable obligations rather than advisory. The framework classifies plastic packaging into four categories: Category I (rigid plastic), Category II (flexible plastic of single layer or multilayer, plastic sheets and covers, carry bags, and plastic packaging used for import), Category III (multi-layered plastic packaging with at least one layer of plastic and at least one layer of material other than plastic), and Category IV (compostable plastic carry bags and packaging). Each category carries distinct recycling, reuse, and recycled-content obligations. Producers, Importers, and Brand Owners must register on a centralised CPCB online portal, file annual returns, and meet category-wise targets — failing which environmental compensation applies on a polluter-pays basis.",
+        "who_is_affected": [
+          "Producers: Entities manufacturing plastic packaging, carry bags, multilayered packaging, or plastic sheets used as packaging.",
+          "Importers: Entities importing plastic packaging, packaged products, carry bags, multilayered packaging, or plastic sheets.",
+          "Brand Owners: Any person or company that sells products under a registered brand label or trademark using plastic packaging — including FMCG, food & beverage, personal care, pharmaceuticals, e-commerce, and online food delivery platforms.",
+          "Plastic Waste Processors: Recyclers, waste-to-energy operators, waste-to-oil converters, and industrial composters, who must register and supply EPR certificates.",
+          "Sector exposure is highest in FMCG, retail, e-commerce, food delivery, pharmaceuticals, electronics, dairy, and apparel — but virtually all consumer-facing businesses that ship goods in plastic are within scope, regardless of size."
+        ],
+        "key_obligations": [
+          "Effective date: Guidelines came into immediate effect on 16 February 2022; ongoing EPR processes were transitioned into the new framework.",
+          "Mandatory registration of all Producers, Importers, and Brand Owners on the CPCB's centralised EPR portal — no PIBO may operate without registration.",
+          "Category-wise minimum recycling targets that escalate annually — from 50% in FY 2024–25 to 80% by FY 2027–28 for Category I and II rigid/flexible plastics.",
+          "Reuse obligations for rigid plastic packaging (Category I) beginning FY 2025–26, with progressive increases through FY 2028–29.",
+          "Mandatory use of recycled plastic content in new packaging — phased in from FY 2025–26 across Categories I, II, and III.",
+          "End-of-life disposal options (waste-to-energy, co-processing in cement kilns, road construction, waste-to-oil) permitted only for residual waste that cannot be recycled.",
+          "Annual filing of returns on the CPCB portal disclosing plastic packaging introduced, collected, recycled, reused, and end-of-life managed.",
+          "Environmental Compensation will be levied on PIBOs for shortfalls against EPR targets, calculated on a per-tonne basis."
+        ],
+        "climate_angle": "Plastic packaging EPR sits squarely at the intersection of India's circular economy ambition and the global climate transition. Virgin plastic production is highly carbon-intensive — accounting for an estimated 3–4% of global GHG emissions — and mandatory recycled content directly reduces Scope 3 emissions for brand owners. The recycled-content mandate and reuse targets align India with emerging global norms: the EU Packaging and Packaging Waste Regulation (PPWR), the UN Global Plastics Treaty negotiations, and disclosure expectations under ISSB IFRS S2 and CSRD's ESRS E5 (Resource Use and Circular Economy). For Indian exporters, alignment with this EPR regime will increasingly be a prerequisite for access to EU, UK, and other regulated markets where customers demand verifiable recycled content and chain-of-custody documentation. Physically, plastic waste mismanagement also amplifies flood and drainage risks in Indian cities — a tangible climate adaptation linkage.",
+        "what_to_do": [
+          "Conduct a plastic packaging audit: map every SKU by category (I/II/III/IV), weight, polymer type, and annual volume — this is the baseline for all EPR targets.",
+          "Register on the CPCB centralised EPR portal immediately if not already done, and reconcile historical data for the past three years as required for baseline-setting.",
+          "Build an EPR certificate procurement strategy: contract with registered recyclers and waste processors well in advance, since certificate supply is tightening as demand from PIBOs rises.",
+          "Redesign packaging for circularity: shift from multilayered (Category III) to mono-material recyclable formats, increase post-consumer recycled (PCR) content, and pilot reusable rigid packaging.",
+          "Integrate EPR data into ESG reporting — BRSR Principle 2 and Principle 6 disclosures, and prepare for ISSB-aligned Scope 3 and circularity metrics that investors are increasingly asking about."
+        ],
+        "our_take": "This is the most consequential plastics regulation India has issued in a decade, and its real teeth lie in the combination of mandatory recycled content, reuse targets, and tradable EPR certificates — a market mechanism that will price plastic waste for the first time. Companies that treat this as a paperwork exercise will face escalating environmental compensation and reputational exposure; those that treat it as a packaging-redesign and supply-chain transformation opportunity will gain a structural cost and brand advantage as global circular-economy rules converge. Expect tighter CPCB enforcement, the emergence of a liquid EPR certificate market, and growing investor scrutiny of plastic intensity metrics. The direction of travel is clear: virgin plastic is becoming a regulated, taxed, and stranded input — and the transition window is now."
+      }
+    },
+    {
       "id": "esg-index-inclusion-as-a-capital-strategy-what-indian-cfos-a-1779170913",
       "title": "ESG Index Inclusion as a Capital Strategy: What Indian CFOs and CSOs Must Understand About MSCI, FTSE4Good, and the $500M Demand Signal",
       "date": "2026-05-19",
