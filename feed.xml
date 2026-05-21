@@ -5,7 +5,7 @@
     <link>https://viduti-esg.github.io/</link>
     <description>Daily ESG and climate compliance intelligence for Indian businesses.</description>
     <language>en-in</language>
-    <lastBuildDate>Thu, 21 May 2026 01:06:49 +0530</lastBuildDate>
+    <lastBuildDate>Thu, 21 May 2026 11:20:00 +0530</lastBuildDate>
     <atom:link href="https://viduti-esg.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://viduti-esg.github.io/assets/img/logo.png</url>
@@ -13,6 +13,46 @@
       <link>https://viduti-esg.github.io/</link>
     </image>
 
+    <item>
+      <title>Google's 24/7 CFE Commitment Holds: What the GHG Protocol Hourly Matching Debate Means for Indian Data Centre Operators, RE100 Signatories, and BRSR Scope 2 Disclosures</title>
+      <link>https://www.esgtoday.com/google-exec-confirms-2030-carbon-free-energy-commitment-remains-in-place-despite-ai-buildout/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=google-exec-confirms-2030-carbon-free-energy-commitment-remains-in-place-despite-ai-buildout</link>
+      <description>Google's Singapore and Malaysia Managing Director Ben King confirmed at the Ecosperity conference that the company's 2030 24/7 Carbon-Free Energy (CFE) commitment — hourly, local matching of electricity consumption with clean energy supply — remains fully intact despite a $190 billion AI infrastruct</description>
+      <pubDate>Thu, 21 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">google-s-24-7-cfe-commitment-holds-what-the-ghg-protocol-hou-1779342598</guid>
+    </item>
+    <item>
+      <title>La Caisse's Novisto Investment Signals Institutional Capital Flowing Into ESG Data Infrastructure — What Indian CFOs Must Read Into This</title>
+      <link>https://www.esgtoday.com/la-caisse-invests-in-sustainability-reporting-software-provider-novisto/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=la-caisse-invests-in-sustainability-reporting-software-provider-novisto</link>
+      <description>Quebec's La Caisse — one of the world's largest institutional investors managing over CAD 450 billion — has made a strategic investment in Novisto, a Montreal-based ESG data management and reporting software platform, explicitly citing CSRD compliance pressure and California's climate disclosure law</description>
+      <pubDate>Thu, 21 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">la-caisse-s-novisto-investment-signals-institutional-capital-1779342598</guid>
+    </item>
+    <item>
+      <title>Pentagreen's $800M GIP Close: What the FAST-P Blended Finance Architecture Means for India's Transition Infrastructure Capital Gap</title>
+      <link>https://www.esgtoday.com/hsbc-temasek-backed-pentagreen-raises-800-million-for-asia-focused-green-transition-fund/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=hsbc-temasek-backed-pentagreen-raises-800-million-for-asia-focused-green-transition-fund</link>
+      <description>Pentagreen Capital — the HSBC and Temasek-backed debt financing platform — has reached an $800 million second close for its Green Investments Partnership (GIP), a blended finance vehicle operating under Singapore's MAS-anchored Financing Asia's Transition Partnership (FAST-P). Critically for Indian </description>
+      <pubDate>Thu, 21 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">pentagreen-s-800m-gip-close-what-the-fast-p-blended-finance--1779342598</guid>
+    </item>
+    <item>
+      <title>Novata's Risk Atlas: Why AI-Powered Supply Chain Risk Monitoring for Private Markets Has Direct Implications for Indian PE-Backed Companies and BRSR Value Chain Disclosures</title>
+      <link>https://www.esgtoday.com/novata-launches-portfolio-supply-chain-risk-monitoring-solution/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=novata-launches-portfolio-supply-chain-risk-monitoring-solution</link>
+      <description>Novata's launch of Risk Atlas — an AI-powered, multi-category ESG risk monitoring tool for private markets portfolios and supply chains — signals a structural shift in how global GPs and LPs will assess, screen, and engage with portfolio companies on ESG risk, including those domiciled in India. For</description>
+      <pubDate>Thu, 21 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">novata-s-risk-atlas-why-ai-powered-supply-chain-risk-monitor-1779342598</guid>
+    </item>
+    <item>
+      <title>Datamaran Core's CSRD/ISSB Enhancements: What AI-Driven Double Materiality and IRO Gap Analysis Mean for Indian Companies Navigating BRSR Core and Global Disclosure Convergence</title>
+      <link>https://www.esgtoday.com/datamaran-launches-new-tools-to-support-csrd-issb-compliance-governance/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=datamaran-launches-new-tools-to-support-csrd-issb-compliance-governance</link>
+      <description>Datamaran's May 2026 enhancements to its AI-powered Datamaran Core platform — including a Double Materiality IRO gap analysis benchmarked against audited CSRD peer reports, dynamic stakeholder intelligence, and AI-generated disclosure recommendations — represent a material shift in how technology is</description>
+      <pubDate>Thu, 21 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">datamaran-core-s-csrd-issb-enhancements-what-ai-driven-doubl-1779342598</guid>
+    </item>
     <item>
       <title>CPCB Extends Interim Relief for Importers of 85 EEE Items: EPR Registration Deadline Now 30 June 2023</title>
       <link>https://cpcb.nic.in/openpdffile.php?id=UmVwb3J0RmlsZXMvMTUzMl8xNjgzNjM0OTg1X21lZGlhcGhvdG8xNDY1Ni5wZGY=</link>
@@ -132,30 +172,6 @@
       <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
       <category>Plastic Waste Rules</category>
       <guid isPermaLink="false">gc-35e8982bb3e681b3b326fe9fdfa95cdb</guid>
-    </item>
-    <item>
-      <title>Plastic Waste Management (Amendment) Rules, 2021: India's Roadmap to Phasing Out Single-Use Plastics</title>
-      <link>https://cpcb.nic.in/uploads/plasticwaste/Notification-12-08-2021.pdf</link>
-      <description>The Ministry of Environment, Forest and Climate Change notified the Plastic Waste Management (Amendment) Rules, 2021 on 12 August 2021, setting a phased nationwide ban on identified single-use plastic (SUP) items from 1 July 2022 and raising the minimum thickness of plastic carry bags. The amendment</description>
-      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
-      <category>Plastic Waste Rules</category>
-      <guid isPermaLink="false">gc-35e8982bb3e681538131c85497d33262</guid>
-    </item>
-    <item>
-      <title>E-Waste Third Amendment Rules, 2024: EPR Certificate Trading Platform and Price Bands Explained</title>
-      <link>https://cpcb.nic.in/uploads/Projects/E-Waste/E-waste-Third-Amendment-Rules-2024.pdf</link>
-      <description>On 8 March 2024, the Ministry of Environment, Forest and Climate Change notified the E-Waste (Management) Amendment Rules, 2024 — the third amendment to the 2022 framework. The amendment introduces a government-regulated marketplace for trading Extended Producer Responsibility (EPR) certificates wit</description>
-      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
-      <category>E-Waste Rules</category>
-      <guid isPermaLink="false">gc-35e8982b</guid>
-    </item>
-    <item>
-      <title>E-Waste (Management) Second Amendment Rules, 2023: Refrigerants, RoHS Expansion &amp; New Compliance Frontiers</title>
-      <link>https://cpcb.nic.in/uploads/Projects/E-Waste/E-waste-Second-Amendment-Rules-2023.pdf</link>
-      <description>On 24 July 2023, the Ministry of Environment, Forest and Climate Change notified the E-Waste (Management) Second Amendment Rules, 2023, introducing two transformative changes: mandatory safe and sustainable management of refrigerants from air-conditioning and refrigeration equipment (both at manufac</description>
-      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
-      <category>E-Waste Rules</category>
-      <guid isPermaLink="false">approved-35e8982b</guid>
     </item>
   </channel>
 </rss>
