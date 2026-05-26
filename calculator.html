@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GHG Calculator — Green Curve</title>
+  <meta name="description" content="Free GHG emissions calculator for Indian businesses. Estimate Scope 1, Scope 2 and Scope 3 carbon emissions using 3,000+ UNFCCC emission factors." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://viduti-esg.github.io/calculator.html" />
+  <meta property="og:type"    content="website" />
+  <meta property="og:url"     content="https://viduti-esg.github.io/calculator.html" />
+  <meta property="og:title"   content="GHG Calculator — Green Curve" />
+  <meta property="og:description" content="Estimate Scope 1, 2 and 3 carbon emissions using 3,000+ UNFCCC emission factors." />
+  <meta property="og:image"   content="https://viduti-esg.github.io/assets/img/logo.png" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VS37JR0KK7');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/ghg-calculator.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+
+  <style>
+    /* Calculator page overrides */
+    .calc-hero {
+      background: var(--void);
+      padding: 80px 0 48px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    .calc-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .calc-hero__orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+    }
+    .calc-hero__orb--1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(52,211,153,.15) 0%, transparent 65%);
+      top: -180px; right: -80px;
+    }
+    .calc-hero__orb--2 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(0,200,255,.12) 0%, transparent 65%);
+      bottom: -60px; left: -60px;
+    }
+    .calc-hero__content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .calc-hero__back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text-70);
+      border: 1px solid var(--border-hi);
+      border-radius: 100px;
+      padding: 6px 16px;
+      background: transparent;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .calc-hero__back:hover { color: var(--cyan); border-color: rgba(0,200,255,.4); }
+    .calc-hero__text { flex: 1; }
+    .calc-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--emerald);
+      margin-bottom: 16px;
+      padding: 5px 14px;
+      background: rgba(52,211,153,.06);
+      border: 1px solid rgba(52,211,153,.22);
+      border-radius: 100px;
+    }
+    .calc-hero__title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: #fff;
+      letter-spacing: -.03em;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+    .calc-hero__title em {
+      font-style: italic;
+      background: linear-gradient(95deg, var(--emerald), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .calc-hero__sub {
+      font-size: .95rem;
+      color: var(--text-70);
+      line-height: 1.75;
+      max-width: 560px;
+    }
+    /* Give the calculator section proper top padding on its own page */
+    .calc-page-body .calc-app {
+      padding-top: 52px;
+      padding-bottom: 80px;
+      background: var(--deep);
+    }
+  </style>
+</head>
+<body class="calc-page-body">
+
+<!-- Scroll progress bar -->
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve" />
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html#insights">Insights</a></li>
+      <li><a href="index.html#topics">Topics</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="calculator.html" style="color:var(--emerald)">GHG Calculator</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<!-- Mobile nav overlay -->
+<div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+  <a href="index.html#insights">Insights</a>
+  <a href="index.html#topics">Topics</a>
+  <a href="index.html#about">About</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="index.html#contact">Contact</a>
+</div>
+
+<!-- CALCULATOR HERO -->
+<section class="calc-hero">
+  <div class="calc-hero__orb calc-hero__orb--1" aria-hidden="true"></div>
+  <div class="calc-hero__orb calc-hero__orb--2" aria-hidden="true"></div>
+  <div class="calc-hero__content container">
+    <a href="index.html" class="calc-hero__back">&larr; Back to Insights</a>
+    <div class="calc-hero__text">
+      <div class="calc-hero__eyebrow">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+          <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M5 3v2l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        GHG Protocol Compliant
+      </div>
+      <h1 class="calc-hero__title">
+        GHG <em>Emissions</em><br/>Calculator
+      </h1>
+      <p class="calc-hero__sub">
+        Estimate Scope 1, 2 and 3 carbon emissions using 3,000+ UNFCCC emission factors.
+        Built for Indian businesses aligning with GHG Protocol, BRSR and ISSB S2 reporting.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-app container" id="calculator">
+  <div class="calc-app__grid">
+    <div class="calc-panel">
+      <div class="section-label">Emission source lookup</div>
+      <h2>Estimate emissions across Scope 1, Scope 2 and Scope 3.</h2>
+      <p class="calc-panel__intro">Search the UNFCCC dataset, choose an activity source, and calculate carbon emissions in tonnes of CO2e instantly.</p>
+
+      <div class="calc-panel__stats">
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="loaded-count">0</span>
+          <span class="stat-card__label">Sources available</span>
+        </div>
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="scope1-count">0</span>
+          <span class="stat-card__label">Scope 1 factors</span>
+        </div>
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="scope2-count">0</span>
+          <span class="stat-card__label">Scope 2 factors</span>
+        </div>
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="scope3-count">0</span>
+          <span class="stat-card__label">Scope 3 factors</span>
+        </div>
+      </div>
+
+      <div class="calc-filter-bar" id="filter-bar" aria-label="Quick source filters"></div>
+
+      <label class="field-label" for="factor-search">Search emission source</label>
+      <input type="search" id="factor-search" class="field-input" placeholder="e.g. Diesel, Electricity, Refrigerant" autocomplete="off" />
+      <div class="search-hint">Powered by 3,000+ dataset entries from the GHG calculator workbook.</div>
+      <div class="search-results" id="search-results" aria-live="polite"></div>
+
+      <div class="calc-selected" id="selected-card" hidden>
+        <div class="calc-selected__header">
+          <div>
+            <h3 id="selected-title">Source title</h3>
+            <p id="selected-details" class="calc-selected__meta">Scope · Category · Unit</p>
+          </div>
+          <div class="calc-tag" id="selected-scope">Scope 1</div>
+        </div>
+        <div class="calc-selected__content">
+          <div class="calc-field-row">
+            <div>
+              <label class="field-label" for="selected-unit">Unit</label>
+              <input id="selected-unit" class="field-input" disabled />
+            </div>
+            <div>
+              <label class="field-label" for="selected-factor">Factor</label>
+              <input id="selected-factor" class="field-input" disabled />
+            </div>
+          </div>
+          <div class="calc-field-row">
+            <label class="field-label" for="item-amount">Amount</label>
+            <input type="number" id="item-amount" class="field-input" min="0" step="any" placeholder="Enter quantity" />
+          </div>
+          <button id="item-add" class="btn-secondary">Add emission item</button>
+        </div>
+      </div>
+
+      <div class="calc-manual">
+        <h3>Custom emission source</h3>
+        <p>Use a custom factor when your specific activity is not present in the dataset.</p>
+        <label class="field-label" for="custom-description">Description</label>
+        <input id="custom-description" class="field-input" placeholder="Example: Office waste disposal" />
+        <div class="calc-field-row">
+          <div>
+            <label class="field-label" for="custom-factor">Emission factor</label>
+            <input type="number" id="custom-factor" class="field-input" min="0" step="any" placeholder="kg CO2e per unit" />
+          </div>
+          <div>
+            <label class="field-label" for="custom-unit">Unit</label>
+            <input id="custom-unit" class="field-input" placeholder="e.g. tonne, km, kWh" />
+          </div>
+        </div>
+        <div class="calc-field-row">
+          <label class="field-label" for="custom-amount">Amount</label>
+          <input type="number" id="custom-amount" class="field-input" min="0" step="any" placeholder="Activity quantity" />
+        </div>
+        <button id="custom-add" class="btn-secondary">Add custom item</button>
+      </div>
+    </div>
+
+    <div class="calc-results">
+      <div class="calc-results__panel">
+        <div class="calc-results__top">
+          <h2>Emission inventory</h2>
+          <p>Review line-item emissions and totals by scope.</p>
+        </div>
+        <div class="calc-results__summary" id="summary-totals">
+          <div class="summary-card">
+            <span>Total emissions</span>
+            <strong id="total-emissions">0.00</strong>
+            <small>t CO2e</small>
+          </div>
+          <div class="summary-card summary-card--secondary">
+            <span>Scope 1 total</span>
+            <strong id="scope1-total">0.00</strong>
+            <small>t CO2e</small>
+          </div>
+          <div class="summary-card summary-card--secondary">
+            <span>Scope 2 total</span>
+            <strong id="scope2-total">0.00</strong>
+            <small>t CO2e</small>
+          </div>
+          <div class="summary-card summary-card--secondary">
+            <span>Scope 3 total</span>
+            <strong id="scope3-total">0.00</strong>
+            <small>t CO2e</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-table-wrap">
+        <table class="calc-table" aria-label="Emissions inventory">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Scope</th>
+              <th>Amount</th>
+              <th>Factor</th>
+              <th>Result</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="items-table"></tbody>
+        </table>
+      </div>
+
+      <div class="calc-actions">
+        <div class="download-actions">
+          <button id="download-report" class="btn-secondary btn-block">Download CSV report</button>
+          <button id="export-json" class="btn-tertiary btn-block">Export JSON</button>
+        </div>
+        <button id="reset-items" class="btn-secondary btn-block">Clear all items</button>
+        <p class="calc-note">Note: Emission factors are in kg CO2e. Results convert to t CO2e automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+        </svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>Published daily &bull; Green Curve Research</p>
+      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Year + scroll progress + burger (minimal inline since we don't load app.js)
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const header = document.getElementById('site-header');
+  const progress = document.getElementById('scroll-progress');
+  const burger = document.getElementById('nav-burger');
+  const mobileNav = document.getElementById('nav-mobile');
+
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    progress.style.width = pct + '%';
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    mobileNav.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+
+  mobileNav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      burger.classList.remove('open');
+      mobileNav.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+</script>
+<script src="assets/js/ghg-calculator.js" defer></script>
+</body>
+</html>

@@ -113,7 +113,7 @@ img, svg { display: block; }
 .nav__links a {
   font-size: .875rem;
   font-weight: 500;
-  color: var(--text-40);
+  color: var(--text-70);
   transition: color .15s;
   letter-spacing: .01em;
 }
@@ -446,7 +446,7 @@ img, svg { display: block; }
   gap: 7px;
   background: transparent;
   border: 1px solid var(--border-hi);
-  color: var(--text-40);
+  color: var(--text-70);
   border-radius: 100px;
   padding: 6px 13px;
   font-size: .78rem;
@@ -544,7 +544,7 @@ img, svg { display: block; }
 }
 .insights__sub {
   font-size: .83rem;
-  color: var(--text-40);
+  color: var(--text-70);
   margin-top: 5px;
 }
 .insights__count {
@@ -897,7 +897,7 @@ img, svg { display: block; }
   margin-bottom: 14px;
 }
 .step h3 { font-family: var(--serif); font-size: 1.12rem; color: #fff; margin-bottom: 8px; }
-.step p   { font-size: .8rem; color: var(--text-40); line-height: 1.65; }
+.step p   { font-size: .8rem; color: var(--text-70); line-height: 1.65; }
 .step__arrow {
   display: flex;
   align-items: center;
@@ -1036,7 +1036,7 @@ img, svg { display: block; }
 }
 .contact__text p {
   font-size: .93rem;
-  color: var(--text-40);
+  color: var(--text-70);
   max-width: 420px;
   line-height: 1.8;
 }
