@@ -5,7 +5,7 @@
     <link>https://viduti-esg.github.io/</link>
     <description>Daily ESG and climate compliance intelligence for Indian businesses.</description>
     <language>en-in</language>
-    <lastBuildDate>Fri, 22 May 2026 13:33:27 +0530</lastBuildDate>
+    <lastBuildDate>Tue, 26 May 2026 08:42:41 +0530</lastBuildDate>
     <atom:link href="https://viduti-esg.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://viduti-esg.github.io/assets/img/logo.png</url>
@@ -13,6 +13,46 @@
       <link>https://viduti-esg.github.io/</link>
     </image>
 
+    <item>
+      <title>AI Cannot Set Your Sustainability Ambition: What Indian CFOs and CSOs Must Keep Under Human Control</title>
+      <link>https://trellis.net/article/3-things-sustainability-cant-afford-outsource-ai/</link>
+      <description>A timely analysis by Amy Skoczlas Cole published in GreenBiz/Trellis (https://trellis.net/article/3-things-sustainability-cant-afford-outsource-ai/) identifies three irreplaceable human responsibilities in sustainability practice that AI cannot substitute: setting ambition levels, reading cross-syst</description>
+      <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">ai-cannot-set-your-sustainability-ambition-what-indian-cfos--1779765158</guid>
+    </item>
+    <item>
+      <title>The 2026 Sustainability Profession Report: What Shrinking Budgets and CEO Dependency Mean for India's ESG Leadership Pipeline</title>
+      <link>https://trellis.net/article/state-of-the-sustainability-profession-2026/</link>
+      <description>GreenBiz's State of the Sustainability Profession 2026 report (https://trellis.net/article/state-of-the-sustainability-profession-2026/) surfaces a structural tension that Indian boardrooms can no longer treat as a Western problem: sustainability functions are under simultaneous pressure from tighte</description>
+      <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">the-2026-sustainability-profession-report-what-shrinking-bud-1779765158</guid>
+    </item>
+    <item>
+      <title>Stanford's Doerr School Sustainability Accelerator: What Indian Companies Should Know About Soil Carbon, Grid Tech, and Climate Spinout Partnerships</title>
+      <link>https://trellis.net/article/get-involved-with-stanfords-1-billion-sustainability-school/</link>
+      <description>Stanford University's $1.1 billion Doerr School of Sustainability is now actively commercialising over 90 climate technology projects across soil carbon, grid optimisation, greenhouse gas removal, and industrial decarbonisation — and it is explicitly seeking Indian and global corporate partners as e</description>
+      <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">stanford-s-doerr-school-sustainability-accelerator-what-indi-1779765158</guid>
+    </item>
+    <item>
+      <title>Schroders Greencoat's Biomethane Acquisition: What the European RNG Capital Rush Means for India's CBG Ambitions, BRSR Disclosure, and Hard-to-Abate Sector Financing</title>
+      <link>https://www.esgtoday.com/schroders-acquires-biomethane-platform-apf-energy/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=schroders-acquires-biomethane-platform-apf-energy</link>
+      <description>Schroders Greencoat's acquisition of Dutch biomethane platform APF Energy — reported by ESG Today (https://www.esgtoday.com/schroders-acquires-biomethane-platform-apf-energy/) — signals that institutional capital is now treating renewable natural gas (RNG) as a bankable, infrastructure-grade asset c</description>
+      <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">schroders-greencoat-s-biomethane-acquisition-what-the-europe-1779765158</guid>
+    </item>
+    <item>
+      <title>SBTi Shifts to Implementation, Microsoft Re-enters Carbon Removal, and a $300M India Clean Energy Platform Launches: What the Week of May 24, 2026 Means for Indian Boards and ESG Investors</title>
+      <link>https://www.esgtoday.com/esg-today-week-in-review-262/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=esg-today-week-in-review-262</link>
+      <description>The week of May 24, 2026 delivered a cluster of ESG signals that, read together, mark a decisive inflection point: the global ESG architecture is shifting from target-setting theatre to enforcement-grade implementation, and Indian listed companies, clean energy developers, and institutional investor</description>
+      <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
+      <category>Daily Digest</category>
+      <guid isPermaLink="false">sbti-shifts-to-implementation-microsoft-re-enters-carbon-rem-1779765158</guid>
+    </item>
     <item>
       <title>Sustainability as a Growth Driver: What EY's Global Read Means for Indian CFOs Navigating BRSR, Credit Markets, and Supply Chain Scrutiny</title>
       <link>https://www.esgtoday.com/sustainability-as-a-driver-for-growth/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=sustainability-as-a-driver-for-growth</link>
@@ -132,46 +172,6 @@
       <pubDate>Tue, 19 May 2026 06:00:00 +0530</pubDate>
       <category>Daily Digest</category>
       <guid isPermaLink="false">esg-index-inclusion-as-a-capital-strategy-what-indian-cfos-a-1779170913</guid>
-    </item>
-    <item>
-      <title>Australia Raises Sustainability Reporting Thresholds: What India's BRSR Architecture and Listed Companies Should Read Into This Global Rollback Signal</title>
-      <link>https://www.esgtoday.com/australia-proposes-removing-smaller-companies-from-sustainability-financial-reporting-requirements/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=australia-proposes-removing-smaller-companies-from-sustainability-financial-reporting-requirements</link>
-      <description>Australia's 2026 Budget has proposed doubling the revenue and asset thresholds for mandatory sustainability reporting, effectively removing a significant cohort of smaller companies from its climate disclosure regime — a move framed explicitly as a A$10.2 billion per year regulatory burden reduction</description>
-      <pubDate>Tue, 19 May 2026 06:00:00 +0530</pubDate>
-      <category>Daily Digest</category>
-      <guid isPermaLink="false">australia-raises-sustainability-reporting-thresholds-what-in-1779170913</guid>
-    </item>
-    <item>
-      <title>Crew Carbon's $25M Raise Signals a Convergence of Wastewater Infrastructure and Carbon Markets — What Indian Utilities, BRSR Reporters, and Carbon Credit Buyers Must Understand Now</title>
-      <link>https://www.esgtoday.com/crew-carbon-raises-25-million-for-technology-combining-wastewater-treatment-carbon-removal/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=crew-carbon-raises-25-million-for-technology-combining-wastewater-treatment-carbon-removal</link>
-      <description>Crew Carbon, a Yale University spinout, has closed a $25 million Series A to scale its wastewater-integrated enhanced mineral weathering technology — a carbon removal pathway that generates verified, permanent CO2 removal credits sold to corporate buyers including JPMorganChase, Google, and Stripe, </description>
-      <pubDate>Tue, 19 May 2026 06:00:00 +0530</pubDate>
-      <category>Daily Digest</category>
-      <guid isPermaLink="false">crew-carbon-s-25m-raise-signals-a-convergence-of-wastewater--1779170913</guid>
-    </item>
-    <item>
-      <title>HSBC's $4 Billion China Cleantech Facility: What India's CFOs and CSOs Must Understand About the Capital Race They Are Now In</title>
-      <link>https://www.esgtoday.com/hsbc-launches-4-billion-facility-to-help-china-clean-tech-companies-scale-internationally/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=hsbc-launches-4-billion-facility-to-help-china-clean-tech-companies-scale-internationally</link>
-      <description>HSBC's $4 billion Sustainability and Transition Credit Facility — announced on 18 May 2026 and reported by ESG Today (https://www.esgtoday.com/hsbc-launches-4-billion-facility-to-help-china-clean-tech-companies-scale-internationally/) — is designed to accelerate the international scaling of Mainland</description>
-      <pubDate>Tue, 19 May 2026 06:00:00 +0530</pubDate>
-      <category>Daily Digest</category>
-      <guid isPermaLink="false">hsbc-s-4-billion-china-cleantech-facility-what-india-s-cfos--1779170913</guid>
-    </item>
-    <item>
-      <title>BBVA's 99% Renewable Electricity and 83% Scope 1&amp;2 Reduction: The Operational Decarbonisation Benchmark Indian Banks Cannot Ignore</title>
-      <link>https://www.esgtoday.com/bbva-achieves-99-global-renewable-electricity-use/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=bbva-achieves-99-global-renewable-electricity-use</link>
-      <description>Spanish banking group BBVA has disclosed 99% renewable electricity coverage across its global operations in 2025 and an 83% reduction in Scope 1 and 2 emissions since 2019 — a performance benchmark that directly pressures Indian listed banks and financial institutions now subject to mandatory BRSR C</description>
-      <pubDate>Tue, 19 May 2026 06:00:00 +0530</pubDate>
-      <category>Daily Digest</category>
-      <guid isPermaLink="false">bbva-s-99-renewable-electricity-and-83-scope-1-2-reduction-t-1779170913</guid>
-    </item>
-    <item>
-      <title>Draft Plastic Waste Management Rules, 2022: Tightening EPR and Expanding Producer Accountability</title>
-      <link>https://cpcb.nic.in/uploads/plasticwaste/draft-pwmrules-2022.pdf</link>
-      <description>The Ministry of Environment, Forest and Climate Change (MoEFCC) has published the Draft Plastic Waste Management (Third Amendment) Rules, 2021 — building on the EPR framework already issued in October 2021. The amendments sharpen definitions around plastic packaging, biodegradable plastics, recycler</description>
-      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
-      <category>Plastic Waste Rules</category>
-      <guid isPermaLink="false">gc-35e8982bb3e681b0834dff58fdf6fbf4</guid>
     </item>
   </channel>
 </rss>
