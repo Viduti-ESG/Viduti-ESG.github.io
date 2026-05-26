@@ -1,6 +1,119 @@
 {
   "posts": [
     {
+      "id": "gc-35e8982bb3e681c59c55f786d6dea2b0",
+      "title": "CPCB Greenlights Customs Release for 106 EEE Producers: What Importers Need to Know",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "On 31 August 2023, the Central Pollution Control Board (CPCB) issued a letter to Customs Authorities facilitating the release of imported consignments belonging to 106 producers of Electrical and Electronic Equipment (EEE) covered under India's Extended Producer Responsibility (EPR) framework. This ",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zODVfMTY5MzQ3OTYxMl9tZWRpYXBob3RvMzIzMjMucGRm",
+      "sections": {
+        "summary": "On 31 August 2023, the Central Pollution Control Board (CPCB) issued a letter to Customs Authorities facilitating the release of imported consignments belonging to 106 producers of Electrical and Electronic Equipment (EEE) covered under India's Extended Producer Responsibility (EPR) framework. This communication unblocks shipments held up at ports due to EPR registration verification and signals tighter integration between customs clearance and e-waste compliance. Producers not on this list and lacking valid EPR registration risk continued port detentions and financial penalties.",
+        "what_changed": "Under the E-Waste (Management) Rules, 2022, every producer, importer, manufacturer, and brand owner (PIBO) of the 106 notified EEE categories must obtain EPR registration on the CPCB portal before placing products in the Indian market. Increasingly, customs authorities are cross-verifying this registration before releasing imported EEE consignments. CPCB's letter of 31 August 2023 confirms the registration status of 106 producers and authorises customs to release their pending consignments. This effectively formalises a coordination mechanism between CPCB and Customs — without valid EPR registration, your shipment can be held at the port indefinitely.",
+        "who_is_affected": [
+          "Importers and producers of any of the 106 notified EEE categories (IT & telecom equipment, consumer electronics, large/small household appliances, medical devices, lighting, toys, etc.)",
+          "Brand owners selling EEE under their label in India, including those sourcing from contract manufacturers abroad",
+          "Multinational electronics, appliances, and medical device companies importing into India",
+          "E-commerce sellers and marketplaces importing EEE for resale",
+          "Customs House Agents (CHAs) and freight forwarders handling EEE consignments"
+        ],
+        "key_obligations": [
+          "Obtain EPR registration on the CPCB EPR Portal before importing any of the 106 notified EEE items — this is now a de facto customs clearance prerequisite",
+          "Ensure your EPR registration number is current, valid, and matches the importer details on the Bill of Entry",
+          "File quarterly and annual returns on the EPR portal as per the 2022 Rules",
+          "Purchase EPR certificates from registered recyclers to meet annual collection targets",
+          "Maintain documentation linking imported quantities to EPR targets for audit verification",
+          "Producers not on the 31-08-2023 list should immediately apply for or renew EPR registration to avoid consignment detention"
+        ],
+        "climate_angle": "India's tightening EPR enforcement aligns with global circular economy mandates such as the EU's Waste from Electrical and Electronic Equipment (WEEE) Directive and emerging product passport requirements under the EU Ecodesign for Sustainable Products Regulation. For companies reporting under ISSB (IFRS S2) or BRSR Core, e-waste handling is increasingly a material disclosure — both as a regulatory risk and a Scope 3 downstream emissions consideration. Investors and supply chain auditors are scrutinising EPR compliance as a proxy for broader environmental governance. The customs–CPCB linkage also represents a wider trend in India: environmental compliance is no longer a back-office function but an operational gating mechanism that can disrupt revenue.",
+        "what_to_do": [
+          "Verify whether your entity appears on CPCB's 31-08-2023 list; if not, audit your EPR registration status immediately",
+          "Map every imported SKU to its EEE category code and confirm coverage under your EPR certificate",
+          "Brief your CHA and logistics partners on EPR documentation requirements to avoid surprise detentions",
+          "Set up an internal EPR compliance calendar covering quarterly returns, target fulfilment, and certificate procurement",
+          "Integrate EPR compliance status into your ESG / BRSR reporting and board-level risk dashboards"
+        ],
+        "our_take": "This notice is a watershed moment in Indian EPR enforcement — CPCB has moved from passive registration to active gatekeeping at the border. We expect similar customs-linked enforcement to extend to plastic packaging, battery, and tyre EPR frameworks within the next 12-18 months. Companies that treat EPR as a paperwork exercise will face working capital shocks from detained consignments, while those that build EPR into their import planning, vendor contracts, and ESG reporting will turn compliance into a competitive advantage. The direction of travel is clear: India's environmental rules now have operational teeth, and the cost of non-compliance is measured not in fines alone, but in stranded inventory at the port."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e68180a4a1d13cfa653e4d",
+      "title": "CPCB Letter to Customs: Easing Import Clearance for 106 EEE Producers under E-Waste EPR",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "On 30 June 2023, the Central Pollution Control Board (CPCB) issued a communication to Customs Authorities concerning the release of imported consignments belonging to producers of the 106 categories of Electrical and Electronic Equipment (EEE) covered under the E-Waste (Management) Rules, 2022. The ",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zNzRfMTY4ODE4MDMwMV9tZWRpYXBob3RvODIyLnBkZg==",
+      "sections": {
+        "summary": "On 30 June 2023, the Central Pollution Control Board (CPCB) issued a communication to Customs Authorities concerning the release of imported consignments belonging to producers of the 106 categories of Electrical and Electronic Equipment (EEE) covered under the E-Waste (Management) Rules, 2022. The letter is intended to prevent shipment hold-ups at ports for producers who are in the process of obtaining or have obtained EPR registration on the CPCB portal. For importers of EEE, this is a critical operational notice that links customs clearance directly to EPR compliance status.",
+        "what_changed": "The E-Waste (Management) Rules, 2022, effective from 1 April 2023, expanded the scope of regulated EEE from a smaller list to 106 distinct items spanning IT & telecom equipment, consumer electronics, large and small appliances, lighting, electrical tools, toys, medical devices, and laboratory instruments. Every Producer (including importers) of these items must register on the CPCB's centralized EPR portal and meet annual e-waste collection and recycling targets backed by EPR certificates. Because customs clearance for EEE imports is now linked to EPR registration status, several consignments were reportedly being held at ports. CPCB's 30 June 2023 letter to Customs clarifies the procedure for verifying producer registration and authorizes release of consignments where producers are validly registered (or have applications under process), reducing port congestion and demurrage exposure for compliant businesses.",
+        "who_is_affected": [
+          "Importers and producers of any of the 106 notified EEE categories under Schedule-I of the E-Waste Rules, 2022",
+          "Consumer electronics and home appliance brands (TVs, refrigerators, washing machines, air conditioners, microwaves)",
+          "IT hardware and telecom equipment importers (laptops, servers, routers, mobile phones, printers)",
+          "Lighting and luminaire manufacturers and importers (LED lamps, fixtures)",
+          "Medical device and laboratory instrument importers",
+          "Importers of electrical tools, toys with electronic components, and small kitchen appliances",
+          "Customs House Agents (CHAs) and logistics partners handling EEE shipments",
+          "Trading companies and e-commerce marketplaces that import EEE under their own brand"
+        ],
+        "key_obligations": [
+          "Mandatory EPR registration on the CPCB centralized portal (https://eprewastecpcb.cpcb.gov.in) before importing — registration is a precondition for customs clearance",
+          "Submission of EPR registration certificate or acknowledgment to Customs Authority at the time of consignment clearance",
+          "Annual filing of returns on the EPR portal disclosing quantities placed on market and EPR targets met",
+          "Procurement of EPR certificates from registered recyclers equal to applicable collection targets (which scale up year-on-year from FY2023-24 onwards)",
+          "Maintenance of records of imported quantities, sales, and end-of-life collection for a minimum of 5 years",
+          "Reflect EPR target shortfalls as Environmental Compensation liability — payable to CPCB if recycling obligations are unmet"
+        ],
+        "climate_angle": "E-waste EPR is no longer a standalone waste management issue — it sits at the intersection of circular economy commitments, Scope 3 emissions disclosure, and supply chain due diligence. Under ISSB's IFRS S2 and the EU's CSRD/ESRS E5 (Resource Use & Circular Economy), companies must disclose material flows, recycled content, and end-of-life recovery rates. Indian producers exporting to Europe or supplying to multinational customers will increasingly be asked to evidence verifiable recycling — and CPCB's EPR certificate ecosystem is becoming the de facto data source. Furthermore, recovered metals and rare earths from recycled EEE materially reduce embodied carbon versus virgin extraction, directly impacting product-level carbon footprints. Companies that treat EPR as a procurement-and-compliance checkbox will fall behind those integrating it into product design (DfE), reverse logistics, and decarbonization roadmaps.",
+        "what_to_do": [
+          "Audit your product portfolio against the Schedule-I list of 106 EEE items and confirm whether each SKU triggers EPR obligation as a Producer or Importer",
+          "Complete CPCB EPR portal registration immediately if not done — and keep the registration certificate readily available with your CHA for every shipment",
+          "Coordinate with Customs brokers to embed EPR certificate verification into your standard import documentation checklist, alongside BIS and WPC clearances",
+          "Lock in EPR certificate procurement contracts with CPCB-registered recyclers early in the fiscal year — spot-market prices spike near year-end as targets become binding",
+          "Brief finance and legal teams on Environmental Compensation exposure and disclose material EPR-related contingencies in BRSR and board risk reports"
+        ],
+        "our_take": "CPCB's intervention with Customs is a pragmatic acknowledgment that the 2022 EPR regime created real-world friction at the border during its first quarter of operation. The bigger signal, however, is that India's e-waste framework is maturing into a hard-enforced compliance regime — not a paper exercise. Expect tighter integration between CPCB, Customs, DGFT and ICEGATE over the next 12-18 months, automated cross-verification of EPR status against Bill of Entry data, and rising scrutiny of false declarations. Companies should treat this notice as an early warning: import-linked enforcement will only intensify, EPR certificate prices will harden as recycler capacity tightens, and ESG-aligned investors will increasingly probe e-waste recovery metrics as a proxy for circular-economy credibility. The window to build a defensible, auditable EPR program is now — before the next compliance year begins."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e681889b28fcba6e6b898d",
+      "title": "CPCB Tightens E-Waste EPR: GST-Linked E-Invoicing Now Mandatory for Recyclers and Producers",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "The Central Pollution Control Board (CPCB) has issued a directive requiring all e-waste recyclers and producers registered under the E-Waste (Management) Rules, 2022 to use GST-linked e-invoices for all sales and purchases of e-waste and recovered end-products. This is a critical anti-fraud measure ",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=UmVwb3J0RmlsZXMvMTU0Nl8xNjg2ODI4OTM2X21lZGlhcGhvdG8xNjk2MC5wZGY=",
+      "sections": {
+        "summary": "The Central Pollution Control Board (CPCB) has issued a directive requiring all e-waste recyclers and producers registered under the E-Waste (Management) Rules, 2022 to use GST-linked e-invoices for all sales and purchases of e-waste and recovered end-products. This is a critical anti-fraud measure tied to the generation of EPR Certificates on the CPCB EPR Portal, and producers can no longer accept non-GST invoices as proof of recycling.",
+        "what_changed": "Under the E-Waste (Management) Rules, 2022 (notified November 2, 2022), India shifted to a digital, certificate-based EPR regime where producers must purchase EPR Certificates from registered recyclers to demonstrate that they have met their recycling targets. The CPCB notice dated June 15, 2023 closes a major loophole in this system: from now on, every transaction underpinning an EPR Certificate must be backed by a GST-linked e-invoice generated through the GST Portal. Recyclers must maintain auditable, GST-traceable records of both the e-waste they receive and the recovered materials (such as metals, plastics, and components) they sell. Producers, in turn, must accept only GST-linked sales invoices from recyclers as valid proof of recycling. This effectively makes the entire EPR transaction trail traceable, taxable, and verifiable in real time.",
+        "who_is_affected": [
+          "Producers of electrical and electronic equipment (EEE) listed in Schedule I of the 2022 Rules — including manufacturers, brand owners, and importers of IT, telecom, consumer electronics, lighting, medical devices, and large/small appliances",
+          "Registered e-waste recyclers operating dismantling and material recovery facilities",
+          "Refurbishers handling end-of-life electronic equipment",
+          "Bulk consumers and aggregators in the e-waste supply chain whose transactions feed into recycler records",
+          "Compliance, finance, and tax teams responsible for GST e-invoicing infrastructure within these entities"
+        ],
+        "key_obligations": [
+          "Recyclers must generate GST e-invoices through the GST Portal for every purchase of e-waste and every sale of recovered end-products — effective immediately from June 15, 2023",
+          "Recyclers must maintain linked records of sales and purchase invoices to substantiate EPR Certificates generated on the CPCB EPR Portal",
+          "Producers must accept only GST-linked sales invoices from recyclers as valid proof of recycling against their EPR obligations",
+          "All EPR Certificate generation on the CPCB Portal will be cross-verified against GST invoice data",
+          "Non-compliance risks invalidation of EPR Certificates, environmental compensation under the 2022 Rules, and potential GST scrutiny"
+        ],
+        "climate_angle": "This move is more than an administrative tweak — it is India's attempt to bring credibility to circular economy claims. Globally, regulators under the EU CSRD, ESRS E5 (Resource Use and Circular Economy), and the ISSB's IFRS S2 framework are demanding verifiable, audit-grade data on material flows, recycled content, and end-of-life management. Indian producers selling into global supply chains — particularly electronics OEMs, IT hardware exporters, and appliance manufacturers — will increasingly be asked by customers and investors to prove that their EPR compliance is not paper-based. GST-linked e-invoicing creates a digital chain of custody that aligns Indian EPR data with the integrity standards expected under global ESG disclosure regimes. It also makes physical material recovery — and the associated Scope 3 emissions reductions from recycled content — defensible during third-party assurance.",
+        "what_to_do": [
+          "Recyclers: Enable GST e-invoicing on the GST Portal immediately if not already active, and reconcile your EPR Portal transactions against GST invoice numbers for all FY24 activity",
+          "Producers: Audit your current pool of recycler partners — confirm each is generating GST e-invoices, and reject EPR Certificates not backed by valid GST-linked documentation",
+          "Update procurement and vendor onboarding SOPs to require GST e-invoice capability as a prerequisite for any EPR transaction",
+          "Integrate your ERP/finance systems with the EPR Portal data flow so that GST invoices, EPR Certificates, and recycling targets are reconciled monthly — not annually",
+          "Brief your ESG and sustainability reporting teams: recycled content claims in BRSR, CDP, and global disclosures should now reference GST-verifiable transactions"
+        ],
+        "our_take": "CPCB's June 2023 notice signals the end of the era of unverifiable 'paper' EPR Certificates in India. By forcibly linking environmental compliance to the GST infrastructure, the regulator is borrowing from India's most mature digital backbone to combat the long-standing problem of inflated or fictitious recycling claims. Expect this template — GST-linked EPR — to be replicated across plastic waste, battery waste, and used oil regimes in the next 12-24 months. Producers who treat EPR as a procurement-and-paperwork exercise will face rising compliance costs and reputational risk, while those who invest now in traceable, digitally integrated recycler partnerships will be better positioned for both Indian regulatory tightening and the global wave of mandatory circularity disclosures."
+      }
+    },
+    {
       "id": "ai-cannot-set-your-sustainability-ambition-what-indian-cfos--1779765158",
       "title": "AI Cannot Set Your Sustainability Ambition: What Indian CFOs and CSOs Must Keep Under Human Control",
       "date": "2026-05-26",
