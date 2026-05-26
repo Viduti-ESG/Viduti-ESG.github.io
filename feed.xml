@@ -5,7 +5,7 @@
     <link>https://viduti-esg.github.io/</link>
     <description>Daily ESG and climate compliance intelligence for Indian businesses.</description>
     <language>en-in</language>
-    <lastBuildDate>Tue, 26 May 2026 08:42:41 +0530</lastBuildDate>
+    <lastBuildDate>Tue, 26 May 2026 08:58:22 +0530</lastBuildDate>
     <atom:link href="https://viduti-esg.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://viduti-esg.github.io/assets/img/logo.png</url>
@@ -13,6 +13,30 @@
       <link>https://viduti-esg.github.io/</link>
     </image>
 
+    <item>
+      <title>CPCB Greenlights Customs Release for 106 EEE Producers: What Importers Need to Know</title>
+      <link>https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zODVfMTY5MzQ3OTYxMl9tZWRpYXBob3RvMzIzMjMucGRm</link>
+      <description>On 31 August 2023, the Central Pollution Control Board (CPCB) issued a letter to Customs Authorities facilitating the release of imported consignments belonging to 106 producers of Electrical and Electronic Equipment (EEE) covered under India's Extended Producer Responsibility (EPR) framework. This </description>
+      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
+      <category>Urgent Notice / EPR</category>
+      <guid isPermaLink="false">gc-35e8982bb3e681c59c55f786d6dea2b0</guid>
+    </item>
+    <item>
+      <title>CPCB Letter to Customs: Easing Import Clearance for 106 EEE Producers under E-Waste EPR</title>
+      <link>https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zNzRfMTY4ODE4MDMwMV9tZWRpYXBob3RvODIyLnBkZg==</link>
+      <description>On 30 June 2023, the Central Pollution Control Board (CPCB) issued a communication to Customs Authorities concerning the release of imported consignments belonging to producers of the 106 categories of Electrical and Electronic Equipment (EEE) covered under the E-Waste (Management) Rules, 2022. The </description>
+      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
+      <category>Urgent Notice / EPR</category>
+      <guid isPermaLink="false">gc-35e8982bb3e68180a4a1d13cfa653e4d</guid>
+    </item>
+    <item>
+      <title>CPCB Tightens E-Waste EPR: GST-Linked E-Invoicing Now Mandatory for Recyclers and Producers</title>
+      <link>https://cpcb.nic.in/openpdffile.php?id=UmVwb3J0RmlsZXMvMTU0Nl8xNjg2ODI4OTM2X21lZGlhcGhvdG8xNjk2MC5wZGY=</link>
+      <description>The Central Pollution Control Board (CPCB) has issued a directive requiring all e-waste recyclers and producers registered under the E-Waste (Management) Rules, 2022 to use GST-linked e-invoices for all sales and purchases of e-waste and recovered end-products. This is a critical anti-fraud measure </description>
+      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
+      <category>Urgent Notice / EPR</category>
+      <guid isPermaLink="false">gc-35e8982bb3e681889b28fcba6e6b898d</guid>
+    </item>
     <item>
       <title>AI Cannot Set Your Sustainability Ambition: What Indian CFOs and CSOs Must Keep Under Human Control</title>
       <link>https://trellis.net/article/3-things-sustainability-cant-afford-outsource-ai/</link>
@@ -148,30 +172,6 @@
       <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
       <category>Urgent Notice / EPR</category>
       <guid isPermaLink="false">gc-35e8982bb3e68118b5ecfd629c8b8ccd</guid>
-    </item>
-    <item>
-      <title>Plastic Waste Management (2nd Amendment) Rules 2022: EPR Tightens for Producers, Importers &amp; Brand Owners</title>
-      <link>https://cpcb.nic.in/uploads/plasticwaste/2-amendment-pwmrules-2022.pdf</link>
-      <description>On 6 July 2022, the Ministry of Environment, Forest and Climate Change (MoEFCC) notified the Plastic Waste Management (Second Amendment) Rules, 2022, significantly strengthening the Extended Producer Responsibility (EPR) framework for plastic packaging. The amendment introduces clear definitions for</description>
-      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
-      <category>Plastic Waste Rules</category>
-      <guid isPermaLink="false">gc-35e8982bb3e681a489eddddea4b9b98b</guid>
-    </item>
-    <item>
-      <title>Guidelines on Extended Producer Responsibility for Plastic Packaging</title>
-      <link>https://cpcb.nic.in/uploads/plasticwaste/PWM-Amendment-Rules-2022.pdf</link>
-      <description>The Ministry of Environment, Forest and Climate Change has notified the Plastic Waste Management (Amendment) Rules, 2022, introducing legally binding Extended Producer Responsibility (EPR) guidelines for plastic packaging. Producers, Importers, and Brand Owners (PIBOs) are now accountable for the en</description>
-      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
-      <category>Plastic Waste Rules</category>
-      <guid isPermaLink="false">gc-35e8982bb3e6816cb871c0668e09027e</guid>
-    </item>
-    <item>
-      <title>ESG Index Inclusion as a Capital Strategy: What Indian CFOs and CSOs Must Understand About MSCI, FTSE4Good, and the $500M Demand Signal</title>
-      <link>https://trellis.net/article/esg-indexes-boost-sustainability-efforts/</link>
-      <description>Inclusion in major ESG indexes — MSCI ESG Leaders, FTSE4Good, S&amp;P ESG — is no longer merely a reputational marker; it is a direct mechanism for generating incremental institutional demand for a company's equity, with documented examples of single index additions triggering $500 million in net inflow</description>
-      <pubDate>Tue, 19 May 2026 06:00:00 +0530</pubDate>
-      <category>Daily Digest</category>
-      <guid isPermaLink="false">esg-index-inclusion-as-a-capital-strategy-what-indian-cfos-a-1779170913</guid>
     </item>
   </channel>
 </rss>
