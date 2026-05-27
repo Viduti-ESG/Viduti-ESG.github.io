@@ -365,16 +365,16 @@ function renderSearchResults(matches) {
 
 function handleSearchInput() {
   const query = els.search.value.trim().toLowerCase();
-  let matches = state.factors.filter(filterMatches);
-
-  if (query) {
-    matches = matches.filter(entry => {
-      return [entry.label, entry.scope, entry.level1, entry.level2, entry.level3, entry.column_text, entry.uom]
-        .filter(Boolean)
-        .some(value => String(value).toLowerCase().includes(query));
-    });
+  if (!query) {
+    els.results.innerHTML = '';
+    return;
   }
-
+  let matches = state.factors.filter(filterMatches);
+  matches = matches.filter(entry => {
+    return [entry.label, entry.scope, entry.level1, entry.level2, entry.level3, entry.column_text, entry.uom]
+      .filter(Boolean)
+      .some(value => String(value).toLowerCase().includes(query));
+  });
   renderSearchResults(matches.slice(0, 35));
 }
 
@@ -416,13 +416,18 @@ async function initCalculator() {
     state.factors = await response.json();
     renderStats();
     renderFilterBar();
-    handleSearchInput();
   } catch (error) {
     console.error('Failed to load factor dataset', error);
     if (els.loadedCount) els.loadedCount.textContent = '0';
   }
 
   els.search.addEventListener('input', handleSearchInput);
+  els.search.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      els.search.value = '';
+      els.results.innerHTML = '';
+    }
+  });
   els.addItem.addEventListener('click', () => {
     const amount = Number(els.amount.value);
     if (!state.selected) {
@@ -440,6 +445,12 @@ async function initCalculator() {
   els.resetItems.addEventListener('click', resetItems);
   if (els.downloadReport) els.downloadReport.addEventListener('click', downloadReport);
   if (els.exportJson) els.exportJson.addEventListener('click', exportJSON);
+
+  document.addEventListener('click', e => {
+    if (!els.search.contains(e.target) && !els.results.contains(e.target)) {
+      els.results.innerHTML = '';
+    }
+  });
 }
 
 initCalculator();

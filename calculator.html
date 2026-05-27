@@ -354,35 +354,16 @@
 </footer>
 
 <script>
-  // Year + scroll progress + burger (minimal inline since we don't load app.js)
   document.getElementById('year').textContent = new Date().getFullYear();
 
   const header = document.getElementById('site-header');
   const progress = document.getElementById('scroll-progress');
-  const burger = document.getElementById('nav-burger');
-  const mobileNav = document.getElementById('nav-mobile');
 
   window.addEventListener('scroll', () => {
     const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
     progress.style.width = pct + '%';
     header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
-
-  burger.addEventListener('click', () => {
-    const open = burger.classList.toggle('open');
-    mobileNav.classList.toggle('open', open);
-    burger.setAttribute('aria-expanded', open);
-    document.body.style.overflow = open ? 'hidden' : '';
-  });
-
-  mobileNav.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      burger.classList.remove('open');
-      mobileNav.classList.remove('open');
-      burger.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    });
-  });
 </script>
 <script src="assets/js/ghg-calculator.js" defer></script>
 </body>
