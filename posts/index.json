@@ -1,6 +1,48 @@
 {
   "posts": [
     {
+      "id": "gc-35e8982bb3e68151ad9edc1e04a31cf4",
+      "title": "Plastic Waste Management Rules, 2016 (Amended 2018): The Foundation of India's EPR Regime",
+      "date": "2026-05-13",
+      "category": "Plastic Waste Rules",
+      "source": "cpcb.nic.in",
+      "summary": "The Plastic Waste Management (PWM) Rules, 2016, as amended in 2018, form the bedrock of India's plastic governance framework, introducing Extended Producer Responsibility (EPR), the polluter-pays principle, and source segregation obligations across the value chain. For any company that manufactures,",
+      "link": "https://cpcb.nic.in/displaypdf.php?id=cGxhc3RpY3dhc3RlL1BXTV9HYXpldHRlLnBkZg==",
+      "sections": {
+        "summary": "The Plastic Waste Management (PWM) Rules, 2016, as amended in 2018, form the bedrock of India's plastic governance framework, introducing Extended Producer Responsibility (EPR), the polluter-pays principle, and source segregation obligations across the value chain. For any company that manufactures, imports, brands, or packages goods in plastic, these rules — and their successor EPR notifications — define the compliance baseline. Understanding the 2016/2018 architecture is essential to navigating today's far stricter EPR Guidelines and the upcoming wave of single-use plastic and recycled content mandates.",
+        "what_changed": "The 2016 Rules superseded the older Plastic Waste (Management and Handling) Rules, 2011, expanding scope from urban areas to rural Gram Panchayats and bringing producers, importers, and brand owners (PIBOs) squarely under regulation for the first time. The Rules formally introduced Extended Producer Responsibility — making producers accountable for the environmentally sound management of their products until end-of-life — and codified the polluter-pays principle. The March 2018 amendment refined several definitions (including 'alternate use' and 'energy recovery'), clarified obligations on multi-layered packaging (MLP), and exempted certain export-oriented units from Rule 4 restrictions, except where they package gutkha, tobacco, and pan masala. These amendments laid the conceptual scaffolding that the 2022 EPR Guidelines and subsequent notifications have since operationalised with hard targets and digital tracking.",
+        "who_is_affected": [
+          "Producers: manufacturers and importers of carry bags, multi-layered packaging, and plastic sheets",
+          "Brand owners: any company selling commodities under a registered brand that uses plastic packaging (FMCG, food & beverage, personal care, e-commerce, pharma)",
+          "Importers holding an Importer-Exporter Code who bring plastic products or plastic-packaged goods into India",
+          "Manufacturers of plastic raw material (resin producers and converters)",
+          "Institutional waste generators: government departments, corporates, hospitals, educational institutions, hotels, malls, and restaurants",
+          "Urban Local Bodies and Gram Panchayats responsible for collection and processing infrastructure",
+          "Recyclers, waste processors, and registered waste pickers in the informal sector",
+          "Street vendors using plastic carry bags or packaging"
+        ],
+        "key_obligations": [
+          "Producers, importers, and brand owners must register with the Central Pollution Control Board (CPCB) or State Pollution Control Boards (SPCBs) depending on geographic footprint",
+          "Implement an EPR action plan covering collection, channelisation, and environmentally sound disposal of post-consumer plastic waste",
+          "Phase out non-recyclable multi-layered packaging (MLP) — a directional obligation later sharpened under the 2022 EPR Guidelines",
+          "Mandatory minimum thickness for carry bags (50 microns under 2016, later increased to 75 microns from Sept 2021 and 120 microns from Dec 2022)",
+          "Manufacturers and recyclers require Consent to Establish/Operate from SPCBs under the Water Act and Air Act",
+          "Local bodies must ensure source segregation, set up collection systems, and prevent open burning of plastic waste",
+          "Institutional waste generators must segregate plastic waste at source and hand it to authorised recyclers or ULBs",
+          "Annual reporting to SPCB/CPCB on plastic waste generated, collected, and processed (now operationalised via the CPCB EPR Portal)"
+        ],
+        "climate_angle": "Plastic regulation sits at the intersection of India's circular economy push and the global decarbonisation agenda. Plastics are a fossil-fuel-derived product — roughly 99% of feedstock comes from oil and gas — so reducing virgin plastic use directly cuts Scope 3 emissions for brand owners and importers. The EPR framework introduced here is conceptually aligned with the EU's Packaging and Packaging Waste Regulation (PPWR), extended producer responsibility schemes in OECD economies, and the upcoming UN Global Plastics Treaty. For ISSB (IFRS S2) and BRSR Core reporting, plastic intensity, recycled content, and EPR compliance status are increasingly material disclosures that investors and lenders are screening. Companies treating PWM compliance as a pure box-tick exercise will face escalating physical risk (clogged urban drainage exacerbating flood losses), reputational risk, and supply-chain risk as global retailers demand verified recycled content.",
+        "what_to_do": [
+          "Map your full plastic footprint by category (rigid, flexible, MLP, compostable) across all SKUs, geographies, and import flows — this is the foundation for every downstream EPR target",
+          "Register or update your registration on the CPCB Centralised EPR Portal and reconcile historical filings against actual plastic introduced into the market",
+          "Build a recycled content roadmap: the 2022 EPR Guidelines mandate rising recycled content thresholds from 2025-26 onwards — secure offtake agreements with registered PWPs now",
+          "Conduct an MLP redesign audit; identify SKUs where mono-material or paper alternatives can replace non-recyclable laminates",
+          "Establish internal governance — assign EPR ownership to a named executive, integrate plastic KPIs into BRSR disclosures, and prepare for third-party verification of EPR claims"
+        ],
+        "our_take": "The 2016/2018 Rules look modest compared to the granular EPR Guidelines that followed in 2022, 2024, and beyond — but they remain the parent legislation, and every enforcement action ultimately traces back to them. The direction of travel is unmistakable: harder caps on virgin plastic, mandatory recycled content, digital traceability via EPR certificates, and convergence with global standards including the Global Plastics Treaty currently being negotiated. Companies that build robust plastic data systems and supplier engagement programmes now will turn compliance into competitive advantage; those that wait will find themselves buying expensive EPR credits in a tightening market while explaining shortfalls to investors and global customers. Plastic is no longer a packaging cost line — it is a climate, regulatory, and brand risk that belongs on the audit committee agenda."
+      }
+    },
+    {
       "id": "gc-35e8982bb3e681c59c55f786d6dea2b0",
       "title": "CPCB Greenlights Customs Release for 106 EEE Producers: What Importers Need to Know",
       "date": "2026-05-13",
