@@ -166,6 +166,7 @@ const TOPIC_MAP = {
   'CPCB / EPR': [
     'CPCB / EPR', 'Plastic Waste Rules', 'E-Waste Rules',
     'Battery Waste Rules', 'Urgent Notice / EPR', 'Portal Announcement',
+    'EPR / E-Waste Compliance',
   ],
   'SEBI / BRSR':               ['SEBI / BRSR'],
   'MoEFCC':                    ['MoEFCC'],
