@@ -435,6 +435,32 @@
   }
 }
 
+/* ── Status banner ──────────────────────────────────────────────────────────── */
+.calc-status {
+  margin: 1.25rem 0 .25rem;
+  padding: .7rem 1rem;
+  border-radius: var(--r);
+  font-size: .88rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.calc-status--loading {
+  background: rgba(0,200,255,.07);
+  border: 1px solid rgba(0,200,255,.2);
+  color: var(--cyan);
+}
+.calc-status--ok {
+  background: rgba(52,211,153,.07);
+  border: 1px solid rgba(52,211,153,.2);
+  color: var(--emerald);
+}
+.calc-status--error {
+  background: rgba(239,68,68,.07);
+  border: 1px solid rgba(239,68,68,.25);
+  color: #f87171;
+}
+
 /* ── Scope tabs ─────────────────────────────────────────────────────────────── */
 .scope-tabs {
   display: grid;

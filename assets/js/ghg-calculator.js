@@ -450,9 +450,20 @@ async function initCalculator() {
   state.items = loadSavedItems();
   updateResults();
 
+  const statusEl  = document.getElementById('calc-status');
+  const statusTxt = document.getElementById('calc-status-text');
+
+  function setStatus(type, msg) {
+    if (!statusEl) return;
+    statusEl.className = `calc-status calc-status--${type}`;
+    if (statusTxt) statusTxt.textContent = msg;
+    if (type === 'ok') setTimeout(() => { statusEl.hidden = true; }, 5000);
+  }
+
   try {
-    const res = await fetch('assets/data/ghg-factors.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    setStatus('loading', 'Loading emission factors…');
+    const res = await fetch('assets/data/ghg-factors.json?v=20260528');
+    if (!res.ok) throw new Error(`HTTP ${res.status} — file not found`);
     state.factors = await res.json();
 
     const s1 = state.factors.filter(f => f.scope === 'Scope 1').length;
@@ -464,10 +475,12 @@ async function initCalculator() {
     if (els.scope3Count) els.scope3Count.textContent = s3.toLocaleString();
 
     handleScopeChange('Scope 1');
+    setStatus('ok', `✓ ${state.factors.length.toLocaleString()} emission factors loaded. Select a scope to begin.`);
 
   } catch (err) {
     console.error('GHG factors load failed:', err);
-    if (els.category) els.category.innerHTML = '<option>⚠ Failed to load factors — please refresh</option>';
+    setStatus('error', `⚠ Failed to load factors: ${err.message}. Try refreshing the page (Ctrl+Shift+R).`);
+    if (els.category) els.category.innerHTML = '<option value="">— Data unavailable — try refreshing</option>';
   }
 
   document.querySelectorAll('.scope-tab').forEach(btn =>

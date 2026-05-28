@@ -218,6 +218,11 @@
         </div>
       </div>
 
+      <!-- Status banner -->
+      <div id="calc-status" class="calc-status calc-status--loading">
+        <span id="calc-status-text">Loading emission factors…</span>
+      </div>
+
       <!-- Step 1: Scope selector -->
       <div class="scope-tabs" id="scope-tabs" role="tablist" aria-label="Select emission scope">
         <button class="scope-tab scope-tab--active" data-scope="Scope 1" role="tab" aria-selected="true">
@@ -411,6 +416,6 @@
     header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 </script>
-<script src="assets/js/ghg-calculator.js" defer></script>
+<script src="assets/js/ghg-calculator.js?v=20260528" defer></script>
 </body>
 </html>
