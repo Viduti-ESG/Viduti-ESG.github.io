@@ -195,72 +195,118 @@
 <section class="calc-app container" id="calculator">
   <div class="calc-app__grid">
     <div class="calc-panel">
-      <div class="section-label">Emission source lookup</div>
-      <h2>Estimate emissions across Scope 1, Scope 2 and Scope 3.</h2>
-      <p class="calc-panel__intro">Search the UNFCCC dataset, choose an activity source, and calculate carbon emissions in tonnes of CO2e instantly.</p>
+      <div class="section-label">Add emission source</div>
+      <h2>Build your emission inventory.</h2>
+      <p class="calc-panel__intro">Choose a scope, select the activity category, pick the source and unit — the emission factor fills in automatically. Enter quantity and add to your inventory.</p>
 
       <div class="calc-panel__stats">
         <div class="stat-card mini">
-          <span class="stat-card__value" id="loaded-count">0</span>
-          <span class="stat-card__label">Sources available</span>
+          <span class="stat-card__value" id="loaded-count">–</span>
+          <span class="stat-card__label">Sources loaded</span>
         </div>
         <div class="stat-card mini">
-          <span class="stat-card__value" id="scope1-count">0</span>
-          <span class="stat-card__label">Scope 1 factors</span>
+          <span class="stat-card__value" id="scope1-count">–</span>
+          <span class="stat-card__label">Scope 1</span>
         </div>
         <div class="stat-card mini">
-          <span class="stat-card__value" id="scope2-count">0</span>
-          <span class="stat-card__label">Scope 2 factors</span>
+          <span class="stat-card__value" id="scope2-count">–</span>
+          <span class="stat-card__label">Scope 2</span>
         </div>
         <div class="stat-card mini">
-          <span class="stat-card__value" id="scope3-count">0</span>
-          <span class="stat-card__label">Scope 3 factors</span>
+          <span class="stat-card__value" id="scope3-count">–</span>
+          <span class="stat-card__label">Scope 3</span>
         </div>
       </div>
 
-      <div class="calc-filter-bar" id="filter-bar" aria-label="Quick source filters"></div>
-
-      <label class="field-label" for="factor-search">Search emission source</label>
-      <input type="search" id="factor-search" class="field-input" placeholder="e.g. Diesel, Electricity, Refrigerant" autocomplete="off" />
-      <div class="search-hint">Powered by 3,000+ dataset entries from the GHG calculator workbook.</div>
-      <div class="search-results" id="search-results" aria-live="polite"></div>
-
-      <div class="calc-selected" id="selected-card" hidden>
-        <div class="calc-selected__header">
+      <!-- Step 1: Scope selector -->
+      <div class="scope-tabs" id="scope-tabs" role="tablist" aria-label="Select emission scope">
+        <button class="scope-tab scope-tab--active" data-scope="Scope 1" role="tab" aria-selected="true">
+          <span class="scope-tab__num">1</span>
           <div>
-            <h3 id="selected-title">Source title</h3>
-            <p id="selected-details" class="calc-selected__meta">Scope · Category · Unit</p>
+            <span class="scope-tab__label">Scope 1</span>
+            <span class="scope-tab__desc">Direct emissions</span>
           </div>
-          <div class="calc-tag" id="selected-scope">Scope 1</div>
+        </button>
+        <button class="scope-tab" data-scope="Scope 2" role="tab" aria-selected="false">
+          <span class="scope-tab__num">2</span>
+          <div>
+            <span class="scope-tab__label">Scope 2</span>
+            <span class="scope-tab__desc">Purchased energy</span>
+          </div>
+        </button>
+        <button class="scope-tab" data-scope="Scope 3" role="tab" aria-selected="false">
+          <span class="scope-tab__num">3</span>
+          <div>
+            <span class="scope-tab__label">Scope 3</span>
+            <span class="scope-tab__desc">Value chain</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Step 2: Activity category -->
+      <div class="dd-group">
+        <label class="field-label" for="dd-category">Activity category</label>
+        <select class="field-input field-select" id="dd-category">
+          <option value="">Loading emission factors…</option>
+        </select>
+      </div>
+
+      <!-- Step 3: Sub-category (shown only when level2 data exists) -->
+      <div class="dd-group" id="dd-subcat-group" hidden>
+        <label class="field-label" for="dd-subcat">Sub-category</label>
+        <select class="field-input field-select" id="dd-subcat">
+          <option value="">— Select category first</option>
+        </select>
+      </div>
+
+      <!-- Step 4: Specific source -->
+      <div class="dd-group" id="dd-source-group" hidden>
+        <label class="field-label" for="dd-source">Emission source</label>
+        <select class="field-input field-select" id="dd-source">
+          <option value="">— Select sub-category first</option>
+        </select>
+      </div>
+
+      <!-- Step 5: Unit (hidden when only one unit exists — auto-selected) -->
+      <div class="dd-group" id="dd-unit-group" hidden>
+        <label class="field-label" for="dd-unit">Unit of measurement</label>
+        <select class="field-input field-select" id="dd-unit">
+          <option value="">— Select source first</option>
+        </select>
+      </div>
+
+      <!-- Factor preview (shown after full selection) -->
+      <div class="factor-preview" id="factor-preview" hidden>
+        <div class="factor-preview__item">
+          <span class="factor-preview__label">Emission factor</span>
+          <span class="factor-preview__value" id="factor-value">–</span>
         </div>
-        <div class="calc-selected__content">
-          <div class="calc-field-row">
-            <div>
-              <label class="field-label" for="selected-unit">Unit</label>
-              <input id="selected-unit" class="field-input" disabled />
-            </div>
-            <div>
-              <label class="field-label" for="selected-factor">Factor</label>
-              <input id="selected-factor" class="field-input" disabled />
-            </div>
-          </div>
-          <div class="calc-field-row">
-            <label class="field-label" for="item-amount">Amount</label>
-            <input type="number" id="item-amount" class="field-input" min="0" step="any" placeholder="Enter quantity" />
-          </div>
-          <button id="item-add" class="btn-secondary">Add emission item</button>
+        <div class="factor-preview__item">
+          <span class="factor-preview__label">Data source</span>
+          <span class="factor-preview__value" id="factor-source-val">–</span>
         </div>
       </div>
 
+      <!-- Step 6: Quantity -->
+      <div class="dd-group" id="dd-qty-group" hidden>
+        <label class="field-label" for="dd-qty">Quantity</label>
+        <input type="number" class="field-input" id="dd-qty" min="0" step="any" placeholder="Enter quantity (press Enter to add)" />
+      </div>
+      <button class="btn-secondary btn-block" id="dd-add" hidden>+ Add to inventory</button>
+
+      <!-- Divider -->
+      <div class="calc-divider"><span>or enter a custom source</span></div>
+
+      <!-- Custom source -->
       <div class="calc-manual">
         <h3>Custom emission source</h3>
-        <p>Use a custom factor when your specific activity is not present in the dataset.</p>
+        <p>Use a custom factor when your specific activity is not in the dataset.</p>
         <label class="field-label" for="custom-description">Description</label>
         <input id="custom-description" class="field-input" placeholder="Example: Office waste disposal" />
         <div class="calc-field-row">
           <div>
-            <label class="field-label" for="custom-factor">Emission factor</label>
-            <input type="number" id="custom-factor" class="field-input" min="0" step="any" placeholder="kg CO2e per unit" />
+            <label class="field-label" for="custom-factor">Emission factor (kg CO₂e / unit)</label>
+            <input type="number" id="custom-factor" class="field-input" min="0" step="any" placeholder="e.g. 2.52" />
           </div>
           <div>
             <label class="field-label" for="custom-unit">Unit</label>
@@ -268,7 +314,7 @@
           </div>
         </div>
         <div class="calc-field-row">
-          <label class="field-label" for="custom-amount">Amount</label>
+          <label class="field-label" for="custom-amount">Quantity</label>
           <input type="number" id="custom-amount" class="field-input" min="0" step="any" placeholder="Activity quantity" />
         </div>
         <button id="custom-add" class="btn-secondary">Add custom item</button>
