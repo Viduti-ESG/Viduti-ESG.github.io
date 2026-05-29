@@ -462,7 +462,7 @@ async function initCalculator() {
 
   try {
     setStatus('loading', 'Loading emission factors…');
-    const res = await fetch('assets/data/ghg-factors.json?v=20260528');
+    const res = await fetch('assets/data/ghg-factors.json?v=20260529');
     if (!res.ok) throw new Error(`HTTP ${res.status} — file not found`);
     state.factors = await res.json();
 

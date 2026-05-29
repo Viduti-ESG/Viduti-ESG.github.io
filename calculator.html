@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="stylesheet" href="assets/css/ghg-calculator.css" />
+  <link rel="stylesheet" href="assets/css/ghg-calculator.css?v=20260529" />
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
 
   <style>
@@ -123,11 +123,11 @@
       line-height: 1.75;
       max-width: 560px;
     }
-    /* Give the calculator section proper top padding on its own page */
+    /* Calculator section — light theme */
     .calc-page-body .calc-app {
       padding-top: 52px;
       padding-bottom: 80px;
-      background: var(--deep);
+      background: #f1f5f9;
     }
   </style>
 </head>
@@ -195,35 +195,15 @@
 <section class="calc-app container" id="calculator">
   <div class="calc-app__grid">
     <div class="calc-panel">
-      <div class="section-label">Add emission source</div>
-      <h2>Build your emission inventory.</h2>
-      <p class="calc-panel__intro">Choose a scope, select the activity category, pick the source and unit — the emission factor fills in automatically. Enter quantity and add to your inventory.</p>
+      <div class="section-label">GHG Emission Calculator</div>
+      <h2>Add an emission source</h2>
 
-      <div class="calc-panel__stats">
-        <div class="stat-card mini">
-          <span class="stat-card__value" id="loaded-count">–</span>
-          <span class="stat-card__label">Sources loaded</span>
-        </div>
-        <div class="stat-card mini">
-          <span class="stat-card__value" id="scope1-count">–</span>
-          <span class="stat-card__label">Scope 1</span>
-        </div>
-        <div class="stat-card mini">
-          <span class="stat-card__value" id="scope2-count">–</span>
-          <span class="stat-card__label">Scope 2</span>
-        </div>
-        <div class="stat-card mini">
-          <span class="stat-card__value" id="scope3-count">–</span>
-          <span class="stat-card__label">Scope 3</span>
-        </div>
-      </div>
-
-      <!-- Status banner -->
+      <!-- Status banner (loading indicator) -->
       <div id="calc-status" class="calc-status calc-status--loading">
         <span id="calc-status-text">Loading emission factors…</span>
       </div>
 
-      <!-- Step 1: Scope selector -->
+      <!-- Step 1: Scope selector — FIRST interactive element -->
       <div class="scope-tabs" id="scope-tabs" role="tablist" aria-label="Select emission scope">
         <button class="scope-tab scope-tab--active" data-scope="Scope 1" role="tab" aria-selected="true">
           <span class="scope-tab__num">1</span>
@@ -272,7 +252,7 @@
         </select>
       </div>
 
-      <!-- Step 5: Unit (hidden when only one unit exists — auto-selected) -->
+      <!-- Step 5: Unit (hidden when only one unit — auto-selected) -->
       <div class="dd-group" id="dd-unit-group" hidden>
         <label class="field-label" for="dd-unit">Unit of measurement</label>
         <select class="field-input field-select" id="dd-unit">
@@ -295,9 +275,9 @@
       <!-- Step 6: Quantity -->
       <div class="dd-group" id="dd-qty-group" hidden>
         <label class="field-label" for="dd-qty">Quantity</label>
-        <input type="number" class="field-input" id="dd-qty" min="0" step="any" placeholder="Enter quantity (press Enter to add)" />
+        <input type="number" class="field-input" id="dd-qty" min="0" step="any" placeholder="Enter quantity and press Enter, or click Add" />
       </div>
-      <button class="btn-secondary btn-block" id="dd-add" hidden>+ Add to inventory</button>
+      <button id="dd-add" hidden>+ Add to inventory</button>
 
       <!-- Divider -->
       <div class="calc-divider"><span>or enter a custom source</span></div>
@@ -323,6 +303,26 @@
           <input type="number" id="custom-amount" class="field-input" min="0" step="any" placeholder="Activity quantity" />
         </div>
         <button id="custom-add" class="btn-secondary">Add custom item</button>
+      </div>
+
+      <!-- Data stats — secondary info at bottom -->
+      <div class="calc-panel__stats">
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="loaded-count">–</span>
+          <span class="stat-card__label">Sources loaded</span>
+        </div>
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="scope1-count">–</span>
+          <span class="stat-card__label">Scope 1</span>
+        </div>
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="scope2-count">–</span>
+          <span class="stat-card__label">Scope 2</span>
+        </div>
+        <div class="stat-card mini">
+          <span class="stat-card__value" id="scope3-count">–</span>
+          <span class="stat-card__label">Scope 3</span>
+        </div>
       </div>
     </div>
 
@@ -416,6 +416,6 @@
     header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 </script>
-<script src="assets/js/ghg-calculator.js?v=20260528" defer></script>
+<script src="assets/js/ghg-calculator.js?v=20260529" defer></script>
 </body>
 </html>
