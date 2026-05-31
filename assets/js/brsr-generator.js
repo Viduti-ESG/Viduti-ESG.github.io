@@ -4,8 +4,8 @@
  * submits to /api/generate-report, and displays the result.
  */
 
-const API_BASE = "https://brsr-generator-api.onrender.com";
-// const API_BASE = "http://localhost:8001";  // uncomment for local dev
+const API_BASE = "https://777bd5584cb726b2-103-197-75-180.serveousercontent.com";
+// const API_BASE = "https://777bd5584cb726b2-103-197-75-180.serveousercontent.com";  // uncomment for local dev
 
 let formSchema   = null;
 let currentStep  = 0;
