@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRSR Report Generator — Green Curve</title>
+  <link rel="icon" href="assets/images/favicon.ico">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260531">
+  <link rel="stylesheet" href="assets/css/brsr-generator.css?v=20260531">
+</head>
+<body>
+
+<!-- ── Navigation (same as main site) ──────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon">G</div>
+      <span>Green Curve</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#news">News</a>
+      <a href="index.html#compliance">Compliance</a>
+      <a href="calculator.html">GHG Calculator</a>
+      <a href="brsr-generator.html" class="active">BRSR Generator</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────────── -->
+<section class="brsr-hero">
+  <div class="brsr-hero__inner">
+    <div class="brsr-hero__badge">AI-Powered · SEBI XBRL Reference Data</div>
+    <h1 class="brsr-hero__title">BRSR Report Generator</h1>
+    <p class="brsr-hero__subtitle">
+      Answer guided questions about your company. Our AI — trained on 155 real BRSR filings
+      from India's listed companies — drafts a complete SEBI-compliant BRSR report for you.
+    </p>
+    <div class="brsr-hero__stats">
+      <div class="brsr-hero__stat"><span class="stat-num">155</span><span class="stat-label">Reference Companies</span></div>
+      <div class="brsr-hero__stat"><span class="stat-num">9</span><span class="stat-label">BRSR Principles Covered</span></div>
+      <div class="brsr-hero__stat"><span class="stat-num">~15 min</span><span class="stat-label">to Complete</span></div>
+      <div class="brsr-hero__stat"><span class="stat-num">PDF</span><span class="stat-label">Export Ready</span></div>
+    </div>
+    <button class="brsr-hero__cta" id="startWizardBtn">Start BRSR Report →</button>
+    <p class="brsr-hero__note">Free tool · Your data stays private · Review before downloading</p>
+  </div>
+</section>
+
+<!-- ── How it Works ──────────────────────────────────────────────────────────── -->
+<section class="brsr-how" id="how-it-works">
+  <div class="brsr-how__inner">
+    <h2>How It Works</h2>
+    <div class="brsr-how__steps">
+      <div class="how-step">
+        <div class="how-step__num">1</div>
+        <h3>Fill the Form</h3>
+        <p>Answer 80 guided questions across 9 sections — company details, environment, employees, governance, and more.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step__num">2</div>
+        <h3>AI Finds Similar Companies</h3>
+        <p>Our system finds 3 real BRSR reports from your sector in SEBI's XBRL database to use as benchmarks.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step__num">3</div>
+        <h3>Report is Generated</h3>
+        <p>Claude drafts your complete BRSR — all 9 principles, essential + leadership indicators, with sector benchmarks.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step__num">4</div>
+        <h3>Download PDF</h3>
+        <p>Review the report, make any corrections, and download a formatted PDF ready for your sustainability team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Wizard Modal ───────────────────────────────────────────────────────────── -->
+<div class="wizard-overlay" id="wizardOverlay" role="dialog" aria-modal="true" aria-label="BRSR Report Wizard" hidden>
+  <div class="wizard-modal">
+
+    <!-- Sidebar progress -->
+    <aside class="wizard-sidebar">
+      <div class="wizard-sidebar__logo">
+        <div class="brand-icon brand-icon--sm">G</div>
+        <span>BRSR Wizard</span>
+      </div>
+      <nav class="wizard-nav" id="wizardNav" aria-label="Form steps"></nav>
+      <div class="wizard-sidebar__help">
+        <p>Need help? <a href="mailto:support@greencurve.in">Contact us</a></p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="wizard-main">
+      <button class="wizard-close" id="wizardClose" aria-label="Close">✕</button>
+
+      <!-- Step content injected here -->
+      <div class="wizard-content" id="wizardContent"></div>
+
+      <!-- Footer buttons -->
+      <div class="wizard-footer">
+        <button class="btn-wizard-back" id="btnBack" hidden>← Back</button>
+        <div class="wizard-footer__right">
+          <span class="wizard-step-counter" id="stepCounter"></span>
+          <button class="btn-wizard-next" id="btnNext">Next →</button>
+          <button class="btn-wizard-generate" id="btnGenerate" hidden>Generate Report ✦</button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<!-- ── Report Result Modal ────────────────────────────────────────────────────── -->
+<div class="report-overlay" id="reportOverlay" hidden>
+  <div class="report-modal">
+    <div class="report-modal__header">
+      <div>
+        <h2 class="report-modal__title" id="reportTitle">BRSR Report</h2>
+        <p class="report-modal__subtitle" id="reportSubtitle"></p>
+      </div>
+      <div class="report-modal__actions">
+        <button class="btn-download" id="btnDownloadPdf">⬇ Download PDF</button>
+        <button class="btn-download btn-download--outline" id="btnDownloadJson">⬇ JSON</button>
+        <button class="report-close" id="reportClose" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div class="report-modal__body" id="reportBody"></div>
+  </div>
+</div>
+
+<!-- ── Loading Overlay ────────────────────────────────────────────────────────── -->
+<div class="loading-overlay" id="loadingOverlay" hidden>
+  <div class="loading-card">
+    <div class="loading-spinner"></div>
+    <h3 id="loadingTitle">Generating Your BRSR Report</h3>
+    <p id="loadingMsg">Finding similar companies in SEBI XBRL database...</p>
+    <div class="loading-steps" id="loadingSteps">
+      <div class="loading-step" id="ls1">✓ Collecting your inputs</div>
+      <div class="loading-step loading-step--active" id="ls2">⟳ Matching sector companies...</div>
+      <div class="loading-step loading-step--pending" id="ls3">○ Drafting Section A — General Disclosures</div>
+      <div class="loading-step loading-step--pending" id="ls4">○ Writing Principles P1–P9</div>
+      <div class="loading-step loading-step--pending" id="ls5">○ Adding sector benchmarks</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 Green Curve · ESG Intelligence for India</p>
+    <p class="footer-note">BRSR reports are AI-drafted and should be reviewed by your legal/compliance team before filing.</p>
+  </div>
+</footer>
+
+<script src="assets/js/brsr-generator.js?v=20260531"></script>
+</body>
+</html>
