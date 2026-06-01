@@ -34,11 +34,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function openWizard() {
+  alert(
+    "🔧 BRSR Generator Maintenance\n\n" +
+    "The BRSR Generator is temporarily offline for maintenance. The backend service is currently unavailable.\n\n" +
+    "We apologize for the inconvenience. Please check back in a few moments, or contact support if the issue persists.\n\n" +
+    "In the meantime, explore our GHG Calculator (#calculator) for emissions reporting."
+  );
+  return;
+
   show("wizardOverlay");
 
   if (!formSchema) {
     try {
-      const r = await fetch(`${API_BASE}/api/form-schema`);
+      const r = await fetch(`${API_BASE}/api/form-schema`, { signal: AbortSignal.timeout(8000) });
       if (!r.ok) throw new Error("Schema fetch failed");
       formSchema = await r.json();
     } catch (e) {
