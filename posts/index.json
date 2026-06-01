@@ -1,6 +1,122 @@
 {
   "posts": [
     {
+      "id": "gc-35e8982bb3e681ef8d6bc34101413e9f",
+      "title": "CPCB's New EPR Certificate Framework for E-Waste: What Producers Need to Know About Metal-Based Targets",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "The Central Pollution Control Board (CPCB) has released a framework that fundamentally changes how Extended Producer Responsibility (EPR) certificates are generated under the E-Waste (Management) Rules, 2022 — moving from a unit/weight-based system to one anchored in actual metal recovery (Gold, Cop",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zOTBfMTY5NTM1ODM1OF9tZWRpYXBob3RvMjA2MzgucGRm",
+      "sections": {
+        "summary": "The Central Pollution Control Board (CPCB) has released a framework that fundamentally changes how Extended Producer Responsibility (EPR) certificates are generated under the E-Waste (Management) Rules, 2022 — moving from a unit/weight-based system to one anchored in actual metal recovery (Gold, Copper, Aluminium, and Iron). Producers must now meet differentiated targets per metal, with Gold obligations phased in over five years (starting at just 20% in FY 2023-24) while Non-Ferrous and Ferrous obligations apply at 100% from year one. This shift directly links EPR compliance to India's critical minerals security and circular economy ambitions, and demands an urgent rethink of producer recycler contracts.",
+        "what_changed": "Until now, EPR obligations under e-waste rules were largely expressed as a percentage of the weight of electrical and electronic equipment (EEE) placed on the market. The new CPCB framework converts that obligation into specific quantities of recovered key metals — Gold (Au), Copper (Cu), Aluminium (Al), and Iron/Steel (Fe) — based on standardized average material composition tables (Annexure I) published item-wise across 45+ EEE categories. Because India's verified gold recovery capacity from e-waste (across 11 CPCB-audited recyclers) is currently far below aggregate producer obligations, CPCB has introduced a glide path: gold EPR obligations start at 20% in FY 2023-24, rising to 30%, 45%, 60%, 80%, and finally 100% by FY 2028-29. Non-ferrous and ferrous obligations, however, kick in at 100% immediately. Producers can also trade off over- or under-performance between gold and non-ferrous targets within defined rules, and Rare Earth Elements (REE) recovery will be separately incentivized in the future.",
+        "who_is_affected": [
+          "Producers (manufacturers, importers, and brand owners) of all EEE categories listed in Schedule I of the E-Waste Rules 2022 — IT and telecom equipment (ITEW1–ITEW27), consumer electronics and white goods (CEEW1–CEEW17), and lighting products",
+          "Electronics OEMs and importers of laptops, mobile phones, tablets, televisions, refrigerators, washing machines, air conditioners, and solar PV modules",
+          "Telecom infrastructure companies — particularly those deploying Base Transceiver Stations (BTS), which carry the highest gold composition (0.0035%) among listed items",
+          "Registered e-waste recyclers, who must now demonstrate verified metal recovery capacity to issue EPR certificates",
+          "Producer Responsibility Organisations (PROs) and EPR aggregators managing compliance portfolios",
+          "Solar PV module producers (CEEW14), now formally drawn into metal-based recovery targets for Iron and Aluminium"
+        ],
+        "key_obligations": [
+          "FY 2023-24: Meet 20% of gold EPR obligation; 100% of Copper, Aluminium, and Iron obligations",
+          "FY 2024-25: Gold obligation rises to 30%",
+          "FY 2025-26 and FY 2026-27: Gold obligation at 45% and 60% respectively",
+          "FY 2027-28: Gold obligation rises to 80%",
+          "FY 2028-29: Full 100% gold EPR obligation kicks in — closing the five-year capacity gap",
+          "Calculate EPR liability per EEE category using CPCB's Annexure I composition tables (e.g., 0.0015% Au in cellular phones; 11% Cu and 0.0035% Au in BTS)",
+          "Procure EPR certificates from CPCB-verified recyclers against verified metal recovery — not equipment weight",
+          "Track surplus/deficit performance per EEE item; either carry-forward gold liabilities to next FY or offset against non-ferrous purchases in the same FY",
+          "Maintain auditable records of certificate purchases by metal category to support CPCB filings on the EPR portal"
+        ],
+        "climate_angle": "This framework is far more than a waste management adjustment — it is India's most concrete operationalization of the circular economy for critical minerals. Gold, copper, and aluminium recovered from e-waste directly displace virgin mining, with copper recycling alone consuming up to 85% less energy than primary production. For producers, this means EPR compliance is now a direct lever on Scope 3 emissions and supply chain resilience. The framework also aligns India's regime with global directions: the EU's Critical Raw Materials Act, the ISSB's IFRS S2 requirement to disclose climate-related risks in value chains, and CSRD's expectations around resource use and circular economy (ESRS E5). Companies reporting under BRSR Core will find these metal-recovery metrics flowing directly into Principle 2 and Principle 6 disclosures. The explicit signal that Rare Earth Elements will be incentivized next is a clear pointer that producers of EVs, wind turbines, and advanced electronics should start mapping REE recovery pathways now.",
+        "what_to_do": [
+          "Recompute your EPR liability per EEE category using Annexure I composition factors — your existing weight-based estimates are now obsolete. Build a metal-by-metal obligation matrix for FY 2023-24 through FY 2028-29.",
+          "Audit your recycler contracts: confirm that your downstream partners are among the CPCB-verified recyclers with demonstrated gold recovery capacity, and renegotiate certificate pricing now before market tightness pushes premiums up.",
+          "Decide your offset strategy: for each EEE SKU, model whether it is more cost-effective to carry forward gold deficits or to over-procure non-ferrous certificates in the current year — this is a treasury and procurement decision, not just a sustainability one.",
+          "Set up internal MIS to track surplus/deficit per EEE item per metal — CPCB's offset mechanism requires SKU-level traceability and cannot be managed at portfolio aggregate level.",
+          "Begin scenario planning for Rare Earth Element recovery, especially if you manufacture or import devices with magnets, batteries, or specialty optics — this is the next regulatory frontier."
+        ],
+        "our_take": "CPCB's metal-based EPR framework is a quietly transformative move. By tying compliance to actual recovered metals rather than equipment weight, India is forcing the e-waste value chain to invest in real metallurgical capacity — not paper-trail compliance. The phased gold trajectory is a pragmatic acknowledgment that domestic recycling infrastructure cannot yet absorb full obligations, but the message to producers is unambiguous: capacity must scale, and certificate prices will reflect scarcity. Expect a sharp run-up in gold and BTS-linked certificate costs over the next 18 months, consolidation among formal recyclers, and growing scrutiny from auditors mapping these obligations into BRSR Core and ISSB-aligned disclosures. Producers who treat this as a procurement-only exercise will be blindsided; those who integrate it into product design (design-for-disassembly, recovered-content targets) and supplier engagement will turn compliance cost into competitive advantage. The REE signal at the end of the notice is the one to watch — that is where the next compliance wave, and the next material-risk disclosure obligation, will land."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e68177997fd3c499d03f8a",
+      "title": "CPCB Notice: Interim Arrangement for E-Waste EPR Credit Generation and Transfer by Recyclers",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "The Central Pollution Control Board (CPCB) has issued an interim arrangement governing how registered E-Waste Recyclers generate and transfer EPR end-product credits (certificates) on the EPR Portal. This is a transitional measure under the E-Waste (Management) Rules, 2022, designed to keep the EPR ",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zODhfMTY5NDQ1MzUxN19tZWRpYXBob3RvMjEzMDcucGRm",
+      "sections": {
+        "summary": "The Central Pollution Control Board (CPCB) has issued an interim arrangement governing how registered E-Waste Recyclers generate and transfer EPR end-product credits (certificates) on the EPR Portal. This is a transitional measure under the E-Waste (Management) Rules, 2022, designed to keep the EPR credit market functional while the digital traceability framework is being stabilized. Producers, refurbishers, and recyclers should align their internal documentation and reconciliation processes immediately to avoid disruption in EPR target fulfilment.",
+        "what_changed": "Under the E-Waste (Management) Rules, 2022, Extended Producer Responsibility (EPR) obligations are met through a credit-based mechanism. Registered recyclers process end-of-life electronics and generate EPR certificates on the CPCB's EPR Portal, which producers then purchase to discharge their annual recycling targets. Because portal-based generation and transfer of these certificates has faced operational and verification challenges, CPCB has notified an interim arrangement. In practice, this means recyclers may generate and transfer EPR end-product credits under a defined manual or semi-automated workflow — with prescribed documentation, quantity verification, and audit trails — until the full digital functionality is operationalised. Transactions executed under this interim window will remain valid for EPR compliance, provided recyclers and producers maintain the records CPCB specifies.",
+        "who_is_affected": [
+          "Registered E-Waste Recyclers operating under the E-Waste (Management) Rules, 2022",
+          "Producers (manufacturers, importers, and brand owners) of EEE listed in Schedule-I with EPR obligations",
+          "Refurbishers handling used electronic equipment under registered EPR pathways",
+          "Bulk consumers and large IT/ITeS enterprises disposing of e-waste through registered recyclers",
+          "ESG and compliance teams in electronics, appliances, telecom, and consumer durables sectors"
+        ],
+        "key_obligations": [
+          "Recyclers must generate EPR end-product credits strictly in line with the interim procedure specified by CPCB on the EPR Portal",
+          "Credits should be transferred only against verified quantities of processed e-waste, supported by inward manifests, processing records, and end-product evidence",
+          "Maintain a complete audit trail — weighbridge slips, processing logs, downstream sale invoices for recovered materials — for all interim-period transactions",
+          "Producers purchasing credits must conduct due diligence on the recycler's registration status and verify the credit basis before recording it against EPR targets",
+          "All interim transactions remain subject to retrospective verification by CPCB; any inflated or unsubstantiated credits may be cancelled and trigger enforcement action",
+          "Comply with annual EPR filing timelines on the EPR Portal; the interim arrangement does not extend statutory reporting deadlines"
+        ],
+        "climate_angle": "E-waste sits at the intersection of circular economy regulation and Scope 3 emissions management. Globally, frameworks like the ISSB's IFRS S2 and the EU's CSRD require companies to disclose resource-use intensity, end-of-life treatment of products, and value-chain emissions — all of which depend on credible recycling data. India's EPR credit mechanism is the primary evidence base producers will rely on for these disclosures. A weak or unverifiable credit trail creates two compounding risks: regulatory exposure under the E-Waste Rules and disclosure risk under emerging climate and sustainability reporting standards (including BRSR Core assurance). For multinationals, the interim arrangement is also a supply-chain integrity issue — buyers in the EU and Japan increasingly request documentary proof of responsible recycling for imported electronics, and CPCB-issued credits are becoming the de facto Indian benchmark.",
+        "what_to_do": [
+          "Recyclers: Map every step of your credit-generation workflow against CPCB's interim procedure and close documentation gaps within the next 30 days",
+          "Producers: Reconcile EPR credits already purchased in FY24–25 with underlying recycler records; flag any credits without verifiable processing evidence",
+          "Set up a vendor due-diligence checklist for recycler partners — registration status, processing capacity, downstream material flow, and CPCB inspection history",
+          "Integrate EPR credit data into your BRSR and Scope 3 disclosure workflows so the same evidence supports both regulatory and investor reporting",
+          "Brief your board's risk or ESG committee on potential retrospective cancellation risk and quantify financial exposure if credits are invalidated"
+        ],
+        "our_take": "This interim notice is a signal, not just a workaround. CPCB is making clear that the EPR credit market will continue functioning — but on its terms, with tighter traceability and a real possibility of retrospective scrutiny. We expect the next phase to bring full digital generation of certificates with embedded verification, more aggressive audits of recyclers, and possibly a price floor or trading band similar to the plastic waste EPR regime. Companies treating EPR as a procurement exercise — buying the cheapest available credits — will be most exposed. Those that build recycler partnerships with operational transparency and link EPR data into their broader climate disclosures will be best positioned, both for compliance and for the assurance requirements coming with BRSR Core and ISSB-aligned reporting."
+      }
+    },
+    {
+      "id": "gc-35e8982bb3e68174a663d197f12bcc12",
+      "title": "CPCB Interim Arrangement for Tyre Waste EPR Credits: What Recyclers and Producers Must Know",
+      "date": "2026-05-13",
+      "category": "Urgent Notice / EPR",
+      "source": "cpcb.nic.in",
+      "summary": "The Central Pollution Control Board (CPCB) has issued an interim arrangement governing how registered tyre waste recyclers generate and transfer Extended Producer Responsibility (EPR) end product credits — known as EPR certificates — on the centralised online portal. The move is designed to bridge o",
+      "link": "https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zODlfMTY5NDQ1MzYwMV9tZWRpYXBob3RvMTc2NDYucGRm",
+      "sections": {
+        "summary": "The Central Pollution Control Board (CPCB) has issued an interim arrangement governing how registered tyre waste recyclers generate and transfer Extended Producer Responsibility (EPR) end product credits — known as EPR certificates — on the centralised online portal. The move is designed to bridge operational gaps in the EPR regime for waste tyres notified under the Hazardous and Other Wastes Rules, 2022, and unblock credit transactions between recyclers, producers, and importers of new tyres.",
+        "what_changed": "Under India's EPR framework for waste tyres, producers (manufacturers and importers of new tyres) must discharge their EPR obligations by purchasing certificates from registered recyclers who process end-of-life tyres into approved end products such as reclaimed rubber, crumb rubber, char, and recovered oil. The CPCB's EPR portal is the single source of truth for issuing and trading these certificates. Because the portal's full automated functionality is still being stabilised, CPCB has put in place an interim arrangement that allows recyclers to generate EPR end product credits manually-validated or through a simplified workflow, and to transfer those credits to obligated producers. This avoids a compliance freeze while the system is upgraded, and ensures that recyclers continue to receive revenue for processed volumes and producers can fulfil their annual obligations without penalty.",
+        "who_is_affected": [
+          "Registered tyre waste recyclers on the CPCB EPR portal who convert waste tyres into approved end products",
+          "Producers of new tyres — including domestic manufacturers across all tyre categories (two-wheeler, passenger, truck/bus, off-the-road, etc.)",
+          "Importers of new tyres and of tyres fitted on imported vehicles, who carry an equivalent EPR obligation",
+          "Retreaders registered under the EPR system",
+          "Auto OEMs and fleet operators indirectly exposed through supply chain compliance and procurement clauses",
+          "SPCBs/PCCs who monitor recyclers and producers within their jurisdiction"
+        ],
+        "key_obligations": [
+          "Recyclers must generate EPR end product credits only against verified quantities of waste tyres processed into approved end products, with supporting documentation (weighbridge slips, processing logs, end product dispatch records)",
+          "Credits must be generated and transferred on the CPCB EPR portal following the interim workflow prescribed in the notice — offline or parallel trades outside the portal will not be recognised",
+          "Producers must purchase and accept the transfer of certificates against their annual EPR target for the relevant compliance year",
+          "Recyclers should maintain a full audit trail (purchase of waste tyres, processing, end product sale, credit issuance) ready for CPCB inspection or third-party verification",
+          "Any shortfall by producers at year-end will attract environmental compensation as per the Hazardous Waste Rules and CPCB's EC guidelines",
+          "Companies should monitor the CPCB portal and subsequent CPCB notices for the date on which the interim arrangement will be replaced by the fully automated system"
+        ],
+        "climate_angle": "Waste tyre EPR sits at the intersection of circular economy policy and climate risk. End-of-life tyres are a high-volume, hazardous waste stream — and uncontrolled disposal (open burning, dumping, informal pyrolysis) creates significant Scope 3 emissions, black carbon, and local air-quality liabilities for the entire automotive value chain. A functioning EPR credit market incentivises material recovery, displaces virgin rubber and carbon black, and reduces lifecycle GHG intensity of tyres — a metric that global frameworks like ISSB (IFRS S2), CSRD/ESRS E5 (Resource Use and Circular Economy), and CDP increasingly require companies to disclose. Indian tyre producers and auto OEMs supplying European or listed multinational customers should expect EPR compliance evidence, recycler traceability, and recycled content data to be requested as part of supplier ESG assessments and CBAM-adjacent due diligence.",
+        "what_to_do": [
+          "Reconcile your CPCB EPR portal account immediately — confirm registration status, target quantities, and any pending credit transactions stuck in the system",
+          "For recyclers: tighten internal records linking waste tyre intake to end product output, so credits generated under the interim workflow are fully defensible in an audit",
+          "For producers: lock in credit purchase contracts early in the compliance year with reputable, traceable recyclers rather than chasing volumes at year-end when prices spike",
+          "Integrate EPR data flows into your ESG and BRSR reporting — quantity of waste managed, certificates procured, and recycled content should feed Principle 2 and Principle 6 disclosures",
+          "Set up a quarterly compliance review with your EHS, procurement, and finance teams to track EPR obligation status against the CPCB portal and flag any policy updates"
+        ],
+        "our_take": "The interim arrangement is a pragmatic stopgap, but it signals a deeper truth: India's EPR ecosystem is still maturing, and operational glitches will keep surfacing across plastics, e-waste, batteries, and tyres until portal infrastructure, recycler verification, and credit pricing transparency catch up. Companies that treat EPR as a year-end procurement exercise will face volatile pricing, supply shortages, and reputational exposure. The smarter play is to build long-term partnerships with verified recyclers, embed EPR data into mainstream sustainability disclosures, and prepare for the next phase — where regulators are likely to introduce credit price floors, stricter recycler audits, and tighter linkages between EPR performance and BRSR or CBAM-style reporting. Get the plumbing right now; the scrutiny is only going to intensify."
+      }
+    },
+    {
       "id": "food-systems-under-the-esg-lens-what-india-s-agri-business-b-1780136426",
       "title": "Food Systems Under the ESG Lens: What India's Agri-Business Boards Must Act On Before BRSR Core and TNFD Disclosures Converge",
       "date": "2026-05-30",
