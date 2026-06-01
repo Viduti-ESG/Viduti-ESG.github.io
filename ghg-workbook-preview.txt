@@ -1,0 +1,67 @@
+DB rows=3076 cols=15
+(1, ('Scope', 'Level 1', 'Level 2', 'Level 3', 'Level 4', 'Column Text', 'UOM (simple)', 'UOM', 'GHG', 'Lookup VALID', "Lookup (DON'T USE)", 'GHG Conversion Factor 2021', 'Source', 'Country', 'Vintage'))
+(2, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Butane', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsButanekWh', 'Butane kWh (Gross CV)', 0.2224, 'DEFRA', 'UK', 2021))
+(3, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Butane', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsButanekWh', 'Butane kWh (Net CV)', 0.24106, 'DEFRA', 'UK', 2021))
+(4, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Butane', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsButanelitres', 'Butane litres', 1.74529, 'DEFRA', 'UK', 2021))
+(5, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Butane', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsButanetonnes', 'Butane tonnes', 3033.32, 'DEFRA', 'UK', 2021))
+(6, ('Scope 1', 'Fuels', 'Gaseous fuels', 'CNG', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsCNGkWh', 'CNG kWh (Gross CV)', 0.18316, 'DEFRA', 'UK', 2021))
+(7, ('Scope 1', 'Fuels', 'Gaseous fuels', 'CNG', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsCNGkWh', 'CNG kWh (Net CV)', 0.20297, 'DEFRA', 'UK', 2021))
+(8, ('Scope 1', 'Fuels', 'Gaseous fuels', 'CNG', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsCNGlitres', 'CNG litres', 0.44423, 'DEFRA', 'UK', 2021))
+(9, ('Scope 1', 'Fuels', 'Gaseous fuels', 'CNG', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsCNGtonnes', 'CNG tonnes', 2538.48, 'DEFRA', 'UK', 2021))
+(10, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LNG', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLNGkWh', 'LNG kWh (Gross CV)', 0.18438, 'DEFRA', 'UK', 2021))
+(11, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LNG', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLNGkWh', 'LNG kWh (Net CV)', 0.20431, 'DEFRA', 'UK', 2021))
+(12, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LNG', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLNGlitres', 'LNG litres', 1.15623, 'DEFRA', 'UK', 2021))
+(13, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LNG', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLNGtonnes', 'LNG tonnes', 2555.28, 'DEFRA', 'UK', 2021))
+(14, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LPG', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLPGkWh', 'LPG kWh (Gross CV)', 0.21449, 'DEFRA', 'UK', 2021))
+(15, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LPG', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLPGkWh', 'LPG kWh (Net CV)', 0.23031, 'DEFRA', 'UK', 2021))
+(16, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LPG', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLPGlitres', 'LPG litres', 1.55709, 'DEFRA', 'UK', 2021))
+(17, ('Scope 1', 'Fuels', 'Gaseous fuels', 'LPG', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsLPGtonnes', 'LPG tonnes', 2939.29, 'DEFRA', 'UK', 2021))
+(18, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Natural gas', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsNatural gaskWh', 'Natural gas kWh (Gross CV)', 0.18316, 'DEFRA', 'UK', 2021))
+(19, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Natural gas', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsNatural gaskWh', 'Natural gas kWh (Net CV)', 0.20297, 'DEFRA', 'UK', 2021))
+(20, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Natural gas', None, None, 'cubic metres', 'cubic metres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsNatural gascubic metres', 'Natural gas cubic metres', 2.02135, 'DEFRA', 'UK', 2021))
+(21, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Natural gas', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsNatural gastonnes', 'Natural gas tonnes', 2538.48, 'DEFRA', 'UK', 2021))
+(22, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Other petroleum gas', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsOther petroleum gaskWh', 'Other petroleum gas kWh (Gross CV)', 0.18324, 'DEFRA', 'UK', 2021))
+(23, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Other petroleum gas', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsOther petroleum gaskWh', 'Other petroleum gas kWh (Net CV)', 0.19917, 'DEFRA', 'UK', 2021))
+(24, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Other petroleum gas', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsOther petroleum gaslitres', 'Other petroleum gas litres', 0.94441, 'DEFRA', 'UK', 2021))
+(25, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Other petroleum gas', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsOther petroleum gastonnes', 'Other petroleum gas tonnes', 2578.25, 'DEFRA', 'UK', 2021))
+(26, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Propane', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsPropanekWh', 'Propane kWh (Gross CV)', 0.21411, 'DEFRA', 'UK', 2021))
+(27, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Propane', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsGaseous fuelsPropanekWh', 'Propane kWh (Net CV)', 0.23257, 'DEFRA', 'UK', 2021))
+(28, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Propane', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsGaseous fuelsPropanelitres', 'Propane litres', 1.54354, 'DEFRA', 'UK', 2021))
+(29, ('Scope 1', 'Fuels', 'Gaseous fuels', 'Propane', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsGaseous fuelsPropanetonnes', 'Propane tonnes', 2997.55, 'DEFRA', 'UK', 2021))
+(30, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation spirit', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation spiritkWh', 'Aviation spirit kWh (Gross CV)', 0.24375, 'DEFRA', 'UK', 2021))
+(31, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation spirit', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation spiritkWh', 'Aviation spirit kWh (Net CV)', 0.25658, 'DEFRA', 'UK', 2021))
+(32, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation spirit', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation spiritlitres', 'Aviation spirit litres', 2.33048, 'DEFRA', 'UK', 2021))
+(33, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation spirit', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation spirittonnes', 'Aviation spirit tonnes', 3192.76, 'DEFRA', 'UK', 2021))
+(34, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation turbine fuel', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation turbine fuelkWh', 'Aviation turbine fuel kWh (Gross CV)', 0.24782, 'DEFRA', 'UK', 2021))
+(35, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation turbine fuel', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation turbine fuelkWh', 'Aviation turbine fuel kWh (Net CV)', 0.26086, 'DEFRA', 'UK', 2021))
+(36, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation turbine fuel', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation turbine fuellitres', 'Aviation turbine fuel litres', 2.54514, 'DEFRA', 'UK', 2021))
+(37, ('Scope 1', 'Fuels', 'Liquid fuels', 'Aviation turbine fuel', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsLiquid fuelsAviation turbine fueltonnes', 'Aviation turbine fuel tonnes', 3181.43, 'DEFRA', 'UK', 2021))
+(38, ('Scope 1', 'Fuels', 'Liquid fuels', 'Burning oil', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsBurning oilkWh', 'Burning oil kWh (Gross CV)', 0.24677, 'DEFRA', 'UK', 2021))
+(39, ('Scope 1', 'Fuels', 'Liquid fuels', 'Burning oil', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsBurning oilkWh', 'Burning oil kWh (Net CV)', 0.25975, 'DEFRA', 'UK', 2021))
+(40, ('Scope 1', 'Fuels', 'Liquid fuels', 'Burning oil', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsLiquid fuelsBurning oillitres', 'Burning oil litres', 2.54014, 'DEFRA', 'UK', 2021))
+(41, ('Scope 1', 'Fuels', 'Liquid fuels', 'Burning oil', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsLiquid fuelsBurning oiltonnes', 'Burning oil tonnes', 3165.01, 'DEFRA', 'UK', 2021))
+(42, ('Scope 1', 'Fuels', 'Liquid fuels', 'Diesel (average biofuel blend)', None, None, 'kWh', 'kWh (Gross CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsDiesel (average biofuel blend)kWh', 'Diesel (average biofuel blend) kWh (Gross CV)', 0.23686, 'DEFRA', 'UK', 2021))
+(43, ('Scope 1', 'Fuels', 'Liquid fuels', 'Diesel (average biofuel blend)', None, None, 'kWh', 'kWh (Net CV)', 'kg CO2e', 'Scope 1FuelsLiquid fuelsDiesel (average biofuel blend)kWh', 'Diesel (average biofuel blend) kWh (Net CV)', 0.25165, 'DEFRA', 'UK', 2021))
+(44, ('Scope 1', 'Fuels', 'Liquid fuels', 'Diesel (average biofuel blend)', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsLiquid fuelsDiesel (average biofuel blend)litres', 'Diesel (average biofuel blend) litres', 2.51233, 'DEFRA', 'UK', 2021))
+(45, ('Scope 1', 'Fuels', 'Liquid fuels', 'Diesel (average biofuel blend)', None, None, 'tonnes', 'tonnes', 'kg CO2e', 'Scope 1FuelsLiquid fuelsDiesel (average biofuel blend)tonnes', 'Diesel (average biofuel blend) tonnes', 2969.07, 'DEFRA', 'UK', 2021))
+...
+(56, ('Scope 1', 'Fuels', 'Liquid fuels', 'Gas oil', None, None, 'litres', 'litres', 'kg CO2e', 'Scope 1FuelsLiquid fuelsGas oillitres', 'Gas oil litres', 2.75857, 'DEFRA', 'UK', 2021))
+Disclaimer rows=5 cols=1
+Info and sources rows=31 cols=6
+Report rows=29 cols=5
+Your organisation rows=12 cols=14
+Fuels rows=87 cols=10
+Bioenergy rows=69 cols=10
+Refrigerants rows=94 cols=9
+Electricity, heat, cooling, T&D rows=21 cols=11
+Owned vehicles rows=199 cols=13
+WTT- fuels rows=30 cols=9
+Material use rows=45 cols=10
+Waste disposal rows=255 cols=10
+Flight and Accommodation rows=3000 cols=26
+Business travel - land and sea rows=78 cols=9
+Freighting goods rows=111 cols=15
+Employees commuting rows=78 cols=9
+Food rows=17 cols=5
+Home Office rows=100 cols=21
+Water rows=13 cols=7

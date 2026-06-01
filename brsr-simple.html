@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRSR Report Generator — Green Curve</title>
+  <link rel="icon" href="assets/img/favicon.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    header { display: flex; align-items: center; gap: 12px; padding: 20px 0; border-bottom: 1px solid #334155; margin-bottom: 40px; }
+    .logo { width: 40px; height: 40px; background: #10b981; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    h1 { font-size: 2rem; color: #fff; margin: 20px 0; }
+    .subtitle { color: #94a3b8; font-size: 1.1rem; margin: 10px 0 30px; }
+    .section { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+    .section-title { font-size: 1.2rem; color: #10b981; font-weight: 600; margin-bottom: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { grid-column: 1 / -1; }
+    .form-group.half { grid-column: span 1; }
+    label { display: block; margin-bottom: 6px; font-weight: 500; color: #cbd5e1; }
+    input, select, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #e2e8f0; font-family: inherit; font-size: 0.95rem; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1); }
+    textarea { resize: vertical; min-height: 100px; }
+    .button { background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 1rem; transition: background 0.2s; }
+    .button:hover { background: #059669; }
+    .button-secondary { background: #475569; }
+    .button-secondary:hover { background: #64748b; }
+    .button-group { display: flex; gap: 12px; margin-top: 24px; }
+    .step { display: none; }
+    .step.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .progress-bar { display: flex; gap: 8px; margin-bottom: 24px; }
+    .progress-step { flex: 1; height: 4px; background: #334155; border-radius: 2px; }
+    .progress-step.active { background: #10b981; }
+    .progress-step.completed { background: #10b981; }
+    .output { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-top: 24px; max-height: 400px; overflow-y: auto; }
+    .output pre { color: #cbd5e1; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; }
+    .download-btn { background: #0d9488; margin-top: 12px; }
+    .download-btn:hover { background: #0f766e; }
+    .help-text { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
+    .nav { display: flex; align-items: center; gap: 24px; }
+    .nav a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+    .nav a:hover { color: #e2e8f0; }
+    .alert { background: #1e3a3a; border-left: 4px solid #0d9488; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+    .alert strong { color: #0d9488; }
+  </style>
+</head>
+<body>
+
+<header class="container">
+  <div class="logo">G</div>
+  <div>
+    <h1 style="margin: 0; font-size: 1.5rem;">Green Curve</h1>
+    <p style="color: #94a3b8; margin: 0;">BRSR Report Generator</p>
+  </div>
+  <nav class="nav" style="margin-left: auto;">
+    <a href="/">Home</a>
+    <a href="calculator.html">GHG Calculator</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h1>BRSR Report Generator</h1>
+  <p class="subtitle">Generate a SEBI-compliant BRSR report by answering guided questions.</p>
+
+  <div class="alert">
+    <strong>📋 Offline Mode:</strong> This version prepares your BRSR form data for export. Download as PDF or JSON and refine as needed.
+  </div>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <form id="brsr-form">
+    <!-- Step 1: Company Basics -->
+    <div class="step active" id="step-0">
+      <div class="section">
+        <div class="section-title">Step 1: Company Identity</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="company_name">Company Name *</label>
+            <input type="text" id="company_name" name="company_name" required placeholder="e.g. XYZ Ltd">
+          </div>
+          <div class="form-group half">
+            <label for="cin">CIN *</label>
+            <input type="text" id="cin" name="cin" required placeholder="L12345MH2000PLC123456">
+          </div>
+          <div class="form-group half">
+            <label for="sector">Sector *</label>
+            <select id="sector" name="sector" required>
+              <option value="">Choose sector</option>
+              <option value="Banking">Banking & Financial Services</option>
+              <option value="IT">IT & Software</option>
+              <option value="Manufacturing">Manufacturing</option>
+              <option value="Pharma">Pharmaceuticals</option>
+              <option value="FMCG">FMCG</option>
+              <option value="Energy">Energy & Power</option>
+              <option value="Telecom">Telecom</option>
+              <option value="Retail">Retail</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="financial_year">Financial Year *</label>
+            <input type="text" id="financial_year" name="financial_year" required placeholder="2025-26">
+          </div>
+          <div class="form-group">
+            <label for="business_description">Business Description *</label>
+            <textarea id="business_description" name="business_description" required placeholder="Briefly describe your business activities"></textarea>
+            <div class="help-text">What products/services do you provide?</div>
+          </div>
+          <div class="form-group half">
+            <label for="total_employees">Total Employees *</label>
+            <input type="number" id="total_employees" name="total_employees" required placeholder="e.g. 500">
+          </div>
+          <div class="form-group half">
+            <label for="total_revenue">Total Revenue (₹ crore) *</label>
+            <input type="number" id="total_revenue" name="total_revenue" required step="0.01" placeholder="e.g. 100.5">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Environmental -->
+    <div class="step" id="step-1">
+      <div class="section">
+        <div class="section-title">Step 2: Environmental Data</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="scope1_emissions">Scope 1 Emissions (t CO2e)</label>
+            <input type="number" id="scope1_emissions" name="scope1_emissions" step="0.1" placeholder="Direct emissions">
+          </div>
+          <div class="form-group half">
+            <label for="scope2_emissions">Scope 2 Emissions (t CO2e)</label>
+            <input type="number" id="scope2_emissions" name="scope2_emissions" step="0.1" placeholder="Energy emissions">
+          </div>
+          <div class="form-group half">
+            <label for="scope3_emissions">Scope 3 Emissions (t CO2e)</label>
+            <input type="number" id="scope3_emissions" name="scope3_emissions" step="0.1" placeholder="Value chain emissions">
+          </div>
+          <div class="form-group half">
+            <label for="water_consumption">Water Consumption (m³)</label>
+            <input type="number" id="water_consumption" name="water_consumption" step="0.1" placeholder="Annual water use">
+          </div>
+          <div class="form-group">
+            <label for="waste_generation">Waste Generation (tonnes)</label>
+            <input type="number" id="waste_generation" name="waste_generation" step="0.1" placeholder="Total annual waste">
+          </div>
+          <div class="form-group">
+            <label for="env_policy">Environmental Policy / Commitments</label>
+            <textarea id="env_policy" name="env_policy" placeholder="Describe your environmental sustainability policies"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Social -->
+    <div class="step" id="step-2">
+      <div class="section">
+        <div class="section-title">Step 3: Social Data</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="csr_spent">CSR Spending (₹ crore)</label>
+            <input type="number" id="csr_spent" name="csr_spent" step="0.01" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="women_employees_pct">Women Employees (%)</label>
+            <input type="number" id="women_employees_pct" name="women_employees_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="social_initiatives">Social Initiatives & Community Programs</label>
+            <textarea id="social_initiatives" name="social_initiatives" placeholder="Describe your community engagement programs"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="safety_measures">Occupational Health & Safety Measures</label>
+            <textarea id="safety_measures" name="safety_measures" placeholder="Describe your H&S policies and incident rate"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Governance -->
+    <div class="step" id="step-3">
+      <div class="section">
+        <div class="section-title">Step 4: Governance</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="independent_directors_pct">Independent Directors (%)</label>
+            <input type="number" id="independent_directors_pct" name="independent_directors_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="women_directors_pct">Women Directors (%)</label>
+            <input type="number" id="women_directors_pct" name="women_directors_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="compliance_statement">Ethics & Compliance Statement</label>
+            <textarea id="compliance_statement" name="compliance_statement" placeholder="Describe your ethics, compliance, and anti-corruption measures"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="governance_structure">Board & Committee Structure</label>
+            <textarea id="governance_structure" name="governance_structure" placeholder="Describe your board composition and key committees"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="button button-secondary" id="btn-prev" style="display:none;" onclick="prevStep()">← Previous</button>
+      <button type="button" class="button" id="btn-next" onclick="nextStep()">Next →</button>
+      <button type="button" class="button" id="btn-preview" style="display:none;" onclick="generatePreview()">Preview Report</button>
+    </div>
+  </form>
+
+  <div id="preview" class="output" style="display:none;">
+    <h3 style="color: #10b981; margin-bottom: 12px;">Report Preview (JSON)</h3>
+    <pre id="preview-content"></pre>
+    <button class="button download-btn" onclick="downloadJSON()">📥 Download JSON</button>
+    <button class="button download-btn" onclick="downloadPDF()">📄 Download PDF</button>
+  </div>
+</div>
+
+<script>
+const steps = document.querySelectorAll('.step');
+const totalSteps = steps.length;
+let currentStep = 0;
+
+function showStep(n) {
+  steps.forEach(s => s.classList.remove('active'));
+  if (n < 0) currentStep = 0;
+  if (n >= totalSteps) currentStep = totalSteps - 1;
+  steps[currentStep].classList.add('active');
+  
+  document.getElementById('btn-prev').style.display = currentStep === 0 ? 'none' : 'block';
+  document.getElementById('btn-next').style.display = currentStep === totalSteps - 1 ? 'none' : 'block';
+  document.getElementById('btn-preview').style.display = currentStep === totalSteps - 1 ? 'block' : 'none';
+  
+  updateProgress();
+}
+
+function nextStep() {
+  currentStep++;
+  showStep(currentStep);
+}
+
+function prevStep() {
+  currentStep--;
+  showStep(currentStep);
+}
+
+function updateProgress() {
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  for (let i = 0; i < totalSteps; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-step' + (i < currentStep ? ' completed' : i === currentStep ? ' active' : '');
+    bar.appendChild(dot);
+  }
+}
+
+function generatePreview() {
+  const formData = new FormData(document.getElementById('brsr-form'));
+  const data = Object.fromEntries(formData);
+  
+  const report = {
+    company_name: data.company_name,
+    cin: data.cin,
+    financial_year: data.financial_year,
+    sector: data.sector,
+    employees: data.total_employees,
+    revenue_crore: data.total_revenue,
+    business_description: data.business_description,
+    environmental: {
+      scope1_emissions: data.scope1_emissions || 'N/A',
+      scope2_emissions: data.scope2_emissions || 'N/A',
+      scope3_emissions: data.scope3_emissions || 'N/A',
+      water_consumption_m3: data.water_consumption || 'N/A',
+      waste_generation_tonnes: data.waste_generation || 'N/A',
+      policy: data.env_policy || 'N/A'
+    },
+    social: {
+      csr_spending_crore: data.csr_spent || 0,
+      women_employees_pct: data.women_employees_pct || 0,
+      initiatives: data.social_initiatives || 'N/A',
+      safety_measures: data.safety_measures || 'N/A'
+    },
+    governance: {
+      independent_directors_pct: data.independent_directors_pct || 0,
+      women_directors_pct: data.women_directors_pct || 0,
+      ethics_compliance: data.compliance_statement || 'N/A',
+      board_structure: data.governance_structure || 'N/A'
+    },
+    generated_date: new Date().toISOString(),
+    status: 'Preview — Submit for Claude refinement to generate full BRSR report'
+  };
+  
+  document.getElementById('preview-content').textContent = JSON.stringify(report, null, 2);
+  document.getElementById('preview').style.display = 'block';
+}
+
+function downloadJSON() {
+  const preview = document.getElementById('preview-content').textContent;
+  const blob = new Blob([preview], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `BRSR_${document.getElementById('company_name').value.replace(/\s+/g, '_')}.json`;
+  a.click();
+}
+
+function downloadPDF() {
+  alert('PDF export requires Claude refinement.\n\nFor now, export as JSON and convert using your preferred tool, or use the full generator when the backend is live.');
+}
+
+showStep(0);
+</script>
+
+</body>
+</html>
