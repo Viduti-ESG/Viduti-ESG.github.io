@@ -34,14 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function openWizard() {
-  alert(
-    "🔧 BRSR Generator Maintenance\n\n" +
-    "The BRSR Generator is temporarily offline for maintenance. The backend service is currently unavailable.\n\n" +
-    "We apologize for the inconvenience. Please check back in a few moments, or contact support if the issue persists.\n\n" +
-    "In the meantime, explore our GHG Calculator (#calculator) for emissions reporting."
-  );
-  return;
-
   show("wizardOverlay");
 
   if (!formSchema) {
@@ -50,7 +42,8 @@ async function openWizard() {
       if (!r.ok) throw new Error("Schema fetch failed");
       formSchema = await r.json();
     } catch (e) {
-      alert("Could not connect to the BRSR Generator backend. Please try again in a moment — the server may be waking up (takes ~30 seconds).");
+      alert("Could not connect to the BRSR Generator backend. Please try again in a moment — the server may be waking up (takes ~30 seconds).\n\n" +
+            "If the page still shows the offline message after a refresh, please contact support.");
       hide("wizardOverlay");
       return;
     }
