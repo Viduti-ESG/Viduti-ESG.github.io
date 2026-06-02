@@ -495,8 +495,14 @@
   <div id="preview" class="output" style="display:none;">
     <h3 style="color: #10b981; margin-bottom: 12px;">Report Preview (JSON)</h3>
     <pre id="preview-content"></pre>
-    <button class="button download-btn" onclick="downloadJSON()">📥 Download JSON</button>
-    <button class="button download-btn" onclick="downloadPDF()">📄 Download PDF</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+      <button class="button download-btn" onclick="downloadJSON()">📥 Download JSON</button>
+      <button class="button download-btn" onclick="downloadPDF()">📄 Download PDF</button>
+      <button class="button" style="background:#0d9488;" onclick="downloadXBRL()">📋 Download XBRL</button>
+    </div>
+    <p style="color:#94a3b8;font-size:.8rem;margin-top:10px;">
+      XBRL file follows SEBI's in-capmkt taxonomy (2026-02-28). Validate at BSE/NSE portal before filing.
+    </p>
   </div>
 </div>
 
@@ -663,6 +669,164 @@ function downloadJSON() {
 
 function downloadPDF() {
   alert('PDF export requires Claude refinement.\n\nFor now, export as JSON and convert using your preferred tool, or use the full generator when the backend is live.');
+}
+
+function downloadXBRL() {
+  const formData = new FormData(document.getElementById('brsr-form'));
+  const d = Object.fromEntries(formData);
+
+  const SEBI_NS   = 'https://www.sebi.gov.in/xbrl/2026-02-28/in-capmkt';
+  const XBRLI_NS  = 'http://www.xbrl.org/2003/instance';
+  const LINK_NS   = 'http://www.xbrl.org/2003/linkbase';
+  const XLINK_NS  = 'http://www.w3.org/1999/xlink';
+  const ISO4217   = 'http://www.xbrl.org/2003/iso4217';
+
+  // Derive FY dates from financial_year field e.g. "2025-26"
+  function fyDates(fy) {
+    const m = (fy || '').match(/(\d{4})[-/](\d{2,4})/);
+    if (!m) return { start: '2025-04-01', end: '2026-03-31' };
+    const sy = parseInt(m[1]);
+    const ey = m[2].length === 4 ? parseInt(m[2]) : parseInt(String(sy).slice(0,2) + m[2]);
+    return { start: `${sy}-04-01`, end: `${ey}-03-31` };
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fact(name, value, ctx, unit, decimals) {
+    if (!value && value !== 0) return '';
+    let attrs = `contextRef="${ctx}"`;
+    if (unit)     attrs += ` unitRef="${unit}"`;
+    if (decimals !== undefined) attrs += ` decimals="${decimals}"`;
+    return `  <in-capmkt:${name} ${attrs}>${esc(value)}</in-capmkt:${name}>`;
+  }
+
+  function boolVal(v) {
+    return (v || '').toLowerCase() === 'yes' ? 'true' : 'false';
+  }
+
+  const cin = d.cin || '';
+  const { start, end } = fyDates(d.financial_year);
+  const lines = [];
+
+  lines.push(`<?xml version="1.0" encoding="UTF-8"?>`);
+  lines.push(`<xbrl xmlns="${XBRLI_NS}"`);
+  lines.push(`  xmlns:in-capmkt="${SEBI_NS}"`);
+  lines.push(`  xmlns:link="${LINK_NS}"`);
+  lines.push(`  xmlns:xlink="${XLINK_NS}"`);
+  lines.push(`  xmlns:iso4217="${ISO4217}"`);
+  lines.push(`  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"`);
+  lines.push(`  xsi:schemaLocation="${SEBI_NS} https://www.sebi.gov.in/xbrl/2026-02-28/in-capmkt/in-capmkt-2026-02-28.xsd">`);
+  lines.push(``);
+
+  // Schema ref
+  lines.push(`  <link:schemaRef xlink:type="simple"`);
+  lines.push(`    xlink:href="https://www.sebi.gov.in/xbrl/2026-02-28/in-capmkt/in-capmkt-2026-02-28.xsd"/>`);
+  lines.push(``);
+
+  // Contexts
+  lines.push(`  <context id="D_FY">`);
+  lines.push(`    <entity><identifier scheme="http://www.sebi.gov.in">${esc(cin)}</identifier></entity>`);
+  lines.push(`    <period><startDate>${start}</startDate><endDate>${end}</endDate></period>`);
+  lines.push(`  </context>`);
+  lines.push(`  <context id="I_YE">`);
+  lines.push(`    <entity><identifier scheme="http://www.sebi.gov.in">${esc(cin)}</identifier></entity>`);
+  lines.push(`    <period><instant>${end}</instant></period>`);
+  lines.push(`  </context>`);
+  lines.push(``);
+
+  // Units
+  lines.push(`  <unit id="INR"><measure>iso4217:INR</measure></unit>`);
+  lines.push(`  <unit id="pure"><measure>xbrli:pure</measure></unit>`);
+  lines.push(`  <unit id="tCO2e"><measure>xbrli:pure</measure></unit>`);
+  lines.push(`  <unit id="GJ"><measure>xbrli:pure</measure></unit>`);
+  lines.push(`  <unit id="m3"><measure>xbrli:pure</measure></unit>`);
+  lines.push(`  <unit id="tonne"><measure>xbrli:pure</measure></unit>`);
+  lines.push(``);
+
+  // Facts — Section A
+  lines.push(fact('NameOfTheCompany',           d.company_name,          'I_YE'));
+  lines.push(fact('CorporateIdentityNumber',    d.cin,                   'I_YE'));
+  lines.push(fact('WebsiteOfCompany',           d.website,               'I_YE'));
+  lines.push(fact('ReportingBoundary',          d.reporting_boundary,    'I_YE'));
+  lines.push(fact('StockExchangeWhereSharesOfCompanyAreListed', d.stock_exchange, 'I_YE'));
+  lines.push(fact('DescriptionOfBusinessActivity', d.business_description, 'D_FY'));
+  lines.push(fact('ProductOrServiceSoldByTheEntity', d.top_products,     'D_FY'));
+  lines.push(fact('NumberOfNationalLocations',  d.national_locations,    'I_YE', 'pure', '0'));
+  lines.push(fact('NumberOfInternationalLocations', d.international_locations, 'I_YE', 'pure', '0'));
+  lines.push(fact('MarketsServedByTheEntityNational', d.national_markets,'D_FY'));
+  lines.push(fact('PercentageOfContributionOfExportsInTheTotalTurnoverOfTheEntity', d.export_revenue_pct, 'D_FY', 'pure', '2'));
+  lines.push(fact('RevenueFromOperations',      d.total_revenue,         'D_FY', 'INR', '2'));
+
+  // Employees
+  lines.push(fact('TotalNumberOfPermanentMaleEmployees',   d.perm_male_employees,     'I_YE', 'pure', '0'));
+  lines.push(fact('TotalNumberOfPermanentFemaleEmployees', d.perm_female_employees,   'I_YE', 'pure', '0'));
+  lines.push(fact('TotalNumberOfOtherThanPermanentMaleEmployees',   d.contract_male_employees,   'I_YE', 'pure', '0'));
+  lines.push(fact('TotalNumberOfOtherThanPermanentFemaleEmployees', d.contract_female_employees, 'I_YE', 'pure', '0'));
+
+  // CSR
+  lines.push(fact('AmountSpentOnCSRProjectsAndPrograms', d.csr_spent, 'D_FY', 'INR', '2'));
+
+  // Section B / P1
+  lines.push(fact('NameOfDirectorResponsibleForImplementationOfTheBRPolicy', d.responsible_director_name, 'I_YE'));
+  lines.push(fact('DINOfDirectorResponsibleForImplementationOfTheBRPolicy',  d.responsible_director_din,  'I_YE'));
+  if (d.anti_corruption_policy)
+    lines.push(fact('DoesTheEntityHaveAnAntiCorruptionOrAntiBriberyPolicy', boolVal(d.anti_corruption_policy), 'D_FY'));
+  if (d.conflict_of_interest_policy)
+    lines.push(fact('DoesTheEntityHaveProcessesInPlaceToAvoidOrManageConflictOfInterestsInvolvingMembersOfTheBoard', boolVal(d.conflict_of_interest_policy), 'D_FY'));
+
+  // P2
+  lines.push(fact('PercentageOfDirectlySourcedFromMSMEsOrSmallProducers', d.msme_sourcing_pct, 'D_FY', 'pure', '2'));
+  if (d.lifecycle_assessment)
+    lines.push(fact('HasTheEntityConductedLifeCyclePerspectiveOrAssessmentsForAnyOfItsProductsOrForItsServices', boolVal(d.lifecycle_assessment), 'D_FY'));
+
+  // P3
+  lines.push(fact('PercentageOfEmployeesOrWorkersArePartOfAssociationsOrUnionOfTotalNumberOfEmployee', d.union_membership_pct, 'D_FY', 'pure', '2'));
+  lines.push(fact('ReturnToWorkRatePermanentEmployeesThatTookParentalLeave', d.parental_leave_return_pct, 'D_FY', 'pure', '2'));
+
+  // P4 / Stakeholders
+  lines.push(fact('NumberOfComplaintsFiledFromStakeHolderGroupDuringTheYear',      d.stakeholder_complaints_filed,   'D_FY', 'pure', '0'));
+  lines.push(fact('NumberOfComplaintsPendingFromStakeHolderGroupResolutionAtTheEndOfYear', d.stakeholder_complaints_pending, 'D_FY', 'pure', '0'));
+
+  // P5 / Human Rights
+  if (d.human_rights_in_contracts)
+    lines.push(fact('DoHumanRightsRequirementsFormPartOfYourBusinessAgreementsAndContracts', boolVal(d.human_rights_in_contracts), 'D_FY'));
+  if (d.hr_focal_point)
+    lines.push(fact('DoYouHaveAFocalPointResponsibleForAddressingHumanRightsImpactsOrIssuesCausedOrContributedToByTheBusiness', boolVal(d.hr_focal_point), 'D_FY'));
+  lines.push(fact('PercentageOfEmployeesOrWorkersCoveredForProvidedTrainingOnHumanRightsIssues', d.hr_training_pct, 'D_FY', 'pure', '2'));
+
+  // P6 / Environment
+  lines.push(fact('ScopeOneGHGEmissions',                      d.scope1_emissions,   'D_FY', 'tCO2e', '2'));
+  lines.push(fact('ScopeTwoGHGEmissions',                      d.scope2_emissions,   'D_FY', 'tCO2e', '2'));
+  lines.push(fact('ScopeThreeGHGEmissions',                    d.scope3_emissions,   'D_FY', 'tCO2e', '2'));
+  lines.push(fact('TotalEnergyConsumedFromRenewableSources',    d.energy_renewable,   'D_FY', 'GJ',    '2'));
+  lines.push(fact('TotalEnergyConsumedFromNonRenewableSources', d.energy_nonrenewable,'D_FY', 'GJ',    '2'));
+  lines.push(fact('TotalWaterWithdrawal',                       d.water_withdrawal,   'D_FY', 'm3',    '2'));
+  lines.push(fact('TotalWasteGenerated',                        d.waste_total,        'D_FY', 'tonne', '2'));
+  lines.push(fact('TotalHazardousWasteGenerated',               d.waste_hazardous,    'D_FY', 'tonne', '2'));
+
+  // P7
+  lines.push(fact('PublicPolicyAdvocated', d.public_policy_advocated, 'D_FY'));
+
+  // P9 / Consumer
+  lines.push(fact('ConsumerComplaintsReceivedDuringTheYear',       d.consumer_complaints_filed,   'D_FY', 'pure', '0'));
+  lines.push(fact('ConsumerComplaintsPendingResolutionAtEndOfYear', d.consumer_complaints_pending, 'D_FY', 'pure', '0'));
+  lines.push(fact('NumberOfInstancesOfDataBreachesAlongWithImpact', d.data_breaches,              'D_FY', 'pure', '0'));
+  if (d.product_labelling_beyond_law)
+    lines.push(fact('DoesTheEntityDisplayProductInformationOnTheProductOverAndAboveWhatIsMandatedAsPerLocalLaws', boolVal(d.product_labelling_beyond_law), 'D_FY'));
+
+  lines.push(`</xbrl>`);
+
+  // Filter out blank lines from missing fields
+  const xml = lines.filter(l => l !== '').join('\n');
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `BRSR_${(d.company_name || 'Report').replace(/\s+/g,'_')}_${d.financial_year || 'FY'}.xml`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 showStep(0);

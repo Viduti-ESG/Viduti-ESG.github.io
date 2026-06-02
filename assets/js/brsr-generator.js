@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("reportClose").addEventListener("click", closeReport);
   document.getElementById("btnDownloadPdf").addEventListener("click", downloadPdf);
   document.getElementById("btnDownloadJson").addEventListener("click", downloadJson);
+  document.getElementById("btnDownloadXbrl").addEventListener("click", downloadXbrl);
 
   // Close overlays on backdrop click
   document.getElementById("wizardOverlay").addEventListener("click", e => {
@@ -500,6 +501,36 @@ function downloadJson() {
   a.download = `BRSR_${(generatedReport.company_name || "Report").replace(/\s+/g, "_")}.json`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+async function downloadXbrl() {
+  if (!generatedReport) return;
+  const btn = document.getElementById("btnDownloadXbrl");
+  btn.textContent = "⟳ Generating XBRL...";
+  btn.disabled = true;
+
+  try {
+    const r = await fetch(`${API_BASE}/api/export-xbrl`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ report: generatedReport, form_data: formData }),
+    });
+
+    if (!r.ok) throw new Error(`XBRL export failed: ${r.status}`);
+
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `BRSR_${(generatedReport.company_name || "Report").replace(/\s+/g, "_")}_${generatedReport.financial_year || ""}.xml`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert(`XBRL download failed: ${e.message}`);
+  } finally {
+    btn.textContent = "⬇ Download XBRL";
+    btn.disabled = false;
+  }
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
