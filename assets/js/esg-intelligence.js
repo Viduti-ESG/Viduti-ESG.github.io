@@ -950,7 +950,7 @@ function renderDDMateriality(p, data) {
     </div>
   </div>
   <div class="dd-section">
-    <div class="dd-section-title">IRO Context (Datamaran Framework)</div>
+    <div class="dd-section-title">IRO Context (ESRS Framework)</div>
     <div class="dd-reg-list">
       <div class="dd-reg-item"><div class="dd-reg-name">Impacts</div><div class="dd-reg-impact">Company's positive/negative effects on environment, workers, communities and economy through its operations and value chain</div></div>
       <div class="dd-reg-item"><div class="dd-reg-name">Risks</div><div class="dd-reg-impact">Physical climate risks, transition risks, regulatory penalties, reputational risks that affect financial performance</div></div>
@@ -977,7 +977,7 @@ function renderDDTargets(p) {
         </div>`).join('')}
     </div>
     <div class="dd-insight-box" style="margin-top:16px">
-      💡 <strong>Datamaran insight:</strong> Companies with more verified targets typically command lower cost of capital and better ESG ratings from MSCI, Sustainalytics, and CDP.
+      💡 Companies with more verified targets typically command lower cost of capital and better ESG ratings from MSCI, Sustainalytics, and CDP.
     </div>
   </div>`;
 }
