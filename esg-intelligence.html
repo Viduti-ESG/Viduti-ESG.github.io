@@ -95,11 +95,13 @@
 
 <!-- TABS -->
 <div class="intel-tabs container" role="tablist" aria-label="Intelligence sections">
-  <button class="intel-tab intel-tab--active" data-tab="overview"   role="tab" aria-selected="true">Overview</button>
-  <button class="intel-tab" data-tab="screener"  role="tab" aria-selected="false">Company Screener</button>
-  <button class="intel-tab" data-tab="regulations" role="tab" aria-selected="false">Regulation Tracker</button>
-  <button class="intel-tab" data-tab="supply"    role="tab" aria-selected="false">Supply Chain</button>
-  <button class="intel-tab" data-tab="materials" role="tab" aria-selected="false">Material Monitor</button>
+  <button class="intel-tab intel-tab--active" data-tab="overview"     role="tab" aria-selected="true">Overview</button>
+  <button class="intel-tab" data-tab="screener"    role="tab" aria-selected="false">Company Screener</button>
+  <button class="intel-tab" data-tab="materiality" role="tab" aria-selected="false">Double Materiality</button>
+  <button class="intel-tab" data-tab="regulations" role="tab" aria-selected="false">Regulatory Radar</button>
+  <button class="intel-tab" data-tab="targets"     role="tab" aria-selected="false">ESG Targets</button>
+  <button class="intel-tab" data-tab="supply"      role="tab" aria-selected="false">Supply Chain</button>
+  <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
 </div>
 
 <main class="container intel-main">
@@ -172,6 +174,36 @@
     </div>
   </section>
 
+  <!-- ── DOUBLE MATERIALITY ──────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-materiality">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">Double Materiality Assessment</h3>
+      <p class="dm-intro-text">Inspired by Datamaran's DMA methodology. <strong>Financial Materiality</strong> = how ESG risks affect the company's finances. <strong>Impact Materiality</strong> = how the company affects environment &amp; society. Companies in the top-right quadrant carry the highest dual risk.</p>
+      <div class="dm-quadrant-legend">
+        <span class="dm-q dm-q--dual">Dual Materiality</span>
+        <span class="dm-q dm-q--financial">Financially Material</span>
+        <span class="dm-q dm-q--impact">Impact Material</span>
+        <span class="dm-q dm-q--watch">Watch List</span>
+      </div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card" style="grid-column:1/-1">
+        <div class="chart-card__title">Double Materiality Matrix — All 155 Companies</div>
+        <div class="dm-filter-row">
+          <select id="dmSectorFilter" class="screener-filter">
+            <option value="">All Sectors</option>
+          </select>
+          <span id="dmCount" class="screener-count"></span>
+        </div>
+        <canvas id="chartDualMateriality" height="400"></canvas>
+      </div>
+    </div>
+    <div class="dm-quadrant-table">
+      <h4 class="sc-section-title">Companies by Quadrant</h4>
+      <div class="dm-quad-grid" id="dmQuadGrid"></div>
+    </div>
+  </section>
+
   <!-- ── REGULATION TRACKER ───────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-regulations">
     <div class="screener-controls">
@@ -184,6 +216,32 @@
       </select>
     </div>
     <div id="regCards" class="reg-cards"></div>
+  </section>
+
+  <!-- ── ESG TARGETS ─────────────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-targets">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">ESG Target Tracker</h3>
+      <p class="dm-intro-text">Inspired by Datamaran's Target Setting feature. Shows sustainability commitments and achieved targets extracted from BRSR disclosures across all 155 companies.</p>
+    </div>
+    <div class="screener-controls">
+      <input class="screener-search" id="targetSearch" type="search" placeholder="Search company or topic…"/>
+      <select class="screener-filter" id="targetType">
+        <option value="">All Types</option>
+        <option value="Achieved">Achieved</option>
+        <option value="Commitment">Commitment</option>
+      </select>
+      <span class="screener-count" id="targetCount"></span>
+    </div>
+    <div id="targetSummary" class="kpi-grid" style="margin-bottom:20px"></div>
+    <div class="table-wrap">
+      <table class="screener-table" id="targetTable">
+        <thead><tr>
+          <th>Company</th><th>Sector</th><th>ESG Topic</th><th>Target / Achievement</th><th>Type</th><th>Risk Score</th>
+        </tr></thead>
+        <tbody id="targetBody"></tbody>
+      </table>
+    </div>
   </section>
 
   <!-- ── SUPPLY CHAIN ──────────────────────────────────────────────────────── -->
@@ -252,8 +310,10 @@
     <div class="deepdive-tabs">
       <button class="dd-tab dd-tab--active" data-ddtab="overview">Overview</button>
       <button class="dd-tab" data-ddtab="risks">Risk Breakdown</button>
+      <button class="dd-tab" data-ddtab="materiality">Materiality</button>
       <button class="dd-tab" data-ddtab="regulations">Regulations</button>
       <button class="dd-tab" data-ddtab="benchmark">Benchmarking</button>
+      <button class="dd-tab" data-ddtab="targets">Targets</button>
       <button class="dd-tab" data-ddtab="actions">Actions</button>
     </div>
 

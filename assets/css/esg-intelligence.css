@@ -556,3 +556,42 @@
 .dd-action-priority { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
 .dd-action-title { font-size: .88rem; color: #e2e8f0; font-weight: 500; }
 .dd-action-meta { display: flex; gap: 14px; font-size: .78rem; color: #64748b; flex-wrap: wrap; }
+
+/* ── Double Materiality Tab ──────────────────────────────────────────────── */
+.dm-intro { background:#1e293b; border:1px solid var(--border); border-radius:10px; padding:20px 24px; margin-bottom:24px; }
+.dm-intro-title { font-size:1rem; font-weight:700; color:#fff; margin-bottom:8px; }
+.dm-intro-text  { font-size:.85rem; color:#94a3b8; line-height:1.7; margin-bottom:12px; }
+.dm-quadrant-legend { display:flex; flex-wrap:wrap; gap:8px; }
+.dm-q { padding:4px 12px; border-radius:100px; font-size:.75rem; font-weight:600; }
+.dm-q--dual       { background:rgba(248,113,113,.12); color:#f87171; border:1px solid rgba(248,113,113,.3); }
+.dm-q--financial  { background:rgba(251,191,36,.10);  color:#fbbf24; border:1px solid rgba(251,191,36,.3); }
+.dm-q--impact     { background:rgba(99,102,241,.12);  color:#818cf8; border:1px solid rgba(99,102,241,.3); }
+.dm-q--watch      { background:rgba(100,116,139,.12); color:#94a3b8; border:1px solid rgba(100,116,139,.3); }
+
+.dm-filter-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.dm-quadrant-table { margin-top:28px; }
+.dm-quad-grid {
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:14px;
+}
+@media (max-width:700px) { .dm-quad-grid { grid-template-columns:1fr; } }
+.dm-quad-card { background:#1e293b; border:1px solid var(--border); border-radius:10px; padding:16px; }
+.dm-quad-card--dual-materiality    { border-left:3px solid #f87171; }
+.dm-quad-card--financially-material{ border-left:3px solid #fbbf24; }
+.dm-quad-card--impact-material     { border-left:3px solid #6366f1; }
+.dm-quad-card--watch-list          { border-left:3px solid #475569; }
+.dm-quad-title { font-size:.85rem; font-weight:700; color:#fff; margin-bottom:10px; }
+.dm-quad-title span { color:#64748b; font-weight:400; }
+.dm-quad-companies { display:flex; flex-direction:column; gap:5px; }
+.dm-quad-company { display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:4px 6px; border-radius:5px; transition:background .15s; }
+.dm-quad-company:hover { background:rgba(255,255,255,.05); }
+.dm-quad-company span:first-child { font-size:.8rem; color:#cbd5e1; }
+
+/* Deep dive materiality */
+.dm-dd-scores { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+@media (max-width:600px) { .dm-dd-scores { grid-template-columns:1fr; } }
+.dm-dd-score-card { background:#1e293b; border-radius:8px; padding:14px; text-align:center; }
+.dm-dd-score-val  { font-size:1.8rem; font-weight:700; }
+.dm-dd-score-lbl  { font-size:.78rem; font-weight:600; color:#94a3b8; margin-top:4px; }
+.dm-dd-score-desc { font-size:.72rem; color:#475569; margin-top:4px; line-height:1.4; }

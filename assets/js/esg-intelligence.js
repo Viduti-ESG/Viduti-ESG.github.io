@@ -36,7 +36,9 @@ async function initDashboard() {
     renderKPIs(s);
     renderCharts();
     renderScreener();
+    renderDoubleMateriality();
     renderRegulations();
+    renderTargets();
     renderSupplyChain();
     renderMaterials();
   } catch (e) {
@@ -403,6 +405,140 @@ function renderMaterials() {
   }).join('') || '<p style="color:#94a3b8;padding:20px">Material data will appear after the first intelligence run.</p>';
 }
 
+// ── Double Materiality ────────────────────────────────────────────────────────
+let _dmChart = null;
+
+function renderDoubleMateriality(sectorFilter = '') {
+  const data = sectorFilter
+    ? allCompanies.filter(c => (c.sector||'').includes(sectorFilter))
+    : allCompanies;
+
+  document.getElementById('dmCount').textContent = `${data.length} companies`;
+
+  // Populate sector filter
+  const sectorSelect = document.getElementById('dmSectorFilter');
+  if (sectorSelect.options.length <= 1) {
+    const sectors = [...new Set(allCompanies.map(c => (c.sector||'').replace('Manufacturing — ','').slice(0,40)))].sort();
+    sectors.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sectorSelect.appendChild(o); });
+  }
+
+  const points = data.map(c => {
+    const dm = c.double_materiality || {};
+    return {
+      x: dm.financial_materiality || c.esg_risk_score,
+      y: dm.impact_materiality || c.esg_risk_score,
+      label: c.company_name,
+      tier: c.risk_tier,
+      quadrant: dm.quadrant || 'Watch List',
+    };
+  });
+
+  const colorMap = { High: 'rgba(248,113,113,.8)', Medium: 'rgba(251,191,36,.8)', Low: 'rgba(52,211,153,.8)' };
+
+  if (_dmChart) _dmChart.destroy();
+  _dmChart = new Chart(document.getElementById('chartDualMateriality'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Companies',
+        data: points,
+        backgroundColor: points.map(p => colorMap[p.tier] || 'rgba(148,163,184,.7)'),
+        pointRadius: 6,
+        pointHoverRadius: 9,
+      }],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const p = points[ctx.dataIndex];
+              return [`${p.label}`, `Financial: ${ctx.parsed.x.toFixed(1)}  Impact: ${ctx.parsed.y.toFixed(1)}`, `Quadrant: ${p.quadrant}`];
+            },
+          },
+        },
+        annotation: {
+          annotations: {
+            vLine: { type:'line', xMin:5, xMax:5, borderColor:'rgba(255,255,255,.15)', borderWidth:1 },
+            hLine: { type:'line', yMin:5, yMax:5, borderColor:'rgba(255,255,255,.15)', borderWidth:1 },
+          },
+        },
+      },
+      onClick: (e, els) => {
+        if (els[0]) { const p = points[els[0].index]; openDeepDive(p.label); }
+      },
+      scales: {
+        x: { min:0, max:10, title:{ display:true, text:'Financial Materiality →', color:'#94a3b8' }, grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#94a3b8' } },
+        y: { min:0, max:10, title:{ display:true, text:'Impact Materiality →', color:'#94a3b8' }, grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#94a3b8' } },
+      },
+    },
+  });
+
+  // Quadrant breakdown
+  const quads = { 'Dual Materiality':[], 'Financially Material':[], 'Impact Material':[], 'Watch List':[] };
+  data.forEach(c => {
+    const q = c.double_materiality?.quadrant || 'Watch List';
+    if (quads[q]) quads[q].push(c);
+  });
+  document.getElementById('dmQuadGrid').innerHTML = Object.entries(quads).map(([q, companies]) => `
+    <div class="dm-quad-card dm-quad-card--${q.replace(/\s+/g,'-').toLowerCase()}">
+      <div class="dm-quad-title">${q} <span>(${companies.length})</span></div>
+      <div class="dm-quad-companies">
+        ${companies.slice(0,6).map(c => `
+          <div class="dm-quad-company" onclick="openDeepDive('${esc(c.company_name)}')">
+            <span>${esc(c.company_name.slice(0,28))}</span>
+            <span class="risk-badge risk-badge--${c.risk_tier}" style="font-size:.65rem">${c.esg_risk_score}</span>
+          </div>`).join('')}
+        ${companies.length > 6 ? `<div style="font-size:.75rem;color:#64748b;padding:4px">+${companies.length-6} more</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+document.getElementById('dmSectorFilter').addEventListener('change', e => renderDoubleMateriality(e.target.value));
+
+// ── ESG Target Tracker ────────────────────────────────────────────────────────
+function renderTargets(filter = '', typeFilter = '') {
+  const rows = [];
+  allCompanies.forEach(c => {
+    (c.esg_targets || []).forEach(t => {
+      rows.push({ company: c.company_name, sector: c.sector, risk: c.esg_risk_score, tier: c.risk_tier, ...t });
+    });
+  });
+
+  let filtered = rows;
+  if (filter) {
+    const q = filter.toLowerCase();
+    filtered = filtered.filter(r => r.company.toLowerCase().includes(q) || (r.topic||'').toLowerCase().includes(q));
+  }
+  if (typeFilter) filtered = filtered.filter(r => r.type === typeFilter);
+
+  // Summary KPIs
+  const achieved    = rows.filter(r => r.type === 'Achieved').length;
+  const commitments = rows.filter(r => r.type === 'Commitment').length;
+  const topics      = [...new Set(rows.map(r => r.topic))].length;
+  document.getElementById('targetSummary').innerHTML = [
+    { v: rows.length,   l: 'Total Disclosures' },
+    { v: achieved,      l: 'Targets Achieved',  cls: 'kpi-card__value--green' },
+    { v: commitments,   l: 'Commitments',        cls: 'kpi-card__value--amber' },
+    { v: topics,        l: 'ESG Topics Covered' },
+  ].map(k => `<div class="kpi-card"><div class="kpi-card__value ${k.cls||''}">${k.v}</div><div class="kpi-card__label">${k.l}</div></div>`).join('');
+
+  document.getElementById('targetCount').textContent = `${filtered.length} disclosures`;
+  document.getElementById('targetBody').innerHTML = filtered.map(r => `
+    <tr style="cursor:pointer" onclick="openDeepDive('${esc(r.company)}')">
+      <td class="company-name">${esc(r.company.slice(0,28))}</td>
+      <td class="sector-cell">${esc((r.sector||'').replace('Manufacturing — ','').slice(0,28))}</td>
+      <td style="color:#10b981;font-size:.82rem">${esc(r.topic||'')}</td>
+      <td style="font-size:.82rem;color:#cbd5e1">${esc(r.metric||'')}</td>
+      <td><span class="risk-badge ${r.type==='Achieved'?'risk-badge--Low':'risk-badge--Medium'}">${r.type||''}</span></td>
+      <td>${scoreBar(r.risk)}</td>
+    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:20px">No target data found in current dataset.</td></tr>';
+}
+
+document.getElementById('targetSearch').addEventListener('input', e => renderTargets(e.target.value, document.getElementById('targetType').value));
+document.getElementById('targetType').addEventListener('change', e => renderTargets(document.getElementById('targetSearch').value, e.target.value));
+
 // ── Global Search ─────────────────────────────────────────────────────────────
 document.getElementById('globalSearchBtn').addEventListener('click', runGlobalSearch);
 document.getElementById('globalSearch').addEventListener('keydown', e => {
@@ -590,11 +726,17 @@ function renderDDTab(tab) {
   else if (tab === 'risks') {
     body.innerHTML = renderDDRisks(profile);
   }
+  else if (tab === 'materiality') {
+    body.innerHTML = renderDDMateriality(profile, data);
+  }
   else if (tab === 'regulations') {
     body.innerHTML = renderDDRegulations(profile, data);
   }
   else if (tab === 'benchmark') {
     body.innerHTML = renderDDBenchmark(profile, data);
+  }
+  else if (tab === 'targets') {
+    body.innerHTML = renderDDTargets(profile);
   }
   else if (tab === 'actions') {
     body.innerHTML = renderDDActions(data);
@@ -763,6 +905,80 @@ function renderDDActions(data) {
         </div>`).join('')}
     </div>
     ${data.esg_score_trajectory ? `<div class="dd-insight-box">📈 <strong>Trajectory:</strong> ${esc(data.esg_score_trajectory)}</div>` : ''}
+  </div>`;
+}
+
+function renderDDMateriality(p, data) {
+  const dm = p.double_materiality || {};
+  const fin = dm.financial_materiality || p.esg_risk_score;
+  const imp = dm.impact_materiality || p.esg_risk_score;
+  const quadrant = dm.quadrant || 'Watch List';
+  const qColor = {
+    'Dual Materiality':    '#f87171',
+    'Financially Material':'#fbbf24',
+    'Impact Material':     '#6366f1',
+    'Watch List':          '#64748b',
+  }[quadrant] || '#94a3b8';
+
+  return `<div class="dd-section">
+    <div class="dd-section-title">Double Materiality Position</div>
+    <div class="dm-dd-scores">
+      <div class="dm-dd-score-card">
+        <div class="dm-dd-score-val" style="color:#fbbf24">${fin.toFixed(1)}</div>
+        <div class="dm-dd-score-lbl">Financial Materiality</div>
+        <div class="dm-dd-score-desc">How ESG risks affect company finances</div>
+      </div>
+      <div class="dm-dd-score-card">
+        <div class="dm-dd-score-val" style="color:#6366f1">${imp.toFixed(1)}</div>
+        <div class="dm-dd-score-lbl">Impact Materiality</div>
+        <div class="dm-dd-score-desc">Company's impact on environment & society</div>
+      </div>
+      <div class="dm-dd-score-card">
+        <div class="dm-dd-score-val" style="color:${qColor};font-size:1rem">${quadrant}</div>
+        <div class="dm-dd-score-lbl">IRO Quadrant</div>
+        <div class="dm-dd-score-desc">Based on ESRS double materiality framework</div>
+      </div>
+    </div>
+    <div class="dd-insight-box" style="margin-top:16px">
+      ${quadrant === 'Dual Materiality'
+        ? '⚠️ <strong>Dual Materiality:</strong> This company both faces significant financial risk from ESG factors AND has meaningful environmental/social impact. Highest priority for disclosure and action.'
+        : quadrant === 'Financially Material'
+        ? '💰 <strong>Financially Material:</strong> ESG risks significantly affect this company\'s financial performance. Focus on risk mitigation and financial resilience planning.'
+        : quadrant === 'Impact Material'
+        ? '🌍 <strong>Impact Material:</strong> This company has significant environmental/social footprint but lower direct financial ESG risk. Focus on impact reduction and stakeholder disclosure.'
+        : '📋 <strong>Watch List:</strong> Currently lower materiality on both dimensions. Monitor for regulatory changes that could shift this profile.'}
+    </div>
+  </div>
+  <div class="dd-section">
+    <div class="dd-section-title">IRO Context (Datamaran Framework)</div>
+    <div class="dd-reg-list">
+      <div class="dd-reg-item"><div class="dd-reg-name">Impacts</div><div class="dd-reg-impact">Company's positive/negative effects on environment, workers, communities and economy through its operations and value chain</div></div>
+      <div class="dd-reg-item"><div class="dd-reg-name">Risks</div><div class="dd-reg-impact">Physical climate risks, transition risks, regulatory penalties, reputational risks that affect financial performance</div></div>
+      <div class="dd-reg-item"><div class="dd-reg-name">Opportunities</div><div class="dd-reg-impact">Energy savings from efficiency, green financing access, new market access through sustainable products, premium pricing</div></div>
+    </div>
+  </div>`;
+}
+
+function renderDDTargets(p) {
+  const targets = p.esg_targets || [];
+  if (!targets.length) {
+    return `<div class="dd-section"><p style="color:#94a3b8">No ESG targets or commitments found in this company's BRSR disclosures. This may indicate limited voluntary sustainability commitments.</p></div>`;
+  }
+  return `<div class="dd-section">
+    <div class="dd-section-title">ESG Targets & Commitments (from BRSR)</div>
+    <div class="dd-actions-list">
+      ${targets.map(t => `
+        <div class="dd-action">
+          <div class="dd-action-header">
+            <span class="dd-action-priority" style="color:${t.type==='Achieved'?'#10b981':'#fbbf24'}">${t.type}</span>
+            <span class="dd-action-title">${esc(t.topic)}</span>
+          </div>
+          <div style="font-size:.85rem;color:#cbd5e1;margin-top:4px">${esc(t.metric)}</div>
+        </div>`).join('')}
+    </div>
+    <div class="dd-insight-box" style="margin-top:16px">
+      💡 <strong>Datamaran insight:</strong> Companies with more verified targets typically command lower cost of capital and better ESG ratings from MSCI, Sustainalytics, and CDP.
+    </div>
   </div>`;
 }
 
