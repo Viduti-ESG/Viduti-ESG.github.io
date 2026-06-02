@@ -120,68 +120,106 @@
       </div>
     </div>
 
-    <!-- Step 2: Environmental -->
+    <!-- Step 2: Business Activities & Operations -->
     <div class="step" id="step-1">
       <div class="section">
-        <div class="section-title">Step 2: Environmental Data</div>
+        <div class="section-title">Step 2: Business Activities &amp; Operations</div>
         <div class="form-grid">
-          <div class="form-group half">
-            <label for="scope1_emissions">Scope 1 Emissions (t CO2e)</label>
-            <input type="number" id="scope1_emissions" name="scope1_emissions" step="0.1" placeholder="Direct emissions">
-          </div>
-          <div class="form-group half">
-            <label for="scope2_emissions">Scope 2 Emissions (t CO2e)</label>
-            <input type="number" id="scope2_emissions" name="scope2_emissions" step="0.1" placeholder="Energy emissions">
-          </div>
-          <div class="form-group half">
-            <label for="scope3_emissions">Scope 3 Emissions (t CO2e)</label>
-            <input type="number" id="scope3_emissions" name="scope3_emissions" step="0.1" placeholder="Value chain emissions">
-          </div>
-          <div class="form-group half">
-            <label for="water_consumption">Water Consumption (m³)</label>
-            <input type="number" id="water_consumption" name="water_consumption" step="0.1" placeholder="Annual water use">
-          </div>
           <div class="form-group">
-            <label for="waste_generation">Waste Generation (tonnes)</label>
-            <input type="number" id="waste_generation" name="waste_generation" step="0.1" placeholder="Total annual waste">
+            <label for="top_products">Top 3 Products / Services (90%+ of turnover)</label>
+            <textarea id="top_products" name="top_products" placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea>
           </div>
-          <div class="form-group">
-            <label for="env_policy">Environmental Policy / Commitments</label>
-            <textarea id="env_policy" name="env_policy" placeholder="Describe your environmental sustainability policies"></textarea>
+          <div class="form-group half">
+            <label for="national_locations">No. of Locations in India</label>
+            <input type="number" id="national_locations" name="national_locations" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="international_locations">No. of International Locations</label>
+            <input type="number" id="international_locations" name="international_locations" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="national_markets">National Markets Served</label>
+            <input type="text" id="national_markets" name="national_markets" placeholder="e.g. Pan-India / specific states">
+          </div>
+          <div class="form-group half">
+            <label for="export_revenue_pct">Export Revenue as % of Total</label>
+            <input type="number" id="export_revenue_pct" name="export_revenue_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="reporting_boundary">Reporting Boundary</label>
+            <select id="reporting_boundary" name="reporting_boundary">
+              <option value="">Select</option>
+              <option value="Standalone basis">Standalone basis</option>
+              <option value="Consolidated basis">Consolidated basis</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="stock_exchange">Listed On</label>
+            <select id="stock_exchange" name="stock_exchange">
+              <option value="">Select</option>
+              <option value="BSE & NSE">BSE &amp; NSE</option>
+              <option value="BSE">BSE only</option>
+              <option value="NSE">NSE only</option>
+            </select>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Step 3: Social -->
+    <!-- Step 3: Employees & Workers (P3) -->
     <div class="step" id="step-2">
       <div class="section">
-        <div class="section-title">Step 3: Social Data</div>
+        <div class="section-title">Step 3: Employees &amp; Workers (P3)</div>
         <div class="form-grid">
           <div class="form-group half">
-            <label for="csr_spent">CSR Spending (₹ crore)</label>
-            <input type="number" id="csr_spent" name="csr_spent" step="0.01" placeholder="0">
+            <label for="perm_male_employees">Permanent Male Employees</label>
+            <input type="number" id="perm_male_employees" name="perm_male_employees" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="perm_female_employees">Permanent Female Employees</label>
+            <input type="number" id="perm_female_employees" name="perm_female_employees" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="contract_male_employees">Contract Male Employees</label>
+            <input type="number" id="contract_male_employees" name="contract_male_employees" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="contract_female_employees">Contract Female Employees</label>
+            <input type="number" id="contract_female_employees" name="contract_female_employees" placeholder="0">
           </div>
           <div class="form-group half">
             <label for="women_employees_pct">Women Employees (%)</label>
             <input type="number" id="women_employees_pct" name="women_employees_pct" step="0.1" min="0" max="100" placeholder="0">
           </div>
-          <div class="form-group">
-            <label for="social_initiatives">Social Initiatives & Community Programs</label>
-            <textarea id="social_initiatives" name="social_initiatives" placeholder="Describe your community engagement programs"></textarea>
+          <div class="form-group half">
+            <label for="union_membership_pct">% Employees in Unions / Associations</label>
+            <input type="number" id="union_membership_pct" name="union_membership_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="parental_leave_return_pct">Parental Leave Return-to-Work Rate (%)</label>
+            <input type="number" id="parental_leave_return_pct" name="parental_leave_return_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="min_wage_compliance">All employees paid minimum wage?</label>
+            <select id="min_wage_compliance" name="min_wage_compliance">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
           </div>
           <div class="form-group">
-            <label for="safety_measures">Occupational Health & Safety Measures</label>
-            <textarea id="safety_measures" name="safety_measures" placeholder="Describe your H&S policies and incident rate"></textarea>
+            <label for="employee_grievance_mechanism">Employee Grievance Redressal Mechanism</label>
+            <textarea id="employee_grievance_mechanism" name="employee_grievance_mechanism" placeholder="How can employees raise workplace concerns?"></textarea>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Step 4: Governance -->
+
+    <!-- Step 4: Governance (P1) -->
     <div class="step" id="step-3">
       <div class="section">
-        <div class="section-title">Step 4: Governance</div>
+        <div class="section-title">Step 4: Governance &amp; Ethics (P1)</div>
         <div class="form-grid">
           <div class="form-group half">
             <label for="independent_directors_pct">Independent Directors (%)</label>
@@ -191,13 +229,257 @@
             <label for="women_directors_pct">Women Directors (%)</label>
             <input type="number" id="women_directors_pct" name="women_directors_pct" step="0.1" min="0" max="100" placeholder="0">
           </div>
+          <div class="form-group half">
+            <label for="anti_corruption_policy">Anti-Corruption / Anti-Bribery Policy?</label>
+            <select id="anti_corruption_policy" name="anti_corruption_policy">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="conflict_of_interest_policy">Conflict of Interest Policy?</label>
+            <select id="conflict_of_interest_policy" name="conflict_of_interest_policy">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
           <div class="form-group">
-            <label for="compliance_statement">Ethics & Compliance Statement</label>
+            <label for="compliance_statement">Ethics &amp; Compliance Statement</label>
             <textarea id="compliance_statement" name="compliance_statement" placeholder="Describe your ethics, compliance, and anti-corruption measures"></textarea>
           </div>
           <div class="form-group">
-            <label for="governance_structure">Board & Committee Structure</label>
+            <label for="governance_structure">Board &amp; Committee Structure</label>
             <textarea id="governance_structure" name="governance_structure" placeholder="Describe your board composition and key committees"></textarea>
+          </div>
+          <div class="form-group half">
+            <label for="responsible_director_name">Director Responsible for BR Policy</label>
+            <input type="text" id="responsible_director_name" name="responsible_director_name" placeholder="Full name">
+          </div>
+          <div class="form-group half">
+            <label for="responsible_director_din">DIN of Responsible Director</label>
+            <input type="text" id="responsible_director_din" name="responsible_director_din" placeholder="e.g. 00123456">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Environment (P6) -->
+    <div class="step" id="step-4">
+      <div class="section">
+        <div class="section-title">Step 5: Environment (P6)</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="scope1_emissions2">Scope 1 Emissions (t CO2e)</label>
+            <input type="number" id="scope1_emissions2" name="scope1_emissions" step="0.1" placeholder="Direct emissions">
+          </div>
+          <div class="form-group half">
+            <label for="scope2_emissions2">Scope 2 Emissions (t CO2e)</label>
+            <input type="number" id="scope2_emissions2" name="scope2_emissions" step="0.1" placeholder="Energy emissions">
+          </div>
+          <div class="form-group half">
+            <label for="scope3_emissions2">Scope 3 Emissions (t CO2e)</label>
+            <input type="number" id="scope3_emissions2" name="scope3_emissions" step="0.1" placeholder="Value chain emissions">
+          </div>
+          <div class="form-group half">
+            <label for="energy_renewable">Renewable Energy Consumed (GJ)</label>
+            <input type="number" id="energy_renewable" name="energy_renewable" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="energy_nonrenewable">Non-Renewable Energy Consumed (GJ)</label>
+            <input type="number" id="energy_nonrenewable" name="energy_nonrenewable" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="water_withdrawal">Water Withdrawal (m³)</label>
+            <input type="number" id="water_withdrawal" name="water_withdrawal" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="waste_total">Total Waste Generated (tonnes)</label>
+            <input type="number" id="waste_total" name="waste_total" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="waste_hazardous">Hazardous Waste (tonnes)</label>
+            <input type="number" id="waste_hazardous" name="waste_hazardous" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="env_policy">Environmental Policy &amp; Commitments</label>
+            <textarea id="env_policy" name="env_policy" placeholder="Describe your environmental sustainability policies and targets"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6: Products & Services (P2) -->
+    <div class="step" id="step-5">
+      <div class="section">
+        <div class="section-title">Step 6: Products &amp; Services (P2)</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="msme_sourcing_pct">% Input Material from MSMEs / Small Producers</label>
+            <input type="number" id="msme_sourcing_pct" name="msme_sourcing_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="lifecycle_assessment">Life Cycle Assessment conducted?</label>
+            <select id="lifecycle_assessment" name="lifecycle_assessment">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="epr_applicable">Extended Producer Responsibility (EPR) applicable?</label>
+            <select id="epr_applicable" name="epr_applicable">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Not Applicable">Not Applicable</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="epr_return_filed">EPR Return filed?</label>
+            <select id="epr_return_filed" name="epr_return_filed">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="product_reclaim_process">Process to safely reclaim products at end of life</label>
+            <textarea id="product_reclaim_process" name="product_reclaim_process" placeholder="Describe your take-back / end-of-life disposal process"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="rd_env_improvements">R&amp;D / Capex for environmental improvement</label>
+            <textarea id="rd_env_improvements" name="rd_env_improvements" placeholder="Describe investments in sustainable technology"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 7: Stakeholders & Community (P4 + P8) -->
+    <div class="step" id="step-6">
+      <div class="section">
+        <div class="section-title">Step 7: Stakeholders &amp; Inclusive Growth (P4 &amp; P8)</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="stakeholder_complaints_filed">Stakeholder Complaints Filed (during year)</label>
+            <input type="number" id="stakeholder_complaints_filed" name="stakeholder_complaints_filed" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="stakeholder_complaints_pending">Stakeholder Complaints Pending (at year end)</label>
+            <input type="number" id="stakeholder_complaints_pending" name="stakeholder_complaints_pending" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="stakeholder_identification">Stakeholder Identification &amp; Engagement Process</label>
+            <textarea id="stakeholder_identification" name="stakeholder_identification" placeholder="How do you identify key stakeholders and engage with them?"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="vulnerable_group_initiatives">Initiatives for vulnerable / marginalised groups</label>
+            <textarea id="vulnerable_group_initiatives" name="vulnerable_group_initiatives" placeholder="Describe CSR programs for vulnerable communities"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="community_grievance_mechanism">Community Grievance Redressal Mechanism</label>
+            <textarea id="community_grievance_mechanism" name="community_grievance_mechanism" placeholder="How can communities raise concerns?"></textarea>
+          </div>
+          <div class="form-group half">
+            <label for="csr_spent">CSR Spending (₹ crore)</label>
+            <input type="number" id="csr_spent" name="csr_spent" step="0.01" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="social_initiatives">Social Initiatives &amp; Community Programs</label>
+            <input type="text" id="social_initiatives" name="social_initiatives" placeholder="Brief summary">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 8: Human Rights (P5) -->
+    <div class="step" id="step-7">
+      <div class="section">
+        <div class="section-title">Step 8: Human Rights (P5)</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="human_rights_in_contracts">Human Rights requirements in business contracts?</label>
+            <select id="human_rights_in_contracts" name="human_rights_in_contracts">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="hr_focal_point">Designated focal point for Human Rights issues?</label>
+            <select id="hr_focal_point" name="hr_focal_point">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="hr_training_pct">% Employees trained on Human Rights</label>
+            <input type="number" id="hr_training_pct" name="hr_training_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="child_labour_assessment_pct">% Plants assessed for Child Labour</label>
+            <input type="number" id="child_labour_assessment_pct" name="child_labour_assessment_pct" step="0.1" min="0" max="100" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="hr_due_diligence">Human Rights Due Diligence process</label>
+            <textarea id="hr_due_diligence" name="hr_due_diligence" placeholder="Describe the scope and coverage of your HR due diligence"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="hr_grievance_mechanism">Internal grievance mechanism for HR issues</label>
+            <textarea id="hr_grievance_mechanism" name="hr_grievance_mechanism" placeholder="How can employees raise human rights concerns?"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 9: Consumer Responsibility & Policy (P9 + P7) -->
+    <div class="step" id="step-8">
+      <div class="section">
+        <div class="section-title">Step 9: Consumer Responsibility &amp; Policy Advocacy (P9 &amp; P7)</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="consumer_complaints_filed">Consumer Complaints Filed (during year)</label>
+            <input type="number" id="consumer_complaints_filed" name="consumer_complaints_filed" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="consumer_complaints_pending">Consumer Complaints Pending (at year end)</label>
+            <input type="number" id="consumer_complaints_pending" name="consumer_complaints_pending" placeholder="0">
+          </div>
+          <div class="form-group half">
+            <label for="product_labelling_beyond_law">Product information disclosed beyond legal requirements?</label>
+            <select id="product_labelling_beyond_law" name="product_labelling_beyond_law">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="data_breaches">Number of data breach instances</label>
+            <input type="number" id="data_breaches" name="data_breaches" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="consumer_complaint_mechanism">Consumer Complaint &amp; Feedback Mechanism</label>
+            <textarea id="consumer_complaint_mechanism" name="consumer_complaint_mechanism" placeholder="Describe how consumers can raise concerns"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="public_policy_advocated">Public Policy Positions Advocated (P7)</label>
+            <textarea id="public_policy_advocated" name="public_policy_advocated" placeholder="List any regulatory or policy positions your company advocates (or 'None')"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="brsr_assurance">BRSR Assurance obtained?</label>
+            <select id="brsr_assurance" name="brsr_assurance">
+              <option value="">Select</option>
+              <option value="Yes — Reasonable">Yes — Reasonable</option>
+              <option value="Yes — Limited">Yes — Limited</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="safety_measures">Occupational Health &amp; Safety Measures</label>
+            <textarea id="safety_measures" name="safety_measures" placeholder="Describe your H&S policies and incident rate"></textarea>
           </div>
         </div>
       </div>
@@ -259,39 +541,112 @@ function updateProgress() {
 function generatePreview() {
   const formData = new FormData(document.getElementById('brsr-form'));
   const data = Object.fromEntries(formData);
-  
+
   const report = {
     company_name: data.company_name,
     cin: data.cin,
     financial_year: data.financial_year,
     sector: data.sector,
-    employees: data.total_employees,
-    revenue_crore: data.total_revenue,
+    total_employees: data.total_employees,
+    total_revenue: data.total_revenue,
     business_description: data.business_description,
-    environmental: {
+
+    // Step 2 — Business Activities & Operations
+    operations: {
+      top_products: data.top_products || 'N/A',
+      national_locations: data.national_locations || 'N/A',
+      international_locations: data.international_locations || 'N/A',
+      national_markets: data.national_markets || 'N/A',
+      export_revenue_pct: data.export_revenue_pct || 'N/A',
+      reporting_boundary: data.reporting_boundary || 'N/A',
+      stock_exchange: data.stock_exchange || 'N/A',
+    },
+
+    // Step 3 — P3 Employees & Workers
+    p3_employees: {
+      perm_male_employees: data.perm_male_employees || 'N/A',
+      perm_female_employees: data.perm_female_employees || 'N/A',
+      contract_male_employees: data.contract_male_employees || 'N/A',
+      contract_female_employees: data.contract_female_employees || 'N/A',
+      women_employees_pct: data.women_employees_pct || 'N/A',
+      union_membership_pct: data.union_membership_pct || 'N/A',
+      parental_leave_return_pct: data.parental_leave_return_pct || 'N/A',
+      min_wage_compliance: data.min_wage_compliance || 'N/A',
+      grievance_mechanism: data.employee_grievance_mechanism || 'N/A',
+    },
+
+    // Step 4 — P1 Governance & Ethics
+    p1_governance: {
+      independent_directors_pct: data.independent_directors_pct || 'N/A',
+      women_directors_pct: data.women_directors_pct || 'N/A',
+      anti_corruption_policy: data.anti_corruption_policy || 'N/A',
+      conflict_of_interest_policy: data.conflict_of_interest_policy || 'N/A',
+      ethics_compliance: data.compliance_statement || 'N/A',
+      board_structure: data.governance_structure || 'N/A',
+      responsible_director: data.responsible_director_name || 'N/A',
+      responsible_director_din: data.responsible_director_din || 'N/A',
+    },
+
+    // Step 5 — P6 Environment
+    p6_environment: {
       scope1_emissions: data.scope1_emissions || 'N/A',
       scope2_emissions: data.scope2_emissions || 'N/A',
       scope3_emissions: data.scope3_emissions || 'N/A',
-      water_consumption_m3: data.water_consumption || 'N/A',
-      waste_generation_tonnes: data.waste_generation || 'N/A',
-      policy: data.env_policy || 'N/A'
+      energy_renewable_gj: data.energy_renewable || 'N/A',
+      energy_nonrenewable_gj: data.energy_nonrenewable || 'N/A',
+      water_withdrawal_m3: data.water_withdrawal || 'N/A',
+      waste_total_tonnes: data.waste_total || 'N/A',
+      waste_hazardous_tonnes: data.waste_hazardous || 'N/A',
+      env_policy: data.env_policy || 'N/A',
     },
-    social: {
-      csr_spending_crore: data.csr_spent || 0,
-      women_employees_pct: data.women_employees_pct || 0,
-      initiatives: data.social_initiatives || 'N/A',
-      safety_measures: data.safety_measures || 'N/A'
+
+    // Step 6 — P2 Products & Services
+    p2_products: {
+      msme_sourcing_pct: data.msme_sourcing_pct || 'N/A',
+      lifecycle_assessment: data.lifecycle_assessment || 'N/A',
+      epr_applicable: data.epr_applicable || 'N/A',
+      epr_return_filed: data.epr_return_filed || 'N/A',
+      product_reclaim_process: data.product_reclaim_process || 'N/A',
+      rd_env_improvements: data.rd_env_improvements || 'N/A',
     },
-    governance: {
-      independent_directors_pct: data.independent_directors_pct || 0,
-      women_directors_pct: data.women_directors_pct || 0,
-      ethics_compliance: data.compliance_statement || 'N/A',
-      board_structure: data.governance_structure || 'N/A'
+
+    // Step 7 — P4 Stakeholders & P8 Inclusive Growth
+    p4_p8_stakeholders: {
+      stakeholder_complaints_filed: data.stakeholder_complaints_filed || 'N/A',
+      stakeholder_complaints_pending: data.stakeholder_complaints_pending || 'N/A',
+      stakeholder_engagement: data.stakeholder_identification || 'N/A',
+      vulnerable_group_initiatives: data.vulnerable_group_initiatives || 'N/A',
+      community_grievance_mechanism: data.community_grievance_mechanism || 'N/A',
+      csr_spending_crore: data.csr_spent || 'N/A',
+      social_initiatives: data.social_initiatives || 'N/A',
     },
+
+    // Step 8 — P5 Human Rights
+    p5_human_rights: {
+      hr_in_contracts: data.human_rights_in_contracts || 'N/A',
+      hr_focal_point: data.hr_focal_point || 'N/A',
+      hr_training_pct: data.hr_training_pct || 'N/A',
+      child_labour_assessment_pct: data.child_labour_assessment_pct || 'N/A',
+      hr_due_diligence: data.hr_due_diligence || 'N/A',
+      hr_grievance_mechanism: data.hr_grievance_mechanism || 'N/A',
+    },
+
+    // Step 9 — P9 Consumer Responsibility & P7 Policy Advocacy
+    p9_p7_consumer_policy: {
+      consumer_complaints_filed: data.consumer_complaints_filed || 'N/A',
+      consumer_complaints_pending: data.consumer_complaints_pending || 'N/A',
+      product_labelling_beyond_law: data.product_labelling_beyond_law || 'N/A',
+      data_breaches: data.data_breaches || 'N/A',
+      consumer_complaint_mechanism: data.consumer_complaint_mechanism || 'N/A',
+      public_policy_advocated: data.public_policy_advocated || 'N/A',
+      brsr_assurance: data.brsr_assurance || 'N/A',
+      safety_measures: data.safety_measures || 'N/A',
+    },
+
     generated_date: new Date().toISOString(),
-    status: 'Preview — Submit for Claude refinement to generate full BRSR report'
+    status: 'BRSR Form Data — 9 Principles captured. Use with full generator for AI-refined report.',
   };
-  
+
   document.getElementById('preview-content').textContent = JSON.stringify(report, null, 2);
   document.getElementById('preview').style.display = 'block';
 }

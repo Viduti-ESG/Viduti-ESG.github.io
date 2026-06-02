@@ -314,6 +314,17 @@ function addCustomItem() {
 }
 
 // === results ==================================================================
+function calcTotals() {
+  return state.items.reduce((t, item) => {
+    const v = (item.factor * item.amount) / 1000;
+    t.total += v;
+    if (item.scope === 'Scope 1') t.s1 += v;
+    if (item.scope === 'Scope 2') t.s2 += v;
+    if (item.scope === 'Scope 3') t.s3 += v;
+    return t;
+  }, { total: 0, s1: 0, s2: 0, s3: 0 });
+}
+
 function loadSavedItems() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -327,16 +338,11 @@ function saveItems() {
 }
 
 function updateResults() {
-  const totals = { total: 0, s1: 0, s2: 0, s3: 0 };
+  const totals = calcTotals();
   els.itemsTable.innerHTML = '';
 
   state.items.forEach(item => {
     const t = (item.factor * item.amount) / 1000;
-    totals.total += t;
-    if (item.scope === 'Scope 1') totals.s1 += t;
-    if (item.scope === 'Scope 2') totals.s2 += t;
-    if (item.scope === 'Scope 3') totals.s3 += t;
-
     const row = document.createElement('tr');
     [
       { text: item.description, strong: true },
@@ -380,13 +386,9 @@ function removeItem(id) {
 
 // === download / export ========================================================
 function buildPayload() {
-  const totals = { total: 0, s1: 0, s2: 0, s3: 0 };
+  const totals = calcTotals();
   const items = state.items.map(item => {
     const t = (item.factor * item.amount) / 1000;
-    totals.total += t;
-    if (item.scope === 'Scope 1') totals.s1 += t;
-    if (item.scope === 'Scope 2') totals.s2 += t;
-    if (item.scope === 'Scope 3') totals.s3 += t;
     return { description: item.description, scope: item.scope, amount: item.amount,
              unit: item.unit, factor_kg_co2e: item.factor, result_t_co2e: +t.toFixed(3) };
   });
