@@ -5,7 +5,7 @@
     <link>https://viduti-esg.github.io/</link>
     <description>Daily ESG and climate compliance intelligence for Indian businesses.</description>
     <language>en-in</language>
-    <lastBuildDate>Mon, 01 Jun 2026 14:29:28 +0530</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2026 14:00:28 +0530</lastBuildDate>
     <atom:link href="https://viduti-esg.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://viduti-esg.github.io/assets/img/logo.png</url>
@@ -13,6 +13,14 @@
       <link>https://viduti-esg.github.io/</link>
     </image>
 
+    <item>
+      <title>CPCB Tightens the Screws: What the Notice to E-Waste Recyclers Means for EPR Compliance</title>
+      <link>https://cpcb.nic.in/openpdffile.php?id=UmVwb3J0RmlsZXMvMTU5NV8xNzA2NTkzOTU2X21lZGlhcGhvdG8yNzU4NS5wZGY=</link>
+      <description>The Central Pollution Control Board (CPCB) has issued a notice directing registered e-waste recyclers to strictly comply with the E-Waste (Management) Rules, 2022, signaling heightened scrutiny of the EPR (Extended Producer Responsibility) credit ecosystem. The move is a clear warning shot: recycler</description>
+      <pubDate>Wed, 13 May 2026 06:00:00 +0530</pubDate>
+      <category>Urgent Notice / EPR</category>
+      <guid isPermaLink="false">gc-35e8982bb3e681dc9d36e9725cf7662a</guid>
+    </item>
     <item>
       <title>CPCB's New EPR Certificate Framework for E-Waste: What Producers Need to Know About Metal-Based Targets</title>
       <link>https://cpcb.nic.in/openpdffile.php?id=TGF0ZXN0RmlsZS8zOTBfMTY5NTM1ODM1OF9tZWRpYXBob3RvMjA2MzgucGRm</link>
@@ -164,14 +172,6 @@
       <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
       <category>Daily Digest</category>
       <guid isPermaLink="false">the-2026-sustainability-profession-report-what-shrinking-bud-1779765158</guid>
-    </item>
-    <item>
-      <title>Stanford's Doerr School Sustainability Accelerator: What Indian Companies Should Know About Soil Carbon, Grid Tech, and Climate Spinout Partnerships</title>
-      <link>https://trellis.net/article/get-involved-with-stanfords-1-billion-sustainability-school/</link>
-      <description>Stanford University's $1.1 billion Doerr School of Sustainability is now actively commercialising over 90 climate technology projects across soil carbon, grid optimisation, greenhouse gas removal, and industrial decarbonisation — and it is explicitly seeking Indian and global corporate partners as e</description>
-      <pubDate>Tue, 26 May 2026 06:00:00 +0530</pubDate>
-      <category>Daily Digest</category>
-      <guid isPermaLink="false">stanford-s-doerr-school-sustainability-accelerator-what-indi-1779765158</guid>
     </item>
   </channel>
 </rss>
