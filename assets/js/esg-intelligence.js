@@ -3,6 +3,17 @@
 
 let INTEL = null;
 let allCompanies = [];
+let API_BASE = '';   // set dynamically from brsr-generator.js if available
+
+// Try to read API_BASE from brsr-generator config (set by start_brsr.py)
+try {
+  const scripts = document.querySelectorAll('script[src]');
+  // API_BASE is set in brsr-generator.js — read from localStorage if previously set
+  API_BASE = localStorage.getItem('gc_api_base') || '';
+} catch(e) {}
+
+// Allow brsr-generator.js to share its API_BASE
+window.setIntelApiBase = (url) => { API_BASE = url; localStorage.setItem('gc_api_base', url); };
 
 const MATERIAL_ICONS = {
   plastic: '🧴', 'e-waste': '💻', battery: '🔋',
@@ -213,7 +224,7 @@ function renderScreener(filter = '', risk = '', sort = 'esg_risk_score') {
       ? `<span style="color:${ret >= 0 ? '#10b981' : '#f87171'}">${ret >= 0 ? '+' : ''}${ret}%</span>`
       : '<span style="color:#475569">N/A</span>';
     return `
-      <tr>
+      <tr style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">
         <td class="company-name" title="${esc(c.company_name)}">${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}</td>
         <td class="sector-cell">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,30))}</td>
         <td><span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span></td>
@@ -391,6 +402,372 @@ function renderMaterials() {
       </div>`;
   }).join('') || '<p style="color:#94a3b8;padding:20px">Material data will appear after the first intelligence run.</p>';
 }
+
+// ── Global Search ─────────────────────────────────────────────────────────────
+document.getElementById('globalSearchBtn').addEventListener('click', runGlobalSearch);
+document.getElementById('globalSearch').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runGlobalSearch();
+});
+
+async function runGlobalSearch() {
+  const q = document.getElementById('globalSearch').value.trim();
+  if (!q) return;
+  const resultsEl = document.getElementById('searchResults');
+  resultsEl.hidden = false;
+  resultsEl.innerHTML = `<div class="search-loading">
+    <div class="dd-spinner"></div><span>Searching across 155 companies + regulations…</span>
+  </div>`;
+
+  // Client-side fast-path: search existing data before hitting API
+  const clientResults = clientSearch(q);
+
+  if (!API_BASE) {
+    // No backend — show client-side results only
+    renderSearchResults({ answer: null, company_profiles: clientResults, matched_regulations: [] }, q);
+    return;
+  }
+
+  try {
+    const r = await fetch(`${API_BASE}/api/esg-search`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q, limit: 8 }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    renderSearchResults(await r.json(), q);
+  } catch {
+    // Fall back to client-side
+    renderSearchResults({ answer: null, company_profiles: clientResults, matched_regulations: [] }, q);
+  }
+}
+
+function clientSearch(q) {
+  const terms = q.toLowerCase().split(/\s+/);
+  return allCompanies.filter(c => {
+    const blob = [c.company_name, c.sector, ...(c.top_risk_factors||[]),
+                  c.risk_tier, c.ai_summary||''].join(' ').toLowerCase();
+    return terms.every(t => blob.includes(t));
+  }).slice(0, 8);
+}
+
+function renderSearchResults(data, query) {
+  const el = document.getElementById('searchResults');
+  const companies = data.company_profiles || [];
+  const regs      = data.matched_regulations || [];
+  const answer    = data.answer;
+  const insight   = data.key_insight;
+  const followups = data.follow_up_questions || [];
+
+  let html = `<div class="search-header">
+    <span class="search-query">"${esc(query)}"</span>
+    <button class="search-close" onclick="document.getElementById('searchResults').hidden=true">✕</button>
+  </div>`;
+
+  if (answer) {
+    html += `<div class="search-answer">
+      ${insight ? `<div class="search-insight">💡 ${esc(insight)}</div>` : ''}
+      <p>${esc(answer)}</p>
+    </div>`;
+  }
+
+  if (companies.length) {
+    html += `<div class="search-section-title">Matching Companies (${companies.length})</div>
+    <div class="search-companies">
+      ${companies.map(c => `
+        <div class="search-company-card" onclick="openDeepDive('${esc(c.company_name)}')">
+          <div class="search-company-name">${esc(c.company_name)}</div>
+          <div class="search-company-meta">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,30))}</div>
+          <span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  if (regs.length) {
+    html += `<div class="search-section-title">Related Regulations</div>
+    <ul class="search-regs">${regs.map(r => `<li>${esc(r)}</li>`).join('')}</ul>`;
+  }
+
+  if (followups.length) {
+    html += `<div class="search-section-title">Try also</div>
+    <div class="search-followups">
+      ${followups.map(f => `<button class="search-followup" onclick="document.getElementById('globalSearch').value='${esc(f)}';runGlobalSearch()">${esc(f)}</button>`).join('')}
+    </div>`;
+  }
+
+  if (!companies.length && !answer) {
+    html += `<p style="color:#94a3b8;padding:12px">No matches found. Try different keywords.</p>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ── Company Deep Dive ─────────────────────────────────────────────────────────
+document.getElementById('deepDiveClose').addEventListener('click', () => {
+  document.getElementById('deepDiveOverlay').hidden = true;
+});
+document.getElementById('deepDiveOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.hidden = true;
+});
+document.querySelectorAll('.dd-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.dd-tab').forEach(b => b.classList.remove('dd-tab--active'));
+    btn.classList.add('dd-tab--active');
+    renderDDTab(btn.dataset.ddtab);
+  });
+});
+
+let _currentDDData = null;
+let _currentDDCompany = null;
+
+async function openDeepDive(companyName) {
+  const overlay = document.getElementById('deepDiveOverlay');
+  const body    = document.getElementById('deepDiveBody');
+  const loading = document.getElementById('ddLoading');
+
+  // Find basic profile from local data
+  const profile = allCompanies.find(c => c.company_name === companyName);
+  if (!profile) return;
+
+  _currentDDCompany = profile;
+  _currentDDData    = null;
+
+  document.getElementById('ddCompany').textContent = profile.company_name;
+  document.getElementById('ddSector').textContent  = (profile.sector||'').replace('Manufacturing — ','');
+  document.getElementById('ddScore').innerHTML =
+    `<span class="risk-badge risk-badge--${profile.risk_tier}">${profile.esg_risk_score}/10</span>`;
+
+  // Reset tabs
+  document.querySelectorAll('.dd-tab').forEach(b => b.classList.remove('dd-tab--active'));
+  document.querySelector('.dd-tab[data-ddtab="overview"]').classList.add('dd-tab--active');
+
+  overlay.hidden = false;
+
+  // Show client-side overview immediately
+  body.innerHTML = renderDDOverviewLocal(profile);
+
+  // Fetch AI deep dive if backend available
+  if (API_BASE) {
+    body.innerHTML += `<div id="ddAiSection" style="margin-top:20px">
+      <div class="dd-loading"><div class="dd-spinner"></div><p>Loading AI analysis…</p></div>
+    </div>`;
+    try {
+      const r = await fetch(`${API_BASE}/api/esg-company-profile`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ company_name: companyName }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (r.ok) {
+        _currentDDData = await r.json();
+        renderDDTab('overview');
+      }
+    } catch {
+      document.getElementById('ddAiSection').innerHTML =
+        '<p style="color:#64748b;font-size:.8rem">AI analysis unavailable — backend offline.</p>';
+    }
+  }
+}
+
+function renderDDTab(tab) {
+  const body    = document.getElementById('deepDiveBody');
+  const profile = _currentDDCompany;
+  const data    = _currentDDData;
+
+  if (tab === 'overview') {
+    body.innerHTML = renderDDOverviewLocal(profile);
+    if (data) {
+      body.innerHTML += `
+        <div class="dd-section">
+          <div class="dd-section-title">AI Analysis</div>
+          <p class="dd-text">${esc(data.executive_summary||'')}</p>
+        </div>
+        <div class="dd-section">
+          <div class="dd-section-title">Financial Risk Analysis</div>
+          <p class="dd-text">${esc(data.financial_risk_analysis||'')}</p>
+        </div>
+        ${data.investment_signal ? `<div class="dd-insight-box">💡 <strong>Investor Signal:</strong> ${esc(data.investment_signal)}</div>` : ''}`;
+    }
+  }
+  else if (tab === 'risks') {
+    body.innerHTML = renderDDRisks(profile);
+  }
+  else if (tab === 'regulations') {
+    body.innerHTML = renderDDRegulations(profile, data);
+  }
+  else if (tab === 'benchmark') {
+    body.innerHTML = renderDDBenchmark(profile, data);
+  }
+  else if (tab === 'actions') {
+    body.innerHTML = renderDDActions(data);
+  }
+}
+
+function renderDDOverviewLocal(p) {
+  const rb = p.risk_breakdown || {};
+  const fe = p.financial_exposure || {};
+  const md = p.market_data || {};
+  return `
+    <div class="dd-overview-grid">
+      <div class="dd-kpi"><div class="dd-kpi-val">${p.revenue_crore ? '₹'+fmt(p.revenue_crore)+' Cr' : '—'}</div><div class="dd-kpi-lbl">Revenue</div></div>
+      <div class="dd-kpi"><div class="dd-kpi-val">${md.market_cap_crore ? '₹'+fmt(md.market_cap_crore)+' Cr' : '—'}</div><div class="dd-kpi-lbl">Market Cap</div></div>
+      <div class="dd-kpi"><div class="dd-kpi-val ${md.return_1y_pct != null ? (md.return_1y_pct>=0?'green':'red') : ''}">${md.return_1y_pct != null ? (md.return_1y_pct>=0?'+':'')+md.return_1y_pct+'%' : '—'}</div><div class="dd-kpi-lbl">1Y Return</div></div>
+      <div class="dd-kpi"><div class="dd-kpi-val">${fe.estimated_compliance_cost_band||'—'}</div><div class="dd-kpi-lbl">Est. Compliance Cost</div></div>
+    </div>
+    ${p.ai_summary ? `<div class="dd-section"><p class="dd-text dd-summary">${esc(p.ai_summary)}</p></div>` : ''}
+    <div class="dd-section">
+      <div class="dd-section-title">Top Risk Factors</div>
+      <div class="dd-risk-pills">${(p.top_risk_factors||[]).map(r => `<span class="dd-risk-pill">${esc(r)}</span>`).join('')}</div>
+    </div>
+    <div class="dd-section">
+      <div class="dd-section-title">Financial Exposure</div>
+      <div class="dd-kv-grid">
+        ${[
+          ['Scope 1 Emissions', fe.scope1_emissions_tco2e ? fe.scope1_emissions_tco2e+' tCO2e' : '—'],
+          ['Scope 2 Emissions', fe.scope2_emissions_tco2e ? fe.scope2_emissions_tco2e+' tCO2e' : '—'],
+          ['Water Withdrawal', fe.water_withdrawal_m3 ? fmt(fe.water_withdrawal_m3)+' m³' : '—'],
+          ['Waste Generated', fe.waste_tonnes ? fmt(fe.waste_tonnes)+' tonnes' : '—'],
+          ['EPR Applicable', fe.epr_applicable||'Unknown'],
+        ].map(([l,v]) => `<div class="dd-kv"><span class="dd-kv-label">${l}</span><span class="dd-kv-val">${v}</span></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderDDRisks(p) {
+  const rb = p.risk_breakdown || {};
+  const dims = [
+    ['GHG Intensity',   rb.ghg_intensity],
+    ['Water Intensity', rb.water_intensity],
+    ['Waste Intensity', rb.waste_intensity],
+    ['EPR Exposure',    rb.epr_exposure],
+    ['Compliance Risk', rb.compliance_risk],
+    ['HR Risk',         rb.hr_risk],
+    ['Governance Risk', rb.governance_risk],
+  ];
+  return `<div class="dd-section">
+    <div class="dd-section-title">Risk Dimension Breakdown</div>
+    <div class="dd-risk-bars">
+      ${dims.map(([label, val]) => {
+        const v = val || 0;
+        const cls = v >= 7 ? 'red' : v >= 4.5 ? 'amber' : 'green';
+        return `<div class="dd-risk-row">
+          <span class="dd-risk-label">${label}</span>
+          <div class="dd-risk-track">
+            <div class="dd-risk-fill dd-risk-fill--${cls}" style="width:${v*10}%"></div>
+          </div>
+          <span class="dd-risk-score">${v.toFixed(1)}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderDDRegulations(p, data) {
+  const kb = INTEL?.knowledge_base?.india_regulations || [];
+  const sector = (p.sector||'').toLowerCase();
+  const applicable = kb.filter(r =>
+    (r.affected_sectors||[]).some(s => sector.includes(s.toLowerCase().slice(0,6)))
+    || r.id === 'BRSR_EXPANSION'
+  );
+
+  let html = `<div class="dd-section">
+    <div class="dd-section-title">Applicable India Regulations</div>
+    <div class="dd-reg-list">
+      ${applicable.map(r => `
+        <div class="dd-reg-item">
+          <div class="dd-reg-name">${esc(r.name)}</div>
+          <div class="dd-reg-auth">${esc(r.authority)} · ${esc(r.effective_fy || r.effective_date || '')}</div>
+          <div class="dd-reg-impact">${esc(r.financial_impact||'')}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+
+  if (data?.regulatory_obligations?.length) {
+    html += `<div class="dd-section">
+      <div class="dd-section-title">Specific Obligations (AI Analysis)</div>
+      ${data.regulatory_obligations.map(o => `
+        <div class="dd-obligation">
+          <div class="dd-obligation-reg">${esc(o.regulation||'')}</div>
+          <div class="dd-obligation-text">${esc(o.obligation||'')}</div>
+          <div class="dd-obligation-meta">
+            ${o.deadline ? `<span>📅 ${esc(o.deadline)}</span>` : ''}
+            ${o.cost_estimate ? `<span>💰 ${esc(o.cost_estimate)}</span>` : ''}
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }
+  return html;
+}
+
+function renderDDBenchmark(p, data) {
+  const sector  = p.sector || '';
+  const peers   = data?.sector_peers || allCompanies.filter(c =>
+    c.company_name !== p.company_name &&
+    (c.sector||'').slice(0,20).toLowerCase() === sector.slice(0,20).toLowerCase()
+  ).slice(0, 5);
+
+  const allSectorScores = peers.map(pp => pp.esg_risk_score);
+  const sectorAvg = allSectorScores.length
+    ? allSectorScores.reduce((a,b)=>a+b,0)/allSectorScores.length : 0;
+  const position  = p.esg_risk_score > sectorAvg + 0.5 ? 'Higher risk than sector avg'
+                  : p.esg_risk_score < sectorAvg - 0.5 ? 'Lower risk than sector avg'
+                  : 'At sector average';
+
+  return `<div class="dd-section">
+    <div class="dd-section-title">Sector Peer Comparison</div>
+    <div class="dd-bench-position ${p.esg_risk_score > sectorAvg ? 'bench-worse' : 'bench-better'}">
+      ${position} · Sector avg: ${sectorAvg.toFixed(1)} · This company: ${p.esg_risk_score}
+    </div>
+    <div class="dd-peer-table">
+      ${[p, ...peers].map((c, i) => `
+        <div class="dd-peer-row ${i===0?'dd-peer-row--current':''}">
+          <span class="dd-peer-name">${i===0?'▶ ':''} ${esc(c.company_name)}</span>
+          <div class="score-bar">
+            <div class="score-bar__track" style="width:80px">
+              <div class="score-bar__fill score-bar__fill--${c.esg_risk_score>=6.5?'red':c.esg_risk_score>=4?'amber':''}"
+                style="width:${c.esg_risk_score*10}%"></div>
+            </div>
+            <span style="font-size:.8rem;color:#94a3b8">${c.esg_risk_score}</span>
+          </div>
+          <span style="font-size:.78rem;color:#64748b">${c.revenue_crore?'₹'+fmt(c.revenue_crore)+' Cr':'—'}</span>
+        </div>`).join('')}
+    </div>
+    ${data?.benchmark_vs_peers ? `
+    <div class="dd-section-title" style="margin-top:16px">AI Benchmark Analysis</div>
+    ${data.benchmark_vs_peers.strengths?.length ? `
+      <div style="margin-bottom:8px"><strong style="color:#10b981">Strengths</strong>
+      <ul class="dd-list">${data.benchmark_vs_peers.strengths.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>` : ''}
+    ${data.benchmark_vs_peers.weaknesses?.length ? `
+      <div><strong style="color:#f87171">Weaknesses</strong>
+      <ul class="dd-list">${data.benchmark_vs_peers.weaknesses.map(w=>`<li>${esc(w)}</li>`).join('')}</ul></div>` : ''}
+    ` : ''}
+  </div>`;
+}
+
+function renderDDActions(data) {
+  if (!data?.action_recommendations?.length) {
+    return `<div class="dd-section"><p style="color:#94a3b8">Action recommendations available after AI analysis loads. Backend must be running.</p></div>`;
+  }
+  const priorityColor = { High: '#f87171', Medium: '#fbbf24', Low: '#10b981' };
+  return `<div class="dd-section">
+    <div class="dd-section-title">Recommended Actions</div>
+    <div class="dd-actions-list">
+      ${data.action_recommendations.map(a => `
+        <div class="dd-action">
+          <div class="dd-action-header">
+            <span class="dd-action-priority" style="color:${priorityColor[a.priority]||'#94a3b8'}">${a.priority||'Medium'}</span>
+            <span class="dd-action-title">${esc(a.action||'')}</span>
+          </div>
+          <div class="dd-action-meta">
+            ${a.timeline?`<span>⏱ ${esc(a.timeline)}</span>`:''}
+            ${a.expected_benefit?`<span>✓ ${esc(a.expected_benefit)}</span>`:''}
+          </div>
+        </div>`).join('')}
+    </div>
+    ${data.esg_score_trajectory ? `<div class="dd-insight-box">📈 <strong>Trajectory:</strong> ${esc(data.esg_score_trajectory)}</div>` : ''}
+  </div>`;
+}
+
+// Make openDeepDive callable from screener rows
+window.openDeepDive = openDeepDive;
 
 // ── Utilities ──────────────────────────────────────────────────────────────────
 function esc(s) {
