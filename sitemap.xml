@@ -3,9 +3,16 @@
 
   <url>
     <loc>https://viduti-esg.github.io/</loc>
-    <lastmod>2026-06-01</lastmod>
+    <lastmod>2026-06-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://viduti-esg.github.io/#insight-gc-35e8982bb3e681dc9d36e9725cf7662a</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <url>
