@@ -549,7 +549,7 @@ async function runGlobalSearch() {
   const q = document.getElementById('globalSearch').value.trim();
   if (!q) return;
   const resultsEl = document.getElementById('searchResults');
-  resultsEl.hidden = false;
+  resultsEl.classList.add('is-open');
   resultsEl.innerHTML = `<div class="search-loading">
     <div class="dd-spinner"></div><span>Searching across 155 companies + regulations…</span>
   </div>`;
@@ -596,7 +596,7 @@ function renderSearchResults(data, query) {
 
   let html = `<div class="search-header">
     <span class="search-query">"${esc(query)}"</span>
-    <button class="search-close" onclick="document.getElementById('searchResults').hidden=true">✕</button>
+    <button class="search-close" onclick="document.getElementById('searchResults').classList.remove('is-open')">✕</button>
   </div>`;
 
   if (answer) {
@@ -639,10 +639,10 @@ function renderSearchResults(data, query) {
 
 // ── Company Deep Dive ─────────────────────────────────────────────────────────
 document.getElementById('deepDiveClose').addEventListener('click', () => {
-  document.getElementById('deepDiveOverlay').hidden = true;
+  document.getElementById('deepDiveOverlay').classList.remove('is-open');
 });
 document.getElementById('deepDiveOverlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.hidden = true;
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('is-open');
 });
 document.querySelectorAll('.dd-tab').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -676,7 +676,7 @@ async function openDeepDive(companyName) {
   document.querySelectorAll('.dd-tab').forEach(b => b.classList.remove('dd-tab--active'));
   document.querySelector('.dd-tab[data-ddtab="overview"]').classList.add('dd-tab--active');
 
-  overlay.hidden = false;
+  overlay.classList.add('is-open');
 
   // Show client-side overview immediately
   body.innerHTML = renderDDOverviewLocal(profile);

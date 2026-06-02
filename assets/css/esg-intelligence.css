@@ -439,17 +439,17 @@
 .search-loading { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: .85rem; padding: 8px 0; }
 
 /* ── Deep Dive Modal ─────────────────────────────────────────────────────── */
-/* Prevent CSS display:flex from overriding the HTML hidden attribute */
-.deepdive-overlay[hidden],
-.search-results[hidden] { display: none !important; }
-
 .deepdive-overlay {
+  display: none;   /* hidden by default — JS adds .is-open to show */
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(0,0,0,.7);
-  display: flex; align-items: center; justify-content: center;
+  align-items: center; justify-content: center;
   padding: 20px;
   backdrop-filter: blur(4px);
 }
+.deepdive-overlay.is-open { display: flex; }
+.search-results { display: none; }
+.search-results.is-open { display: block; }
 .deepdive-modal {
   background: #0f172a;
   border: 1px solid var(--border);
