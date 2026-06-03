@@ -293,6 +293,23 @@
       <!-- Divider -->
       <div class="calc-divider"><span>or enter a custom source</span></div>
 
+      <!-- Spend-based Scope 3 Module -->
+      <div class="calc-manual" id="spend-module">
+        <h3>📊 Spend-based Scope 3 Estimator <span class="module-badge">Scope 3 Quick Estimate</span></h3>
+        <p>Don't have activity data? Enter annual spend (₹ Crore) per category for an indicative Scope 3 estimate using DEFRA EEIO spend-based factors.</p>
+        <div class="spend-grid" id="spend-grid">
+          <div class="spend-row"><span class="spend-cat">Raw materials</span><input type="number" class="field-input spend-input" data-factor="0.00054" min="0" step="0.01" placeholder="₹ Cr"/></div>
+          <div class="spend-row"><span class="spend-cat">Logistics & freight</span><input type="number" class="field-input spend-input" data-factor="0.00062" min="0" step="0.01" placeholder="₹ Cr"/></div>
+          <div class="spend-row"><span class="spend-cat">Business travel</span><input type="number" class="field-input spend-input" data-factor="0.00148" min="0" step="0.01" placeholder="₹ Cr"/></div>
+          <div class="spend-row"><span class="spend-cat">IT equipment</span><input type="number" class="field-input spend-input" data-factor="0.00089" min="0" step="0.01" placeholder="₹ Cr"/></div>
+          <div class="spend-row"><span class="spend-cat">Professional services</span><input type="number" class="field-input spend-input" data-factor="0.00028" min="0" step="0.01" placeholder="₹ Cr"/></div>
+          <div class="spend-row"><span class="spend-cat">Construction & capex</span><input type="number" class="field-input spend-input" data-factor="0.00118" min="0" step="0.01" placeholder="₹ Cr"/></div>
+        </div>
+        <div class="commute-preview" id="spend-preview">Enter spend categories above to estimate Scope 3</div>
+        <button id="spend-add" class="btn-secondary">Add spend-based Scope 3 entry</button>
+        <p class="calc-note" style="margin-top:8px">Source: DEFRA 2024 EEIO spend-based factors (converted to INR). Accuracy improves with activity-based data — use as a starting estimate.</p>
+      </div>
+
       <!-- CEA State Grid Module -->
       <div class="calc-manual" id="cea-module">
         <h3>🇮🇳 CEA India State Grid Electricity <span class="module-badge">Scope 2</span></h3>
@@ -532,6 +549,34 @@
         <p class="calc-note" style="margin-top:8px">Benchmarks derived from companies' own publicly filed SEBI BRSR disclosures (Green Curve ESG Quotient dataset). Not investment advice.</p>
       </div>
 
+      <!-- Anomaly Detection -->
+      <div class="calc-anomaly" id="anomaly-section" hidden>
+        <h3 class="calc-section-title">⚠ Data Quality Alerts</h3>
+        <div id="anomaly-list"></div>
+      </div>
+
+      <!-- Net Zero Pathway -->
+      <div class="calc-netzero" id="nz-section" hidden>
+        <h3 class="calc-section-title">Net Zero Pathway <span class="section-badge">SBTi 1.5°C</span></h3>
+        <p style="font-size:.8rem;color:#64748b;margin-bottom:12px">Required annual reduction rate: 4.2% to stay on a 1.5°C pathway (SBTi methodology)</p>
+        <canvas id="nzChart" height="200"></canvas>
+        <div class="nz-milestones" id="nz-milestones"></div>
+        <p class="calc-note" style="margin-top:10px">Based on SBTi Corporate Net-Zero Standard. Not an official SBTi validation.</p>
+      </div>
+
+      <!-- SBTi Target Generator -->
+      <div class="calc-sbti" id="sbti-section">
+        <h3 class="calc-section-title">SBTi Target Generator <span class="section-badge">BRSR Required</span></h3>
+        <div id="sbti-result"><p class="calc-note">Add emission items to generate SBTi targets.</p></div>
+      </div>
+
+      <!-- Reduction Levers -->
+      <div class="calc-levers" id="levers-section">
+        <h3 class="calc-section-title">India Reduction Levers</h3>
+        <p style="font-size:.8rem;color:#64748b;margin-bottom:12px">Practical actions ranked by impact and cost for Indian businesses</p>
+        <div id="levers-list" class="levers-list"></div>
+      </div>
+
       <!-- Year-on-Year Comparison -->
       <div class="calc-yoy" id="yoy-section">
         <h3 class="calc-section-title">Year-on-Year Comparison</h3>
@@ -545,6 +590,12 @@
           <button id="yoy-save" class="btn-secondary">Save snapshot for this FY</button>
         </div>
         <div id="yoy-table-wrap" class="yoy-table-wrap" hidden></div>
+      </div>
+
+      <!-- Carbon Offsets -->
+      <div class="calc-offsets" id="offsets-section">
+        <h3 class="calc-section-title">Carbon Offset Projects — India</h3>
+        <div id="offsets-list"></div>
       </div>
 
       <div class="calc-table-wrap">
@@ -569,6 +620,7 @@
           <button id="export-brsr" class="btn-brsr btn-block">Export for BRSR ⬇</button>
           <button id="export-json" class="btn-tertiary btn-block">Export JSON</button>
         </div>
+        <button onclick="generateShareableProfile()" class="btn-secondary btn-block">Share Profile Link</button>
         <button id="reset-items" class="btn-secondary btn-block">Clear all items</button>
         <p class="calc-note">Emission factors in kg CO₂e. Results in t CO₂e. BRSR export is a draft — verify before filing. Based on GHG Protocol Corporate Standard &amp; CEA CO₂ Baseline V21.0.</p>
       </div>
@@ -596,6 +648,39 @@
   </div>
 </footer>
 
+<!-- Shareable Profile Modal -->
+<div id="profile-modal" hidden style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:flex;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:28px;max-width:500px;width:90%">
+    <h3 style="margin-bottom:8px;font-size:1.1rem">Your GHG Profile Link</h3>
+    <p style="font-size:.85rem;color:#64748b;margin-bottom:14px">Share this link to show your carbon footprint publicly. Data is encoded in the URL — no account needed.</p>
+    <input id="profile-url" type="text" readonly style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:.82rem;margin-bottom:10px"/>
+    <div style="display:flex;gap:10px">
+      <button id="profile-copy-btn" onclick="copyProfileUrl()" style="flex:1;background:#059669;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;cursor:pointer">Copy link</button>
+      <button id="profile-modal-close" style="flex:1;background:#f1f5f9;color:#374151;border:none;border-radius:8px;padding:10px;cursor:pointer">Close</button>
+    </div>
+    <p style="font-size:.72rem;color:#94a3b8;margin-top:10px">Self-reported data. Not independently verified. Add disclaimer when sharing officially.</p>
+  </div>
+</div>
+
+<!-- AI Chat Copilot -->
+<button id="chat-toggle" class="chat-toggle" title="AI Carbon Copilot">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div id="chat-panel" class="chat-panel" hidden>
+  <div class="chat-header">
+    <span>AI Carbon Copilot</span>
+    <button id="chat-close" class="chat-close">✕</button>
+  </div>
+  <div id="chat-messages" class="chat-messages">
+    <div class="chat-msg chat-msg--bot">Hi! I can answer questions about your emission inventory, help reduce specific items, or explain any calculation. What would you like to know?</div>
+  </div>
+  <form id="chat-form" class="chat-form">
+    <input id="chat-input" type="text" placeholder="e.g. Which item has highest impact?" autocomplete="off"/>
+    <button type="submit">Send</button>
+  </form>
+  <p class="chat-note">Powered by Claude Haiku via your BRSR backend</p>
+</div>
+
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -608,6 +693,7 @@
     header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 </script>
-<script src="assets/js/ghg-calculator.js?v=20260529" defer></script>
+<script src="assets/js/ghg-calculator.js?v=20260604" defer></script>
+<script src="assets/js/ghg-features2.js?v=20260604" defer></script>
 </body>
 </html>
