@@ -1,4 +1,4 @@
-// ESG Financial Intelligence Dashboard
+// ESG Financial Quotient Dashboard
 // Reads assets/data/esg_intelligence.json and renders all 4 panels
 
 let INTEL = null;
@@ -42,7 +42,7 @@ async function initDashboard() {
     renderSupplyChain();
     renderMaterials();
   } catch (e) {
-    statusEl.textContent = 'Intelligence data not yet available — runs daily after 2 AM.';
+    statusEl.textContent = 'Quotient data not yet available — runs daily after 2 AM.';
     console.warn('ESG Intel load failed:', e);
     renderPlaceholder();
   }
