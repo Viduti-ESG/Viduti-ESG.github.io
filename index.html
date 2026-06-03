@@ -549,12 +549,9 @@
 
 <script src="assets/js/app.js"></script>
 <script>
-// ── Newsletter subscription ────────────────────────────────────────────────
-// Replace the URL below with your Buttondown/Mailchimp/ConvertKit form endpoint.
-// Buttondown: https://buttondown.email/api/emails/embed-subscribe/YOUR_USERNAME
-// Mailchimp:  Your Mailchimp embedded form action URL
-// ConvertKit: Your ConvertKit form endpoint
-const NEWSLETTER_ENDPOINT = 'https://buttondown.email/api/emails/embed-subscribe/greencurve';
+// ── Newsletter subscription → Google Sheets ───────────────────────────────
+// After deploying your Apps Script (see setup instructions), paste the URL below.
+const NEWSLETTER_ENDPOINT = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
 
 async function subscribeNewsletter(e) {
   e.preventDefault();
@@ -564,34 +561,29 @@ async function subscribeNewsletter(e) {
   const msg   = document.getElementById('nlMsg');
 
   if (!email) return;
+  if (NEWSLETTER_ENDPOINT === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+    if (msg) { msg.textContent = 'Subscription not configured yet.'; msg.style.color = '#f87171'; }
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Subscribing…';
 
   try {
-    const res = await fetch(NEWSLETTER_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-
-    if (res.ok || res.status === 201) {
-      form.innerHTML = `
-        <div class="nl-success">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>You're in! Check your inbox to confirm.</span>
-        </div>`;
-    } else {
-      throw new Error(`HTTP ${res.status}`);
-    }
+    const fd = new FormData();
+    fd.append('email', email);
+    // mode:'no-cors' is required — Apps Script doesn't return CORS headers.
+    // Response is opaque but the email IS written to the sheet.
+    await fetch(NEWSLETTER_ENDPOINT, { method: 'POST', mode: 'no-cors', body: fd });
+    form.innerHTML = `
+      <div class="nl-success">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>Subscribed! You'll hear from us soon.</span>
+      </div>`;
   } catch {
-    // Fallback: open Buttondown signup page
-    window.open('https://buttondown.email/greencurve', '_blank');
-    if (msg) {
-      msg.textContent = 'Redirecting to signup page…';
-      msg.style.color = '#94a3b8';
-    }
     btn.disabled = false;
     btn.textContent = 'Subscribe →';
+    if (msg) { msg.textContent = 'Something went wrong — please try again.'; msg.style.color = '#f87171'; }
   }
 }
 </script>
