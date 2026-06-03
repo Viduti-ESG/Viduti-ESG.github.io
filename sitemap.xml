@@ -442,6 +442,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://viduti-esg.github.io/methodology.html</loc>
+    <lastmod>2026-06-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- COMPANY PAGES -->
   <url>
     <loc>https://viduti-esg.github.io/company/gmr-power-and-urban-infra-limited.html</loc>

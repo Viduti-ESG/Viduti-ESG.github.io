@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ESG Scoring Methodology | Green Curve</title>
+  <meta name="description" content="How Green Curve calculates ESG risk scores for Indian listed companies. Data sources, scoring dimensions, weights, risk tiers and limitations — full transparency."/>
+  <meta name="robots" content="index,follow"/>
+  <link rel="canonical" href="https://viduti-esg.github.io/methodology.html"/>
+  <meta property="og:title" content="ESG Scoring Methodology | Green Curve"/>
+  <meta property="og:description" content="Full transparency on how Green Curve calculates ESG Financial Quotient scores for Indian listed companies using SEBI BRSR public filings."/>
+  <meta property="og:image" content="https://viduti-esg.github.io/assets/img/logo.png"/>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ESG Financial Quotient — Scoring Methodology",
+    "description": "How Green Curve calculates ESG risk scores for Indian listed companies using SEBI BRSR public filings.",
+    "publisher": { "@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io" },
+    "dateModified": "2026-06-03",
+    "mainEntityOfPage": "https://viduti-esg.github.io/methodology.html"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="stylesheet" href="assets/css/methodology.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+</head>
+<body>
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html#insights">Insights</a></li>
+      <li><a href="index.html#topics">Topics</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+  <a href="index.html#insights">Insights</a>
+  <a href="index.html#topics">Topics</a>
+  <a href="index.html#about">About</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="esg-intelligence.html">ESG Quotient</a>
+  <a href="index.html#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="meth-hero">
+  <div class="container meth-hero__inner">
+    <div class="meth-hero__eyebrow">Transparency &amp; Methodology</div>
+    <h1 class="meth-hero__title">How We Calculate<br/><em>ESG Financial Quotient</em> Scores</h1>
+    <p class="meth-hero__sub">Full transparency on our data sources, scoring dimensions, weighting approach, risk tier definitions, and limitations. If you have questions, <a href="index.html#contact">contact us</a>.</p>
+    <div class="meth-hero__meta">
+      <span>Last updated: June 2026</span>
+      <span>Covers: 155 Indian listed companies</span>
+      <span>Data source: SEBI BRSR public filings</span>
+    </div>
+  </div>
+</section>
+
+<main class="container meth-main">
+
+  <!-- TOC -->
+  <nav class="meth-toc" aria-label="Page contents">
+    <div class="meth-toc__title">On this page</div>
+    <ol class="meth-toc__list">
+      <li><a href="#data-sources">1. Data Sources</a></li>
+      <li><a href="#scoring-overview">2. Scoring Overview</a></li>
+      <li><a href="#dimensions">3. The 7 Risk Dimensions</a></li>
+      <li><a href="#weights">4. Dimension Weights</a></li>
+      <li><a href="#risk-tiers">5. Risk Tier Thresholds</a></li>
+      <li><a href="#financial-exposure">6. Financial Exposure Estimates</a></li>
+      <li><a href="#double-materiality">7. Double Materiality</a></li>
+      <li><a href="#update-cycle">8. Update Cycle</a></li>
+      <li><a href="#limitations">9. Limitations &amp; Disclaimers</a></li>
+      <li><a href="#faq">10. FAQ</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. Data Sources -->
+  <section class="meth-section" id="data-sources">
+    <h2 class="meth-h2">1. Data Sources</h2>
+    <p class="meth-p">All ESG Financial Quotient scores are derived <strong>exclusively from companies' own public regulatory disclosures</strong>. We do not use estimates, surveys, or third-party data providers. The primary sources are:</p>
+
+    <div class="meth-source-grid">
+      <div class="meth-source-card">
+        <div class="meth-source-icon">📄</div>
+        <div>
+          <div class="meth-source-title">SEBI BRSR Filings</div>
+          <div class="meth-source-desc">Business Responsibility &amp; Sustainability Reports filed by listed companies as part of their Annual Reports under SEBI's mandatory disclosure framework (top 1,000 companies by market cap, mandatory from FY 2022-23). Covers GHG emissions, water use, waste, energy, supply chain, governance and ESG targets.</div>
+        </div>
+      </div>
+      <div class="meth-source-card">
+        <div class="meth-source-icon">🏭</div>
+        <div>
+          <div class="meth-source-title">CPCB EPR Portal (Public Data)</div>
+          <div class="meth-source-desc">Publicly available data from the Central Pollution Control Board's Extended Producer Responsibility portals for Batteries, Plastics, E-Waste and Tyres. Used to determine EPR applicability and compliance obligations by sector and product type.</div>
+        </div>
+      </div>
+      <div class="meth-source-card">
+        <div class="meth-source-icon">🏢</div>
+        <div>
+          <div class="meth-source-title">MCA Company Registry</div>
+          <div class="meth-source-desc">Ministry of Corporate Affairs public registry for company identification, CIN numbers, and sector classification used to map BRSR filings to company profiles.</div>
+        </div>
+      </div>
+      <div class="meth-source-card">
+        <div class="meth-source-icon">📋</div>
+        <div>
+          <div class="meth-source-title">Regulatory Notifications</div>
+          <div class="meth-source-desc">Published notifications and circulars from SEBI, MoEFCC, BEE, CPCB and other Indian regulators, used to assess compliance risk levels and upcoming regulatory obligations by sector.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meth-callout">
+      <strong>What we do not use:</strong> Real-time stock prices, NSE/BSE live market data, proprietary databases, or self-reported ESG questionnaires outside of BRSR filings.
+    </div>
+  </section>
+
+  <!-- 2. Scoring Overview -->
+  <section class="meth-section" id="scoring-overview">
+    <h2 class="meth-h2">2. Scoring Overview</h2>
+    <p class="meth-p">The <strong>ESG Financial Quotient (EFQ) score</strong> is a composite 0–10 risk score. A <strong>higher score indicates greater financial exposure to ESG-related risks</strong> — not a lower ESG performance. This is a risk lens, not a ratings system.</p>
+
+    <div class="meth-flow">
+      <div class="meth-flow-step">
+        <div class="meth-flow-num">1</div>
+        <div class="meth-flow-text"><strong>Extract</strong> quantitative and qualitative indicators from BRSR filings</div>
+      </div>
+      <div class="meth-flow-arrow">→</div>
+      <div class="meth-flow-step">
+        <div class="meth-flow-num">2</div>
+        <div class="meth-flow-text"><strong>Score</strong> each of 7 risk dimensions on a 0–10 scale</div>
+      </div>
+      <div class="meth-flow-arrow">→</div>
+      <div class="meth-flow-step">
+        <div class="meth-flow-num">3</div>
+        <div class="meth-flow-text"><strong>Weight</strong> dimensions by financial materiality to Indian regulations</div>
+      </div>
+      <div class="meth-flow-arrow">→</div>
+      <div class="meth-flow-step">
+        <div class="meth-flow-num">4</div>
+        <div class="meth-flow-text"><strong>Aggregate</strong> into a single EFQ composite score</div>
+      </div>
+      <div class="meth-flow-arrow">→</div>
+      <div class="meth-flow-step">
+        <div class="meth-flow-num">5</div>
+        <div class="meth-flow-text"><strong>Classify</strong> into High / Medium / Low risk tier</div>
+      </div>
+    </div>
+
+    <div class="meth-callout meth-callout--blue">
+      <strong>Score interpretation:</strong> A score of 0 means no identified ESG financial risk exposure based on disclosed data. A score of 10 means maximum identified risk exposure. Most Indian listed companies score between 4.0 and 7.0 due to widespread partial disclosures and EPR compliance gaps.
+    </div>
+  </section>
+
+  <!-- 3. Dimensions -->
+  <section class="meth-section" id="dimensions">
+    <h2 class="meth-h2">3. The 7 Risk Dimensions</h2>
+    <p class="meth-p">Each dimension is scored independently on a 0–10 scale before being combined into the composite EFQ score.</p>
+
+    <div class="meth-dim-grid">
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(248,113,113,.12);color:#f87171">🌫️</span>
+          <div>
+            <div class="meth-dim-name">GHG Intensity</div>
+            <div class="meth-dim-weight">Weight: 20%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">Measures carbon emissions intensity relative to revenue. Derived from Scope 1 and Scope 2 absolute emissions disclosed in BRSR (Section C, Principle 6). Scored higher for heavy emitters and for companies with incomplete or nil emissions disclosures, which signals potential SEBI enforcement exposure.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: Nil or missing Scope 1/2 data</span>
+          <span class="signal-pill signal-pill--amber">Medium: Partial disclosure</span>
+          <span class="signal-pill signal-pill--green">Low: Full, assured disclosure</span>
+        </div>
+      </div>
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(56,189,248,.12);color:#38bdf8">💧</span>
+          <div>
+            <div class="meth-dim-name">Water Intensity</div>
+            <div class="meth-dim-weight">Weight: 10%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">Evaluates water withdrawal and consumption relative to sector benchmarks. Scored using absolute water withdrawal (m³) from BRSR, cross-referenced against sector water-stress classifications under CPCB norms. High scores indicate exposure to water-related regulatory tightening or operational disruption risk.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: High withdrawal, water-stressed region</span>
+          <span class="signal-pill signal-pill--amber">Medium: Moderate disclosure</span>
+          <span class="signal-pill signal-pill--green">Low: Efficiency measures disclosed</span>
+        </div>
+      </div>
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(251,191,36,.12);color:#fbbf24">🗑️</span>
+          <div>
+            <div class="meth-dim-name">Waste Intensity</div>
+            <div class="meth-dim-weight">Weight: 15%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">Assesses total waste generation (hazardous + non-hazardous) relative to revenue. Scored using BRSR Principle 6 waste data. Companies with high waste generation and no disclosed reclamation or recycling protocols receive maximum scores. Linked directly to EPR obligations.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: High waste, no reclaim process</span>
+          <span class="signal-pill signal-pill--amber">Medium: Partial waste management</span>
+          <span class="signal-pill signal-pill--green">Low: Circular practices disclosed</span>
+        </div>
+      </div>
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(99,102,241,.12);color:#a5b4fc">♻️</span>
+          <div>
+            <div class="meth-dim-name">EPR Exposure</div>
+            <div class="meth-dim-weight">Weight: 20%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">Quantifies financial risk from Extended Producer Responsibility obligations under Battery Waste Management Rules 2022, Plastic Waste Management Rules, E-Waste (Management) Rules 2022, and Waste Tyre notification. Scored based on product categories, sector classification, and disclosed EPR compliance status in BRSR Section C.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: Multiple EPR categories, nil compliance</span>
+          <span class="signal-pill signal-pill--amber">Medium: Partial compliance or unknown</span>
+          <span class="signal-pill signal-pill--green">Low: Full EPR compliance documented</span>
+        </div>
+      </div>
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(248,113,113,.12);color:#f87171">⚠️</span>
+          <div>
+            <div class="meth-dim-name">Compliance Risk</div>
+            <div class="meth-dim-weight">Weight: 20%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">The highest-weight dimension. Evaluates the completeness and accuracy of BRSR disclosures against SEBI's mandatory framework. Missing mandatory indicators, nil responses for quantitative fields, inconsistencies between reported figures, and absence of third-party assurance all contribute to a higher compliance risk score. Directly linked to SEBI enforcement and potential delisting risk.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: Multiple nil/missing mandatory fields</span>
+          <span class="signal-pill signal-pill--amber">Medium: Some gaps in disclosure</span>
+          <span class="signal-pill signal-pill--green">Low: Complete, assured disclosure</span>
+        </div>
+      </div>
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(52,211,153,.12);color:#34d399">👥</span>
+          <div>
+            <div class="meth-dim-name">HR Risk</div>
+            <div class="meth-dim-weight">Weight: 10%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">Assesses human rights and labour practice risks based on BRSR Principle 5 disclosures. Considers MSME sourcing percentage (supply chain inclusion), presence of human rights due diligence policies, contractor workforce treatment, and value chain disclosures. Low MSME sourcing (below 15%) increases this score due to preferential procurement policy risk.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: No HR policy, &lt;5% MSME sourcing</span>
+          <span class="signal-pill signal-pill--amber">Medium: Partial HR disclosures</span>
+          <span class="signal-pill signal-pill--green">Low: Robust HR framework disclosed</span>
+        </div>
+      </div>
+
+      <div class="meth-dim-card">
+        <div class="meth-dim-header">
+          <span class="meth-dim-icon" style="background:rgba(167,139,250,.12);color:#c4b5fd">🏛️</span>
+          <div>
+            <div class="meth-dim-name">Governance Risk</div>
+            <div class="meth-dim-weight">Weight: 5%</div>
+          </div>
+        </div>
+        <p class="meth-dim-desc">Evaluates anti-corruption policies, conflict of interest frameworks, BRSR assurance level, and board-level ESG accountability from BRSR Principle 1 and Principle 7. Companies with no disclosed anti-corruption policy or no independent BRSR assurance receive higher governance risk scores. Lowest weight as Indian listed companies have relatively standardised governance frameworks under SEBI LODR.</p>
+        <div class="meth-dim-signals">
+          <span class="signal-pill signal-pill--red">High: No anti-corruption policy, no assurance</span>
+          <span class="signal-pill signal-pill--amber">Medium: Partial governance disclosures</span>
+          <span class="signal-pill signal-pill--green">Low: Full governance framework + assurance</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. Weights -->
+  <section class="meth-section" id="weights">
+    <h2 class="meth-h2">4. Dimension Weights</h2>
+    <p class="meth-p">Weights reflect the relative financial materiality of each dimension to Indian regulatory risk and market exposure, not universal ESG importance. Compliance Risk and EPR Exposure carry the highest weight because they represent the most direct and quantifiable financial penalties under Indian law.</p>
+
+    <table class="meth-table">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Weight</th>
+          <th>Primary Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Compliance Risk</strong></td>
+          <td><span class="weight-badge weight-badge--high">20%</span></td>
+          <td>Direct SEBI enforcement exposure; mandatory BRSR Core from FY 2023-24</td>
+        </tr>
+        <tr>
+          <td><strong>EPR Exposure</strong></td>
+          <td><span class="weight-badge weight-badge--high">20%</span></td>
+          <td>Quantifiable penalties under 4 EPR rules; growing CPCB enforcement</td>
+        </tr>
+        <tr>
+          <td><strong>GHG Intensity</strong></td>
+          <td><span class="weight-badge weight-badge--med">20%</span></td>
+          <td>SEBI BRSR Core mandatory; Carbon Credit Trading Scheme (CCTS) exposure</td>
+        </tr>
+        <tr>
+          <td><strong>Waste Intensity</strong></td>
+          <td><span class="weight-badge weight-badge--med">15%</span></td>
+          <td>Linked to EPR obligations and Hazardous Waste Management Rules</td>
+        </tr>
+        <tr>
+          <td><strong>Water Intensity</strong></td>
+          <td><span class="weight-badge weight-badge--low">10%</span></td>
+          <td>Sector-specific; operational risk in water-stressed regions of India</td>
+        </tr>
+        <tr>
+          <td><strong>HR Risk</strong></td>
+          <td><span class="weight-badge weight-badge--low">10%</span></td>
+          <td>MSME sourcing policy risk; BRSR Principle 5 compliance</td>
+        </tr>
+        <tr>
+          <td><strong>Governance Risk</strong></td>
+          <td><span class="weight-badge weight-badge--min">5%</span></td>
+          <td>SEBI LODR baseline governance already mandated for listed entities</td>
+        </tr>
+        <tr class="meth-table__total">
+          <td><strong>Total</strong></td>
+          <td><strong>100%</strong></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="meth-p" style="margin-top:20px">The composite EFQ score is calculated as:</p>
+    <div class="meth-formula">
+      EFQ Score = (0.20 × Compliance) + (0.20 × EPR) + (0.20 × GHG) + (0.15 × Waste) + (0.10 × Water) + (0.10 × HR) + (0.05 × Governance)
+    </div>
+  </section>
+
+  <!-- 5. Risk Tiers -->
+  <section class="meth-section" id="risk-tiers">
+    <h2 class="meth-h2">5. Risk Tier Thresholds</h2>
+    <p class="meth-p">Companies are classified into three tiers based on their composite EFQ score. Thresholds are calibrated to the Indian listed company universe — most companies score in the Medium range due to widespread partial disclosures across BRSR mandatory fields.</p>
+
+    <div class="meth-tier-grid">
+      <div class="meth-tier-card meth-tier-card--high">
+        <div class="meth-tier-score">≥ 6.5 / 10</div>
+        <div class="meth-tier-name">High Risk</div>
+        <div class="meth-tier-desc">Material financial exposure from ESG compliance gaps. Significant unreported emissions, major EPR obligations unaddressed, or critical BRSR disclosure failures. Warrants immediate attention from management and investors.</div>
+      </div>
+      <div class="meth-tier-card meth-tier-card--medium">
+        <div class="meth-tier-score">4.0 – 6.4 / 10</div>
+        <div class="meth-tier-name">Medium Risk</div>
+        <div class="meth-tier-desc">Moderate financial exposure. Partial disclosures, some regulatory compliance gaps, or sector-specific exposure to evolving Indian ESG regulations. Requires monitoring and targeted disclosure improvements.</div>
+      </div>
+      <div class="meth-tier-card meth-tier-card--low">
+        <div class="meth-tier-score">&lt; 4.0 / 10</div>
+        <div class="meth-tier-name">Low Risk</div>
+        <div class="meth-tier-desc">Limited identified financial exposure from ESG compliance. Comprehensive BRSR disclosures, low environmental intensity, and documented regulatory compliance. Consistent with ESG leadership within the Indian listed universe.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Financial Exposure -->
+  <section class="meth-section" id="financial-exposure">
+    <h2 class="meth-h2">6. Financial Exposure Estimates</h2>
+    <p class="meth-p">The <strong>Estimated Compliance Cost Band</strong> shown on company profiles (e.g., <em>₹10–38 crore</em>) is a directional estimate of potential regulatory compliance costs, not an audited figure. It is derived from:</p>
+    <ul class="meth-list">
+      <li>Published penalty structures under SEBI BRSR enforcement guidelines</li>
+      <li>CPCB EPR non-compliance penalty rates for Plastics, Batteries, E-Waste and Tyres</li>
+      <li>Sector-wide carbon pricing frameworks (₹600–900/tonne CO₂e under India's Carbon Credit Trading Scheme)</li>
+      <li>Company revenue scale and waste/emissions intensity as a multiplier</li>
+    </ul>
+    <div class="meth-callout meth-callout--amber">
+      <strong>Important:</strong> These are indicative ranges only. Actual compliance costs depend on company-specific circumstances, regulatory discretion, and remediation timelines. Do not use these figures for financial reporting, legal proceedings, or investment decisions.
+    </div>
+  </section>
+
+  <!-- 7. Double Materiality -->
+  <section class="meth-section" id="double-materiality">
+    <h2 class="meth-h2">7. Double Materiality Assessment</h2>
+    <p class="meth-p">Following the ISSB IFRS S1/S2 and EU CSRD double materiality framework, each company is assessed on two axes:</p>
+    <div class="meth-dm-grid">
+      <div class="meth-dm-card">
+        <div class="meth-dm-title">Financial Materiality (→)</div>
+        <p>How ESG risks affect the company's own financial position, earnings, and access to capital. Derived from the composite EFQ score.</p>
+      </div>
+      <div class="meth-dm-card">
+        <div class="meth-dm-title">Impact Materiality (↑)</div>
+        <p>How the company's operations affect the environment and society. Derived from absolute GHG, water, and waste figures relative to sector peers — independent of disclosure completeness.</p>
+      </div>
+    </div>
+    <table class="meth-table" style="margin-top:20px">
+      <thead><tr><th>Quadrant</th><th>Financial Materiality</th><th>Impact Materiality</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dual Materiality</strong></td><td>High (≥5)</td><td>High (≥5)</td><td>ESG risks affect both company finances and the environment — highest priority for disclosure and action</td></tr>
+        <tr><td><strong>Financially Material</strong></td><td>High (≥5)</td><td>Low (&lt;5)</td><td>Strong regulatory/financial risk but relatively lower absolute environmental impact</td></tr>
+        <tr><td><strong>Impact Material</strong></td><td>Low (&lt;5)</td><td>High (≥5)</td><td>High environmental impact but lower near-term regulatory financial risk</td></tr>
+        <tr><td><strong>Watch List</strong></td><td>Low (&lt;5)</td><td>Low (&lt;5)</td><td>Currently lower risk on both axes — monitor for regulatory changes</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 8. Update Cycle -->
+  <section class="meth-section" id="update-cycle">
+    <h2 class="meth-h2">8. Update Cycle</h2>
+    <div class="meth-update-grid">
+      <div class="meth-update-card">
+        <div class="meth-update-icon">🔄</div>
+        <div class="meth-update-title">Company Scores</div>
+        <div class="meth-update-desc">Updated annually when new BRSR filings are published (typically June–September for the previous financial year). Scores reflect the most recently available BRSR filing — the financial year is shown on each company profile.</div>
+      </div>
+      <div class="meth-update-card">
+        <div class="meth-update-icon">📰</div>
+        <div class="meth-update-title">Regulatory Radar</div>
+        <div class="meth-update-desc">Regulatory notifications, circulars and compliance deadlines are reviewed and updated daily (automated nightly run). Impact scores are assigned based on sector coverage and penalty magnitude.</div>
+      </div>
+      <div class="meth-update-card">
+        <div class="meth-update-icon">🏭</div>
+        <div class="meth-update-title">EPR Data</div>
+        <div class="meth-update-desc">CPCB EPR portal public data is checked periodically and EPR exposure scores are updated when new registration data or compliance notices are published.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Limitations -->
+  <section class="meth-section" id="limitations">
+    <h2 class="meth-h2">9. Limitations &amp; Disclaimers</h2>
+    <div class="meth-limitations">
+      <div class="meth-limit-item">
+        <div class="meth-limit-icon">⚠️</div>
+        <div>
+          <strong>Self-Reported Data</strong>
+          <p>All scores are based on data companies have chosen to disclose in their BRSR filings. Companies that disclose less may appear riskier than they are (due to penalising incomplete disclosures), and companies that over-report may appear less risky. We score what is disclosed — not what is true.</p>
+        </div>
+      </div>
+      <div class="meth-limit-item">
+        <div class="meth-limit-icon">⚠️</div>
+        <div>
+          <strong>Not Investment Advice</strong>
+          <p>ESG Financial Quotient scores are analytical outputs for informational purposes only. They do not constitute investment advice, a buy/sell recommendation, or a securities rating. Green Curve is not a SEBI-registered Research Analyst or ESG Rating Provider.</p>
+        </div>
+      </div>
+      <div class="meth-limit-item">
+        <div class="meth-limit-icon">⚠️</div>
+        <div>
+          <strong>AI-Assisted Analysis</strong>
+          <p>Company risk summaries are generated using AI analysis of BRSR data. While grounded in disclosed data, AI-generated summaries may contain inaccuracies or omissions. Always verify findings against the original company BRSR filing.</p>
+        </div>
+      </div>
+      <div class="meth-limit-item">
+        <div class="meth-limit-icon">⚠️</div>
+        <div>
+          <strong>Data Currency</strong>
+          <p>Scores reflect the most recently available BRSR filing, which may be 12–18 months old at any given time. Company circumstances, regulatory compliance, and environmental performance may have changed since the filing date.</p>
+        </div>
+      </div>
+      <div class="meth-limit-item">
+        <div class="meth-limit-icon">⚠️</div>
+        <div>
+          <strong>Coverage Scope</strong>
+          <p>The current dataset covers 155 companies — a subset of India's listed universe. Absence from our database does not imply lower or higher ESG risk. We are working to expand coverage to NIFTY 500.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FAQ -->
+  <section class="meth-section" id="faq">
+    <h2 class="meth-h2">10. Frequently Asked Questions</h2>
+    <div class="meth-faq">
+
+      <details class="meth-faq-item">
+        <summary>Why does a higher score mean higher risk? Shouldn't a better company score higher?</summary>
+        <p>The EFQ is a <em>financial risk</em> score, not an ESG performance rating. It measures how much ESG-related regulatory and financial risk a company is exposed to. A score of 10 means maximum identified risk — similar to how a credit risk score works. Think of it as: the higher the score, the more work the company needs to do to reduce its ESG-related financial exposure.</p>
+      </details>
+
+      <details class="meth-faq-item">
+        <summary>Why do some companies have identical scores across all dimensions?</summary>
+        <p>When a company's BRSR filing contains nil or missing data across multiple required fields, the scoring algorithm applies a disclosure-penalty score reflecting the regulatory risk of non-disclosure. This can result in identical dimension scores for companies with similar disclosure gaps, even if their actual environmental performance differs.</p>
+      </details>
+
+      <details class="meth-faq-item">
+        <summary>My company is listed here — can I request a correction?</summary>
+        <p>Yes. If you believe your company's score reflects an error in reading your BRSR filing, please <a href="index.html#contact">contact us</a> with the specific BRSR page reference and we will review. We are committed to accuracy and will update scores when corrections are warranted.</p>
+      </details>
+
+      <details class="meth-faq-item">
+        <summary>Is this the same as SEBI's ESG Rating Provider framework?</summary>
+        <p>No. SEBI's ERP framework regulates registered ESG rating agencies that issue formal ESG ratings used for regulatory and investment purposes. Green Curve is not a SEBI-registered ESG Rating Provider. Our scores are research-grade analytical outputs derived from public BRSR data — not formal regulatory ratings.</p>
+      </details>
+
+      <details class="meth-faq-item">
+        <summary>How is the ESG Financial Quotient different from MSCI, Sustainalytics or other ESG ratings?</summary>
+        <p>Global ESG rating providers use proprietary datasets, surveys, and estimated data across global frameworks. The EFQ is designed specifically for the <strong>Indian regulatory environment</strong> — it focuses on financial risk from Indian laws (SEBI BRSR, EPR rules, CCTS) and uses only publicly disclosed Indian regulatory data. It is narrower in scope but more directly relevant to India-specific compliance risk.</p>
+      </details>
+
+      <details class="meth-faq-item">
+        <summary>Can I use this data in my research or reports?</summary>
+        <p>Yes, with attribution. You may cite Green Curve ESG Financial Quotient scores in research, journalism, or analysis with a reference to <strong>greencurve.github.io</strong> and the data date. You may not reproduce the dataset wholesale or use it for commercial redistribution without written permission.</p>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="meth-cta">
+    <a href="esg-intelligence.html" class="meth-cta-btn">Explore ESG Quotient Dashboard &rarr;</a>
+    <a href="company/index.html" class="meth-cta-link">Browse all 155 companies</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+        </svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>Data sourced from companies' publicly filed SEBI BRSR annual disclosures &amp; CPCB public portal. Risk scores are Green Curve's own analytical output — not ratings issued by any SEBI-registered ESG Rating Provider.</p>
+      <p style="font-size:.72rem;color:#475569;margin-top:6px">Not investment advice. Always verify against original company filings.</p>
+      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const header   = document.getElementById('site-header');
+  const progress = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    progress.style.width = pct + '%';
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+  document.getElementById('nav-burger').addEventListener('click', function() {
+    const m = document.getElementById('nav-mobile');
+    const open = m.classList.toggle('is-open');
+    this.setAttribute('aria-expanded', open);
+  });
+</script>
+</body>
+</html>
