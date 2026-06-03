@@ -417,7 +417,12 @@ let _dmChart = null;
 
 function renderDoubleMateriality(sectorFilter = '') {
   const data = sectorFilter
-    ? allCompanies.filter(c => (c.sector||'').includes(sectorFilter))
+    ? allCompanies.filter(c => {
+        const raw = (c.sector||'').replace('Manufacturing — ','').trim();
+        const NIC_MAP2 = {'62099':'IT & software services','62090':'IT & computer services','62021':'IT consulting','64191':'Banking','64192':'Banking','64990':'Financial services','24101':'Iron & steel','24102':'Iron & steel','20113':'Specialty chemicals','21001':'Pharmaceuticals','21002':'Pharmaceuticals','35101':'Electricity generation','35102':'Electricity transmission'};
+        const cleaned = /^\d{4,6}$/.test(raw) ? (NIC_MAP2[raw] || `NIC ${raw}`) : raw;
+        return cleaned.includes(sectorFilter) || raw.includes(sectorFilter);
+      })
     : allCompanies;
 
   document.getElementById('dmCount').textContent = `${data.length} companies`;
@@ -425,7 +430,45 @@ function renderDoubleMateriality(sectorFilter = '') {
   // Populate sector filter
   const sectorSelect = document.getElementById('dmSectorFilter');
   if (sectorSelect.options.length <= 1) {
-    const sectors = [...new Set(allCompanies.map(c => (c.sector||'').replace('Manufacturing — ','').slice(0,40)))].sort();
+    const NIC_MAP = {
+      '62011':'Software development','62012':'Software development','62013':'Software development',
+      '62099':'IT & software services','62090':'IT & computer services','62021':'IT consulting',
+      '64191':'Banking','64192':'Banking','64990':'Financial services','65110':'Life insurance',
+      '65120':'Non-life insurance','66190':'Financial services aux','66110':'Fund management',
+      '24101':'Iron & steel','24102':'Iron & steel','24103':'Iron & steel','24200':'Steel tubes & pipes',
+      '24311':'Precious metals','25910':'Metal containers','25930':'Fasteners & screws',
+      '20111':'Industrial gases','20112':'Dyes & pigments','20113':'Specialty chemicals',
+      '20211':'Pesticides','20221':'Paints & coatings','20231':'Soap & detergents',
+      '20291':'Other chemicals','21001':'Pharmaceuticals','21002':'Pharmaceuticals',
+      '26101':'Electronic components','26102':'Electronic components','26301':'Telecom equipment',
+      '35101':'Electricity generation','35102':'Electricity transmission','35201':'Gas supply',
+      '41001':'Construction','41002':'Construction','42101':'Roads & highways',
+      '45101':'Motor vehicles wholesale','45201':'Motor vehicle repair',
+      '46100':'Wholesale trade','47110':'Retail — food','47190':'Retail — general',
+      '55101':'Hotels','56101':'Restaurants',
+      '61100':'Telecom — wired','61200':'Telecom — wireless','61300':'Satellite telecom',
+      '68100':'Real estate','68200':'Rental of real estate',
+      '72100':'R&D natural sciences','73100':'Advertising',
+      '10101':'Processed meat','10201':'Fish processing','10301':'Fruit & veg processing',
+      '10411':'Edible oils','10501':'Dairy products','10611':'Grain milling',
+      '13111':'Cotton yarn spinning','13121':'Weaving','13941':'Cordage & ropes',
+      '14101':'Wearing apparel','15121':'Footwear',
+      '16101':'Sawmilling','17011':'Pulp','17012':'Paper','17021':'Paperboard',
+      '22111':'Rubber tyres','22192':'Other rubber products','22210':'Plastic products',
+      '23101':'Glass','23910':'Abrasives','23921':'Cement','23931':'Cement products',
+      '27101':'Electric motors','27102':'Batteries','27201':'Lighting equipment',
+      '28111':'Engines & turbines','28121':'Pumps & compressors','28131':'Taps & valves',
+      '29101':'Motor vehicles','29102':'Motor vehicle parts','30111':'Ships',
+      '31001':'Furniture',
+    };
+    const cleanSector = s => {
+      const trimmed = (s||'').replace('Manufacturing — ','').trim();
+      if (/^\d{4,6}$/.test(trimmed)) return NIC_MAP[trimmed] || `NIC ${trimmed}`;
+      return trimmed;
+    };
+    const sectors = [...new Set(allCompanies.map(c => cleanSector(c.sector)))]
+      .filter(s => s && s.length > 1)
+      .sort();
     sectors.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sectorSelect.appendChild(o); });
   }
 
