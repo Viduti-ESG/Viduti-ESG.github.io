@@ -1,5 +1,35 @@
 /* ── ESG Intelligence Dashboard ─────────────────────────────────────────── */
 
+/* Legal Disclaimer Strip */
+.legal-disclaimer-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(251,191,36,.06);
+  border-top: 1px solid rgba(251,191,36,.2);
+  border-bottom: 1px solid rgba(251,191,36,.2);
+  padding: 10px 24px;
+  font-size: .78rem;
+  color: #92400e;
+  color: #fbbf24;
+  line-height: 1.5;
+}
+.legal-disclaimer-strip svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: .7;
+}
+
+/* AI summary disclaimer line */
+.dd-disclaimer {
+  font-size: .72rem;
+  color: #475569;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.05);
+  line-height: 1.5;
+}
+
 /* Hero */
 .intel-hero {
   background: var(--void);

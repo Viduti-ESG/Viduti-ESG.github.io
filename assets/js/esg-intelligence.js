@@ -720,7 +720,8 @@ function renderDDTab(tab) {
           <div class="dd-section-title">Financial Risk Analysis</div>
           <p class="dd-text">${esc(data.financial_risk_analysis||'')}</p>
         </div>
-        ${data.investment_signal ? `<div class="dd-insight-box">💡 <strong>Investor Signal:</strong> ${esc(data.investment_signal)}</div>` : ''}`;
+        ${data.investment_signal ? `<div class="dd-insight-box">💡 <strong>Investor Signal:</strong> ${esc(data.investment_signal)}</div>` : ''}
+        <p class="dd-disclaimer">AI analysis based on publicly filed BRSR data. Not investment advice. Not a SEBI-registered Research Analyst or ESG Rating Provider output.</p>`;
     }
   }
   else if (tab === 'risks') {
@@ -754,7 +755,11 @@ function renderDDOverviewLocal(p) {
       <div class="dd-kpi"><div class="dd-kpi-val ${md.return_1y_pct != null ? (md.return_1y_pct>=0?'green':'red') : ''}">${md.return_1y_pct != null ? (md.return_1y_pct>=0?'+':'')+md.return_1y_pct+'%' : '—'}</div><div class="dd-kpi-lbl">1Y Return</div></div>
       <div class="dd-kpi"><div class="dd-kpi-val">${fe.estimated_compliance_cost_band||'—'}</div><div class="dd-kpi-lbl">Est. Compliance Cost</div></div>
     </div>
-    ${p.ai_summary ? `<div class="dd-section"><p class="dd-text dd-summary">${esc(p.ai_summary)}</p></div>` : ''}
+    ${p.ai_summary ? `
+    <div class="dd-section">
+      <p class="dd-text dd-summary">${esc(p.ai_summary)}</p>
+      <p class="dd-disclaimer">Source: ${esc(p.company_name)} BRSR Filing, FY ${esc(p.financial_year||'2024-25')}. This analysis is derived from the company's own public disclosures and is not investment advice or a regulatory determination.</p>
+    </div>` : ''}
     <div class="dd-section">
       <div class="dd-section-title">Top Risk Factors</div>
       <div class="dd-risk-pills">${(p.top_risk_factors||[]).map(r => `<span class="dd-risk-pill">${esc(r)}</span>`).join('')}</div>
