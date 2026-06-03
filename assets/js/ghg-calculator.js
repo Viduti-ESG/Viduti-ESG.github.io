@@ -504,6 +504,433 @@ async function initCalculator() {
 
   if (els.downloadReport) els.downloadReport.addEventListener('click', downloadCSV);
   if (els.exportJson)     els.exportJson.addEventListener('click', downloadJSON);
+
+  // BRSR export
+  const brBtn = document.getElementById('export-brsr');
+  if (brBtn) brBtn.addEventListener('click', exportBRSR);
+
+  // CEA module
+  const ceaBtn = document.getElementById('cea-add');
+  if (ceaBtn) ceaBtn.addEventListener('click', addCEAEntry);
+
+  // Commute module
+  initCommuteModule();
+
+  // Intensity live update
+  ['int-revenue','int-employees'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateIntensity);
+  });
+
+  // Sector benchmarking
+  initBenchmarking();
+
+  // YoY
+  const yoySave = document.getElementById('yoy-save');
+  if (yoySave) yoySave.addEventListener('click', saveYoYSnapshot);
+  renderYoYTable();
+
+  // Detect India electricity selection → show CEA notice
+  els.source.addEventListener('change', () => {
+    const notice = document.getElementById('cea-notice');
+    if (notice) notice.hidden = !(state.level3 && state.level3.toLowerCase().includes('india'));
+  });
 }
+
+// ── Feature 2: Scope 3 GHG Protocol Category Labels ──────────────────────────
+const S3_CATEGORY_MAP = {
+  'Material use':                'Cat 1 · Purchased Goods & Services',
+  'Freighting goods':            'Cat 4 · Upstream Transport & Distribution',
+  'Waste disposal':              'Cat 5 · Waste in Operations',
+  'Business travel- air':        'Cat 6 · Business Travel',
+  'Business travel- land':       'Cat 6 · Business Travel',
+  'Business travel- sea':        'Cat 6 · Business Travel',
+  'Hotel stay':                  'Cat 6 · Business Travel',
+  'Employee commuting':          'Cat 7 · Employee Commuting',
+  'Water supply':                'Cat 1 · Purchased Goods & Services',
+  'Water treatment':             'Cat 5 · Waste in Operations',
+  'Managed assets- electricity': 'Cat 15 · Investments / Managed Assets',
+  'Managed assets- vehicles':    'Cat 15 · Investments / Managed Assets',
+  'Transmission and distribution':'Cat 3 · Energy-Related Activities (T&D)',
+};
+
+function getS3Label(level1) {
+  return S3_CATEGORY_MAP[level1] || null;
+}
+
+// ── Feature 1: Hotspot Chart ──────────────────────────────────────────────────
+let _hotspotChart = null;
+
+function renderHotspot() {
+  const section = document.getElementById('hotspot-section');
+  if (!section || !state.items.length) { if (section) section.hidden = true; return; }
+  section.hidden = false;
+
+  // Aggregate by category label
+  const cats = {};
+  state.items.forEach(item => {
+    const key = item.description.split(' › ')[0] || item.description;
+    cats[key] = (cats[key] || 0) + (item.factor * item.amount) / 1000;
+  });
+
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  const top6   = sorted.slice(0, 6);
+  const other  = sorted.slice(6).reduce((s,[,v]) => s+v, 0);
+  if (other > 0) top6.push(['Other', other]);
+
+  const labels = top6.map(([k]) => k.length > 22 ? k.slice(0,20)+'…' : k);
+  const data   = top6.map(([,v]) => +v.toFixed(3));
+  const COLORS  = ['#10b981','#6366f1','#f59e0b','#f87171','#38bdf8','#a78bfa','#64748b'];
+
+  const canvas = document.getElementById('hotspotChart');
+  if (!canvas) return;
+
+  if (_hotspotChart) _hotspotChart.destroy();
+  _hotspotChart = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: COLORS.slice(0, data.length), borderWidth: 2, borderColor: '#f1f5f9' }],
+    },
+    options: {
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(3)} t CO₂e` } },
+      },
+    },
+  });
+
+  // Custom legend
+  const totals = calcTotals();
+  const legendEl = document.getElementById('hotspot-legend');
+  if (legendEl) {
+    legendEl.innerHTML = top6.map(([label, val], i) => {
+      const pct = totals.total > 0 ? (val/totals.total*100).toFixed(1) : 0;
+      return `<div class="hs-legend-item">
+        <span class="hs-dot" style="background:${COLORS[i]}"></span>
+        <span class="hs-label">${label.length>22?label.slice(0,20)+'…':label}</span>
+        <span class="hs-pct">${pct}%</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ── Feature 4: Intensity Metrics ──────────────────────────────────────────────
+function updateIntensity() {
+  const totals  = calcTotals();
+  const revenue = Number(document.getElementById('int-revenue')?.value || 0);
+  const employees = Number(document.getElementById('int-employees')?.value || 0);
+
+  const revVal = document.getElementById('int-rev-val');
+  const empVal = document.getElementById('int-emp-val');
+  const s1PctVal = document.getElementById('int-s1pct-val');
+
+  if (revVal) revVal.textContent   = revenue > 0 ? (totals.total / revenue).toFixed(4) : '—';
+  if (empVal) empVal.textContent   = employees > 0 ? (totals.total / employees).toFixed(3) : '—';
+  if (s1PctVal) s1PctVal.textContent = totals.total > 0 ? (totals.s1/totals.total*100).toFixed(1)+'%' : '—';
+}
+
+// ── Feature 3: CEA State Grid ─────────────────────────────────────────────────
+function addCEAEntry() {
+  const stateEl = document.getElementById('cea-state');
+  const kwhEl   = document.getElementById('cea-kwh');
+  const factor  = Number(stateEl?.value);
+  const kwh     = Number(kwhEl?.value);
+  const label   = stateEl?.options[stateEl.selectedIndex]?.text?.split('—')[0]?.trim() || 'India';
+
+  if (!factor) { alert('Select a state / region.'); return; }
+  if (!kwh || kwh <= 0) { alert('Enter kWh consumed.'); return; }
+
+  // Convert tCO₂/MWh × MWh to kg CO₂ factor per kWh: factor * 1000 / 1000 = factor kg/kWh
+  const factorKg = factor; // tCO₂/MWh = kg CO₂/kWh
+  state.items.push({
+    id: `cea-${Date.now()}`,
+    description: `Grid Electricity (CEA) › ${label}`,
+    scope: 'Scope 2',
+    amount: kwh,
+    unit: 'kWh',
+    factor: factorKg * 1000, // kg CO₂e per MWh, so per kWh = factor
+  });
+
+  kwhEl.value = '';
+  updateResults();
+}
+
+// ── Feature 6: Employee Commute Module ────────────────────────────────────────
+function initCommuteModule() {
+  document.querySelectorAll('.commute-km').forEach(inp => {
+    inp.addEventListener('input', updateCommutePreview);
+  });
+  const btn = document.getElementById('commute-add');
+  if (btn) btn.addEventListener('click', addCommuteEntry);
+  updateCommutePreview();
+}
+
+function updateCommutePreview() {
+  const employees = Number(document.getElementById('com-employees')?.value || 0);
+  const days      = Number(document.getElementById('com-days')?.value || 240);
+  const rows      = document.querySelectorAll('.commute-km');
+  let totalKm     = 0;
+  let totalCO2    = 0;
+
+  rows.forEach(inp => {
+    const km = Number(inp.value || 0);
+    const factor = Number(inp.dataset.factor || 0);
+    totalKm  += km;
+    totalCO2 += km * 2 * factor * employees * days; // round-trip, all employees, all days
+  });
+
+  // Update % labels
+  rows.forEach(inp => {
+    const km = Number(inp.value || 0);
+    const pct = totalKm > 0 ? Math.round(km / totalKm * 100) : 0;
+    // Find the sibling pct span (next sibling after input)
+    const row = inp.closest('.commute-row');
+    if (row) {
+      const pctSpan = row.querySelector('.commute-pct');
+      if (pctSpan) pctSpan.textContent = `${pct}%`;
+    }
+  });
+
+  const preview = document.getElementById('commute-preview');
+  if (preview) {
+    if (employees > 0 && totalKm > 0) {
+      preview.innerHTML = `<strong>${(totalCO2 / 1000).toFixed(2)} t CO₂e/year</strong> estimated for ${employees} employees over ${days} working days.`;
+      preview.className = 'commute-preview commute-preview--active';
+    } else {
+      preview.innerHTML = 'Enter employee count and commute distances to preview emissions.';
+      preview.className = 'commute-preview';
+    }
+  }
+}
+
+function addCommuteEntry() {
+  const employees = Number(document.getElementById('com-employees')?.value || 0);
+  const days      = Number(document.getElementById('com-days')?.value || 240);
+
+  if (!employees || employees <= 0) { alert('Enter number of employees.'); return; }
+
+  let totalCO2 = 0;
+  document.querySelectorAll('.commute-km').forEach(inp => {
+    const km = Number(inp.value || 0);
+    const factor = Number(inp.dataset.factor || 0);
+    totalCO2 += km * 2 * factor * employees * days;
+  });
+
+  if (totalCO2 <= 0) { alert('Enter at least one commute distance greater than 0.'); return; }
+
+  // Add as a single Scope 3 line item (total kg CO₂e = totalCO2, qty=1, factor=totalCO2)
+  state.items.push({
+    id: `commute-${Date.now()}`,
+    description: `Employee Commuting (Cat 7) › ${employees} employees, ${days} days`,
+    scope: 'Scope 3',
+    amount: 1,
+    unit: 'annual total',
+    factor: totalCO2,
+  });
+
+  updateResults();
+}
+
+// ── Feature 5: BRSR Export ────────────────────────────────────────────────────
+function exportBRSR() {
+  if (!state.items.length) { alert('Add at least one item before exporting.'); return; }
+  const totals  = calcTotals();
+  const revenue = Number(document.getElementById('int-revenue')?.value || 0);
+  const employees = Number(document.getElementById('int-employees')?.value || 0);
+  const fy = document.getElementById('yoy-fy')?.value || 'FY2025-26';
+
+  const rows = [
+    ['BRSR Section C — Principle 6: GHG Emissions (Draft)', '', '', ''],
+    ['Generated by Green Curve GHG Calculator', new Date().toLocaleDateString('en-IN'), '', ''],
+    ['Financial Year', fy, '', ''],
+    ['DISCLAIMER: This is a draft export for data collection. Verify against audited data before BRSR submission.', '', '', ''],
+    [''],
+    ['Parameter', 'Unit', `${fy} (Current)`, 'Notes'],
+    ['Scope 1 – Total GHG Emissions (Direct)', 'Metric tonnes CO₂e', totals.s1.toFixed(3), 'GHG Protocol Corporate Standard'],
+    ['Scope 2 – Total GHG Emissions (Indirect - Purchased Energy)', 'Metric tonnes CO₂e', totals.s2.toFixed(3), 'Location-based method'],
+    ['Scope 3 – Total GHG Emissions (Value Chain)', 'Metric tonnes CO₂e', totals.s3.toFixed(3), 'Voluntary under BRSR; mandatory under BRSR Core'],
+    ['Total GHG Emissions (Scope 1 + Scope 2)', 'Metric tonnes CO₂e', (totals.s1 + totals.s2).toFixed(3), 'Required for BRSR mandatory disclosure'],
+    [''],
+    ['Intensity Metrics (BRSR Principle 6 – Required)', '', '', ''],
+    ['GHG Emission Intensity per Rupee of Turnover', 'tCO₂e / ₹ Crore', revenue > 0 ? (totals.total/revenue).toFixed(4) : 'Enter revenue above', 'Scope 1+2+3 / Revenue (₹ Cr)'],
+    ['GHG Emission Intensity per Employee', 'tCO₂e / Employee', employees > 0 ? (totals.total/employees).toFixed(3) : 'Enter employees above', 'Scope 1+2+3 / Total employees'],
+    [''],
+    ['Line Item Detail', '', '', ''],
+    ['Description', 'Scope', 'Amount & Unit', 'Result (t CO₂e)'],
+    ...state.items.map(item => {
+      const t = (item.factor * item.amount) / 1000;
+      return [item.description, item.scope, `${fmt(item.amount)} ${item.unit}`, t.toFixed(3)];
+    }),
+    [''],
+    ['Data Sources', '', '', ''],
+    ['Emission Factors', 'DEFRA 2024 / CEA CO₂ Baseline Database V21.0 (Nov 2025)', '', ''],
+    ['Standard', 'GHG Protocol Corporate Standard / SEBI BRSR Framework', '', ''],
+    ['Calculator', 'Green Curve GHG Calculator (viduti-esg.github.io/calculator.html)', '', ''],
+  ];
+
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  triggerDownload(new Blob(['﻿' + csv, { type: 'text/csv;charset=utf-8;' }]), `BRSR-GHG-${fy}-${Date.now()}.csv`);
+}
+
+// ── Feature 7: Year-on-Year Comparison ────────────────────────────────────────
+const YOY_KEY = 'greencurve_ghg_yoy';
+
+function loadYoYSnapshots() {
+  try { return JSON.parse(localStorage.getItem(YOY_KEY) || '{}'); } catch { return {}; }
+}
+
+function saveYoYSnapshot() {
+  const fy = document.getElementById('yoy-fy')?.value;
+  if (!fy) return;
+  if (!state.items.length) { alert('Add items before saving a snapshot.'); return; }
+  const totals = calcTotals();
+  const snaps  = loadYoYSnapshots();
+  snaps[fy] = {
+    fy,
+    saved_at: new Date().toISOString(),
+    total: +totals.total.toFixed(3),
+    s1:    +totals.s1.toFixed(3),
+    s2:    +totals.s2.toFixed(3),
+    s3:    +totals.s3.toFixed(3),
+    items: state.items.length,
+  };
+  localStorage.setItem(YOY_KEY, JSON.stringify(snaps));
+  renderYoYTable();
+  alert(`Snapshot saved for ${fy}: ${totals.total.toFixed(2)} t CO₂e`);
+}
+
+function renderYoYTable() {
+  const wrap = document.getElementById('yoy-table-wrap');
+  if (!wrap) return;
+  const snaps = loadYoYSnapshots();
+  const entries = Object.values(snaps).sort((a,b) => b.fy.localeCompare(a.fy));
+  if (!entries.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+
+  const rows = entries.map((s, i) => {
+    const prev = entries[i+1];
+    const chg  = prev ? ((s.total - prev.total) / prev.total * 100) : null;
+    const chgHtml = chg !== null
+      ? `<span style="color:${chg<=0?'#10b981':'#f87171'}">${chg>=0?'+':''}${chg.toFixed(1)}%</span>`
+      : '—';
+    return `<tr>
+      <td><strong>${s.fy}</strong></td>
+      <td>${s.total.toFixed(2)}</td>
+      <td>${s.s1.toFixed(2)}</td>
+      <td>${s.s2.toFixed(2)}</td>
+      <td>${s.s3.toFixed(2)}</td>
+      <td>${chgHtml}</td>
+      <td><button class="yoy-delete" onclick="deleteYoYSnapshot('${s.fy}')">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `<table class="calc-table">
+    <thead><tr><th>FY</th><th>Total (t)</th><th>S1</th><th>S2</th><th>S3</th><th>vs Prior</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function deleteYoYSnapshot(fy) {
+  const snaps = loadYoYSnapshots();
+  delete snaps[fy];
+  localStorage.setItem(YOY_KEY, JSON.stringify(snaps));
+  renderYoYTable();
+}
+window.deleteYoYSnapshot = deleteYoYSnapshot;
+
+// ── Feature 8: Sector Benchmarking ────────────────────────────────────────────
+async function initBenchmarking() {
+  const sel = document.getElementById('bench-sector');
+  if (!sel) return;
+  try {
+    const res = await fetch('assets/data/esg_quotient.json?v=' + Date.now());
+    if (!res.ok) return;
+    const data = await res.json();
+    const companies = data.companies || [];
+
+    // Build sector → intensity list
+    const sectorMap = {};
+    companies.forEach(c => {
+      const sec = (c.sector || '').replace('Manufacturing — ','').trim().slice(0, 50);
+      if (!sec || /^\d+$/.test(sec)) return;
+      const fe  = c.financial_exposure || {};
+      const s1  = fe.scope1_emissions_tco2e;
+      const s2  = fe.scope2_emissions_tco2e;
+      const rev = c.revenue_crore;
+      if (s1 != null && s2 != null && rev > 0) {
+        if (!sectorMap[sec]) sectorMap[sec] = [];
+        sectorMap[sec].push({ total: (s1 + s2) / 1000, revenue: rev, score: c.esg_risk_score });
+      }
+    });
+
+    // Only sectors with 3+ companies
+    const validSectors = Object.entries(sectorMap)
+      .filter(([,arr]) => arr.length >= 3)
+      .sort(([a],[b]) => a.localeCompare(b));
+
+    validSectors.forEach(([sec]) => {
+      sel.appendChild(new Option(sec, sec));
+    });
+
+    sel.addEventListener('change', () => renderBenchmark(sel.value, sectorMap));
+  } catch { /* benchmarking optional */ }
+}
+
+function renderBenchmark(sector, sectorMap) {
+  const result = document.getElementById('benchmark-result');
+  if (!result) return;
+  if (!sector || !sectorMap[sector]) { result.hidden = true; return; }
+
+  const peers    = sectorMap[sector];
+  const avgInt   = peers.reduce((s,p) => s + p.total/p.revenue, 0) / peers.length;
+  const avgScore = peers.reduce((s,p) => s + p.score, 0) / peers.length;
+  const totals   = calcTotals();
+  const revenue  = Number(document.getElementById('int-revenue')?.value || 0);
+
+  result.hidden = false;
+
+  if (revenue <= 0 || totals.total <= 0) {
+    result.innerHTML = `<div class="bench-info">
+      <strong>${peers.length} peer companies</strong> in "${sector}" tracked in Green Curve BRSR dataset.<br>
+      Enter your revenue and emission items above to see how you compare.
+    </div>`;
+    return;
+  }
+
+  const yourInt = totals.total / revenue;
+  const pctDiff = ((yourInt - avgInt) / avgInt * 100);
+  const better  = pctDiff <= 0;
+  const col     = better ? '#10b981' : '#f87171';
+
+  result.innerHTML = `<div class="bench-result-grid">
+    <div class="bench-card">
+      <div class="bench-val">${yourInt.toFixed(4)}</div>
+      <div class="bench-lbl">Your intensity (tCO₂e/₹Cr)</div>
+    </div>
+    <div class="bench-card">
+      <div class="bench-val">${avgInt.toFixed(4)}</div>
+      <div class="bench-lbl">Sector avg (${peers.length} peers)</div>
+    </div>
+    <div class="bench-card">
+      <div class="bench-val" style="color:${col}">${better?'':'+'}${pctDiff.toFixed(1)}%</div>
+      <div class="bench-lbl">${better ? 'Below sector avg ✓' : 'Above sector avg'}</div>
+    </div>
+    <div class="bench-card">
+      <div class="bench-val">${avgScore.toFixed(1)}/10</div>
+      <div class="bench-lbl">Avg ESG risk score</div>
+    </div>
+  </div>
+  <p class="bench-note">Based on ${peers.length} companies' SEBI BRSR disclosures in the "${sector}" sector. Not investment advice.</p>`;
+}
+
+// ── Patch updateResults to trigger new features ────────────────────────────────
+const _origUpdateResults = updateResults;
+updateResults = function() {
+  _origUpdateResults();
+  renderHotspot();
+  updateIntensity();
+};
 
 initCalculator();

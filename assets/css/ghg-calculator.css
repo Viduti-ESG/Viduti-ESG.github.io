@@ -509,3 +509,181 @@
   .scope-tab { padding: .65rem .5rem; }
   .scope-tab__num { width: 24px; height: 24px; font-size: .75rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GHG Calculator — Feature Enhancements (v2)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Module badge */
+.module-badge {
+  background: #dbeafe; color: #1d4ed8;
+  font-size: .65rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: .05em;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* CEA notice */
+.cea-notice {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: #fef3c7; border: 1px solid #fbbf24;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: .8rem; color: #92400e; margin: 8px 0 12px;
+}
+.cea-notice svg { flex-shrink: 0; margin-top: 1px; }
+
+/* Section title in results panel */
+.calc-section-title {
+  font-size: .85rem; font-weight: 700;
+  color: #374151; text-transform: uppercase;
+  letter-spacing: .06em; margin: 0 0 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-badge {
+  background: #d1fae5; color: #065f46;
+  font-size: .65rem; padding: 2px 8px;
+  border-radius: 20px; font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ── Feature 1: Hotspot Chart ───────────────────────────────────── */
+.calc-hotspot {
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 20px;
+  margin-bottom: 16px;
+}
+.hotspot-grid {
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+}
+.hotspot-chart-wrap {
+  width: 180px; height: 180px; flex-shrink: 0;
+}
+.hotspot-legend {
+  flex: 1; min-width: 160px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.hs-legend-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .78rem; color: #374151;
+}
+.hs-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.hs-label { flex: 1; }
+.hs-pct { font-weight: 700; color: #6b7280; }
+
+/* ── Feature 4: Intensity Metrics ──────────────────────────────── */
+.calc-intensity {
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 20px; margin-bottom: 16px;
+}
+.intensity-inputs {
+  display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.intensity-inputs > div { flex: 1; min-width: 140px; }
+.field-input--sm { padding: 8px 10px; font-size: .85rem; }
+.intensity-results {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap: 10px;
+}
+.intensity-card {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 8px; padding: 12px;
+}
+.intensity-val {
+  font-size: 1.25rem; font-weight: 800;
+  color: #0f172a; margin-bottom: 4px;
+}
+.intensity-lbl {
+  font-size: .75rem; color: #64748b; margin-bottom: 2px;
+}
+.intensity-brsr {
+  font-size: .68rem; color: #059669; font-weight: 600;
+}
+
+/* ── Feature 8: Sector Benchmarking ────────────────────────────── */
+.calc-benchmark {
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 20px; margin-bottom: 16px;
+}
+.benchmark-controls {
+  display: flex; gap: 10px; margin-bottom: 14px;
+}
+.benchmark-result { margin-top: 12px; }
+.bench-info {
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 8px; padding: 12px;
+  font-size: .85rem; color: #065f46; line-height: 1.6;
+}
+.bench-result-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+  gap: 10px; margin-bottom: 10px;
+}
+.bench-card {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 8px; padding: 12px; text-align: center;
+}
+.bench-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
+.bench-lbl { font-size: .72rem; color: #64748b; margin-top: 3px; }
+.bench-note { font-size: .72rem; color: #94a3b8; }
+
+/* ── Feature 7: Year-on-Year ────────────────────────────────────── */
+.calc-yoy {
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 20px; margin-bottom: 16px;
+}
+.yoy-controls {
+  display: flex; gap: 10px; align-items: center;
+  flex-wrap: wrap; margin-bottom: 14px;
+}
+.yoy-table-wrap { overflow-x: auto; }
+.yoy-delete {
+  background: none; border: none; cursor: pointer;
+  color: #ef4444; font-size: .8rem; padding: 2px 6px;
+}
+
+/* ── Feature 6: Commute Module ──────────────────────────────────── */
+.commute-grid {
+  display: flex; flex-direction: column; gap: 8px;
+  margin: 12px 0;
+}
+.commute-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.commute-mode {
+  width: 130px; font-size: .82rem; color: #374151; flex-shrink: 0;
+}
+.commute-row .field-input {
+  flex: 1; max-width: 120px; padding: 7px 10px;
+}
+.commute-pct {
+  width: 40px; font-size: .78rem; color: #6b7280;
+  font-weight: 600; text-align: right;
+}
+.commute-preview {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: .85rem; color: #64748b; margin: 10px 0;
+}
+.commute-preview--active {
+  background: #f0fdf4; border-color: #bbf7d0;
+  color: #065f46;
+}
+
+/* ── BRSR Export button ─────────────────────────────────────────── */
+.btn-brsr {
+  background: linear-gradient(135deg, #059669, #0d9488);
+  color: #fff; border: none;
+  border-radius: 8px; padding: 10px 16px;
+  font-weight: 700; font-size: .85rem; cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-brsr:hover { opacity: .88; }
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .hotspot-grid { flex-direction: column; }
+  .hotspot-chart-wrap { width: 160px; height: 160px; margin: 0 auto; }
+  .commute-mode { width: 90px; font-size: .75rem; }
+  .intensity-results { grid-template-columns: 1fr 1fr; }
+}

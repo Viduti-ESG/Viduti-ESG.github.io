@@ -26,7 +26,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="stylesheet" href="assets/css/ghg-calculator.css?v=20260529" />
+  <link rel="stylesheet" href="assets/css/ghg-calculator.css?v=20260603" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
 
   <style>
@@ -283,8 +284,123 @@
       </div>
       <button id="dd-add" hidden>+ Add to inventory</button>
 
+      <!-- CEA India notice (shown when India electricity selected) -->
+      <div id="cea-notice" class="cea-notice" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Using CEA All-India average. For state-specific accuracy, select from the CEA State Grid section below.</span>
+      </div>
+
       <!-- Divider -->
       <div class="calc-divider"><span>or enter a custom source</span></div>
+
+      <!-- CEA State Grid Module -->
+      <div class="calc-manual" id="cea-module">
+        <h3>🇮🇳 CEA India State Grid Electricity <span class="module-badge">Scope 2</span></h3>
+        <p>More accurate Scope 2 calculation using state-specific grid emission factors from CEA CO₂ Baseline Database V21.0 (Nov 2025, FY 2024-25).</p>
+        <div class="calc-field-row">
+          <div>
+            <label class="field-label" for="cea-state">State / Region</label>
+            <select class="field-input field-select" id="cea-state">
+              <option value="">— Select state</option>
+              <optgroup label="All-India">
+                <option value="0.7117">All-India Average — 0.7117 tCO₂/MWh</option>
+              </optgroup>
+              <optgroup label="Northern Region (~0.776 avg)">
+                <option value="0.803">Haryana — 0.803</option>
+                <option value="0.718">Delhi — 0.718</option>
+                <option value="0.703">Punjab — 0.703</option>
+                <option value="0.817">Rajasthan — 0.817</option>
+                <option value="0.837">Uttar Pradesh — 0.837</option>
+                <option value="0.176">Uttarakhand — 0.176</option>
+                <option value="0.043">Himachal Pradesh — 0.043</option>
+                <option value="0.082">Jammu & Kashmir — 0.082</option>
+              </optgroup>
+              <optgroup label="Western Region (~0.727 avg)">
+                <option value="0.745">Maharashtra — 0.745</option>
+                <option value="0.757">Gujarat — 0.757</option>
+                <option value="0.867">Madhya Pradesh — 0.867</option>
+                <option value="0.918">Chhattisgarh — 0.918</option>
+                <option value="0.654">Goa — 0.654</option>
+              </optgroup>
+              <optgroup label="Southern Region (~0.648 avg)">
+                <option value="0.557">Karnataka — 0.557</option>
+                <option value="0.640">Tamil Nadu — 0.640</option>
+                <option value="0.653">Andhra Pradesh — 0.653</option>
+                <option value="0.845">Telangana — 0.845</option>
+                <option value="0.349">Kerala — 0.349</option>
+              </optgroup>
+              <optgroup label="Eastern Region (~0.825 avg)">
+                <option value="0.820">Bihar — 0.820</option>
+                <option value="0.876">Odisha — 0.876</option>
+                <option value="0.828">West Bengal — 0.828</option>
+                <option value="0.887">Jharkhand — 0.887</option>
+              </optgroup>
+              <optgroup label="North-Eastern Region (~0.430 avg)">
+                <option value="0.400">Assam — 0.400</option>
+                <option value="0.530">Tripura — 0.530</option>
+                <option value="0.288">Manipur — 0.288</option>
+                <option value="0.568">Meghalaya — 0.568</option>
+                <option value="0.194">Mizoram — 0.194</option>
+                <option value="0.275">Nagaland — 0.275</option>
+                <option value="0.090">Sikkim — 0.090</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="cea-kwh">Electricity consumed (kWh)</label>
+            <input type="number" id="cea-kwh" class="field-input" min="0" step="any" placeholder="e.g. 50000" />
+          </div>
+        </div>
+        <button id="cea-add" class="btn-secondary">Add CEA Scope 2 entry</button>
+        <p class="calc-note" style="margin-top:8px">Source: CEA CO₂ Baseline Database V21.0, Nov 2025, Ministry of Power, GoI. Factors in tCO₂/MWh.</p>
+      </div>
+
+      <!-- Employee Commute Module -->
+      <div class="calc-manual" id="commute-module">
+        <h3>🚌 Employee Commute Calculator <span class="module-badge">Scope 3 Cat 7</span></h3>
+        <p>Automatically calculates Category 7 (Employee Commuting) emissions based on transport mix.</p>
+        <div class="calc-field-row">
+          <div>
+            <label class="field-label" for="com-employees">Number of employees</label>
+            <input type="number" id="com-employees" class="field-input" min="1" step="1" placeholder="e.g. 250" />
+          </div>
+          <div>
+            <label class="field-label" for="com-days">Working days/year</label>
+            <input type="number" id="com-days" class="field-input" min="1" step="1" value="240" />
+          </div>
+        </div>
+        <label class="field-label">Average one-way commute distance per employee (km)</label>
+        <div class="commute-grid" id="commute-grid">
+          <div class="commute-row">
+            <span class="commute-mode">🚗 Car (petrol)</span>
+            <input type="number" class="field-input commute-km" data-factor="0.17039" min="0" step="0.1" value="0" placeholder="km"/>
+            <span class="commute-pct" id="pct-car">0%</span>
+          </div>
+          <div class="commute-row">
+            <span class="commute-mode">🚌 Bus</span>
+            <input type="number" class="field-input commute-km" data-factor="0.10312" min="0" step="0.1" value="0" placeholder="km"/>
+            <span class="commute-pct" id="pct-bus">0%</span>
+          </div>
+          <div class="commute-row">
+            <span class="commute-mode">🚇 Metro / Rail</span>
+            <input type="number" class="field-input commute-km" data-factor="0.03549" min="0" step="0.1" value="0" placeholder="km"/>
+            <span class="commute-pct" id="pct-rail">0%</span>
+          </div>
+          <div class="commute-row">
+            <span class="commute-mode">🛵 Two-wheeler</span>
+            <input type="number" class="field-input commute-km" data-factor="0.11370" min="0" step="0.1" value="0" placeholder="km"/>
+            <span class="commute-pct" id="pct-2w">0%</span>
+          </div>
+          <div class="commute-row">
+            <span class="commute-mode">🚶 Walk / WFH</span>
+            <input type="number" class="field-input commute-km" data-factor="0" min="0" step="0.1" value="0" placeholder="km"/>
+            <span class="commute-pct" id="pct-walk">0%</span>
+          </div>
+        </div>
+        <div class="commute-preview" id="commute-preview"></div>
+        <button id="commute-add" class="btn-secondary">Add commute to inventory</button>
+        <p class="calc-note" style="margin-top:8px">Factors: DEFRA 2024 (kg CO₂e/km per employee). Round-trip automatically applied.</p>
+      </div>
 
       <!-- Custom source -->
       <div class="calc-manual">
@@ -360,6 +476,77 @@
         </div>
       </div>
 
+      <!-- Hotspot Chart -->
+      <div class="calc-hotspot" id="hotspot-section" hidden>
+        <h3 class="calc-section-title">Emission Hotspots</h3>
+        <div class="hotspot-grid">
+          <div class="hotspot-chart-wrap">
+            <canvas id="hotspotChart" height="220"></canvas>
+          </div>
+          <div class="hotspot-legend" id="hotspot-legend"></div>
+        </div>
+      </div>
+
+      <!-- Intensity Metrics -->
+      <div class="calc-intensity" id="intensity-section">
+        <h3 class="calc-section-title">Intensity Metrics <span class="section-badge">BRSR Required</span></h3>
+        <div class="intensity-inputs">
+          <div>
+            <label class="field-label" for="int-revenue">Revenue (₹ Crore)</label>
+            <input type="number" id="int-revenue" class="field-input field-input--sm" min="0" step="0.01" placeholder="e.g. 500"/>
+          </div>
+          <div>
+            <label class="field-label" for="int-employees">Employees</label>
+            <input type="number" id="int-employees" class="field-input field-input--sm" min="1" step="1" placeholder="e.g. 250"/>
+          </div>
+        </div>
+        <div class="intensity-results" id="intensity-results">
+          <div class="intensity-card" id="int-rev-card">
+            <div class="intensity-val" id="int-rev-val">—</div>
+            <div class="intensity-lbl">tCO₂e / ₹ Crore revenue</div>
+            <div class="intensity-brsr">BRSR Principle 6 · Intensity per rupee turnover</div>
+          </div>
+          <div class="intensity-card" id="int-emp-card">
+            <div class="intensity-val" id="int-emp-val">—</div>
+            <div class="intensity-lbl">tCO₂e / employee</div>
+            <div class="intensity-brsr">BRSR Principle 6 · Per capita emissions</div>
+          </div>
+          <div class="intensity-card">
+            <div class="intensity-val" id="int-s1pct-val">—</div>
+            <div class="intensity-lbl">% Scope 1 of total</div>
+            <div class="intensity-brsr">Direct emission share</div>
+          </div>
+        </div>
+        <p class="calc-note" style="margin-top:8px">Verify against audited financials before BRSR submission.</p>
+      </div>
+
+      <!-- Sector Benchmarking -->
+      <div class="calc-benchmark" id="benchmark-section">
+        <h3 class="calc-section-title">Sector Peer Benchmarking <span class="section-badge">India BRSR Data</span></h3>
+        <div class="benchmark-controls">
+          <select class="field-input field-select" id="bench-sector" style="flex:1">
+            <option value="">— Select your sector to compare</option>
+          </select>
+        </div>
+        <div id="benchmark-result" class="benchmark-result" hidden></div>
+        <p class="calc-note" style="margin-top:8px">Benchmarks derived from companies' own publicly filed SEBI BRSR disclosures (Green Curve ESG Quotient dataset). Not investment advice.</p>
+      </div>
+
+      <!-- Year-on-Year Comparison -->
+      <div class="calc-yoy" id="yoy-section">
+        <h3 class="calc-section-title">Year-on-Year Comparison</h3>
+        <div class="yoy-controls">
+          <select class="field-input field-select" id="yoy-fy" style="max-width:180px">
+            <option value="FY2025-26">FY 2025-26</option>
+            <option value="FY2024-25">FY 2024-25</option>
+            <option value="FY2023-24">FY 2023-24</option>
+            <option value="FY2022-23">FY 2022-23</option>
+          </select>
+          <button id="yoy-save" class="btn-secondary">Save snapshot for this FY</button>
+        </div>
+        <div id="yoy-table-wrap" class="yoy-table-wrap" hidden></div>
+      </div>
+
       <div class="calc-table-wrap">
         <table class="calc-table" aria-label="Emissions inventory">
           <thead>
@@ -379,10 +566,11 @@
       <div class="calc-actions">
         <div class="download-actions">
           <button id="download-report" class="btn-secondary btn-block">Download CSV report</button>
+          <button id="export-brsr" class="btn-brsr btn-block">Export for BRSR ⬇</button>
           <button id="export-json" class="btn-tertiary btn-block">Export JSON</button>
         </div>
         <button id="reset-items" class="btn-secondary btn-block">Clear all items</button>
-        <p class="calc-note">Note: Emission factors are in kg CO2e. Results convert to t CO2e automatically.</p>
+        <p class="calc-note">Emission factors in kg CO₂e. Results in t CO₂e. BRSR export is a draft — verify before filing. Based on GHG Protocol Corporate Standard &amp; CEA CO₂ Baseline V21.0.</p>
       </div>
     </div>
   </div>
