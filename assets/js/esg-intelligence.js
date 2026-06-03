@@ -42,6 +42,8 @@ async function initDashboard() {
     renderSupplyChain();
     renderMaterials();
     renderCalendar();
+    const dmTitle = document.getElementById('dmChartTitle');
+    if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
   } catch (e) {
     statusEl.textContent = 'Quotient data not yet available — runs daily after 2 AM.';
     console.warn('ESG Intel load failed:', e);
