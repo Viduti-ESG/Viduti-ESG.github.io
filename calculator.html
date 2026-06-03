@@ -149,6 +149,7 @@
       <li><a href="index.html#topics">Topics</a></li>
       <li><a href="index.html#about">About</a></li>
       <li><a href="calculator.html" style="color:var(--emerald)">GHG Calculator</a></li>
+      <li><a href="learn.html">Carbon Literacy</a></li>
       <li><a href="brsr-simple.html">BRSR Report</a></li>
       <li><a href="esg-intelligence.html">ESG Quotient</a></li>
       <li><a href="index.html#contact">Contact</a></li>
@@ -166,6 +167,7 @@
   <a href="index.html#topics">Topics</a>
   <a href="index.html#about">About</a>
   <a href="calculator.html">GHG Calculator</a>
+  <a href="learn.html">Carbon Literacy</a>
   <a href="brsr-simple.html">BRSR Report</a>
   <a href="esg-intelligence.html">ESG Quotient</a>
   <a href="index.html#contact">Contact</a>
@@ -620,7 +622,7 @@
           <button id="export-brsr" class="btn-brsr btn-block">Export for BRSR ⬇</button>
           <button id="export-json" class="btn-tertiary btn-block">Export JSON</button>
         </div>
-        <button onclick="generateShareableProfile()" class="btn-secondary btn-block">Share Profile Link</button>
+        <button onclick="generateShareableProfile()" class="btn-secondary btn-block">🔗 Copy Shareable Profile Link</button>
         <button id="reset-items" class="btn-secondary btn-block">Clear all items</button>
         <p class="calc-note">Emission factors in kg CO₂e. Results in t CO₂e. BRSR export is a draft — verify before filing. Based on GHG Protocol Corporate Standard &amp; CEA CO₂ Baseline V21.0.</p>
       </div>
@@ -648,20 +650,23 @@
   </div>
 </footer>
 
-<!-- Shareable Profile Modal -->
-<div id="profile-modal" hidden style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:flex;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:16px;padding:28px;max-width:500px;width:90%">
-    <h3 style="margin-bottom:8px;font-size:1.1rem">Your GHG Profile Link</h3>
-    <p style="font-size:.85rem;color:#64748b;margin-bottom:14px">Share this link to show your carbon footprint publicly. Data is encoded in the URL — no account needed.</p>
-    <input id="profile-url" type="text" readonly style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:.82rem;margin-bottom:10px"/>
-    <div style="display:flex;gap:10px">
-      <button id="profile-copy-btn" onclick="copyProfileUrl()" style="flex:1;background:#059669;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;cursor:pointer">Copy link</button>
-      <button id="profile-modal-close" style="flex:1;background:#f1f5f9;color:#374151;border:none;border-radius:8px;padding:10px;cursor:pointer">Close</button>
+<!-- Profile share toast -->
+<div id="profile-toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#0f172a;border:1px solid rgba(52,211,153,.35);border-radius:16px;padding:16px 20px;max-width:460px;width:calc(100vw - 40px);z-index:9999;box-shadow:0 12px 40px rgba(0,0,0,.5)">
+  <div style="display:flex;align-items:flex-start;gap:14px">
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;color:#34d399">✓</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:700;color:#fff;font-size:.88rem;margin-bottom:3px">Profile link copied to clipboard!</div>
+      <div id="profile-toast-url" style="font-size:.72rem;color:rgba(221,228,240,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a id="profile-toast-view" href="#" target="_blank" rel="noopener" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);color:#34d399;font-weight:700;font-size:.78rem;padding:7px 14px;border-radius:8px;display:inline-flex;align-items:center;gap:5px;text-decoration:none">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View profile
+        </a>
+        <button onclick="hideProfileToast()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(221,228,240,.5);font-size:.78rem;padding:7px 14px;border-radius:8px;cursor:pointer">Dismiss</button>
+      </div>
     </div>
-    <p style="font-size:.72rem;color:#94a3b8;margin-top:10px">Self-reported data. Not independently verified. Add disclaimer when sharing officially.</p>
   </div>
 </div>
-
 <!-- AI Chat Copilot -->
 <button id="chat-toggle" class="chat-toggle" title="AI Carbon Copilot">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -693,7 +698,7 @@
     header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 </script>
-<script src="assets/js/ghg-calculator.js?v=20260604" defer></script>
-<script src="assets/js/ghg-features2.js?v=20260604" defer></script>
+<script src="assets/js/ghg-calculator.js?v=20260605" defer></script>
+<script src="assets/js/ghg-features2.js?v=20260605" defer></script>
 </body>
 </html>

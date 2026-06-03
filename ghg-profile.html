@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title id="page-title">GHG Carbon Profile — Green Curve</title>
+  <meta name="description" content="Company GHG carbon footprint profile — Scope 1, 2 and 3 emissions calculated with Green Curve."/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta property="og:type"  content="website"/>
+  <meta property="og:title" content="My GHG Carbon Profile — Green Curve"/>
+  <meta property="og:description" content="View this company's Scope 1, 2 &amp; 3 carbon footprint breakdown, calculated using the Green Curve GHG Calculator."/>
+  <meta property="og:image" content="https://viduti-esg.github.io/assets/img/logo.png"/>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', 'G-VS37JR0KK7');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { background: var(--void); }
+
+    .profile-page {
+      min-height: 100vh;
+      padding: 60px 0 80px;
+    }
+
+    .profile-error {
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .profile-error h2 { font-family: var(--serif); font-size: 2rem; color: #fff; margin-bottom: 12px; }
+    .profile-error p  { color: var(--text-70); margin-bottom: 24px; }
+    .profile-error a  { display: inline-block; background: var(--emerald); color: #000; font-weight: 700; padding: 10px 24px; border-radius: 8px; font-size: .9rem; }
+
+    /* ── Card wrapper ── */
+    .profile-card {
+      max-width: 680px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    /* ── Card header ── */
+    .profile-header {
+      background: linear-gradient(135deg, rgba(16,185,129,.12) 0%, rgba(99,102,241,.08) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 36px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .profile-header__top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; position: relative;
+    }
+    .profile-brand {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--emerald);
+    }
+    .profile-fy {
+      font-size: .75rem; font-weight: 600; color: var(--text-40);
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+    }
+    .profile-total-label {
+      font-size: .78rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-40);
+      margin-bottom: 6px; position: relative;
+    }
+    .profile-total {
+      display: flex; align-items: baseline; gap: 8px; position: relative;
+    }
+    .profile-total__num {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      color: #fff;
+      letter-spacing: -.03em;
+      line-height: 1;
+    }
+    .profile-total__unit {
+      font-size: 1rem; font-weight: 500; color: var(--text-70);
+    }
+    .profile-total__badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+      color: var(--emerald); background: rgba(52,211,153,.1);
+      border: 1px solid rgba(52,211,153,.25); border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    /* ── Scope bars ── */
+    .profile-scopes {
+      padding: 28px 36px;
+      border-bottom: 1px solid var(--border);
+    }
+    .scope-bar-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 14px;
+    }
+    .scope-bar-row:last-child { margin-bottom: 0; }
+    .scope-bar-label {
+      width: 68px; flex-shrink: 0;
+      font-size: .78rem; font-weight: 600; color: var(--text-70);
+    }
+    .scope-bar-track {
+      flex: 1; height: 10px; background: rgba(255,255,255,.07);
+      border-radius: 5px; overflow: hidden;
+    }
+    .scope-bar-fill {
+      height: 100%; border-radius: 5px;
+      transition: width .8s cubic-bezier(.34,1.56,.64,1);
+    }
+    .scope-bar-fill--s1 { background: linear-gradient(90deg, #10b981, #34d399); }
+    .scope-bar-fill--s2 { background: linear-gradient(90deg, #6366f1, #818cf8); }
+    .scope-bar-fill--s3 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .scope-bar-stats {
+      width: 140px; flex-shrink: 0;
+      display: flex; gap: 8px; align-items: baseline;
+      justify-content: flex-end;
+    }
+    .scope-bar-val {
+      font-size: .88rem; font-weight: 700; color: #fff;
+    }
+    .scope-bar-pct {
+      font-size: .72rem; color: var(--text-40);
+    }
+
+    /* ── Intensity grid ── */
+    .profile-intensity {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .intensity-cell {
+      background: var(--surface); padding: 20px 24px;
+    }
+    .intensity-cell__val {
+      font-size: 1.25rem; font-weight: 800; color: #fff;
+      margin-bottom: 3px;
+    }
+    .intensity-cell__lbl {
+      font-size: .72rem; color: var(--text-40); font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ── Net Zero banner ── */
+    .profile-netzero {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 36px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(16,185,129,.04);
+    }
+    .nz-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(16,185,129,.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+    .nz-text { flex: 1; }
+    .nz-text strong { display: block; font-size: .85rem; color: #fff; margin-bottom: 2px; }
+    .nz-text span { font-size: .75rem; color: var(--text-40); }
+
+    /* ── Footer actions ── */
+    .profile-footer {
+      padding: 24px 36px;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    .profile-share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.3);
+      color: var(--emerald); font-weight: 700; font-size: .82rem;
+      padding: 9px 18px; border-radius: 8px; cursor: pointer;
+      transition: all .2s;
+    }
+    .profile-share-btn:hover { background: rgba(52,211,153,.2); }
+    .profile-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--emerald); color: #000; font-weight: 700;
+      font-size: .82rem; padding: 9px 20px; border-radius: 8px;
+      transition: opacity .2s;
+    }
+    .profile-cta:hover { opacity: .85; }
+    .profile-disclaimer {
+      width: 100%; font-size: .68rem; color: var(--text-20); line-height: 1.5;
+    }
+
+    /* ── Chart section ── */
+    .profile-chart {
+      padding: 20px 36px;
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-chart-title {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-40);
+      margin-bottom: 14px;
+    }
+
+    /* ── Back / nav ── */
+    .profile-nav {
+      max-width: 680px; margin: 0 auto 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .profile-nav a {
+      font-size: .8rem; color: var(--text-70); display: inline-flex;
+      align-items: center; gap: 5px;
+      border: 1px solid var(--border-hi); border-radius: 20px;
+      padding: 5px 14px; transition: all .2s;
+    }
+    .profile-nav a:hover { color: var(--cyan); border-color: rgba(0,200,255,.35); }
+
+    /* Copied toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--emerald); color: #000; font-weight: 700; font-size: .82rem;
+      padding: 10px 20px; border-radius: 8px;
+      opacity: 0; transition: all .25s;
+      pointer-events: none; z-index: 9999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      .profile-header { padding: 24px 20px 20px; }
+      .profile-scopes { padding: 20px; }
+      .profile-intensity { grid-template-columns: 1fr; }
+      .profile-netzero { padding: 16px 20px; }
+      .profile-footer { padding: 20px; }
+      .profile-chart { padding: 16px 20px; }
+      .profile-nav { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html#insights">Insights</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="learn.html">Carbon Literacy</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+    </ul>
+    <a href="calculator.html" class="nav__cta">Calculate &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+  <a href="index.html#insights">Insights</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="learn.html">Carbon Literacy</a>
+  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="esg-intelligence.html">ESG Quotient</a>
+</div>
+
+<section class="profile-page container">
+  <!-- Error / loading state -->
+  <div id="profile-error" class="profile-error" hidden>
+    <h2>No profile data found</h2>
+    <p>This link may be broken or expired. Create a new profile using the GHG Calculator.</p>
+    <a href="calculator.html">Open GHG Calculator &rarr;</a>
+  </div>
+
+  <!-- Profile card -->
+  <div id="profile-content" hidden>
+
+    <div class="profile-nav">
+      <a href="calculator.html">&larr; GHG Calculator</a>
+      <a href="learn.html">Carbon Literacy</a>
+    </div>
+
+    <div class="profile-card" id="profile-card">
+
+      <!-- Header -->
+      <div class="profile-header">
+        <div class="profile-header__top">
+          <div class="profile-brand">
+            <svg width="14" height="10" viewBox="0 0 28 20" fill="none" aria-hidden="true">
+              <path d="M3 17 Q9 3 25 5" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="25" cy="5" r="2" fill="#34d399"/>
+            </svg>
+            Green Curve &bull; GHG Profile
+          </div>
+          <span class="profile-fy" id="profile-fy-badge"></span>
+        </div>
+        <div class="profile-total-label">Total GHG Emissions</div>
+        <div class="profile-total">
+          <span class="profile-total__num" id="profile-total-num">—</span>
+          <span class="profile-total__unit">t CO₂e</span>
+          <span class="profile-total__badge">
+            <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            GHG Protocol
+          </span>
+        </div>
+      </div>
+
+      <!-- Scope breakdown bars -->
+      <div class="profile-scopes">
+        <div class="scope-bar-row">
+          <div class="scope-bar-label">Scope 1</div>
+          <div class="scope-bar-track">
+            <div class="scope-bar-fill scope-bar-fill--s1" id="bar-s1" style="width:0%"></div>
+          </div>
+          <div class="scope-bar-stats">
+            <span class="scope-bar-val" id="val-s1">—</span>
+            <span class="scope-bar-pct" id="pct-s1"></span>
+          </div>
+        </div>
+        <div class="scope-bar-row">
+          <div class="scope-bar-label">Scope 2</div>
+          <div class="scope-bar-track">
+            <div class="scope-bar-fill scope-bar-fill--s2" id="bar-s2" style="width:0%"></div>
+          </div>
+          <div class="scope-bar-stats">
+            <span class="scope-bar-val" id="val-s2">—</span>
+            <span class="scope-bar-pct" id="pct-s2"></span>
+          </div>
+        </div>
+        <div class="scope-bar-row">
+          <div class="scope-bar-label">Scope 3</div>
+          <div class="scope-bar-track">
+            <div class="scope-bar-fill scope-bar-fill--s3" id="bar-s3" style="width:0%"></div>
+          </div>
+          <div class="scope-bar-stats">
+            <span class="scope-bar-val" id="val-s3">—</span>
+            <span class="scope-bar-pct" id="pct-s3"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="profile-chart" id="chart-section" hidden>
+        <div class="profile-chart-title">Emission breakdown</div>
+        <canvas id="profile-chart" height="140"></canvas>
+      </div>
+
+      <!-- Intensity metrics -->
+      <div class="profile-intensity" id="intensity-section" hidden>
+        <div class="intensity-cell" id="ri-cell" hidden>
+          <div class="intensity-cell__val" id="ri-val">—</div>
+          <div class="intensity-cell__lbl">t CO₂e per ₹ Crore revenue<br><span style="color:rgba(221,228,240,.25)">BRSR Principle 6 intensity</span></div>
+        </div>
+        <div class="intensity-cell" id="em-cell" hidden>
+          <div class="intensity-cell__val" id="em-val">—</div>
+          <div class="intensity-cell__lbl">t CO₂e per employee<br><span style="color:rgba(221,228,240,.25)">Per capita GHG intensity</span></div>
+        </div>
+      </div>
+
+      <!-- Net Zero banner -->
+      <div class="profile-netzero" id="nz-banner" hidden>
+        <div class="nz-icon">🎯</div>
+        <div class="nz-text">
+          <strong id="nz-target-text"></strong>
+          <span>SBTi 1.5°C pathway · 4.2% annual reduction required · <a href="learn.html#sbti" style="color:var(--emerald)">Learn more</a></span>
+        </div>
+      </div>
+
+      <!-- Footer actions -->
+      <div class="profile-footer">
+        <button class="profile-share-btn" onclick="shareProfile()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Copy profile link
+        </button>
+        <a href="calculator.html" class="profile-cta">
+          Calculate yours &rarr;
+        </a>
+        <p class="profile-disclaimer">
+          Self-reported data calculated using the Green Curve GHG Calculator. Not independently verified or audited.
+          Emission factors: DEFRA 2024, CEA CO₂ Baseline V21.0. Add disclaimer when sharing for official purposes.
+        </p>
+      </div>
+
+    </div><!-- /.profile-card -->
+  </div><!-- /#profile-content -->
+</section>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+        </svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>Published daily &bull; Green Curve Research</p>
+      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Link copied!</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const header = document.getElementById('site-header');
+const progress = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  progress.style.width = pct + '%';
+  header.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// Mobile nav
+const burger = document.getElementById('nav-burger');
+const mobileNav = document.getElementById('nav-mobile');
+if (burger && mobileNav) {
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    mobileNav.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    burger.setAttribute('aria-expanded', String(open));
+  });
+}
+
+function fmt(v, d = 2) {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: d, maximumFractionDigits: d,
+  }).format(v);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function shareProfile() {
+  navigator.clipboard.writeText(location.href).then(() => showToast('Profile link copied!'));
+}
+window.shareProfile = shareProfile;
+
+// Decode and render
+(function () {
+  const params = new URLSearchParams(location.search);
+  const d = params.get('d');
+
+  if (!d) {
+    document.getElementById('profile-error').hidden = false;
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(atob(d));
+  } catch {
+    document.getElementById('profile-error').hidden = false;
+    return;
+  }
+
+  const { fy = '', s1 = 0, s2 = 0, s3 = 0, tot = 0, ri = '', em = '' } = data;
+  const total = Number(tot);
+  if (total <= 0) {
+    document.getElementById('profile-error').hidden = false;
+    return;
+  }
+
+  document.getElementById('profile-content').hidden = false;
+  document.getElementById('profile-fy-badge').textContent = fy || 'FY 2025-26';
+  document.getElementById('profile-total-num').textContent = fmt(total, 2);
+
+  // Update page title for social sharing
+  document.title = `GHG Profile — ${fmt(total, 1)} t CO₂e — Green Curve`;
+
+  // Scope bars
+  const vals = { s1: Number(s1), s2: Number(s2), s3: Number(s3) };
+  const scopes = ['s1', 's2', 's3'];
+
+  scopes.forEach(k => {
+    const pct = total > 0 ? (vals[k] / total * 100) : 0;
+    const barEl = document.getElementById('bar-' + k);
+    const valEl = document.getElementById('val-' + k);
+    const pctEl = document.getElementById('pct-' + k);
+    if (barEl) setTimeout(() => { barEl.style.width = pct.toFixed(1) + '%'; }, 100);
+    if (valEl) valEl.textContent = fmt(vals[k], 2) + ' t';
+    if (pctEl) pctEl.textContent = pct.toFixed(0) + '%';
+  });
+
+  // Chart
+  const canvas = document.getElementById('profile-chart');
+  const chartSec = document.getElementById('chart-section');
+  if (canvas && total > 0) {
+    chartSec.hidden = false;
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: ['Scope 1\n(Direct)', 'Scope 2\n(Purchased energy)', 'Scope 3\n(Value chain)'],
+        datasets: [{
+          data: [vals.s1, vals.s2, vals.s3],
+          backgroundColor: ['rgba(16,185,129,.75)', 'rgba(99,102,241,.75)', 'rgba(245,158,11,.75)'],
+          borderColor:      ['#10b981', '#6366f1', '#f59e0b'],
+          borderWidth: 1.5, borderRadius: 6,
+        }],
+      },
+      options: {
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.y, 2) + ' t CO₂e' } } },
+        scales: {
+          x: { ticks: { color: 'rgba(221,228,240,.5)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.04)' } },
+          y: {
+            ticks: { color: 'rgba(221,228,240,.5)', callback: v => v + 't', font: { size: 10 } },
+            grid: { color: 'rgba(255,255,255,.04)' },
+          },
+        },
+      },
+    });
+  }
+
+  // Intensity
+  const intSec = document.getElementById('intensity-section');
+  let hasIntensity = false;
+  if (ri) {
+    const riCell = document.getElementById('ri-cell');
+    const riVal  = document.getElementById('ri-val');
+    if (riCell && riVal) { riVal.textContent = Number(ri).toFixed(4); riCell.hidden = false; hasIntensity = true; }
+  }
+  if (em) {
+    const emCell = document.getElementById('em-cell');
+    const emVal  = document.getElementById('em-val');
+    if (emCell && emVal) { emVal.textContent = Number(em).toFixed(3); emCell.hidden = false; hasIntensity = true; }
+  }
+  if (hasIntensity && intSec) intSec.hidden = false;
+
+  // Net Zero banner
+  const nzBanner = document.getElementById('nz-banner');
+  const nzText   = document.getElementById('nz-target-text');
+  if (nzBanner && nzText && total > 0) {
+    const baseYear = new Date().getFullYear();
+    const t2030 = +(total * Math.pow(1 - 0.042, 2030 - baseYear)).toFixed(1);
+    const t2050 = +(total * 0.10).toFixed(1);
+    nzText.textContent = `2030 target: ${fmt(t2030, 1)} t  ·  2050 target: ${fmt(t2050, 1)} t`;
+    nzBanner.hidden = false;
+  }
+})();
+</script>
+</body>
+</html>

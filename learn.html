@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carbon Literacy — GHG Protocol, BRSR &amp; Net Zero for Indian Business — Green Curve</title>
+  <meta name="description" content="Free carbon literacy guide for Indian businesses: Scope 1, 2, 3 explained, GHG Protocol, SEBI BRSR requirements, SBTi net zero targets, carbon offsets and India-specific emission factors."/>
+  <meta name="keywords" content="carbon literacy India, GHG Protocol India, Scope 1 2 3 explained, BRSR emissions, SBTi India, net zero India 2070, carbon offsetting India, emission factors India, CEA grid factor, carbon accounting"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://viduti-esg.github.io/learn.html"/>
+
+  <meta property="og:type"        content="article"/>
+  <meta property="og:url"         content="https://viduti-esg.github.io/learn.html"/>
+  <meta property="og:title"       content="Carbon Literacy — GHG &amp; Net Zero for Indian Businesses — Green Curve"/>
+  <meta property="og:description" content="Everything Indian businesses need to know about carbon accounting: Scope 1/2/3, GHG Protocol, SEBI BRSR, SBTi targets, and carbon offsets — explained simply."/>
+  <meta property="og:image"       content="https://viduti-esg.github.io/assets/img/logo.png"/>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Carbon Literacy — GHG Protocol, BRSR and Net Zero for Indian Businesses",
+    "description": "Free guide covering Scope 1/2/3 emissions, GHG Protocol, SEBI BRSR, SBTi net zero targets, and carbon offsets for Indian businesses.",
+    "url": "https://viduti-esg.github.io/learn.html",
+    "publisher": { "@type": "Organization", "name": "Green Curve Research", "url": "https://viduti-esg.github.io/" },
+    "inLanguage": "en-IN"
+  }
+  </script>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', 'G-VS37JR0KK7');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+
+  <style>
+    /* ── Learn page layout ── */
+    .learn-hero {
+      background: var(--void);
+      padding: 80px 0 56px;
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    .learn-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .learn-hero__orb {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; filter: blur(80px);
+    }
+    .learn-hero__orb--1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(52,211,153,.12) 0%, transparent 65%);
+      top: -180px; right: -80px;
+    }
+    .learn-hero__orb--2 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(0,200,255,.08) 0%, transparent 65%);
+      bottom: -60px; left: -60px;
+    }
+    .learn-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--emerald);
+      margin-bottom: 16px; padding: 5px 14px;
+      background: rgba(52,211,153,.06); border: 1px solid rgba(52,211,153,.22);
+      border-radius: 100px;
+    }
+    .learn-hero__title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      color: #fff; letter-spacing: -.03em; line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .learn-hero__title em {
+      font-style: italic;
+      background: linear-gradient(95deg, var(--emerald), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .learn-hero__sub {
+      font-size: .95rem; color: var(--text-70); line-height: 1.75;
+      max-width: 580px; margin-bottom: 28px;
+    }
+
+    /* ── Quick-nav pills ── */
+    .learn-quicknav {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 20px 0; border-bottom: 1px solid var(--border);
+    }
+    .learn-quicknav a {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: .75rem; font-weight: 600; color: var(--text-70);
+      border: 1px solid var(--border-hi); border-radius: 20px;
+      padding: 5px 13px; transition: all .2s;
+    }
+    .learn-quicknav a:hover { color: var(--cyan); border-color: rgba(0,200,255,.35); }
+
+    /* ── Main content grid ── */
+    .learn-body {
+      padding: 60px 0 80px;
+    }
+    .learn-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* ── Sticky sidebar ── */
+    .learn-sidebar {
+      position: sticky; top: 80px;
+    }
+    .learn-toc { list-style: none; }
+    .learn-toc__title {
+      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--text-40);
+      margin-bottom: 12px;
+    }
+    .learn-toc li { margin-bottom: 2px; }
+    .learn-toc a {
+      display: block; font-size: .8rem; color: var(--text-40);
+      padding: 4px 10px; border-left: 2px solid var(--border);
+      transition: all .2s;
+    }
+    .learn-toc a:hover, .learn-toc a.active {
+      color: var(--emerald); border-color: var(--emerald);
+    }
+
+    /* ── Article sections ── */
+    .learn-section {
+      scroll-margin-top: 90px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 48px;
+      margin-bottom: 48px;
+    }
+    .learn-section:last-child { border-bottom: none; }
+
+    .section-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; margin-bottom: 10px;
+    }
+    .eyebrow--green  { color: var(--emerald); }
+    .eyebrow--blue   { color: var(--cyan); }
+    .eyebrow--violet { color: var(--violet); }
+    .eyebrow--amber  { color: var(--amber); }
+
+    .learn-section h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      color: #fff; letter-spacing: -.02em; line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .learn-section p {
+      font-size: .92rem; color: var(--text-70); line-height: 1.8;
+      margin-bottom: 14px; max-width: 680px;
+    }
+    .learn-section p:last-child { margin-bottom: 0; }
+    .learn-section strong { color: var(--text); font-weight: 600; }
+    .learn-section a { color: var(--emerald); text-decoration: underline; text-underline-offset: 3px; }
+    .learn-section a:hover { color: var(--cyan); }
+
+    /* ── Scope cards ── */
+    .scope-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin: 24px 0;
+    }
+    .scope-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px;
+      transition: border-color .2s;
+    }
+    .scope-card:hover { border-color: var(--border-hi); }
+    .scope-card__num {
+      font-family: var(--serif); font-size: 2rem; font-weight: 400;
+      margin-bottom: 6px;
+    }
+    .scope-card--s1 .scope-card__num { color: #34d399; }
+    .scope-card--s2 .scope-card__num { color: #818cf8; }
+    .scope-card--s3 .scope-card__num { color: #fbbf24; }
+    .scope-card__title { font-weight: 700; color: #fff; font-size: .9rem; margin-bottom: 6px; }
+    .scope-card__desc  { font-size: .78rem; color: var(--text-40); line-height: 1.6; margin-bottom: 10px; }
+    .scope-card__examples { font-size: .75rem; color: var(--text-40); }
+    .scope-card__examples strong { display: block; color: var(--text-70); font-size: .7rem; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── Info boxes ── */
+    .info-box {
+      border-radius: 12px; padding: 18px 20px;
+      margin: 20px 0; font-size: .85rem; line-height: 1.7;
+    }
+    .info-box--green {
+      background: rgba(52,211,153,.06); border: 1px solid rgba(52,211,153,.2);
+      color: var(--text-70);
+    }
+    .info-box--amber {
+      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.2);
+      color: var(--text-70);
+    }
+    .info-box--blue {
+      background: rgba(0,200,255,.05); border: 1px solid rgba(0,200,255,.15);
+      color: var(--text-70);
+    }
+    .info-box--violet {
+      background: rgba(129,140,248,.06); border: 1px solid rgba(129,140,248,.2);
+      color: var(--text-70);
+    }
+    .info-box strong { color: #fff; }
+    .info-box__label {
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; margin-bottom: 6px; display: block;
+    }
+    .info-box--green .info-box__label  { color: var(--emerald); }
+    .info-box--amber .info-box__label  { color: var(--amber); }
+    .info-box--blue .info-box__label   { color: var(--cyan); }
+    .info-box--violet .info-box__label { color: var(--violet); }
+
+    /* ── Data table ── */
+    .learn-table-wrap { overflow-x: auto; margin: 20px 0; }
+    .learn-table {
+      width: 100%; border-collapse: collapse; font-size: .82rem;
+    }
+    .learn-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-40);
+      border-bottom: 1px solid var(--border);
+    }
+    .learn-table td {
+      padding: 10px 14px; color: var(--text-70);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .learn-table tr:last-child td { border-bottom: none; }
+    .learn-table tr:hover td { background: rgba(255,255,255,.02); }
+    .learn-table td strong { color: var(--text); }
+
+    /* ── Step list ── */
+    .step-list { list-style: none; margin: 20px 0; }
+    .step-item {
+      display: flex; gap: 16px; margin-bottom: 16px;
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.3);
+      color: var(--emerald); font-weight: 800; font-size: .78rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step-content strong { display: block; color: #fff; font-size: .88rem; margin-bottom: 3px; }
+    .step-content span   { font-size: .8rem; color: var(--text-40); line-height: 1.6; }
+
+    /* ── CTA section ── */
+    .learn-cta {
+      background: linear-gradient(135deg, rgba(16,185,129,.1) 0%, rgba(99,102,241,.08) 100%);
+      border: 1px solid rgba(52,211,153,.2);
+      border-radius: 20px; padding: 36px; text-align: center;
+      margin-top: 48px;
+    }
+    .learn-cta h3 {
+      font-family: var(--serif); font-size: 1.6rem; color: #fff; margin-bottom: 10px;
+    }
+    .learn-cta p { font-size: .9rem; color: var(--text-70); margin-bottom: 20px; }
+    .learn-cta__btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--emerald); color: #000;
+      font-weight: 700; font-size: .88rem; padding: 11px 24px;
+      border-radius: 10px; transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; color: var(--text-70);
+      border: 1px solid var(--border-hi); font-weight: 600;
+      font-size: .88rem; padding: 11px 22px; border-radius: 10px;
+      transition: all .2s;
+    }
+    .btn-outline:hover { color: var(--cyan); border-color: rgba(0,200,255,.35); }
+
+    /* ── FAQ accordion ── */
+    .faq-item {
+      border: 1px solid var(--border); border-radius: 12px;
+      margin-bottom: 8px; overflow: hidden;
+    }
+    .faq-question {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer; user-select: none;
+      font-weight: 600; font-size: .88rem; color: var(--text);
+      background: transparent; transition: background .2s;
+    }
+    .faq-question:hover { background: rgba(255,255,255,.03); }
+    .faq-icon {
+      width: 18px; height: 18px; flex-shrink: 0;
+      color: var(--text-40); transition: transform .3s;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); color: var(--emerald); }
+    .faq-answer {
+      display: none; padding: 0 18px 16px;
+      font-size: .84rem; color: var(--text-70); line-height: 1.75;
+    }
+    .faq-item.open .faq-answer { display: block; }
+
+    @media (max-width: 800px) {
+      .learn-grid { grid-template-columns: 1fr; gap: 32px; }
+      .learn-sidebar { position: static; }
+      .scope-cards { grid-template-columns: 1fr; }
+      .learn-toc { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html#insights">Insights</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="learn.html" style="color:var(--emerald)">Carbon Literacy</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <a href="calculator.html" class="nav__cta">Calculate &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+  <a href="index.html#insights">Insights</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="learn.html">Carbon Literacy</a>
+  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="esg-intelligence.html">ESG Quotient</a>
+  <a href="index.html#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="learn-hero">
+  <div class="learn-hero__orb learn-hero__orb--1" aria-hidden="true"></div>
+  <div class="learn-hero__orb learn-hero__orb--2" aria-hidden="true"></div>
+  <div class="container" style="position:relative">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:500;color:var(--text-70);border:1px solid var(--border-hi);border-radius:100px;padding:6px 16px;margin-bottom:28px;transition:all .2s" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-70)'">&larr; Back to Insights</a>
+    <div class="learn-eyebrow">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+        <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M5 2v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Free Carbon Literacy Guide
+    </div>
+    <h1 class="learn-hero__title">Carbon Accounting<br/><em>explained</em> for India</h1>
+    <p class="learn-hero__sub">
+      Everything Indian businesses need to know — Scope 1, 2 &amp; 3, GHG Protocol, SEBI BRSR,
+      SBTi targets, emission factors, and carbon offsets — explained plainly, with Indian context.
+    </p>
+    <div class="learn-quicknav">
+      <a href="#ghg-protocol">GHG Protocol</a>
+      <a href="#scopes">Scope 1 / 2 / 3</a>
+      <a href="#brsr">BRSR India</a>
+      <a href="#net-zero">Net Zero</a>
+      <a href="#sbti">SBTi Targets</a>
+      <a href="#emission-factors">Emission Factors</a>
+      <a href="#offsets">Carbon Offsets</a>
+      <a href="#getting-started">Getting Started</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+</section>
+
+<!-- BODY -->
+<div class="learn-body">
+  <div class="container">
+    <div class="learn-grid">
+
+      <!-- Sidebar TOC -->
+      <aside class="learn-sidebar" aria-label="Table of contents">
+        <p class="learn-toc__title">Contents</p>
+        <ul class="learn-toc">
+          <li><a href="#ghg-protocol">GHG Protocol</a></li>
+          <li><a href="#scopes">Scope 1 · 2 · 3</a></li>
+          <li><a href="#brsr">BRSR India</a></li>
+          <li><a href="#net-zero">Net Zero</a></li>
+          <li><a href="#sbti">SBTi Targets</a></li>
+          <li><a href="#emission-factors">Emission Factors</a></li>
+          <li><a href="#offsets">Carbon Offsets</a></li>
+          <li><a href="#getting-started">Getting Started</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+        <div style="margin-top:28px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+          <p style="font-size:.75rem;color:var(--text-40);margin-bottom:10px">Calculate your emissions →</p>
+          <a href="calculator.html" style="display:block;background:var(--emerald);color:#000;font-weight:700;font-size:.8rem;padding:9px;border-radius:8px;text-align:center">Free GHG Calculator</a>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <article>
+
+        <!-- 1. GHG Protocol -->
+        <section class="learn-section" id="ghg-protocol">
+          <div class="section-eyebrow eyebrow--green">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Foundation
+          </div>
+          <h2>What is the GHG Protocol?</h2>
+          <p>
+            The <strong>Greenhouse Gas (GHG) Protocol</strong> is the world's most widely used accounting
+            standard for measuring and managing greenhouse gas emissions. Developed jointly by the
+            World Resources Institute (WRI) and the World Business Council for Sustainable Development
+            (WBCSD), it provides the accounting framework used by 92% of Fortune 500 companies.
+          </p>
+          <p>
+            In India, the GHG Protocol underpins SEBI's BRSR framework, the SBTi corporate standard,
+            CDP disclosures, and the ISSB IFRS S2 climate standard. When you measure emissions using
+            Green Curve's calculator, you are following GHG Protocol Corporate Standard methodology.
+          </p>
+          <div class="info-box info-box--green">
+            <span class="info-box__label">Why it matters for Indian companies</span>
+            SEBI's BRSR (Business Responsibility and Sustainability Reporting) framework explicitly
+            requires Scope 1 and Scope 2 disclosures using GHG Protocol methodology for all listed
+            companies. BRSR Core (top 150 companies) additionally requires Scope 3 disclosures
+            with third-party assurance.
+          </div>
+          <p>
+            The Protocol defines <strong>three scopes</strong> of emissions — direct, indirect from
+            purchased energy, and value chain — and specifies how to calculate, verify, and report
+            each. This scope structure is now embedded in every major global reporting framework.
+          </p>
+        </section>
+
+        <!-- 2. Scopes -->
+        <section class="learn-section" id="scopes">
+          <div class="section-eyebrow eyebrow--green">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Core Concepts
+          </div>
+          <h2>Scope 1, 2 &amp; 3 Explained</h2>
+          <p>
+            The GHG Protocol divides emissions into three scopes based on where they occur in your
+            value chain. Understanding the difference is essential before you begin measuring.
+          </p>
+
+          <div class="scope-cards">
+            <div class="scope-card scope-card--s1">
+              <div class="scope-card__num">1</div>
+              <div class="scope-card__title">Direct Emissions</div>
+              <div class="scope-card__desc">Emissions from sources owned or controlled by your company.</div>
+              <div class="scope-card__examples">
+                <strong>Indian examples</strong>
+                Diesel / furnace oil in boilers, DG sets, coal in kilns, petrol/diesel in company vehicles,
+                LPG in canteen, refrigerant leakage from ACs, SF6 in switchgear.
+              </div>
+            </div>
+            <div class="scope-card scope-card--s2">
+              <div class="scope-card__num">2</div>
+              <div class="scope-card__title">Purchased Energy</div>
+              <div class="scope-card__desc">Indirect emissions from electricity, steam, heat or cooling you buy.</div>
+              <div class="scope-card__examples">
+                <strong>Indian examples</strong>
+                Grid electricity from DISCOM, purchased steam from a power plant, chilled water
+                from a district cooling utility. India's average grid factor: 0.71 tCO₂/MWh (CEA 2024-25).
+              </div>
+            </div>
+            <div class="scope-card scope-card--s3">
+              <div class="scope-card__num">3</div>
+              <div class="scope-card__title">Value Chain</div>
+              <div class="scope-card__desc">All other indirect emissions — 15 GHG Protocol categories upstream and downstream.</div>
+              <div class="scope-card__examples">
+                <strong>Indian examples</strong>
+                Raw material extraction (Cat 1), freight by road/rail (Cat 4), employee commute
+                (Cat 7), business flights (Cat 6), waste treatment at CETP (Cat 5),
+                use of sold products by customers (Cat 11).
+              </div>
+            </div>
+          </div>
+
+          <div class="info-box info-box--amber">
+            <span class="info-box__label">The Scope 3 problem</span>
+            For most Indian manufacturers, Scope 3 represents <strong>70–85% of total emissions</strong>
+            — but it is the hardest to measure. If you don't have supplier activity data, use the
+            <strong>spend-based estimation</strong> method with DEFRA EEIO factors — available directly
+            in the Green Curve GHG Calculator.
+          </div>
+
+          <p>
+            <strong>Location-based vs market-based (Scope 2):</strong> The location-based method uses
+            the average grid emission factor for your state (CEA CO₂ Baseline Database, updated annually
+            by the Ministry of Power). The market-based method uses the emission factor of your specific
+            electricity supplier — relevant if you buy renewable energy certificates (RECs) or have a
+            green power purchase agreement.
+          </p>
+
+          <div class="learn-table-wrap">
+            <table class="learn-table">
+              <thead>
+                <tr>
+                  <th>Scope</th>
+                  <th>BRSR required?</th>
+                  <th>Typical % of total</th>
+                  <th>Difficulty to measure</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Scope 1</strong></td><td>Yes — mandatory for all listed co.</td><td>5–40%</td><td>Low — use utility/fuel invoices</td></tr>
+                <tr><td><strong>Scope 2</strong></td><td>Yes — mandatory for all listed co.</td><td>10–50%</td><td>Low — use DISCOM bills + CEA factor</td></tr>
+                <tr><td><strong>Scope 3</strong></td><td>BRSR Core only (top 150)</td><td>40–85%</td><td>High — requires supplier data or spend-based</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 3. BRSR -->
+        <section class="learn-section" id="brsr">
+          <div class="section-eyebrow eyebrow--blue">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            India Regulation
+          </div>
+          <h2>SEBI BRSR — India's Mandatory ESG Framework</h2>
+          <p>
+            The <strong>Business Responsibility and Sustainability Report (BRSR)</strong> is mandatory
+            for all companies listed in the top 1,000 by market capitalisation on BSE/NSE, effective
+            from FY 2022-23. It is filed as part of the Annual Report.
+          </p>
+          <p>
+            The BRSR is structured across <strong>9 National Guidelines principles</strong>. Principle 6
+            covers the environment — and requires GHG disclosures including Scope 1, Scope 2, emission
+            intensity, energy consumption, and targets.
+          </p>
+
+          <div class="learn-table-wrap">
+            <table class="learn-table">
+              <thead>
+                <tr>
+                  <th>BRSR disclosure</th>
+                  <th>Scope</th>
+                  <th>Mandatory?</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Scope 1 (tCO₂e)</strong></td><td>P6 — Environment</td><td>Yes</td><td>For current + prior FY</td></tr>
+                <tr><td><strong>Scope 2 (tCO₂e)</strong></td><td>P6 — Environment</td><td>Yes</td><td>Location-based method</td></tr>
+                <tr><td><strong>Scope 3 (tCO₂e)</strong></td><td>P6 — Environment</td><td>BRSR Core only</td><td>Top 150 companies from FY2024</td></tr>
+                <tr><td><strong>Intensity per ₹ turnover</strong></td><td>P6</td><td>Yes</td><td>tCO₂e per crore revenue</td></tr>
+                <tr><td><strong>Intensity per employee</strong></td><td>P6</td><td>Yes</td><td>Total S1+S2+S3 / headcount</td></tr>
+                <tr><td><strong>Reduction targets</strong></td><td>P6</td><td>Voluntary</td><td>Required for BRSR Core</td></tr>
+                <tr><td><strong>Energy consumption</strong></td><td>P6</td><td>Yes</td><td>Renewable vs non-renewable split</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-box info-box--blue">
+            <span class="info-box__label">BRSR Core</span>
+            From FY 2023-24, the top 150 listed companies (by market cap) must file a <strong>BRSR Core</strong>
+            with enhanced disclosures and mandatory <strong>third-party assurance</strong>. This includes
+            Scope 3 GHG disclosures and a double materiality assessment. The threshold expands to top 250
+            companies from FY 2024-25.
+          </div>
+
+          <p>
+            The <a href="brsr-simple.html">Green Curve BRSR Report Generator</a> helps you fill all
+            nine principles using AI assistance, benchmarked against 1,227 listed companies from
+            SEBI's own XBRL filings.
+          </p>
+        </section>
+
+        <!-- 4. Net Zero -->
+        <section class="learn-section" id="net-zero">
+          <div class="section-eyebrow eyebrow--violet">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Targets
+          </div>
+          <h2>Net Zero vs Carbon Neutral — what's the difference?</h2>
+
+          <p>
+            These terms are often used interchangeably but have distinct meanings. Confusing them
+            is one of the most common causes of greenwashing claims.
+          </p>
+
+          <div class="info-box info-box--green">
+            <span class="info-box__label">Net Zero</span>
+            <strong>Net zero</strong> requires a company to cut absolute emissions by at least <strong>90%
+            across Scopes 1, 2 and 3</strong> compared to a base year, and then balance the remaining
+            ≤10% residuals with <em>permanent carbon removal</em> (not cheap offsets).
+            This is the SBTi Corporate Net-Zero Standard definition.
+          </div>
+
+          <div class="info-box info-box--amber">
+            <span class="info-box__label">Carbon Neutral</span>
+            <strong>Carbon neutral</strong> means balancing your emissions with carbon offsets — but
+            without a required reduction target. A company can claim carbon neutrality while still emitting
+            the same as before, simply by purchasing offset certificates. This is weaker and increasingly
+            criticised as insufficient by investors and regulators.
+          </div>
+
+          <p>
+            <strong>India's net zero commitment:</strong> India committed to net zero by <strong>2070</strong>
+            at COP26. Listed companies — especially those in the NIFTY 50 and BSE 500 — face growing
+            investor pressure to align with 1.5°C pathways well ahead of this national deadline.
+          </p>
+
+          <p>
+            The <strong>Green Curve Net Zero Pathway Modeler</strong> (inside the GHG Calculator) automatically
+            shows your required annual reduction trajectory under SBTi's 1.5°C pathway — which requires
+            a <strong>4.2% absolute reduction per year</strong> from your baseline.
+          </p>
+        </section>
+
+        <!-- 5. SBTi -->
+        <section class="learn-section" id="sbti">
+          <div class="section-eyebrow eyebrow--violet">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Targets
+          </div>
+          <h2>Science-Based Targets (SBTi)</h2>
+          <p>
+            The <strong>Science Based Targets initiative (SBTi)</strong> is a body that validates corporate
+            climate targets to ensure they are aligned with the latest climate science. A company
+            with SBTi-approved targets has committed to emission reductions consistent with limiting
+            global warming to 1.5°C.
+          </p>
+
+          <div class="learn-table-wrap">
+            <table class="learn-table">
+              <thead>
+                <tr><th>Target type</th><th>Pathway</th><th>Annual reduction</th><th>Timeline</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Near-term</strong></td><td>1.5°C</td><td>4.2% absolute / year</td><td>5–10 years (typically 2030)</td></tr>
+                <tr><td><strong>Near-term</strong></td><td>Well-below 2°C</td><td>2.5% absolute / year</td><td>5–10 years</td></tr>
+                <tr><td><strong>Long-term (Net Zero)</strong></td><td>1.5°C Corporate NZS</td><td>90%+ reduction</td><td>By 2050</td></tr>
+                <tr><td><strong>SME Near-term</strong></td><td>1.5°C simplified</td><td>42% by 2030</td><td>Vs 2020 base year</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-box info-box--violet">
+            <span class="info-box__label">SBTi in India — growing fast</span>
+            As of 2025, over 80 Indian companies have submitted near-term SBTi targets — including
+            Tata Steel, JSW Energy, Infosys, HCL, and Mahindra. Indian suppliers to global brands
+            (Unilever, Apple, IKEA supply chains) are increasingly required to have SBTi-aligned targets
+            to remain on approved vendor lists.
+          </div>
+
+          <p>
+            The <strong>Green Curve SBTi Target Generator</strong> in the calculator automatically computes
+            your 2030 and 2050 targets once you add emission items. These numbers map directly to the
+            BRSR target disclosure fields under Principle 6.
+          </p>
+        </section>
+
+        <!-- 6. Emission Factors -->
+        <section class="learn-section" id="emission-factors">
+          <div class="section-eyebrow eyebrow--blue">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Data
+          </div>
+          <h2>Emission Factors — how calculations work</h2>
+          <p>
+            An <strong>emission factor</strong> converts an activity quantity into kg CO₂ equivalent.
+            For example: burning 1 litre of diesel releases approximately 2.556 kg CO₂e. The factor
+            accounts for CO₂, methane (CH₄) and nitrous oxide (N₂O) converted to CO₂ equivalent
+            using Global Warming Potentials (GWPs) from the IPCC.
+          </p>
+
+          <div class="learn-table-wrap">
+            <table class="learn-table">
+              <thead>
+                <tr><th>Source</th><th>Coverage</th><th>Used for</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>DEFRA 2024</strong></td>
+                  <td>3,000+ factors covering fuels, vehicles, travel, freight, materials, waste, water</td>
+                  <td>Most Scope 1, 2 and 3 categories globally — default in Green Curve calculator</td>
+                </tr>
+                <tr>
+                  <td><strong>CEA CO₂ Baseline V21.0</strong></td>
+                  <td>State-wise Indian grid emission factors (tCO₂/MWh), updated Nov 2025 for FY24-25</td>
+                  <td>Scope 2 electricity in India — use for accurate BRSR filing</td>
+                </tr>
+                <tr>
+                  <td><strong>IPCC AR6</strong></td>
+                  <td>Global warming potentials (CH₄ = 29.8, N₂O = 273 over 100-year horizon)</td>
+                  <td>Converting non-CO₂ gases into CO₂e</td>
+                </tr>
+                <tr>
+                  <td><strong>DEFRA EEIO Spend-based</strong></td>
+                  <td>Spend intensity factors by procurement category (tCO₂e per ₹ spend)</td>
+                  <td>Scope 3 Category 1/4/6 estimation when activity data is unavailable</td>
+                </tr>
+                <tr>
+                  <td><strong>IPCC Tier 2 (India)</strong></td>
+                  <td>Country-specific combustion emission factors for Indian coal, biomass</td>
+                  <td>Coal combustion in Indian power plants and industrial boilers</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            <strong>All-India average grid factor (FY 2024-25):</strong> <strong>0.7117 tCO₂/MWh</strong>
+            (CEA CO₂ Baseline Database V21.0, November 2025). State-wise factors range from
+            0.043 (Himachal Pradesh — mostly hydro) to 0.918 (Chhattisgarh — coal-heavy).
+            Always use the state-specific factor for more accurate Scope 2 disclosures.
+          </p>
+        </section>
+
+        <!-- 7. Offsets -->
+        <section class="learn-section" id="offsets">
+          <div class="section-eyebrow eyebrow--amber">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Reduction
+          </div>
+          <h2>Carbon Offsets — last resort, not a strategy</h2>
+          <p>
+            A <strong>carbon offset</strong> represents the verified removal or avoidance of one tonne of
+            CO₂ equivalent from the atmosphere. Companies purchase offsets to compensate for residual
+            emissions they cannot yet eliminate.
+          </p>
+          <div class="info-box info-box--amber">
+            <span class="info-box__label">The hierarchy — reduce first</span>
+            The GHG Protocol, SBTi, and all credible frameworks follow a clear hierarchy:
+            <strong>(1) Reduce</strong> — cut your own emissions first. <strong>(2) Replace</strong> —
+            switch to low-carbon alternatives (renewables, EVs, rail freight). <strong>(3) Remove</strong>
+            — only then offset residuals you genuinely cannot eliminate.
+            Using offsets to delay reduction is considered greenwashing.
+          </div>
+          <p>
+            <strong>India-specific offset options:</strong>
+          </p>
+          <ul style="margin:0 0 14px 16px;font-size:.88rem;color:var(--text-70);line-height:1.8">
+            <li><strong style="color:var(--text)">Gold Standard India:</strong> Cookstoves, solar home systems, biogas digesters, forestry projects. ICROA-endorsed, used by CDP-reporting companies.</li>
+            <li><strong style="color:var(--text)">Verra VCS India:</strong> REDD+ (avoiding deforestation), renewables, sustainable agriculture. The world's largest voluntary carbon standard.</li>
+            <li><strong style="color:var(--text)">India Carbon Credit Trading Scheme (CCTS):</strong> Domestic market under the BEE Energy Conservation Act. Mandatory for designated industries (PAT scheme); voluntary for others. Compliance with PAT credits counts toward Scope 1 reduction.</li>
+          </ul>
+          <p>
+            Always verify offset quality independently. Key questions: Is it additional? Is it permanent?
+            Is it verified by an accredited third party? Does it avoid double-counting?
+          </p>
+        </section>
+
+        <!-- 8. Getting Started -->
+        <section class="learn-section" id="getting-started">
+          <div class="section-eyebrow eyebrow--green">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            Action
+          </div>
+          <h2>Building your first GHG Inventory — step by step</h2>
+          <p>
+            Starting from zero? Here's how most Indian businesses approach their first GHG inventory,
+            following the GHG Protocol Corporate Standard.
+          </p>
+
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <strong>Set your organisational boundary</strong>
+                <span>Decide which entities are "in scope." Most Indian companies use the operational control approach — include all facilities and vehicles over which you have operational control, even if you don't own them.</span>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <strong>Choose your base year</strong>
+                <span>Typically the first year you have reliable data — usually the year the BRSR was first filed. FY 2021-22 is a common base year for BSE 500 companies.</span>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <strong>Collect Scope 1 data</strong>
+                <span>Fuel purchase invoices (diesel, LPG, furnace oil, coal, natural gas), DG set log books, vehicle fuel logs. Convert using DEFRA factors in the Green Curve calculator.</span>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <strong>Collect Scope 2 data</strong>
+                <span>Monthly DISCOM electricity bills (kWh, not rupees). Use the CEA state-specific factor for your manufacturing location. If you have solar, subtract that from grid consumption.</span>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num">5</div>
+              <div class="step-content">
+                <strong>Estimate Scope 3 (start simple)</strong>
+                <span>Use the Spend-based Scope 3 Estimator in Green Curve for a quick indicative estimate. For BRSR Core, you'll need activity-based data for Category 1 (purchased goods) and Category 11 (sold products use-phase).</span>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num">6</div>
+              <div class="step-content">
+                <strong>Calculate intensity metrics</strong>
+                <span>Divide total emissions (S1+S2+S3) by revenue in ₹ Crore and by number of employees. These are the two intensity metrics required by BRSR Principle 6.</span>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num">7</div>
+              <div class="step-content">
+                <strong>Set targets and file</strong>
+                <span>Use the SBTi Target Generator in Green Curve to calculate your 2030 and 2050 targets. Export to CSV for BRSR filing using the "Export for BRSR" button.</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- 9. FAQ -->
+        <section class="learn-section" id="faq">
+          <div class="section-eyebrow eyebrow--blue">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+            FAQ
+          </div>
+          <h2>Frequently asked questions</h2>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Is this calculator BRSR-compliant?
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="faq-answer">
+              The Green Curve GHG Calculator uses DEFRA 2024 and CEA CO₂ Baseline V21.0 emission factors,
+              following GHG Protocol Corporate Standard methodology — which is what BRSR requires.
+              The BRSR export button generates a draft CSV pre-formatted for Principle 6 disclosures.
+              You should verify all data against audited financials before filing, as SEBI requires
+              assurance for BRSR Core companies.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              My company is an SME, not listed. Do I still need to report?
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="faq-answer">
+              BRSR is currently mandatory only for the top 1,000 listed companies. However, if you are
+              a supplier to a listed company — particularly those in BRSR Core — you will increasingly
+              be asked to provide your Scope 3 Category 1 emissions data (purchased goods). Global brands
+              (Unilever, IKEA, Apple) already require Scope 3 data from Indian tier-1 suppliers.
+              Starting measurement now puts you ahead.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              What's the difference between CO₂ and CO₂e?
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="faq-answer">
+              CO₂ is pure carbon dioxide. CO₂<strong>e</strong> (equivalent) is a universal unit that
+              converts all greenhouse gases into their CO₂ warming potential using Global Warming Potentials
+              (GWPs) from IPCC AR6: methane (CH₄) = 29.8 × CO₂ over 100 years; nitrous oxide (N₂O) = 273 ×
+              CO₂. All GHG Protocol and BRSR reporting uses CO₂e. The Green Curve calculator reports in
+              metric tonnes CO₂e (tCO₂e).
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              We have rooftop solar — how do we account for it?
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="faq-answer">
+              Under the location-based Scope 2 method (required for BRSR), you subtract your on-site
+              solar generation from total electricity consumption and apply the grid factor only to
+              net grid purchases. Under the market-based method, if you hold I-RECs (renewable energy
+              certificates) matching your solar output, you can claim zero Scope 2 for that portion.
+              BRSR requires both location-based and market-based figures to be reported.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              How accurate is spend-based Scope 3 estimation?
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="faq-answer">
+              Spend-based estimation uses DEFRA EEIO (Environmentally Extended Input-Output) factors —
+              average emission intensity per rupee of spend by category. Accuracy is typically ±50% at
+              the total level. It is accepted for initial screening and BRSR voluntarily, but for BRSR Core
+              assurance you will need activity-based data for material categories. The Green Curve
+              Spend-based Estimator is ideal for SMEs or for categories where activity data is hard to
+              collect.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              What is India's CEA grid emission factor and where does it come from?
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="faq-answer">
+              The Central Electricity Authority (CEA) publishes the <em>CO₂ Baseline Database for
+              the Indian Power Sector</em> annually. The latest version (V21.0, November 2025) covers
+              FY 2024-25 and provides state-wise and all-India average grid emission factors in
+              tCO₂/MWh. The all-India average is <strong>0.7117 tCO₂/MWh</strong>. State-specific
+              factors range from 0.043 (Himachal Pradesh) to 0.918 (Chhattisgarh). BRSR requires
+              using these factors for Scope 2 reporting in India.
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <div class="learn-cta">
+          <h3>Ready to calculate your emissions?</h3>
+          <p>Use the Green Curve GHG Calculator — free, no sign-up, 3,000+ UNFCCC factors, BRSR export built in.</p>
+          <div class="learn-cta__btns">
+            <a href="calculator.html" class="btn-primary">Open GHG Calculator &rarr;</a>
+            <a href="brsr-simple.html" class="btn-outline">Generate BRSR Report</a>
+          </div>
+        </div>
+
+      </article>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+        </svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>Published daily &bull; Green Curve Research</p>
+      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const header = document.getElementById('site-header');
+const progress = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  progress.style.width = pct + '%';
+  header.classList.toggle('scrolled', window.scrollY > 20);
+  updateActiveToc();
+}, { passive: true });
+
+// Mobile nav
+const burger = document.getElementById('nav-burger');
+const mobileNav = document.getElementById('nav-mobile');
+if (burger && mobileNav) {
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    mobileNav.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    burger.setAttribute('aria-expanded', String(open));
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    burger.classList.remove('open');
+    mobileNav.classList.remove('open');
+    document.body.style.overflow = '';
+    burger.setAttribute('aria-expanded', 'false');
+  }));
+}
+
+// FAQ toggle
+function toggleFaq(questionEl) {
+  const item = questionEl.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// Active TOC link
+function updateActiveToc() {
+  const sections = document.querySelectorAll('.learn-section');
+  const tocLinks = document.querySelectorAll('.learn-toc a');
+  let active = '';
+  sections.forEach(sec => {
+    if (sec.getBoundingClientRect().top <= 120) active = '#' + sec.id;
+  });
+  tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+</script>
+</body>
+</html>

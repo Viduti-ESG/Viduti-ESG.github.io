@@ -177,32 +177,51 @@ function renderSBTiTarget() {
 // ── Shareable Profile ────────────────────────────────────
 function generateShareableProfile() {
   const totals = calcTotals();
-  if (totals.total <= 0) { alert('Add emission items first.'); return; }
+  if (totals.total <= 0) {
+    alert('Add emission items to your inventory first.');
+    return;
+  }
   const revenue   = Number(document.getElementById('int-revenue')?.value || 0);
   const employees = Number(document.getElementById('int-employees')?.value || 0);
   const fy        = document.getElementById('yoy-fy')?.value || 'FY2025-26';
   const payload = {
-    fy, s1: totals.s1.toFixed(2), s2: totals.s2.toFixed(2),
+    fy,
+    s1: totals.s1.toFixed(2), s2: totals.s2.toFixed(2),
     s3: totals.s3.toFixed(2), tot: totals.total.toFixed(2),
-    ri: revenue > 0 ? (totals.total/revenue).toFixed(4) : '',
-    em: employees > 0 ? (totals.total/employees).toFixed(3) : '',
+    ri: revenue   > 0 ? (totals.total / revenue).toFixed(4)   : '',
+    em: employees > 0 ? (totals.total / employees).toFixed(3) : '',
   };
   const encoded = btoa(JSON.stringify(payload));
-  const url = location.origin + location.pathname.replace('calculator.html','') + 'ghg-profile.html?d=' + encoded;
-  const urlEl = document.getElementById('profile-url');
-  const modal = document.getElementById('profile-modal');
-  if (urlEl && modal) { urlEl.value = url; modal.hidden = false; }
-  else navigator.clipboard.writeText(url).then(() => alert('Profile link copied!'));
+  // Build base URL — works for file://, localhost, and GitHub Pages
+  const origin  = (location.origin && location.origin !== 'null') ? location.origin : 'https://viduti-esg.github.io';
+  const base    = origin + location.pathname.replace(/[^/]*$/, '');
+  const url     = base + 'ghg-profile.html?d=' + encoded;
+
+  navigator.clipboard.writeText(url)
+    .then(() => showProfileToast(url))
+    .catch(() => showProfileToast(url)); // show toast even if clipboard fails (HTTPS required for clipboard)
 }
 window.generateShareableProfile = generateShareableProfile;
 
-function copyProfileUrl() {
-  const el = document.getElementById('profile-url');
-  if (el) navigator.clipboard.writeText(el.value);
-  const btn = document.getElementById('profile-copy-btn');
-  if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy link', 2000); }
+function showProfileToast(url) {
+  const toast   = document.getElementById('profile-toast');
+  const urlEl   = document.getElementById('profile-toast-url');
+  const viewBtn = document.getElementById('profile-toast-view');
+  if (!toast) return;
+  if (urlEl)   urlEl.textContent = url;
+  if (viewBtn) viewBtn.href = url;
+  toast.style.display = 'block';
+  // Auto-dismiss after 6s
+  clearTimeout(window._profileToastTimer);
+  window._profileToastTimer = setTimeout(hideProfileToast, 6000);
 }
-window.copyProfileUrl = copyProfileUrl;
+window.showProfileToast = showProfileToast;
+
+function hideProfileToast() {
+  const toast = document.getElementById('profile-toast');
+  if (toast) toast.style.display = 'none';
+}
+window.hideProfileToast = hideProfileToast;
 
 // ── Carbon Offset Links ──────────────────────────────────
 function renderCarbonOffsets() {
@@ -316,7 +335,4 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSpendEstimator();
   renderReductionLevers();
   initChatCopilot();
-  document.getElementById('profile-modal-close')?.addEventListener('click', () => {
-    document.getElementById('profile-modal').hidden = true;
-  });
 });
