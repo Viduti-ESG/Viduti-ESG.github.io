@@ -162,6 +162,7 @@
       <table class="screener-table" id="screenerTable">
         <thead>
           <tr>
+            <th></th>
             <th>Company</th>
             <th>Sector</th>
             <th>ESG Risk</th>
@@ -330,6 +331,27 @@
         <p>Generating AI analysis…</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- COMPARE TRAY -->
+<div class="cmp-tray" id="cmpTray" aria-live="polite">
+  <div class="cmp-tray__slots" id="cmpSlots"></div>
+  <div class="cmp-tray__actions">
+    <span class="cmp-tray__count" id="cmpCount">0 / 3 selected</span>
+    <button class="cmp-tray__btn" id="cmpBtn" disabled onclick="openCompareModal()">Compare</button>
+    <button class="cmp-tray__clear" onclick="clearCompare()">✕ Clear</button>
+  </div>
+</div>
+
+<!-- COMPARE MODAL -->
+<div class="cmp-overlay" id="cmpOverlay">
+  <div class="cmp-modal">
+    <div class="cmp-modal__header">
+      <h2 class="cmp-modal__title">Company Comparison</h2>
+      <button class="cmp-modal__close" id="cmpClose" aria-label="Close">✕</button>
+    </div>
+    <div class="cmp-modal__body" id="cmpBody"></div>
   </div>
 </div>
 

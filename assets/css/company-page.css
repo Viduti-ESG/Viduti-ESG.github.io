@@ -206,3 +206,66 @@
   .fe-grid        { grid-template-columns: 1fr; }
   .rb-label       { width: 100px; }
 }
+
+/* ── Print / PDF styles ───────────────────────────────────────────────────── */
+.cp-pdf-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #94a3b8; border-radius: 8px;
+  padding: 9px 16px; font-size: .84rem; cursor: pointer;
+  text-decoration: none; transition: all .15s;
+}
+.cp-pdf-btn:hover { border-color: var(--emerald); color: var(--emerald); }
+
+@media print {
+  /* Hide everything except content */
+  .site-header, .nav__mobile, .breadcrumb,
+  .cp-cta, .cp-pdf-btn, .site-footer,
+  .scroll-progress { display: none !important; }
+
+  body { background: #fff !important; color: #111 !important; font-size: 11pt; }
+  .cp-hero { background: #fff !important; border-bottom: 2px solid #16a34a; padding: 24px 0 16px; }
+  .cp-hero__title { color: #111 !important; font-size: 18pt; }
+  .cp-hero__sector { color: #444 !important; }
+  .cp-tier-badge { border: 1px solid currentColor !important; }
+  .cp-score-ring { border-color: currentColor !important; }
+  .cp-score-val, .cp-tier-badge { color: #111 !important; }
+
+  .cp-card {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    break-inside: avoid;
+    margin-bottom: 12pt;
+  }
+  .cp-section-title { color: #555 !important; }
+  .fe-label { color: #666 !important; }
+  .fe-val   { color: #111 !important; }
+  .rb-label { color: #555 !important; }
+  .rb-track { background: #e5e7eb !important; }
+  .rb-val   { color: #111 !important; }
+  .rb-fill  { background: #16a34a !important; }
+  .cp-ai-text { color: #333 !important; }
+  .cp-disclaimer { color: #888 !important; border-top-color: #e5e7eb !important; }
+  .badge--green { background: #dcfce7 !important; color: #166534 !important; }
+  .badge--amber { background: #fef9c3 !important; color: #854d0e !important; }
+  .cp-table th, .cp-table td { color: #333 !important; border-color: #e5e7eb !important; }
+  .top-risk-pill { background: #fee2e2 !important; color: #991b1b !important; border-color: #fca5a5 !important; }
+  .mat-pill { background: #ede9fe !important; color: #5b21b6 !important; border-color: #c4b5fd !important; }
+
+  /* Print header */
+  .cp-hero::after {
+    content: 'ESG Financial Quotient  |  greencurve.github.io  |  Source: SEBI BRSR Public Filing  |  Not investment advice';
+    display: block;
+    font-size: 8pt;
+    color: #888;
+    margin-top: 12pt;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6pt;
+  }
+
+  /* Force page break before AI section */
+  .cp-card:nth-child(3) { page-break-before: auto; }
+  .cp-grid { display: block; }
+  .cp-grid .cp-card { width: 100%; margin-bottom: 10pt; }
+}

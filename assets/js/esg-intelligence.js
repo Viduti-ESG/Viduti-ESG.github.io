@@ -225,8 +225,14 @@ function renderScreener(filter = '', risk = '', sort = 'esg_risk_score') {
     const retHtml = ret != null
       ? `<span style="color:${ret >= 0 ? '#10b981' : '#f87171'}">${ret >= 0 ? '+' : ''}${ret}%</span>`
       : '<span style="color:#475569">N/A</span>';
+    const inCmp = compareList.includes(c.company_name);
     return `
       <tr style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">
+        <td onclick="event.stopPropagation()" style="padding:0 6px;width:32px">
+          <button class="cmp-btn${inCmp?' cmp-btn--active':''}" data-name="${esc(c.company_name)}"
+            onclick="toggleCompare('${esc(c.company_name)}',event)"
+            title="${inCmp?'Remove from compare':'Add to compare'}">${inCmp?'✓':'+'}</button>
+        </td>
         <td class="company-name" title="${esc(c.company_name)}">${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}</td>
         <td class="sector-cell">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,30))}</td>
         <td><span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span></td>
@@ -989,6 +995,169 @@ function renderDDTargets(p) {
 
 // Make openDeepDive callable from screener rows
 window.openDeepDive = openDeepDive;
+
+// ── Company Comparison ────────────────────────────────────────────────────────
+let compareList = [];
+
+function toggleCompare(name, e) {
+  e.stopPropagation();
+  const idx = compareList.indexOf(name);
+  if (idx > -1) {
+    compareList.splice(idx, 1);
+  } else {
+    if (compareList.length >= 3) return;
+    compareList.push(name);
+  }
+  updateCompareTray();
+  // refresh screener button states
+  document.querySelectorAll('.cmp-btn').forEach(btn => {
+    const n = btn.dataset.name;
+    const active = compareList.includes(n);
+    btn.classList.toggle('cmp-btn--active', active);
+    btn.textContent = active ? '✓' : '+';
+    btn.title = active ? 'Remove from compare' : 'Add to compare';
+  });
+}
+
+function updateCompareTray() {
+  const tray    = document.getElementById('cmpTray');
+  const slots   = document.getElementById('cmpSlots');
+  const countEl = document.getElementById('cmpCount');
+  const btn     = document.getElementById('cmpBtn');
+
+  countEl.textContent = `${compareList.length} / 3 selected`;
+  btn.disabled = compareList.length < 2;
+  tray.classList.toggle('cmp-tray--visible', compareList.length > 0);
+
+  slots.innerHTML = compareList.map(name => {
+    const c = allCompanies.find(x => x.company_name === name);
+    if (!c) return '';
+    const col = c.risk_tier === 'High' ? '#f87171' : c.risk_tier === 'Low' ? '#34d399' : '#fbbf24';
+    return `<div class="cmp-slot">
+      <span class="cmp-slot__score" style="color:${col}">${c.esg_risk_score}</span>
+      <span class="cmp-slot__name">${esc(c.company_name.slice(0,22))}${c.company_name.length>22?'…':''}</span>
+      <button class="cmp-slot__remove" onclick="toggleCompare('${esc(name)}',event)" aria-label="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function clearCompare() {
+  compareList = [];
+  updateCompareTray();
+  document.querySelectorAll('.cmp-btn').forEach(btn => {
+    btn.classList.remove('cmp-btn--active');
+    btn.textContent = '+';
+  });
+}
+
+function openCompareModal() {
+  if (compareList.length < 2) return;
+  document.getElementById('cmpOverlay').classList.add('is-open');
+  renderCompareModal();
+}
+
+document.getElementById('cmpClose').addEventListener('click', () =>
+  document.getElementById('cmpOverlay').classList.remove('is-open'));
+document.getElementById('cmpOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('is-open');
+});
+
+function renderCompareModal() {
+  const companies = compareList.map(n => allCompanies.find(c => c.company_name === n)).filter(Boolean);
+  const dims = [
+    ['GHG Intensity',   'ghg_intensity'],
+    ['Water Intensity', 'water_intensity'],
+    ['Waste Intensity', 'waste_intensity'],
+    ['EPR Exposure',    'epr_exposure'],
+    ['Compliance Risk', 'compliance_risk'],
+    ['HR Risk',         'hr_risk'],
+    ['Governance Risk', 'governance_risk'],
+  ];
+
+  const tierCol = t => t==='High'?'#f87171':t==='Low'?'#34d399':'#fbbf24';
+
+  // Header row
+  let html = `<div class="cmp-table">
+    <div class="cmp-col cmp-col--label">
+      <div class="cmp-cell cmp-cell--head"></div>
+      <div class="cmp-cell cmp-cell--metric">Overall ESG Score</div>
+      <div class="cmp-cell cmp-cell--metric">Risk Tier</div>
+      <div class="cmp-cell cmp-cell--metric">Revenue (₹Cr)</div>
+      <div class="cmp-cell cmp-cell--metric">Est. Compliance Cost</div>
+      <div class="cmp-cell cmp-cell--metric cmp-cell--section">EPR Applicable</div>
+      ${dims.map(([l]) => `<div class="cmp-cell cmp-cell--metric">${l}</div>`).join('')}
+      <div class="cmp-cell cmp-cell--metric cmp-cell--section">Scope 1 Emissions</div>
+      <div class="cmp-cell cmp-cell--metric">Waste (tonnes)</div>
+      <div class="cmp-cell cmp-cell--metric">MSME Sourcing %</div>
+      <div class="cmp-cell cmp-cell--metric cmp-cell--section">BRSR Assurance</div>
+      <div class="cmp-cell cmp-cell--metric">Top Risk Factor</div>
+    </div>`;
+
+  companies.forEach(c => {
+    const rb = c.risk_breakdown || {};
+    const fe = c.financial_exposure || {};
+    const sc = c.supply_chain || {};
+    const gov = c.governance || {};
+    const tc = tierCol(c.risk_tier);
+
+    html += `<div class="cmp-col">
+      <div class="cmp-cell cmp-cell--head">
+        <div class="cmp-company-name">${esc(c.company_name)}</div>
+        <div class="cmp-company-sector">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,40))}</div>
+      </div>
+      <div class="cmp-cell">
+        <span class="cmp-big-score" style="color:${tc}">${c.esg_risk_score}</span>
+        <div class="cmp-score-bar"><div style="width:${c.esg_risk_score*10}%;background:${tc};height:4px;border-radius:2px"></div></div>
+      </div>
+      <div class="cmp-cell"><span class="risk-badge risk-badge--${c.risk_tier}">${c.risk_tier}</span></div>
+      <div class="cmp-cell cmp-val">${c.revenue_crore ? '₹'+fmt(c.revenue_crore) : '—'}</div>
+      <div class="cmp-cell cmp-val">${esc(fe.estimated_compliance_cost_band||'—')}</div>
+      <div class="cmp-cell cmp-val cmp-cell--section">${esc(fe.epr_applicable||'Unknown')}</div>
+      ${dims.map(([,k]) => {
+        const v = rb[k] || 0;
+        const col = v>=7?'#f87171':v>=4.5?'#fbbf24':'#34d399';
+        return `<div class="cmp-cell">
+          <span style="color:${col};font-weight:700;font-size:.95rem">${v.toFixed(1)}</span>
+          <div class="cmp-score-bar"><div style="width:${v*10}%;background:${col};height:4px;border-radius:2px"></div></div>
+        </div>`;
+      }).join('')}
+      <div class="cmp-cell cmp-val cmp-cell--section">${fe.scope1_emissions_tco2e != null ? fmt(fe.scope1_emissions_tco2e)+' tCO2e' : '—'}</div>
+      <div class="cmp-cell cmp-val">${fe.waste_tonnes != null ? fmt(fe.waste_tonnes)+' T' : '—'}</div>
+      <div class="cmp-cell cmp-val">${sc.msme_sourcing_pct != null ? sc.msme_sourcing_pct.toFixed(1)+'%' : '—'}</div>
+      <div class="cmp-cell cmp-val cmp-cell--section">${esc(gov.brsr_assurance||'—')}</div>
+      <div class="cmp-cell cmp-val" style="font-size:.8rem">${esc((c.top_risk_factors||[])[0]||'—')}</div>
+    </div>`;
+  });
+
+  html += '</div>';
+
+  // Share / copy link
+  html += `<div class="cmp-share">
+    <button class="cmp-share-btn" onclick="copyCompareLink()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      Copy comparison link
+    </button>
+    <span id="cmpShareMsg" style="font-size:.78rem;color:#34d399;display:none">Link copied!</span>
+  </div>`;
+
+  document.getElementById('cmpBody').innerHTML = html;
+}
+
+function copyCompareLink() {
+  const params = compareList.map(n => encodeURIComponent(n)).join(',');
+  const url = `${location.origin}${location.pathname}?compare=${params}#screener`;
+  navigator.clipboard.writeText(url).then(() => {
+    const msg = document.getElementById('cmpShareMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => { msg.style.display = 'none'; }, 2500);
+  });
+}
+
+// Re-expose for HTML onclick
+window.toggleCompare  = toggleCompare;
+window.clearCompare   = clearCompare;
+window.openCompareModal = openCompareModal;
+window.copyCompareLink  = copyCompareLink;
 
 // ── Utilities ──────────────────────────────────────────────────────────────────
 function esc(s) {
