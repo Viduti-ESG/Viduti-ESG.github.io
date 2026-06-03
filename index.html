@@ -439,6 +439,43 @@
   </div>
 </section>
 
+<!-- NEWSLETTER -->
+<section class="newsletter" id="newsletter">
+  <div class="container newsletter__inner">
+    <div class="newsletter__left">
+      <div class="newsletter__eyebrow">Free · Daily · No spam</div>
+      <h2 class="newsletter__title">ESG intelligence in your inbox every morning</h2>
+      <p class="newsletter__sub">Join compliance officers, ESG analysts, and investors who start their day with Green Curve. Regulatory updates, BRSR insights, and company risk alerts — curated for Indian businesses.</p>
+      <ul class="newsletter__bullets">
+        <li>New EPR rules &amp; CPCB enforcement actions</li>
+        <li>SEBI BRSR filing deadlines &amp; guidance</li>
+        <li>Company ESG risk alerts from BRSR data</li>
+        <li>Global standards affecting Indian companies (ISSB, CSRD)</li>
+      </ul>
+    </div>
+    <div class="newsletter__right">
+      <form class="newsletter__form" id="newsletterForm" onsubmit="subscribeNewsletter(event)">
+        <label class="newsletter__label" for="nlEmail">Your work email</label>
+        <div class="newsletter__input-row">
+          <input
+            class="newsletter__input" id="nlEmail" type="email"
+            placeholder="you@company.com" required autocomplete="email"/>
+          <button class="newsletter__btn" type="submit" id="nlBtn">Subscribe &rarr;</button>
+        </div>
+        <div class="newsletter__msg" id="nlMsg" aria-live="polite"></div>
+        <p class="newsletter__note">Free forever. Unsubscribe any time. No ads.</p>
+      </form>
+      <div class="newsletter__social">
+        <span>Also follow us on</span>
+        <a href="https://www.linkedin.com/company/green-curve-research/" target="_blank" rel="noopener" class="newsletter__social-link" id="linkedinCompanyLink">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact" id="contact">
   <div class="container contact__inner">
@@ -476,7 +513,18 @@
       <p>Climate transition intelligence for Indian businesses.</p>
     </div>
     <div class="footer__right">
-      <p>Published daily &bull; Green Curve Research</p>
+      <form class="footer__nl-form" onsubmit="subscribeNewsletter(event)">
+        <input class="footer__nl-input" type="email" placeholder="Get daily ESG insights →" required autocomplete="email"/>
+        <button class="footer__nl-btn" type="submit">Subscribe</button>
+      </form>
+      <div class="footer__links">
+        <a href="https://www.linkedin.com/company/green-curve-research/" target="_blank" rel="noopener" class="footer__social-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Green Curve on LinkedIn
+        </a>
+        <a href="methodology.html" class="footer__social-link">Methodology</a>
+        <a href="company/index.html" class="footer__social-link">All Companies</a>
+      </div>
       <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
     </div>
   </div>
@@ -498,5 +546,52 @@
 </button>
 
 <script src="assets/js/app.js"></script>
+<script>
+// ── Newsletter subscription ────────────────────────────────────────────────
+// Replace the URL below with your Buttondown/Mailchimp/ConvertKit form endpoint.
+// Buttondown: https://buttondown.email/api/emails/embed-subscribe/YOUR_USERNAME
+// Mailchimp:  Your Mailchimp embedded form action URL
+// ConvertKit: Your ConvertKit form endpoint
+const NEWSLETTER_ENDPOINT = 'https://buttondown.email/api/emails/embed-subscribe/greencurve';
+
+async function subscribeNewsletter(e) {
+  e.preventDefault();
+  const form  = e.target;
+  const email = form.querySelector('input[type="email"]').value.trim();
+  const btn   = form.querySelector('button[type="submit"]');
+  const msg   = document.getElementById('nlMsg');
+
+  if (!email) return;
+  btn.disabled = true;
+  btn.textContent = 'Subscribing…';
+
+  try {
+    const res = await fetch(NEWSLETTER_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    if (res.ok || res.status === 201) {
+      form.innerHTML = `
+        <div class="nl-success">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>You're in! Check your inbox to confirm.</span>
+        </div>`;
+    } else {
+      throw new Error(`HTTP ${res.status}`);
+    }
+  } catch {
+    // Fallback: open Buttondown signup page
+    window.open('https://buttondown.email/greencurve', '_blank');
+    if (msg) {
+      msg.textContent = 'Redirecting to signup page…';
+      msg.style.color = '#94a3b8';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Subscribe →';
+  }
+}
+</script>
 </body>
 </html>

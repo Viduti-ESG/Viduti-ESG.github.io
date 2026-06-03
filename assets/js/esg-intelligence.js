@@ -1,5 +1,5 @@
 // ESG Financial Quotient Dashboard
-// Reads assets/data/esg_intelligence.json and renders all 4 panels
+// Reads assets/data/esg_quotient.json and renders all 4 panels
 
 let INTEL = null;
 let allCompanies = [];
@@ -24,7 +24,7 @@ const MATERIAL_ICONS = {
 async function initDashboard() {
   const statusEl = document.getElementById('heroMeta');
   try {
-    const res = await fetch('assets/data/esg_intelligence.json?v=' + Date.now());
+    const res = await fetch('assets/data/esg_quotient.json?v=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     INTEL = await res.json();
     allCompanies = INTEL.companies || [];
