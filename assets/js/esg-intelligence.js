@@ -41,6 +41,7 @@ async function initDashboard() {
     renderTargets();
     renderSupplyChain();
     renderMaterials();
+    renderCalendar();
   } catch (e) {
     statusEl.textContent = 'Quotient data not yet available — runs daily after 2 AM.';
     console.warn('ESG Intel load failed:', e);
@@ -995,6 +996,147 @@ function renderDDTargets(p) {
 
 // Make openDeepDive callable from screener rows
 window.openDeepDive = openDeepDive;
+
+// ── Regulation Calendar ───────────────────────────────────────────────────────
+const CALENDAR_DEADLINES = [
+  // EPR — Battery
+  { date:'2026-08-15', title:'EPR Annual Return — Batteries FY 2025-26', category:'EPR',    urgency:'Critical', rule:'Battery Waste Management Rules 2022', body:'CPCB',  detail:'Filing of Annual Return for all registered Producers, Recyclers and Refurbishers under Battery Waste Management Rules. Extended deadline.' },
+  { date:'2026-04-30', title:'EPR Battery Certificate generation deadline FY 2025-26', category:'EPR', urgency:'High', rule:'Battery Waste Management Rules 2022', body:'CPCB', detail:'Last date for waste battery recyclers to generate EPR credits/certificates for FY 2025-26 on the eprbattery.cpcb.gov.in portal.' },
+  { date:'2027-08-15', title:'EPR Annual Return — Batteries FY 2026-27', category:'EPR',    urgency:'Medium', rule:'Battery Waste Management Rules 2022', body:'CPCB',  detail:'Annual return filing deadline for next cycle. Mark calendar now.' },
+
+  // EPR — Plastics
+  { date:'2026-06-30', title:'EPR Annual Return — Plastics FY 2025-26',   category:'EPR',    urgency:'Critical', rule:'Plastic Waste Management Rules 2016 (amended 2022)', body:'CPCB', detail:'PIBOs and PWPs must file annual EPR compliance return on eprplastic.cpcb.gov.in for FY 2025-26 plastic waste obligations.' },
+  { date:'2026-03-31', title:'EPR Plastic — Credit procurement deadline FY 2025-26', category:'EPR', urgency:'High', rule:'Plastic Waste Management Rules', body:'CPCB', detail:'Last date for PIBOs to procure EPR certificates from registered Plastic Waste Processors to meet recycling targets for the year.' },
+
+  // EPR — E-Waste
+  { date:'2026-06-30', title:'EPR Annual Return — E-Waste FY 2025-26',    category:'EPR',    urgency:'Critical', rule:'E-Waste (Management) Rules 2022', body:'CPCB', detail:'Producers, recyclers and refurbishers must file annual compliance return on eprewaste.cpcb.gov.in. 70% recycling target for FY 2025-26.' },
+  { date:'2027-06-30', title:'EPR E-Waste recycling target rises to 80%', category:'EPR',    urgency:'Medium',   rule:'E-Waste (Management) Rules 2022', body:'CPCB', detail:'Recycling obligation increases from 70% (FY25-26) to 80% from FY 2026-27 onwards for established producers.' },
+
+  // EPR — Tyres
+  { date:'2026-08-15', title:'EPR Annual Return — Waste Tyres FY 2024-25 (extended)', category:'EPR', urgency:'High', rule:'Waste Tyre EPR Notification 2022', body:'CPCB', detail:'Annual Return for FY 2024-25 extended to 15 August 2026. Contact: wastetyre.cpcb@gov.in' },
+  { date:'2026-04-30', title:'EPR Tyre Certificate generation FY 2025-26', category:'EPR',   urgency:'High', rule:'Waste Tyre EPR Notification 2022', body:'CPCB', detail:'Waste tyre recyclers may submit sales data and generate denominated EPR certificates on or before 30 April 2026.' },
+
+  // BRSR / SEBI
+  { date:'2026-09-30', title:'BRSR Filing Deadline — Top 1000 companies FY 2025-26', category:'BRSR', urgency:'Critical', rule:'SEBI LODR Regulations / BRSR Framework', body:'SEBI', detail:'All top 1000 listed companies by market cap must include BRSR in Annual Report and file in XBRL format with BSE/NSE. AGM deadline is 6 months from year-end (Sep 30).' },
+  { date:'2026-09-30', title:'BRSR Core — Reasonable Assurance (Top 150 companies)', category:'BRSR', urgency:'Critical', rule:'SEBI Circular Jul 2023 — BRSR Core', body:'SEBI', detail:'Top 150 listed entities must obtain reasonable assurance on BRSR Core indicators from a registered assurance provider. Part of SEBI\'s glide path for FY 2025-26.' },
+  { date:'2027-09-30', title:'BRSR Core Assurance extends to Top 250 companies',     category:'BRSR', urgency:'Medium',   rule:'SEBI BRSR Core Glide Path', body:'SEBI', detail:'Reasonable assurance on BRSR Core mandatory for top 250 companies from FY 2026-27.' },
+  { date:'2028-09-30', title:'BRSR Core Assurance extends to Top 500 companies',     category:'BRSR', urgency:'Medium',   rule:'SEBI BRSR Core Glide Path', body:'SEBI', detail:'Reasonable assurance on BRSR Core mandatory for top 500 companies from FY 2027-28.' },
+  { date:'2026-12-31', title:'BRSR Value Chain disclosures — Top 250 companies',     category:'BRSR', urgency:'High',     rule:'SEBI BRSR Core — Value Chain', body:'SEBI', detail:'Top 250 listed entities must disclose BRSR Core indicators for value chain partners constituting ≥75% of purchases/sales from FY 2025-26.' },
+
+  // BEE / Energy
+  { date:'2026-06-30', title:'BEE PAT Cycle VIII — Baseline submission deadline',    category:'BEE',  urgency:'High',     rule:'Energy Conservation Act / PAT Scheme', body:'BEE', detail:'Designated Consumers under PAT Cycle VIII must submit baseline energy consumption data. Applies to energy-intensive industries.' },
+  { date:'2026-09-30', title:'BEE Star Label renewal — Mandatory products',          category:'BEE',  urgency:'Medium',   rule:'Energy Conservation (Amendment) Act 2022', body:'BEE', detail:'Annual renewal of BEE star labels for mandatory star-labelled products. Manufacturers must comply or face market withdrawal.' },
+  { date:'2026-03-31', title:'RPO Compliance — Renewable Purchase Obligation FY 2025-26', category:'BEE', urgency:'High', rule:'Electricity Act / RPO Guidelines', body:'MNRE/CERC', detail:'Obligated entities (discoms, open access consumers, captive users) must meet Renewable Purchase Obligation targets for FY 2025-26.' },
+
+  // Carbon / CCTS
+  { date:'2026-12-31', title:'CCTS — Phase I Obligated Entities Registration Deadline', category:'CCTS', urgency:'Critical', rule:'Carbon Credit Trading Scheme 2023', body:'BEE/MoP', detail:'Phase I covered entities (cement, aluminium, iron & steel, petrochemicals, chlor-alkali, paper) must complete registration on the Carbon Credit Trading platform.' },
+  { date:'2027-03-31', title:'CCTS — First compliance period assessment',              category:'CCTS', urgency:'High',     rule:'Carbon Credit Trading Scheme 2023', body:'BEE/MoP', detail:'First formal assessment of GHG intensity targets for Phase I CCTS participants. Non-compliance attracts penalties under Energy Conservation Act.' },
+  { date:'2026-09-30', title:'GHG Inventory — Third-party verification deadline',     category:'CCTS', urgency:'High',     rule:'SEBI BRSR Core / CCTS', body:'SEBI/BEE', detail:'Listed entities in CCTS sectors must have Scope 1 emissions verified by an accredited third party. Required for both BRSR Core assurance and CCTS compliance.' },
+
+  // MoEFCC
+  { date:'2026-06-05', title:'World Environment Day — MoEFCC Annual Report deadline', category:'MoEFCC', urgency:'Medium', rule:'Environment Protection Act', body:'MoEFCC', detail:'Annual Environmental Performance Reports due for entities under Environment Protection Act and related notifications.' },
+  { date:'2026-07-31', title:'Hazardous Waste Annual Returns FY 2025-26',             category:'MoEFCC', urgency:'High',   rule:'Hazardous and Other Wastes (M&TBM) Rules 2016', body:'CPCB/SPCB', detail:'Occupiers and authorised operators must file annual returns for hazardous waste generation, storage, and disposal with respective SPCBs.' },
+  { date:'2026-09-30', title:'Environmental Clearance — Annual Compliance Report',    category:'MoEFCC', urgency:'Medium', rule:'EIA Notification 2006', body:'MoEFCC', detail:'Project proponents with Environment Clearance must submit Half-Yearly Compliance Reports. Second half report due September 30.' },
+];
+
+function renderCalendar(categoryFilter = '', urgencyFilter = '') {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let deadlines = [...CALENDAR_DEADLINES];
+
+  // Merge any dates from the regulations data
+  (INTEL?.regulations || []).forEach(r => {
+    if (r.date && r.title) {
+      const parsed = new Date(r.date);
+      if (!isNaN(parsed)) {
+        deadlines.push({
+          date: r.date,
+          title: r.title,
+          category: r.source || 'Regulation',
+          urgency: r.urgency || 'Medium',
+          rule: r.source || '',
+          body: r.source || '',
+          detail: r.description || '',
+        });
+      }
+    }
+  });
+
+  // Filter
+  if (categoryFilter) deadlines = deadlines.filter(d => d.category === categoryFilter);
+  if (urgencyFilter)  deadlines = deadlines.filter(d => d.urgency === urgencyFilter);
+
+  // Sort by date
+  deadlines.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const container = document.getElementById('calTimeline');
+  if (!deadlines.length) {
+    container.innerHTML = '<p style="color:#64748b;padding:20px">No deadlines match the selected filters.</p>';
+    return;
+  }
+
+  // Group by month
+  const groups = {};
+  deadlines.forEach(d => {
+    const dt  = new Date(d.date);
+    const key = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+    const lbl = dt.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+    if (!groups[key]) groups[key] = { label: lbl, items: [] };
+    groups[key].items.push({ ...d, dt });
+  });
+
+  const urgencyCol = { Critical: '#f87171', High: '#fbbf24', Medium: '#34d399' };
+  const categoryBadgeColor = {
+    EPR: '#6366f1', BRSR: '#10b981', BEE: '#f59e0b',
+    CCTS: '#06b6d4', MoEFCC: '#8b5cf6', Regulation: '#64748b',
+  };
+
+  let html = '';
+  Object.entries(groups).forEach(([, group]) => {
+    const allPast = group.items.every(d => d.dt < today);
+    html += `<div class="cal-month${allPast ? ' cal-month--past' : ''}">
+      <div class="cal-month-label">${group.label}</div>
+      <div class="cal-items">`;
+
+    group.items.forEach(d => {
+      const isPast    = d.dt < today;
+      const isToday   = d.dt.toDateString() === today.toDateString();
+      const daysAway  = Math.round((d.dt - today) / 86400000);
+      const urgColor  = urgencyCol[d.urgency] || '#94a3b8';
+      const catColor  = categoryBadgeColor[d.category] || '#64748b';
+      const dateStr   = d.dt.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+      let daysLabel = '';
+      if (isPast) daysLabel = `<span class="cal-days-label cal-days-label--past">Passed</span>`;
+      else if (isToday) daysLabel = `<span class="cal-days-label cal-days-label--today">Today</span>`;
+      else if (daysAway <= 30) daysLabel = `<span class="cal-days-label cal-days-label--soon">${daysAway}d away</span>`;
+      else daysLabel = `<span class="cal-days-label">${daysAway}d away</span>`;
+
+      html += `
+        <div class="cal-item${isPast?' cal-item--past':''}" style="border-left:3px solid ${isPast?'#334155':urgColor}">
+          <div class="cal-item__top">
+            <span class="cal-cat-badge" style="background:${catColor}22;color:${catColor}">${esc(d.category)}</span>
+            <span class="cal-urg-badge" style="color:${isPast?'#475569':urgColor}">${esc(d.urgency)}</span>
+            ${daysLabel}
+          </div>
+          <div class="cal-item__date">${dateStr}</div>
+          <div class="cal-item__title">${esc(d.title)}</div>
+          ${d.rule ? `<div class="cal-item__rule">${esc(d.rule)} · ${esc(d.body)}</div>` : ''}
+          ${d.detail ? `<details class="cal-detail"><summary>Details</summary><p>${esc(d.detail)}</p></details>` : ''}
+        </div>`;
+    });
+
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+document.getElementById('calCategoryFilter').addEventListener('change', e =>
+  renderCalendar(e.target.value, document.getElementById('calUrgencyFilter').value));
+document.getElementById('calUrgencyFilter').addEventListener('change', e =>
+  renderCalendar(document.getElementById('calCategoryFilter').value, e.target.value));
 
 // ── Company Comparison ────────────────────────────────────────────────────────
 let compareList = [];

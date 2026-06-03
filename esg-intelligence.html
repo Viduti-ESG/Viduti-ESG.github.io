@@ -108,6 +108,7 @@
   <button class="intel-tab" data-tab="targets"     role="tab" aria-selected="false">ESG Targets</button>
   <button class="intel-tab" data-tab="supply"      role="tab" aria-selected="false">Supply Chain</button>
   <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
+  <button class="intel-tab" data-tab="calendar"    role="tab" aria-selected="false">Reg Calendar</button>
 </div>
 
 <main class="container intel-main">
@@ -276,6 +277,39 @@
   <!-- ── MATERIAL MONITOR ─────────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-materials">
     <div id="materialCards" class="material-cards"></div>
+  </section>
+
+  <!-- ── REGULATION CALENDAR ──────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-calendar">
+    <div class="cal-header">
+      <div class="cal-header__left">
+        <h2 class="cal-title">Compliance Deadline Calendar</h2>
+        <p class="cal-sub">Key regulatory deadlines for Indian listed companies — EPR, BRSR, BEE, CCTS and more.</p>
+      </div>
+      <div class="cal-header__filters">
+        <select class="screener-filter" id="calCategoryFilter">
+          <option value="">All Categories</option>
+          <option value="EPR">EPR</option>
+          <option value="BRSR">BRSR / SEBI</option>
+          <option value="BEE">BEE / Energy</option>
+          <option value="CCTS">Carbon / CCTS</option>
+          <option value="MoEFCC">MoEFCC</option>
+        </select>
+        <select class="screener-filter" id="calUrgencyFilter">
+          <option value="">All Urgency</option>
+          <option value="Critical">Critical</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+        </select>
+      </div>
+    </div>
+    <div id="calTimeline" class="cal-timeline"></div>
+    <div class="cal-legend">
+      <span class="cal-leg cal-leg--critical">Critical</span>
+      <span class="cal-leg cal-leg--high">High</span>
+      <span class="cal-leg cal-leg--medium">Medium</span>
+      <span class="cal-leg cal-leg--passed">Passed</span>
+    </div>
   </section>
 
 </main>
