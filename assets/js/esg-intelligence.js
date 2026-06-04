@@ -102,26 +102,19 @@ function renderSectorRiskChart() {
     .sort((a,b) => b.avg - a.avg)
     .slice(0, 12);
 
-  new Chart(document.getElementById('chartSectorRisk'), {
-    type: 'bar',
-    data: {
-      labels: entries.map(e => e.sector.replace('Manufacturing — ', '')),
-      datasets: [{
-        label: 'Avg ESG Risk Score',
-        data: entries.map(e => e.avg.toFixed(1)),
-        backgroundColor: entries.map(e => e.avg >= 6.5 ? 'rgba(248,113,113,.75)' : e.avg >= 4 ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)'),
-        borderRadius: 4,
-      }],
-    },
-    options: {
-      indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { max: 10, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#94a3b8' } },
-        y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 11 } } },
-      },
-    },
-  });
+  Plotly.newPlot('chartSectorRisk', [{
+    type: 'bar', orientation: 'h',
+    x: entries.map(e => +e.avg.toFixed(1)),
+    y: entries.map(e => e.sector.replace('Manufacturing — ', '')),
+    marker: { color: entries.map(e => e.avg >= 6.5 ? 'rgba(248,113,113,.75)' : e.avg >= 4 ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)'), line: { width: 0 } },
+    hovertemplate: '<b>%{y}</b><br>Avg ESG Risk: %{x:.1f}/10<extra></extra>',
+  }], {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    xaxis: { range: [0, 10], gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' } },
+    yaxis: { gridcolor: 'transparent', tickfont: { color: '#cbd5e1', size: 11 }, automargin: true },
+    margin: { l: 10, r: 20, t: 10, b: 40 }, height: 280,
+  }, { displayModeBar: false, responsive: true });
 }
 
 function renderFactorsChart() {
@@ -133,76 +126,62 @@ function renderFactorsChart() {
     return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : 5;
   });
 
-  new Chart(document.getElementById('chartFactors'), {
-    type: 'radar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Avg Risk',
-        data: scores,
-        backgroundColor: 'rgba(99,102,241,.2)',
-        borderColor: 'rgba(99,102,241,.8)',
-        pointBackgroundColor: '#818cf8',
-        pointRadius: 4,
-      }],
+  Plotly.newPlot('chartFactors', [{
+    type: 'scatterpolar',
+    r: [...scores, scores[0]],
+    theta: [...labels, labels[0]],
+    fill: 'toself',
+    fillcolor: 'rgba(99,102,241,.2)',
+    line: { color: 'rgba(99,102,241,.8)' },
+    marker: { color: '#818cf8', size: 4 },
+    hovertemplate: '<b>%{theta}</b><br>Risk: %{r:.1f}/10<extra></extra>',
+  }], {
+    paper_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    polar: {
+      radialaxis: { visible: true, range: [0, 10], gridcolor: 'rgba(255,255,255,.07)', tickfont: { color: '#94a3b8', size: 9 } },
+      angularaxis: { tickfont: { color: '#cbd5e1', size: 11 }, gridcolor: 'rgba(255,255,255,.07)' },
+      bgcolor: 'transparent',
     },
-    options: {
-      scales: {
-        r: {
-          min: 0, max: 10,
-          grid: { color: 'rgba(255,255,255,.07)' },
-          ticks: { color: '#94a3b8', backdropColor: 'transparent', stepSize: 2 },
-          pointLabels: { color: '#cbd5e1', font: { size: 11 } },
-        },
-      },
-      plugins: { legend: { display: false } },
-    },
-  });
+    showlegend: false,
+    margin: { l: 40, r: 40, t: 40, b: 40 }, height: 280,
+  }, { displayModeBar: false, responsive: true });
 }
 
 function renderRegImpactChart() {
   const regs = (INTEL.regulations || []).slice(0, 15).reverse();
-  new Chart(document.getElementById('chartRegImpact'), {
-    type: 'bar',
-    data: {
-      labels: regs.map(r => (r.title || '').slice(0, 40) + (r.title?.length > 40 ? '…' : '')),
-      datasets: [{
-        label: 'Impact Score',
-        data: regs.map(r => r.impact_score || 0),
-        backgroundColor: regs.map(r => r.urgency === 'High' ? 'rgba(248,113,113,.75)' : r.urgency === 'Medium' ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)'),
-        borderRadius: 4,
-      }],
-    },
-    options: {
-      indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { max: 10, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#94a3b8' } },
-        y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-      },
-    },
-  });
+  Plotly.newPlot('chartRegImpact', [{
+    type: 'bar', orientation: 'h',
+    x: regs.map(r => r.impact_score || 0),
+    y: regs.map(r => (r.title || '').slice(0, 40) + (r.title?.length > 40 ? '…' : '')),
+    marker: { color: regs.map(r => r.urgency === 'High' ? 'rgba(248,113,113,.75)' : r.urgency === 'Medium' ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)'), line: { width: 0 } },
+    hovertemplate: '<b>%{y}</b><br>Impact Score: %{x:.1f}/10<extra></extra>',
+  }], {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 10 },
+    xaxis: { range: [0, 10], gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' } },
+    yaxis: { gridcolor: 'transparent', tickfont: { color: '#94a3b8', size: 10 }, automargin: true },
+    margin: { l: 10, r: 20, t: 10, b: 40 }, height: 260,
+  }, { displayModeBar: false, responsive: true });
 }
 
 function renderMaterialsChart() {
   const freq = INTEL.factor_matrix?.material_frequency || {};
   const entries = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0, 8);
-  new Chart(document.getElementById('chartMaterials'), {
-    type: 'doughnut',
-    data: {
-      labels: entries.map(([k]) => k.charAt(0).toUpperCase() + k.slice(1)),
-      datasets: [{
-        data: entries.map(([,v]) => v),
-        backgroundColor: ['#10b981','#6366f1','#f59e0b','#f87171','#38bdf8','#a78bfa','#34d399','#fb923c'],
-        borderWidth: 0,
-      }],
-    },
-    options: {
-      plugins: {
-        legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, padding: 12 } },
-      },
-    },
-  });
+  Plotly.newPlot('chartMaterials', [{
+    type: 'pie', hole: 0.4,
+    labels: entries.map(([k]) => k.charAt(0).toUpperCase() + k.slice(1)),
+    values: entries.map(([,v]) => v),
+    marker: { colors: ['#10b981','#6366f1','#f59e0b','#f87171','#38bdf8','#a78bfa','#34d399','#fb923c'] },
+    hovertemplate: '<b>%{label}</b><br>%{value} companies (%{percent})<extra></extra>',
+    textinfo: 'label+percent',
+    textfont: { size: 10, color: '#cbd5e1' },
+  }], {
+    paper_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    showlegend: false,
+    margin: { l: 10, r: 10, t: 10, b: 10 }, height: 260,
+  }, { displayModeBar: false, responsive: true });
 }
 
 // ── Company Screener ──────────────────────────────────────────────────────────
@@ -456,35 +435,48 @@ function renderSupplyChain() {
     else if (d.msme_pct < 50) bands['30–50%']++;
     else bands['>50%']++;
   });
-  new Chart(document.getElementById('chartMsme'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(bands),
-      datasets: [{ data: Object.values(bands), backgroundColor: ['#f87171','#fbbf24','#34d399','#10b981'], borderWidth: 0 }],
-    },
-    options: { plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } } },
-  });
+  Plotly.newPlot('chartMsme', [{
+    type: 'pie', hole: 0.4,
+    labels: Object.keys(bands),
+    values: Object.values(bands),
+    marker: { colors: ['#f87171','#fbbf24','#34d399','#10b981'] },
+    hovertemplate: '<b>%{label}</b><br>%{value} companies (%{percent})<extra></extra>',
+    textinfo: 'label+percent',
+    textfont: { size: 11, color: '#cbd5e1' },
+  }], {
+    paper_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif' },
+    showlegend: false,
+    margin: { l: 10, r: 10, t: 10, b: 10 }, height: 280,
+  }, { displayModeBar: false, responsive: true });
 
   // Upstream bottlenecks chart
   const upstream = Object.entries(sc.upstream_bottlenecks || {})
     .sort((a,b) => b[1].max_impact_score - a[1].max_impact_score).slice(0, 8);
-  new Chart(document.getElementById('chartUpstream'), {
-    type: 'bar',
-    data: {
-      labels: upstream.map(([,v]) => v.material_label),
-      datasets: [
-        { label: 'Max Regulation Impact', data: upstream.map(([,v]) => v.max_impact_score), backgroundColor: 'rgba(248,113,113,.7)', borderRadius: 4 },
-        { label: 'Companies Exposed',     data: upstream.map(([,v]) => v.companies_exposed), backgroundColor: 'rgba(99,102,241,.7)', borderRadius: 4 },
-      ],
+  Plotly.newPlot('chartUpstream', [
+    {
+      type: 'bar', name: 'Max Regulation Impact',
+      x: upstream.map(([,v]) => v.material_label),
+      y: upstream.map(([,v]) => v.max_impact_score),
+      marker: { color: 'rgba(248,113,113,.7)', line: { width: 0 } },
+      hovertemplate: '<b>%{x}</b><br>Max Impact: %{y:.1f}<extra></extra>',
     },
-    options: {
-      plugins: { legend: { labels: { color: '#94a3b8' } } },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-        y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#94a3b8' } },
-      },
+    {
+      type: 'bar', name: 'Companies Exposed',
+      x: upstream.map(([,v]) => v.material_label),
+      y: upstream.map(([,v]) => v.companies_exposed),
+      marker: { color: 'rgba(99,102,241,.7)', line: { width: 0 } },
+      hovertemplate: '<b>%{x}</b><br>Companies: %{y}<extra></extra>',
     },
-  });
+  ], {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    barmode: 'group',
+    legend: { font: { color: '#94a3b8' }, bgcolor: 'transparent' },
+    xaxis: { gridcolor: 'transparent', tickfont: { color: '#94a3b8' } },
+    yaxis: { gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' } },
+    margin: { l: 40, r: 10, t: 10, b: 80 }, height: 280,
+  }, { displayModeBar: false, responsive: true });
 
   // MSME table
   const lowMsme = msme.filter(d => d.msme_pct < 15).slice(0, 30);
@@ -546,7 +538,7 @@ function renderMaterials() {
 }
 
 // ── Double Materiality ────────────────────────────────────────────────────────
-let _dmChart = null;
+let _dmClickAttached = false;
 
 function renderDoubleMateriality(sectorFilter = '') {
   const data = sectorFilter
@@ -618,45 +610,35 @@ function renderDoubleMateriality(sectorFilter = '') {
 
   const colorMap = { High: 'rgba(248,113,113,.8)', Medium: 'rgba(251,191,36,.8)', Low: 'rgba(52,211,153,.8)' };
 
-  if (_dmChart) _dmChart.destroy();
-  _dmChart = new Chart(document.getElementById('chartDualMateriality'), {
-    type: 'scatter',
-    data: {
-      datasets: [{
-        label: 'Companies',
-        data: points,
-        backgroundColor: points.map(p => colorMap[p.tier] || 'rgba(148,163,184,.7)'),
-        pointRadius: 6,
-        pointHoverRadius: 9,
-      }],
+  const dmDiv = document.getElementById('chartDualMateriality');
+  Plotly.react(dmDiv, [{
+    type: 'scatter', mode: 'markers',
+    x: points.map(p => p.x),
+    y: points.map(p => p.y),
+    customdata: points.map(p => [p.label, p.quadrant]),
+    marker: {
+      color: points.map(p => colorMap[p.tier] || 'rgba(148,163,184,.7)'),
+      size: 8, line: { width: 0 },
     },
-    options: {
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => {
-              const p = points[ctx.dataIndex];
-              return [`${p.label}`, `Financial: ${ctx.parsed.x.toFixed(1)}  Impact: ${ctx.parsed.y.toFixed(1)}`, `Quadrant: ${p.quadrant}`];
-            },
-          },
-        },
-        annotation: {
-          annotations: {
-            vLine: { type:'line', xMin:5, xMax:5, borderColor:'rgba(255,255,255,.15)', borderWidth:1 },
-            hLine: { type:'line', yMin:5, yMax:5, borderColor:'rgba(255,255,255,.15)', borderWidth:1 },
-          },
-        },
-      },
-      onClick: (e, els) => {
-        if (els[0]) { const p = points[els[0].index]; openDeepDive(p.label); }
-      },
-      scales: {
-        x: { min:0, max:10, title:{ display:true, text:'Financial Materiality →', color:'#94a3b8' }, grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#94a3b8' } },
-        y: { min:0, max:10, title:{ display:true, text:'Impact Materiality →', color:'#94a3b8' }, grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#94a3b8' } },
-      },
-    },
-  });
+    hovertemplate: '<b>%{customdata[0]}</b><br>Financial: %{x:.1f}  Impact: %{y:.1f}<br>Quadrant: %{customdata[1]}<extra></extra>',
+  }], {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    xaxis: { range: [0, 10], title: { text: 'Financial Materiality →', font: { color: '#94a3b8' } }, gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' } },
+    yaxis: { range: [0, 10], title: { text: 'Impact Materiality →', font: { color: '#94a3b8' } }, gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' } },
+    shapes: [
+      { type: 'line', x0: 5, x1: 5, y0: 0, y1: 10, line: { color: 'rgba(255,255,255,.15)', width: 1 } },
+      { type: 'line', x0: 0, x1: 10, y0: 5, y1: 5, line: { color: 'rgba(255,255,255,.15)', width: 1 } },
+    ],
+    margin: { l: 60, r: 20, t: 20, b: 60 }, height: 400,
+  }, { displayModeBar: false, responsive: true });
+
+  if (!_dmClickAttached) {
+    _dmClickAttached = true;
+    dmDiv.on('plotly_click', evData => {
+      if (evData.points[0]) openDeepDive(evData.points[0].customdata[0]);
+    });
+  }
 
   // Quadrant breakdown
   const quads = { 'Dual Materiality':[], 'Financially Material':[], 'Impact Material':[], 'Watch List':[] };

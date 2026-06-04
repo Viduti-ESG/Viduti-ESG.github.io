@@ -27,7 +27,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="stylesheet" href="assets/css/ghg-calculator.css?v=20260603" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
 
   <style>
@@ -533,7 +533,7 @@
         <h3 class="calc-section-title">Emission Hotspots</h3>
         <div class="hotspot-grid">
           <div class="hotspot-chart-wrap">
-            <canvas id="hotspotChart" height="220"></canvas>
+            <div id="hotspotChart" style="height:220px;width:100%"></div>
           </div>
           <div class="hotspot-legend" id="hotspot-legend"></div>
         </div>
@@ -592,11 +592,18 @@
 
       <!-- Net Zero Pathway -->
       <div class="calc-netzero" id="nz-section" hidden>
-        <h3 class="calc-section-title">Net Zero Pathway <span class="section-badge">SBTi 1.5°C</span></h3>
-        <p style="font-size:.8rem;color:#64748b;margin-bottom:12px">Required annual reduction rate: 4.2% to stay on a 1.5°C pathway (SBTi methodology)</p>
-        <canvas id="nzChart" height="200"></canvas>
+        <h3 class="calc-section-title">Net Zero Pathway <span class="section-badge">Multi-Scenario</span></h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <p style="font-size:.8rem;color:#64748b;margin:0">Compare BAU, Well-below 2°C, 1.5°C Paris and SBTi Net-Zero Standard trajectories. Hover for values. Download chart via top-right menu.</p>
+          <select id="nz-scenario-highlight" class="field-input field-select" style="max-width:180px;padding:5px 8px;font-size:.74rem" onchange="renderNetZeroPathway()">
+            <option value="all">Show all scenarios</option>
+            <option value="paris">1.5°C only</option>
+            <option value="nzs">Net-Zero Standard only</option>
+          </select>
+        </div>
+        <div id="nzChart" style="height:260px;min-height:200px"></div>
         <div class="nz-milestones" id="nz-milestones"></div>
-        <p class="calc-note" style="margin-top:10px">Based on SBTi Corporate Net-Zero Standard. Not an official SBTi validation.</p>
+        <p class="calc-note" style="margin-top:10px">Based on SBTi Corporate Net-Zero Standard. Not an official SBTi validation. <a href="tcfd.html" style="color:#6366f1">Track TCFD disclosures →</a></p>
       </div>
 
       <!-- SBTi Target Generator -->

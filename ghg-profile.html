@@ -24,7 +24,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/css/style.css"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 
   <style>
     body { background: var(--void); }
@@ -361,7 +361,7 @@
       <!-- Chart -->
       <div class="profile-chart" id="chart-section" hidden>
         <div class="profile-chart-title">Emission breakdown</div>
-        <canvas id="profile-chart" height="140"></canvas>
+        <div id="profile-chart" style="height:200px;width:100%"></div>
       </div>
 
       <!-- Intensity metrics -->
@@ -513,32 +513,34 @@ window.shareProfile = shareProfile;
   });
 
   // Chart
-  const canvas = document.getElementById('profile-chart');
+  const profileDiv = document.getElementById('profile-chart');
   const chartSec = document.getElementById('chart-section');
-  if (canvas && total > 0) {
+  if (profileDiv && total > 0) {
     chartSec.hidden = false;
-    new Chart(canvas, {
+    Plotly.newPlot(profileDiv, [{
       type: 'bar',
-      data: {
-        labels: ['Scope 1\n(Direct)', 'Scope 2\n(Purchased energy)', 'Scope 3\n(Value chain)'],
-        datasets: [{
-          data: [vals.s1, vals.s2, vals.s3],
-          backgroundColor: ['rgba(16,185,129,.75)', 'rgba(99,102,241,.75)', 'rgba(245,158,11,.75)'],
-          borderColor:      ['#10b981', '#6366f1', '#f59e0b'],
-          borderWidth: 1.5, borderRadius: 6,
-        }],
+      x: ['Scope 1<br>(Direct)', 'Scope 2<br>(Purchased energy)', 'Scope 3<br>(Value chain)'],
+      y: [vals.s1, vals.s2, vals.s3],
+      marker: {
+        color: ['rgba(16,185,129,.75)', 'rgba(99,102,241,.75)', 'rgba(245,158,11,.75)'],
+        line: { color: ['#10b981', '#6366f1', '#f59e0b'], width: 1.5 },
       },
-      options: {
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.y, 2) + ' t CO₂e' } } },
-        scales: {
-          x: { ticks: { color: 'rgba(221,228,240,.5)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.04)' } },
-          y: {
-            ticks: { color: 'rgba(221,228,240,.5)', callback: v => v + 't', font: { size: 10 } },
-            grid: { color: 'rgba(255,255,255,.04)' },
-          },
-        },
-      },
-    });
+      customdata: [
+        (vals.s1 / total * 100).toFixed(0) + '%',
+        (vals.s2 / total * 100).toFixed(0) + '%',
+        (vals.s3 / total * 100).toFixed(0) + '%',
+      ],
+      hovertemplate: '<b>%{x}</b><br>%{y:.2f} t CO₂e (%{customdata})<extra></extra>',
+    }], {
+      paper_bgcolor: 'transparent',
+      plot_bgcolor: 'transparent',
+      font: { color: 'rgba(221,228,240,.5)', family: 'DM Sans, sans-serif', size: 11 },
+      xaxis: { gridcolor: 'rgba(255,255,255,.04)', tickfont: { color: 'rgba(221,228,240,.5)', size: 10 }, fixedrange: true },
+      yaxis: { gridcolor: 'rgba(255,255,255,.04)', tickfont: { color: 'rgba(221,228,240,.5)', size: 10 }, ticksuffix: ' t', fixedrange: true },
+      margin: { l: 50, r: 10, t: 10, b: 60 },
+      height: 200,
+      bargap: 0.4,
+    }, { displayModeBar: false, responsive: true });
   }
 
   // Intensity

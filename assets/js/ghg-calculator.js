@@ -558,58 +558,82 @@ function getS3Label(level1) {
   return S3_CATEGORY_MAP[level1] || null;
 }
 
-// ── Feature 1: Hotspot Chart ──────────────────────────────────────────────────
-let _hotspotChart = null;
-
+// ── Feature 1: Hotspot Chart (Plotly sunburst — drill-down by Scope → Category) ──
 function renderHotspot() {
   const section = document.getElementById('hotspot-section');
   if (!section || !state.items.length) { if (section) section.hidden = true; return; }
   section.hidden = false;
 
-  // Aggregate by category label
-  const cats = {};
-  state.items.forEach(item => {
-    const key = item.description.split(' › ')[0] || item.description;
-    cats[key] = (cats[key] || 0) + (item.factor * item.amount) / 1000;
-  });
+  const div = document.getElementById('hotspotChart');
+  if (!div) return;
 
-  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
-  const top6   = sorted.slice(0, 6);
-  const other  = sorted.slice(6).reduce((s,[,v]) => s+v, 0);
-  if (other > 0) top6.push(['Other', other]);
-
-  const labels = top6.map(([k]) => k.length > 22 ? k.slice(0,20)+'…' : k);
-  const data   = top6.map(([,v]) => +v.toFixed(3));
-  const COLORS  = ['#10b981','#6366f1','#f59e0b','#f87171','#38bdf8','#a78bfa','#64748b'];
-
-  const canvas = document.getElementById('hotspotChart');
-  if (!canvas) return;
-
-  if (_hotspotChart) _hotspotChart.destroy();
-  _hotspotChart = new Chart(canvas, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data, backgroundColor: COLORS.slice(0, data.length), borderWidth: 2, borderColor: '#f1f5f9' }],
-    },
-    options: {
-      cutout: '62%',
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(3)} t CO₂e` } },
-      },
-    },
-  });
-
-  // Custom legend
   const totals = calcTotals();
+  const SCOPE_COLORS = { 'Scope 1': '#10b981', 'Scope 2': '#6366f1', 'Scope 3': '#f59e0b' };
+  const CAT_PALETTES = {
+    'Scope 1': ['rgba(16,185,129,.85)','rgba(52,211,153,.75)','rgba(110,231,183,.65)','rgba(167,243,208,.55)'],
+    'Scope 2': ['rgba(99,102,241,.85)','rgba(129,140,248,.75)','rgba(165,180,252,.65)','rgba(199,210,254,.55)'],
+    'Scope 3': ['rgba(245,158,11,.85)','rgba(251,191,36,.75)','rgba(252,211,77,.65)','rgba(253,230,138,.55)'],
+  };
+
+  // Root node
+  const ids = ['root'], labels = ['All Scopes'], parents = [''], values = [0];
+  const colors = ['rgba(52,211,153,.15)'];
+
+  // Scope subtotals
+  [['Scope 1', totals.s1], ['Scope 2', totals.s2], ['Scope 3', totals.s3]].forEach(([scope, sv]) => {
+    if (sv > 0.0001) {
+      ids.push(scope); labels.push(scope); parents.push('root');
+      values.push(sv); colors.push(SCOPE_COLORS[scope]);
+    }
+  });
+
+  // Category breakdown per scope
+  const catMap = {};
+  state.items.forEach(item => {
+    const cat = item.description.split(' › ')[0] || item.description;
+    const key = `${item.scope}|||${cat}`;
+    if (!catMap[key]) catMap[key] = { scope: item.scope, cat, val: 0 };
+    catMap[key].val += (item.factor * item.amount) / 1000;
+  });
+
+  const scopeCatIdx = { 'Scope 1': 0, 'Scope 2': 0, 'Scope 3': 0 };
+  Object.values(catMap).sort((a, b) => b.val - a.val).forEach(({ scope, cat, val }) => {
+    if (val <= 0.0001 || !SCOPE_COLORS[scope]) return;
+    const idx = scopeCatIdx[scope]++;
+    ids.push(`${scope}|||${cat}`);
+    labels.push(cat.length > 20 ? cat.slice(0, 18) + '…' : cat);
+    parents.push(scope);
+    values.push(val);
+    colors.push(CAT_PALETTES[scope][idx % CAT_PALETTES[scope].length]);
+  });
+
+  Plotly.react(div, [{
+    type: 'sunburst',
+    ids, labels, parents, values,
+    branchvalues: 'total',
+    marker: { colors, line: { width: 1, color: 'rgba(0,0,0,.2)' } },
+    hovertemplate: '<b>%{label}</b><br>%{value:.3f} t CO₂e<br>%{percentParent:.0%} of parent<extra></extra>',
+    textinfo: 'label+percent parent',
+    textfont: { size: 10, color: '#fff' },
+    insidetextorientation: 'auto',
+  }], {
+    paper_bgcolor: 'transparent',
+    font: { color: '#cbd5e1', family: 'DM Sans, sans-serif', size: 10 },
+    margin: { l: 0, r: 0, t: 0, b: 0 },
+    height: 220,
+  }, { displayModeBar: false, responsive: true });
+
+  // Legend: top categories by emissions
+  const COLORS = ['#10b981','#6366f1','#f59e0b','#f87171','#38bdf8','#a78bfa','#64748b'];
   const legendEl = document.getElementById('hotspot-legend');
   if (legendEl) {
-    legendEl.innerHTML = top6.map(([label, val], i) => {
-      const pct = totals.total > 0 ? (val/totals.total*100).toFixed(1) : 0;
+    const topCats = Object.values(catMap).sort((a, b) => b.val - a.val).slice(0, 7);
+    legendEl.innerHTML = topCats.map(({ cat, val }, i) => {
+      const pct = totals.total > 0 ? (val / totals.total * 100).toFixed(1) : '0';
+      const lbl = cat.length > 22 ? cat.slice(0, 20) + '…' : cat;
       return `<div class="hs-legend-item">
         <span class="hs-dot" style="background:${COLORS[i]}"></span>
-        <span class="hs-label">${label.length>22?label.slice(0,20)+'…':label}</span>
+        <span class="hs-label">${lbl}</span>
         <span class="hs-pct">${pct}%</span>
       </div>`;
     }).join('');

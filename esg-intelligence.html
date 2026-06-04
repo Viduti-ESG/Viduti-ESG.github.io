@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="assets/css/style.css"/>
   <link rel="stylesheet" href="assets/css/esg-intelligence.css?v=20260607"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 </head>
 <body>
 
@@ -103,6 +103,7 @@
 <div class="intel-tabs container" role="tablist" aria-label="Intelligence sections">
   <button class="intel-tab intel-tab--active" data-tab="overview"     role="tab" aria-selected="true">Overview</button>
   <button class="intel-tab" data-tab="screener"    role="tab" aria-selected="false">Company Screener</button>
+  <button class="intel-tab" data-tab="heatmap"     role="tab" aria-selected="false">ESG Heat Map</button>
   <button class="intel-tab" data-tab="materiality" role="tab" aria-selected="false">Double Materiality</button>
   <button class="intel-tab" data-tab="regulations" role="tab" aria-selected="false">Regulatory Radar</button>
   <button class="intel-tab" data-tab="targets"     role="tab" aria-selected="false">ESG Targets</button>
@@ -121,22 +122,22 @@
     <div class="charts-row">
       <div class="chart-card">
         <div class="chart-card__title">ESG Risk Distribution by Sector</div>
-        <canvas id="chartSectorRisk" height="280"></canvas>
+        <div id="chartSectorRisk" style="height:280px;width:100%"></div>
       </div>
       <div class="chart-card">
         <div class="chart-card__title">Top Financial Impact Factors</div>
-        <canvas id="chartFactors" height="280"></canvas>
+        <div id="chartFactors" style="height:280px;width:100%"></div>
       </div>
     </div>
 
     <div class="charts-row">
       <div class="chart-card">
         <div class="chart-card__title">Regulation Impact Scores (Recent 15)</div>
-        <canvas id="chartRegImpact" height="260"></canvas>
+        <div id="chartRegImpact" style="height:260px;width:100%"></div>
       </div>
       <div class="chart-card">
         <div class="chart-card__title">Material Risk Frequency</div>
-        <canvas id="chartMaterials" height="260"></canvas>
+        <div id="chartMaterials" style="height:260px;width:100%"></div>
       </div>
     </div>
   </section>
@@ -215,6 +216,34 @@
     </div>
   </section>
 
+  <!-- ── ESG HEAT MAP ────────────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-heatmap">
+    <div class="heatmap-header">
+      <div>
+        <h3 class="dm-intro-title">ESG Risk Heat Map — All Companies</h3>
+        <p class="dm-intro-text">Each rectangle = one company. <strong>Size</strong> = relative weight. <strong>Colour</strong> = ESG risk score (green = low, red = high). Grouped by sector. Click any company to open deep dive.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px">
+        <select class="screener-filter" id="hm-sector-filter" onchange="renderHeatMap()" style="max-width:220px">
+          <option value="">All sectors</option>
+        </select>
+        <select class="screener-filter" id="hm-size-by" onchange="renderHeatMap()" style="max-width:160px">
+          <option value="uniform">Size: Uniform</option>
+          <option value="revenue">Size: Revenue</option>
+          <option value="market_cap">Size: Mkt Cap</option>
+        </select>
+        <span class="screener-count" id="hm-count"></span>
+      </div>
+    </div>
+    <div id="heatmapChart" style="height:560px;margin-top:8px"></div>
+    <div class="heatmap-legend">
+      <span style="color:#10b981;font-weight:700">● Low risk (0–4)</span>
+      <span style="color:#fbbf24;font-weight:700">● Medium risk (4–7)</span>
+      <span style="color:#f87171;font-weight:700">● High risk (7–10)</span>
+      <span style="color:#94a3b8;font-size:.72rem">Click any company to open deep dive</span>
+    </div>
+  </section>
+
   <!-- ── DOUBLE MATERIALITY ──────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-materiality">
     <div class="dm-intro">
@@ -236,7 +265,7 @@
           </select>
           <span id="dmCount" class="screener-count"></span>
         </div>
-        <canvas id="chartDualMateriality" height="400"></canvas>
+        <div id="chartDualMateriality" style="height:400px;width:100%"></div>
       </div>
     </div>
     <div class="dm-quadrant-table">
@@ -291,11 +320,11 @@
     <div class="charts-row">
       <div class="chart-card">
         <div class="chart-card__title">MSME Sourcing Distribution (%)</div>
-        <canvas id="chartMsme" height="280"></canvas>
+        <div id="chartMsme" style="height:280px;width:100%"></div>
       </div>
       <div class="chart-card">
         <div class="chart-card__title">Upstream Material Bottlenecks</div>
-        <canvas id="chartUpstream" height="280"></canvas>
+        <div id="chartUpstream" style="height:280px;width:100%"></div>
       </div>
     </div>
     <div class="sc-table-wrap">
