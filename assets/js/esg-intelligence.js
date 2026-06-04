@@ -226,12 +226,28 @@ function setColSort(col) {
 function populateSectorDropdown() {
   const sel = document.getElementById('cf-sector');
   if (!sel || sel.options.length > 1) return;
-  const sectors = [...new Set(allCompanies.map(c =>
-    (c.sector || '').replace('Manufacturing — ', '').trim()
-  ).filter(Boolean))].sort();
+
+  // Count frequency of each sector value
+  const freq = {};
+  allCompanies.forEach(c => {
+    const raw = (c.sector || '').replace('Manufacturing — ', '').trim();
+    if (raw) freq[raw] = (freq[raw] || 0) + 1;
+  });
+
+  const sectors = Object.entries(freq)
+    .filter(([s, count]) =>
+      count >= 2 &&          // must appear on 2+ companies
+      /^[A-Za-z]/.test(s) && // must start with a letter
+      s.length <= 50 &&      // no long descriptions
+      !/\b(is a|includes|delivers|manufactures|project|portfolio|leading|supplier|services|provides)\b/i.test(s)
+    )
+    .map(([s]) => s)
+    .sort();
+
   sectors.forEach(s => {
     const opt = document.createElement('option');
-    opt.value = s; opt.textContent = s.slice(0, 40);
+    opt.value = s;
+    opt.textContent = s.length > 42 ? s.slice(0, 40) + '…' : s;
     sel.appendChild(opt);
   });
 }
@@ -295,7 +311,7 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
   // Column filters
   if (colFilters) {
     if (colFilters.company)  data = data.filter(c => (c.company_name||'').toLowerCase().includes(colFilters.company));
-    if (colFilters.sector)   data = data.filter(c => (c.sector||'').replace('Manufacturing — ','').trim().startsWith(colFilters.sector));
+    if (colFilters.sector)   data = data.filter(c => (c.sector||'').replace('Manufacturing — ','').trim() === colFilters.sector);
     if (colFilters.ghgMin)   data = data.filter(c => (c.risk_breakdown?.ghg_intensity||0)   >= colFilters.ghgMin);
     if (colFilters.waterMin) data = data.filter(c => (c.risk_breakdown?.water_intensity||0) >= colFilters.waterMin);
     if (colFilters.eprMin)   data = data.filter(c => (c.risk_breakdown?.epr_exposure||0)    >= colFilters.eprMin);
