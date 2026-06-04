@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BRSR Core Assurance Readiness Checker — Green Curve</title>
+  <meta name="description" content="Free interactive checklist to assess your company's readiness for BRSR Core mandatory assurance. Covers all 12 BRSR Core KPIs across Environment, Social and Governance."/>
+  <meta name="keywords" content="BRSR Core assurance, BRSR readiness checker, SEBI sustainability assurance, BRSR KPI checklist, ESG assurance India"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://viduti-esg.github.io/assurance.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="BRSR Core Assurance Readiness Checker — Green Curve"/>
+  <meta property="og:description" content="Check if your ESG data is ready for BRSR Core mandatory third-party assurance. Free interactive checklist covering all SEBI-mandated KPIs."/>
+  <meta property="og:image" content="https://viduti-esg.github.io/assets/img/logo.png"/>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-VS37JR0KK7');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+
+  <style>
+    .ar-hero { background:var(--void); padding:80px 0 48px; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+    .ar-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(0,200,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .ar-hero__orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); }
+    .ar-hero__orb--1 { width:500px; height:500px; background:radial-gradient(circle,rgba(99,102,241,.12) 0%,transparent 65%); top:-180px; right:-80px; }
+    .ar-hero__orb--2 { width:350px; height:350px; background:radial-gradient(circle,rgba(52,211,153,.08) 0%,transparent 65%); bottom:-60px; left:-60px; }
+    .ar-eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--violet); margin-bottom:16px; padding:5px 14px; background:rgba(129,140,248,.06); border:1px solid rgba(129,140,248,.22); border-radius:100px; }
+    .ar-hero__title { font-family:var(--serif); font-size:clamp(2rem,4.5vw,3.2rem); color:#fff; letter-spacing:-.03em; line-height:1.1; margin-bottom:14px; }
+    .ar-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--violet),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .ar-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:580px; }
+
+    /* Score bar */
+    .ar-score-banner { background:var(--surface); border:1px solid var(--border-hi); border-radius:20px; padding:24px 28px; margin:40px 0 32px; display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
+    .ar-score-num { font-family:var(--serif); font-size:3.5rem; font-weight:400; line-height:1; color:#fff; flex-shrink:0; }
+    .ar-score-lbl { font-size:.75rem; color:var(--text-40); text-transform:uppercase; letter-spacing:.08em; }
+    .ar-score-bar-wrap { flex:1; min-width:200px; }
+    .ar-score-bar-track { height:10px; background:rgba(255,255,255,.07); border-radius:5px; overflow:hidden; margin-bottom:8px; }
+    .ar-score-bar-fill { height:100%; border-radius:5px; transition:width .6s cubic-bezier(.34,1.56,.64,1); }
+    .ar-score-status { font-size:.85rem; font-weight:700; }
+    .ar-score-status--red { color:#f87171; }
+    .ar-score-status--amber { color:#fbbf24; }
+    .ar-score-status--green { color:#34d399; }
+    .ar-export-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(129,140,248,.12); border:1px solid rgba(129,140,248,.3); color:var(--violet); font-weight:700; font-size:.82rem; padding:9px 18px; border-radius:8px; cursor:pointer; transition:all .2s; }
+    .ar-export-btn:hover { background:rgba(129,140,248,.22); }
+
+    /* Section */
+    .ar-section { margin-bottom:32px; }
+    .ar-section-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .ar-section-icon { font-size:1.2rem; }
+    .ar-section-title { font-size:1rem; font-weight:700; color:#fff; }
+    .ar-section-badge { font-size:.65rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:rgba(255,255,255,.07); border:1px solid var(--border); color:var(--text-40); border-radius:20px; padding:2px 9px; }
+
+    /* KPI card */
+    .ar-kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 20px; margin-bottom:10px; transition:border-color .2s; }
+    .ar-kpi-card.complete { border-color:rgba(52,211,153,.3); }
+    .ar-kpi-card.partial { border-color:rgba(251,191,36,.3); }
+    .ar-kpi-card.missing { border-color:rgba(248,113,113,.2); }
+    .ar-kpi-name { font-size:.88rem; font-weight:600; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .ar-kpi-tag { font-size:.62rem; font-weight:700; letter-spacing:.06em; padding:2px 7px; border-radius:10px; }
+    .ar-kpi-tag--e { background:rgba(52,211,153,.1); color:#34d399; }
+    .ar-kpi-tag--s { background:rgba(251,191,36,.1); color:#fbbf24; }
+    .ar-kpi-tag--g { background:rgba(99,102,241,.1); color:#818cf8; }
+    .ar-kpi-tag--vc { background:rgba(0,200,255,.1); color:#00c8ff; }
+    .ar-checks { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+    @media(max-width:600px){ .ar-checks { grid-template-columns:1fr; } }
+    .ar-check-item { display:flex; align-items:center; gap:8px; }
+    .ar-check-item label { font-size:.78rem; color:var(--text-70); cursor:pointer; flex:1; }
+    .ar-check-item select { background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:4px 8px; font-size:.74rem; cursor:pointer; }
+
+    /* Gaps */
+    .ar-gaps { background:rgba(248,113,113,.05); border:1px solid rgba(248,113,113,.2); border-radius:14px; padding:20px; margin-top:32px; }
+    .ar-gaps-title { font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#f87171; margin-bottom:14px; }
+    .ar-gap-item { display:flex; gap:10px; margin-bottom:10px; font-size:.82rem; color:var(--text-70); line-height:1.6; }
+    .ar-gap-item:last-child { margin-bottom:0; }
+    .ar-gap-dot { width:6px; height:6px; border-radius:50%; background:#f87171; flex-shrink:0; margin-top:6px; }
+
+    .ar-done-banner { background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.25); border-radius:14px; padding:20px; margin-top:32px; text-align:center; }
+    .ar-done-banner strong { display:block; color:#34d399; font-size:1rem; margin-bottom:6px; }
+    .ar-done-banner p { font-size:.82rem; color:var(--text-70); }
+
+    .ar-info { background:rgba(129,140,248,.05); border:1px solid rgba(129,140,248,.2); border-radius:10px; padding:14px 16px; font-size:.8rem; color:var(--text-70); line-height:1.7; margin-bottom:28px; }
+    .ar-info strong { color:var(--violet); }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="learn.html">Carbon Literacy</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="assurance.html" style="color:var(--violet)">BRSR Assurance</a></li>
+      <li><a href="ccts.html">CCTS Tracker</a></li>
+      <li><a href="tcfd.html">TCFD</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+    </ul>
+    <a href="brsr-simple.html" class="nav__cta">BRSR Report &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation">
+  <a href="learn.html">Carbon Literacy</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="assurance.html">BRSR Assurance</a>
+  <a href="ccts.html">CCTS Tracker</a>
+  <a href="tcfd.html">TCFD</a>
+  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="esg-intelligence.html">ESG Quotient</a>
+</div>
+
+<section class="ar-hero">
+  <div class="ar-hero__orb ar-hero__orb--1" aria-hidden="true"></div>
+  <div class="ar-hero__orb ar-hero__orb--2" aria-hidden="true"></div>
+  <div class="container" style="position:relative">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:500;color:var(--text-70);border:1px solid var(--border-hi);border-radius:100px;padding:6px 16px;margin-bottom:28px">&larr; Back</a>
+    <div class="ar-eyebrow">SEBI BRSR Core &bull; Assurance Readiness</div>
+    <h1 class="ar-hero__title">BRSR Core <em>Assurance</em><br/>Readiness Checker</h1>
+    <p class="ar-hero__sub">Check if your ESG data is ready for mandatory third-party assurance. Covers all SEBI-mandated BRSR Core KPIs across Environment, Social and Governance.</p>
+  </div>
+</section>
+
+<div class="container" style="padding-top:40px;padding-bottom:80px">
+
+  <div class="ar-info">
+    <strong>Who needs this:</strong> Top 1,000 listed companies (BRSR mandatory). Top 150 by market cap require <strong>reasonable assurance</strong> from FY2023-24; expands to top 250 from FY2024-25. For each BRSR Core KPI, answer 4 readiness questions. Your score indicates whether your data will pass assurance scrutiny.
+  </div>
+
+  <!-- Live Score Banner -->
+  <div class="ar-score-banner">
+    <div>
+      <div class="ar-score-lbl">Readiness Score</div>
+      <div class="ar-score-num" id="score-num">0%</div>
+    </div>
+    <div class="ar-score-bar-wrap">
+      <div class="ar-score-bar-track">
+        <div class="ar-score-bar-fill" id="score-bar" style="width:0%;background:linear-gradient(90deg,#f87171,#fbbf24)"></div>
+      </div>
+      <div class="ar-score-status" id="score-status">Answer the checklist below to see your readiness score.</div>
+    </div>
+    <button class="ar-export-btn" onclick="exportGaps()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export Gap Report
+    </button>
+  </div>
+
+  <!-- E: GHG Emissions -->
+  <div class="ar-section">
+    <div class="ar-section-header">
+      <span class="ar-section-icon">🌍</span>
+      <span class="ar-section-title">Environment — GHG Emissions</span>
+      <span class="ar-section-badge">BRSR Core P6</span>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Scope 1 GHG Emissions (tCO₂e)">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--e">E</span>Scope 1 GHG Emissions (tCO₂e)</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Data available?</option><option value="1">Yes — complete data</option><option value="0.5">Partial data</option><option value="0">No data yet</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Methodology documented?</option><option value="1">Yes — written methodology</option><option value="0">No written methodology</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Emission factors cited?</option><option value="1">Yes — DEFRA/CEA/IPCC cited</option><option value="0">Factors not documented</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes — prior FY data available</option><option value="0">No prior year comparison</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Scope 2 GHG Emissions (tCO₂e)">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--e">E</span>Scope 2 GHG Emissions (tCO₂e)</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Data available?</option><option value="1">Yes</option><option value="0.5">Partial</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Methodology documented?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">CEA state grid factor used?</option><option value="1">Yes — CEA V21 factor cited</option><option value="0.5">All-India average only</option><option value="0">No factor cited</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Scope 3 GHG Emissions (tCO₂e) — Top 150 only">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--e">E</span>Scope 3 GHG Emissions — Top 150 companies only</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Scope 3 data available?</option><option value="1">Yes — activity-based</option><option value="0.5">Spend-based estimate only</option><option value="0">Not measured</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Categories covered?</option><option value="1">Cat 1 &amp; 11 at minimum</option><option value="0.5">Some categories only</option><option value="0">None documented</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Methodology documented?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes</option><option value="0">No/first year</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Total Energy Consumption (GJ) — renewable vs non-renewable">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--e">E</span>Total Energy Consumption (GJ) — renewable vs non-renewable split</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Energy data collected?</option><option value="1">Yes — all fuels + electricity</option><option value="0.5">Electricity only</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Renewable split tracked?</option><option value="1">Yes — renewable % documented</option><option value="0">No split available</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Calorific values documented?</option><option value="1">Yes — IPCC/BEE factors cited</option><option value="0">No conversion factors cited</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Energy intensity calculated?</option><option value="1">Yes — per ₹ Crore turnover</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E: Water & Waste -->
+  <div class="ar-section">
+    <div class="ar-section-header">
+      <span class="ar-section-icon">💧</span>
+      <span class="ar-section-title">Environment — Water &amp; Waste</span>
+      <span class="ar-section-badge">BRSR Core P6</span>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Water Withdrawal (ML) by source">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--e">E</span>Water Withdrawal (ML) by source</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Water data collected?</option><option value="1">Yes — all sources tracked</option><option value="0.5">Total only, no source split</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Sources documented?</option><option value="1">Municipal/groundwater/surface split</option><option value="0">Not broken down</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Water intensity calculated?</option><option value="1">Yes — per ₹ Crore turnover</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Total Waste Generated (MT) — hazardous and non-hazardous">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--e">E</span>Total Waste Generated (MT) — hazardous and non-hazardous</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Waste data collected?</option><option value="1">Yes — both types tracked</option><option value="0.5">Total only</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Hazardous waste classified?</option><option value="1">Yes — per CPCB HWM Rules</option><option value="0">Not classified</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Disposal method documented?</option><option value="1">Yes — recycled/reused/disposed split</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S: Safety & Workforce -->
+  <div class="ar-section">
+    <div class="ar-section-header">
+      <span class="ar-section-icon">👷</span>
+      <span class="ar-section-title">Social — Safety &amp; Workforce</span>
+      <span class="ar-section-badge">BRSR Core P3 / P8</span>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="LTIFR — Employees (per million person-hours)">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--s">S</span>LTIFR — Employees (per million person-hours)</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Lost time injury data tracked?</option><option value="1">Yes — all incidents logged</option><option value="0.5">Partial records</option><option value="0">No tracking system</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Person-hours data available?</option><option value="1">Yes — total manhours recorded</option><option value="0">Estimated only</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">LTIFR formula applied?</option><option value="1">Yes — (LTI × 10⁶) / manhours</option><option value="0">No formal calculation</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year LTIFR available?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="LTIFR — Workers/Contractual (per million person-hours)">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--s">S</span>LTIFR — Workers/Contractual (per million person-hours)</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Contractor injury data tracked?</option><option value="1">Yes</option><option value="0.5">Partial</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Contractor manhours recorded?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">LTIFR calculated for workers?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Employee Well-being Coverage (health, accident, maternity, PF, gratuity)">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--s">S</span>Employee Well-being Coverage — health, accident, maternity, PF, gratuity</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">% covered by health insurance?</option><option value="1">Yes — documented %</option><option value="0">Not tracked</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Maternity/paternity benefits?</option><option value="1">Policy documented with coverage %</option><option value="0">No documentation</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">PF/gratuity compliance?</option><option value="1">100% statutory compliance documented</option><option value="0.5">Partial documentation</option><option value="0">No documentation</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Separate data for workers?</option><option value="1">Yes — employees and workers split</option><option value="0">Combined only</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- G: Governance & Diversity -->
+  <div class="ar-section">
+    <div class="ar-section-header">
+      <span class="ar-section-icon">🏛️</span>
+      <span class="ar-section-title">Governance — Diversity &amp; Pay Equity</span>
+      <span class="ar-section-badge">BRSR Core P5 / P1</span>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Equal Remuneration — % women receiving equal pay vs men at same grade">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--g">G</span>Equal Remuneration — median male vs female salary comparison</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Salary data by gender available?</option><option value="1">Yes — median pay by gender tracked</option><option value="0.5">Aggregate only</option><option value="0">No gender pay data</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Ratio/gap calculated?</option><option value="1">Yes — female/male ratio documented</option><option value="0">No calculation</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Board/KMP vs employees split?</option><option value="1">Yes — separate for each category</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Prior year data available?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+      </div>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Board Diversity — % women directors and independent directors">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--g">G</span>Board Diversity — % women directors, independent directors</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Board composition data?</option><option value="1">Yes — exact numbers documented</option><option value="0">Not formally compiled</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Women directors % calculated?</option><option value="1">Yes</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">SEBI LODR compliance confirmed?</option><option value="1">Yes — min 1 woman director verified</option><option value="0">Not verified</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">ESG committee on board?</option><option value="1">Yes — documented mandate</option><option value="0.5">CSR committee covers ESG</option><option value="0">No board ESG oversight</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Value Chain -->
+  <div class="ar-section">
+    <div class="ar-section-header">
+      <span class="ar-section-icon">🔗</span>
+      <span class="ar-section-title">Value Chain Coverage</span>
+      <span class="ar-section-badge">BRSR Core mandatory from FY2026-27</span>
+    </div>
+
+    <div class="ar-kpi-card" data-kpi="Value chain ESG data — suppliers/customers ≥2% spend or covering 75% aggregate">
+      <div class="ar-kpi-name"><span class="ar-kpi-tag ar-kpi-tag--vc">VC</span>Value chain partners identified and assessed</div>
+      <div class="ar-checks">
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Top suppliers identified?</option><option value="1">Yes — ≥2% spend suppliers listed</option><option value="0.5">Top 10 suppliers only</option><option value="0">No supplier mapping</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">ESG questionnaire sent?</option><option value="1">Yes — response rate &gt;50%</option><option value="0.5">Sent, low response</option><option value="0">Not initiated</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Coverage % calculated?</option><option value="1">Yes — % of spend/revenue covered</option><option value="0">No</option></select></div>
+        <div class="ar-check-item"><select class="ar-sel" onchange="recalc()"><option value="0">Green Credit Programme tracked?</option><option value="1">Yes — GCP credits disclosed (SEBI Apr 2025)</option><option value="0.5">Aware but not tracked</option><option value="0">Not aware of requirement</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gaps panel (populated by JS) -->
+  <div id="gaps-panel" hidden></div>
+  <div id="done-panel" hidden class="ar-done-banner">
+    <strong>Assurance Ready</strong>
+    <p>Your data appears to meet the threshold for BRSR Core reasonable assurance. Engage an ICAI-accredited sustainability assurance provider to begin the formal process.</p>
+  </div>
+
+  <p style="font-size:.72rem;color:var(--text-20);margin-top:32px;line-height:1.6">
+    Based on SEBI BRSR Core framework (SEBI/HO/CFD/CMD-2/P/CIR/2023/168) and ICAI sustainability assurance guidance. This tool is for self-assessment only. Engage a registered assurance provider for official BRSR Core verification. Green Curve is not an ESG rating provider under SEBI regulations.
+  </p>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/><circle cx="25" cy="5" r="2" fill="#4ade80"/></svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const header = document.getElementById('site-header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+const burger = document.getElementById('nav-burger');
+const mobileNav = document.getElementById('nav-mobile');
+if (burger && mobileNav) {
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    mobileNav.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    burger.setAttribute('aria-expanded', String(open));
+  });
+}
+
+function recalc() {
+  const cards = document.querySelectorAll('.ar-kpi-card');
+  let earned = 0, possible = 0;
+  const gaps = [];
+
+  cards.forEach(card => {
+    const sels = card.querySelectorAll('.ar-sel');
+    let cardEarned = 0;
+    sels.forEach(s => { cardEarned += Number(s.value || 0); });
+    const cardMax = sels.length;
+    earned += cardEarned;
+    possible += cardMax;
+
+    const ratio = cardEarned / cardMax;
+    card.className = 'ar-kpi-card ' + (ratio >= 0.85 ? 'complete' : ratio >= 0.5 ? 'partial' : 'missing');
+
+    if (ratio < 0.85) {
+      const kpi = card.dataset.kpi || card.querySelector('.ar-kpi-name')?.textContent?.trim() || 'KPI';
+      sels.forEach((s, i) => {
+        if (Number(s.value || 0) < 1) {
+          const labels = ['Data availability', 'Methodology documentation', 'Data source / emission factor citation', 'Prior year comparison'];
+          gaps.push(kpi.slice(0, 60) + ': ' + (labels[i] || 'Check ' + (i+1)) + ' is incomplete.');
+        }
+      });
+    }
+  });
+
+  const pct = possible > 0 ? Math.round(earned / possible * 100) : 0;
+  document.getElementById('score-num').textContent = pct + '%';
+  const bar = document.getElementById('score-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = pct >= 85 ? 'linear-gradient(90deg,#10b981,#34d399)' :
+                          pct >= 55 ? 'linear-gradient(90deg,#f59e0b,#fbbf24)' :
+                                      'linear-gradient(90deg,#f87171,#fbbf24)';
+
+  const statusEl = document.getElementById('score-status');
+  const gapsPanel = document.getElementById('gaps-panel');
+  const donePanel = document.getElementById('done-panel');
+
+  if (pct >= 85) {
+    statusEl.className = 'ar-score-status ar-score-status--green';
+    statusEl.textContent = 'Assurance Ready — your data meets the readiness threshold.';
+    gapsPanel.hidden = true; donePanel.hidden = false;
+  } else if (pct >= 55) {
+    statusEl.className = 'ar-score-status ar-score-status--amber';
+    statusEl.textContent = 'Partially Ready — address the gaps below before engaging an assurance provider.';
+    donePanel.hidden = true;
+    renderGaps(gaps, gapsPanel);
+  } else {
+    statusEl.className = 'ar-score-status ar-score-status--red';
+    statusEl.textContent = 'Not Ready — significant gaps exist. Review remediation actions below.';
+    donePanel.hidden = true;
+    renderGaps(gaps, gapsPanel);
+  }
+}
+
+function renderGaps(gaps, panel) {
+  if (!gaps.length) { panel.hidden = true; return; }
+  panel.hidden = false;
+  panel.className = 'ar-gaps';
+  panel.innerHTML = '<div class="ar-gaps-title">Gaps &amp; Remediation Actions (' + gaps.length + ')</div>' +
+    gaps.map(g => '<div class="ar-gap-item"><div class="ar-gap-dot"></div><div>' + g + '</div></div>').join('');
+}
+
+function exportGaps() {
+  const cards = document.querySelectorAll('.ar-kpi-card');
+  const rows = [['KPI', 'Readiness', 'Gap Detail']];
+  cards.forEach(card => {
+    const sels = card.querySelectorAll('.ar-sel');
+    const kpi = card.dataset.kpi || 'KPI';
+    let earned = 0;
+    sels.forEach(s => earned += Number(s.value || 0));
+    const pct = Math.round(earned / sels.length * 100);
+    const status = pct >= 85 ? 'Ready' : pct >= 50 ? 'Partial' : 'Gap';
+    const labels = ['Data availability', 'Methodology documentation', 'Source / factor citation', 'Prior year data'];
+    const missing = [];
+    sels.forEach((s, i) => { if (Number(s.value || 0) < 1) missing.push(labels[i] || 'Item ' + (i+1)); });
+    rows.push([kpi, status + ' (' + pct + '%)', missing.join('; ')]);
+  });
+  const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'BRSR-Core-Assurance-Readiness-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+</script>
+</body>
+</html>

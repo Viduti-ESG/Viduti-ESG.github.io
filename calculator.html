@@ -150,9 +150,11 @@
       <li><a href="index.html#about">About</a></li>
       <li><a href="learn.html">Carbon Literacy</a></li>
       <li><a href="calculator.html" style="color:var(--emerald)">GHG Calculator</a></li>
+      <li><a href="assurance.html">BRSR Assurance</a></li>
+      <li><a href="ccts.html">CCTS</a></li>
+      <li><a href="tcfd.html">TCFD</a></li>
       <li><a href="brsr-simple.html">BRSR Report</a></li>
       <li><a href="esg-intelligence.html">ESG Quotient</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
     </ul>
     <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
     <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
@@ -168,9 +170,11 @@
   <a href="index.html#about">About</a>
   <a href="learn.html">Carbon Literacy</a>
   <a href="calculator.html">GHG Calculator</a>
+  <a href="assurance.html">BRSR Assurance</a>
+  <a href="ccts.html">CCTS</a>
+  <a href="tcfd.html">TCFD</a>
   <a href="brsr-simple.html">BRSR Report</a>
   <a href="esg-intelligence.html">ESG Quotient</a>
-  <a href="index.html#contact">Contact</a>
 </div>
 
 <!-- CALCULATOR HERO -->
@@ -419,6 +423,35 @@
         <div class="commute-preview" id="commute-preview"></div>
         <button id="commute-add" class="btn-secondary">Add commute to inventory</button>
         <p class="calc-note" style="margin-top:8px">Factors: DEFRA 2024 (kg CO₂e/km per employee). Round-trip automatically applied.</p>
+      </div>
+
+      <!-- Water & Waste Module -->
+      <div class="calc-manual" id="water-waste-module">
+        <h3>💧 Water &amp; Waste Footprint <span class="module-badge">BRSR Core P6</span></h3>
+        <p>Track water withdrawal and waste generation for BRSR Core mandatory disclosure and intensity metrics.</p>
+
+        <div class="ww-section-label">Water Withdrawal (kilolitres / year)</div>
+        <div class="ww-grid" id="water-grid">
+          <div class="ww-row"><span class="ww-cat">Municipal / DISCOM supply</span><input type="number" class="field-input ww-water-input" data-label="Municipal water" min="0" step="any" placeholder="kL"/></div>
+          <div class="ww-row"><span class="ww-cat">Groundwater (borewell)</span><input type="number" class="field-input ww-water-input" data-label="Groundwater" min="0" step="any" placeholder="kL"/></div>
+          <div class="ww-row"><span class="ww-cat">Surface water (river/lake)</span><input type="number" class="field-input ww-water-input" data-label="Surface water" min="0" step="any" placeholder="kL"/></div>
+          <div class="ww-row"><span class="ww-cat">Rainwater harvested</span><input type="number" class="field-input ww-water-input" data-label="Rainwater" min="0" step="any" placeholder="kL"/></div>
+          <div class="ww-row"><span class="ww-cat">Recycled / treated water</span><input type="number" class="field-input ww-water-input" data-label="Recycled water" min="0" step="any" placeholder="kL"/></div>
+        </div>
+        <div class="ww-preview" id="water-preview">Enter water sources above to see total withdrawal</div>
+
+        <div class="ww-section-label" style="margin-top:14px">Waste Generation (metric tonnes / year)</div>
+        <div class="ww-grid" id="waste-grid">
+          <div class="ww-row"><span class="ww-cat">Hazardous waste (HWM Rules)</span><input type="number" class="field-input ww-waste-input" data-label="Hazardous waste" min="0" step="any" placeholder="MT"/></div>
+          <div class="ww-row"><span class="ww-cat">Non-hazardous waste</span><input type="number" class="field-input ww-waste-input" data-label="Non-hazardous waste" min="0" step="any" placeholder="MT"/></div>
+          <div class="ww-row"><span class="ww-cat">Plastic waste (EPR)</span><input type="number" class="field-input ww-waste-input" data-label="Plastic waste" min="0" step="any" placeholder="MT"/></div>
+          <div class="ww-row"><span class="ww-cat">E-waste (EPR)</span><input type="number" class="field-input ww-waste-input" data-label="E-waste" min="0" step="any" placeholder="MT"/></div>
+          <div class="ww-row"><span class="ww-cat">Waste recycled / recovered</span><input type="number" class="field-input ww-waste-input" data-label="Waste recycled" min="0" step="any" placeholder="MT"/></div>
+        </div>
+        <div class="ww-preview" id="waste-preview">Enter waste categories above to see totals</div>
+
+        <button id="ww-add" class="btn-secondary">Add water &amp; waste to BRSR report</button>
+        <p class="calc-note" style="margin-top:8px">Water and waste are BRSR Core mandatory disclosures (P6). Data exports to CSV via "Export for BRSR" button. Source: CPCB HWM Rules 2016, SEBI BRSR Core KPIs.</p>
       </div>
 
       <!-- Custom source -->
@@ -698,7 +731,8 @@
     header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 </script>
-<script src="assets/js/ghg-calculator.js?v=20260605" defer></script>
-<script src="assets/js/ghg-features2.js?v=20260605" defer></script>
+<script src="assets/js/ghg-calculator.js?v=20260606" defer></script>
+<script src="assets/js/ghg-features2.js?v=20260606" defer></script>
+<script src="assets/js/ghg-features3.js?v=20260606" defer></script>
 </body>
 </html>

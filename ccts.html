@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CCTS Compliance Tracker — India Carbon Credit Trading Scheme — Green Curve</title>
+  <meta name="description" content="Free CCTS compliance tracker for Indian industries. Calculate your emission intensity vs BEE notified targets, estimate Carbon Credit Certificate (CCC) surplus or deficit under India's Carbon Credit Trading Scheme."/>
+  <meta name="keywords" content="CCTS India, Carbon Credit Trading Scheme India, BEE carbon credits, India carbon market, CCC certificates, emission intensity target India, CCTS compliance"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://viduti-esg.github.io/ccts.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="CCTS Compliance Tracker — India Carbon Credit Trading Scheme — Green Curve"/>
+  <meta property="og:description" content="Calculate your emission intensity vs BEE targets under India's Carbon Credit Trading Scheme. Estimate CCC surplus or deficit for your sector."/>
+  <meta property="og:image" content="https://viduti-esg.github.io/assets/img/logo.png"/>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-VS37JR0KK7');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    .ct-hero { background:var(--void); padding:80px 0 48px; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+    .ct-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(0,200,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .ct-orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); }
+    .ct-orb--1 { width:500px; height:500px; background:radial-gradient(circle,rgba(251,191,36,.1) 0%,transparent 65%); top:-180px; right:-80px; }
+    .ct-orb--2 { width:350px; height:350px; background:radial-gradient(circle,rgba(52,211,153,.08) 0%,transparent 65%); bottom:-60px; left:-60px; }
+    .ct-eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--amber); margin-bottom:16px; padding:5px 14px; background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.22); border-radius:100px; }
+    .ct-hero__title { font-family:var(--serif); font-size:clamp(2rem,4.5vw,3.2rem); color:#fff; letter-spacing:-.03em; line-height:1.1; margin-bottom:14px; }
+    .ct-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--amber),var(--emerald)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .ct-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:580px; }
+
+    /* layout */
+    .ct-body { padding:40px 0 80px; }
+    .ct-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; }
+    @media(max-width:800px){ .ct-grid { grid-template-columns:1fr; } }
+
+    /* card */
+    .ct-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
+    .ct-card-title { font-size:.85rem; font-weight:700; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .ct-card-title .badge { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; background:rgba(251,191,36,.1); color:var(--amber); border:1px solid rgba(251,191,36,.25); border-radius:20px; padding:2px 8px; }
+
+    /* inputs */
+    .ct-field { margin-bottom:14px; }
+    .ct-label { display:block; font-size:.75rem; font-weight:600; color:var(--text-70); margin-bottom:5px; letter-spacing:.03em; }
+    .ct-input { width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:9px 12px; font-size:.88rem; font-family:var(--sans); transition:border-color .2s; }
+    .ct-input:focus { outline:none; border-color:var(--amber); }
+    .ct-select { width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:9px 12px; font-size:.88rem; font-family:var(--sans); cursor:pointer; }
+    .ct-calc-btn { width:100%; background:var(--amber); color:#000; font-weight:800; font-size:.9rem; padding:12px; border:none; border-radius:10px; cursor:pointer; transition:opacity .2s; margin-top:8px; }
+    .ct-calc-btn:hover { opacity:.85; }
+
+    /* results */
+    .ct-result { display:none; margin-top:24px; }
+    .ct-result.show { display:block; }
+    .ct-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    .ct-result-card { background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
+    .ct-result-val { font-family:var(--serif); font-size:1.6rem; color:#fff; margin-bottom:3px; }
+    .ct-result-lbl { font-size:.68rem; color:var(--text-40); text-transform:uppercase; letter-spacing:.06em; }
+    .ct-verdict { border-radius:12px; padding:16px 18px; font-size:.85rem; line-height:1.7; margin-bottom:14px; }
+    .ct-verdict--surplus { background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.25); color:var(--text-70); }
+    .ct-verdict--deficit { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); color:var(--text-70); }
+    .ct-verdict--ontrack { background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.25); color:var(--text-70); }
+    .ct-verdict strong { color:#fff; display:block; margin-bottom:4px; }
+
+    /* sector info table */
+    .ct-sector-table { width:100%; border-collapse:collapse; font-size:.78rem; margin-top:12px; }
+    .ct-sector-table th { text-align:left; padding:8px 10px; font-size:.65rem; text-transform:uppercase; letter-spacing:.07em; color:var(--text-40); border-bottom:1px solid var(--border); }
+    .ct-sector-table td { padding:8px 10px; color:var(--text-70); border-bottom:1px solid var(--border); }
+    .ct-sector-table tr:last-child td { border-bottom:none; }
+    .ct-sector-table tr.active td { color:#fff; background:rgba(251,191,36,.05); }
+
+    .ct-info { background:rgba(251,191,36,.05); border:1px solid rgba(251,191,36,.2); border-radius:10px; padding:14px 16px; font-size:.8rem; color:var(--text-70); line-height:1.7; margin-bottom:24px; }
+    .ct-info strong { color:var(--amber); }
+    .ct-disclaimer { font-size:.7rem; color:var(--text-20); line-height:1.6; margin-top:24px; }
+
+    .ct-timeline { display:flex; gap:0; margin:20px 0; }
+    .ct-tl-item { flex:1; text-align:center; position:relative; }
+    .ct-tl-item::before { content:''; position:absolute; top:14px; left:-50%; right:50%; height:2px; background:var(--border); }
+    .ct-tl-item:first-child::before { display:none; }
+    .ct-tl-dot { width:28px; height:28px; border-radius:50%; background:var(--surface-2); border:2px solid var(--border); margin:0 auto 6px; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; color:var(--text-40); position:relative; z-index:1; }
+    .ct-tl-dot.active { background:rgba(251,191,36,.15); border-color:var(--amber); color:var(--amber); }
+    .ct-tl-dot.done { background:rgba(52,211,153,.15); border-color:var(--emerald); color:var(--emerald); }
+    .ct-tl-label { font-size:.62rem; color:var(--text-40); line-height:1.4; }
+    .ct-tl-label.active { color:var(--amber); }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="learn.html">Carbon Literacy</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="assurance.html">BRSR Assurance</a></li>
+      <li><a href="ccts.html" style="color:var(--amber)">CCTS Tracker</a></li>
+      <li><a href="tcfd.html">TCFD</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+    </ul>
+    <a href="calculator.html" class="nav__cta">GHG Calculator &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation">
+  <a href="learn.html">Carbon Literacy</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="assurance.html">BRSR Assurance</a>
+  <a href="ccts.html">CCTS Tracker</a>
+  <a href="tcfd.html">TCFD</a>
+  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="esg-intelligence.html">ESG Quotient</a>
+</div>
+
+<section class="ct-hero">
+  <div class="ct-orb ct-orb--1" aria-hidden="true"></div>
+  <div class="ct-orb ct-orb--2" aria-hidden="true"></div>
+  <div class="container" style="position:relative">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:500;color:var(--text-70);border:1px solid var(--border-hi);border-radius:100px;padding:6px 16px;margin-bottom:28px">&larr; Back</a>
+    <div class="ct-eyebrow">BEE &bull; India Carbon Credit Trading Scheme</div>
+    <h1 class="ct-hero__title">CCTS <em>Compliance</em><br/>Tracker</h1>
+    <p class="ct-hero__sub">Calculate your emission intensity vs BEE-notified targets. Estimate your Carbon Credit Certificate (CCC) surplus or deficit under India's Carbon Credit Trading Scheme.</p>
+  </div>
+</section>
+
+<div class="ct-body container">
+
+  <!-- Timeline -->
+  <div class="ct-timeline">
+    <div class="ct-tl-item">
+      <div class="ct-tl-dot done">&#10003;</div>
+      <div class="ct-tl-label">CCTS notified<br/>Aug 2023</div>
+    </div>
+    <div class="ct-tl-item">
+      <div class="ct-tl-dot done">&#10003;</div>
+      <div class="ct-tl-label">9 sectors<br/>designated</div>
+    </div>
+    <div class="ct-tl-item">
+      <div class="ct-tl-dot done">&#10003;</div>
+      <div class="ct-tl-label">BEE targets<br/>notified FY24</div>
+    </div>
+    <div class="ct-tl-item">
+      <div class="ct-tl-dot active">&#9654;</div>
+      <div class="ct-tl-label active">Compliance<br/>FY2025-26</div>
+    </div>
+    <div class="ct-tl-item">
+      <div class="ct-tl-dot">~</div>
+      <div class="ct-tl-label">CCC trading<br/>launches 2026</div>
+    </div>
+    <div class="ct-tl-item">
+      <div class="ct-tl-dot">2030</div>
+      <div class="ct-tl-label">Intensity<br/>target year</div>
+    </div>
+  </div>
+
+  <div class="ct-info">
+    <strong>What is CCTS?</strong> India's Carbon Credit Trading Scheme (Energy Conservation Amendment Act 2022) mandates emission intensity reduction targets for ~740 entities in 9 industrial sectors. Entities that over-achieve targets earn Carbon Credit Certificates (CCCs) that can be traded on exchanges. Those falling short must purchase CCCs to comply. First trading is expected mid-2026 on BSE/NSE.
+  </div>
+
+  <div class="ct-grid">
+    <!-- Input panel -->
+    <div class="ct-card">
+      <div class="ct-card-title">Your Intensity Calculation <span class="badge">Indicative</span></div>
+
+      <div class="ct-field">
+        <label class="ct-label" for="ct-sector">Your sector</label>
+        <select class="ct-select" id="ct-sector" onchange="onSectorChange()">
+          <option value="">— Select sector</option>
+          <option value="aluminium">Aluminium</option>
+          <option value="cement">Cement</option>
+          <option value="steel">Iron &amp; Steel</option>
+          <option value="chloralkali">Chlor-Alkali</option>
+          <option value="fertilizer">Fertilizer (Urea)</option>
+          <option value="paper">Paper &amp; Pulp</option>
+          <option value="petrochemicals">Petrochemicals</option>
+          <option value="refinery">Petroleum Refinery</option>
+          <option value="textile">Textile</option>
+        </select>
+      </div>
+
+      <div class="ct-field" id="ct-unit-field" style="display:none">
+        <label class="ct-label" id="ct-unit-label">Production output</label>
+        <input type="number" class="ct-input" id="ct-output" min="0" step="any" placeholder="e.g. 50000"/>
+      </div>
+
+      <div class="ct-field" id="ct-emission-field" style="display:none">
+        <label class="ct-label">Scope 1 + Scope 2 emissions (tCO₂e/year)</label>
+        <input type="number" class="ct-input" id="ct-emissions" min="0" step="any" placeholder="From your GHG inventory"/>
+      </div>
+
+      <div class="ct-field" id="ct-fy-field" style="display:none">
+        <label class="ct-label">Financial year</label>
+        <select class="ct-select" id="ct-fy">
+          <option value="2026">FY 2025-26</option>
+          <option value="2027">FY 2026-27</option>
+          <option value="2028">FY 2027-28</option>
+          <option value="2029">FY 2028-29</option>
+          <option value="2030">FY 2029-30</option>
+        </select>
+      </div>
+
+      <button class="ct-calc-btn" id="ct-calc-btn" style="display:none" onclick="calculate()">Calculate CCTS Position</button>
+
+      <div class="ct-result" id="ct-result">
+        <div class="ct-result-grid">
+          <div class="ct-result-card">
+            <div class="ct-result-val" id="res-your">—</div>
+            <div class="ct-result-lbl">Your intensity</div>
+          </div>
+          <div class="ct-result-card">
+            <div class="ct-result-val" id="res-target">—</div>
+            <div class="ct-result-lbl">BEE target</div>
+          </div>
+          <div class="ct-result-card">
+            <div class="ct-result-val" id="res-diff">—</div>
+            <div class="ct-result-lbl">vs target</div>
+          </div>
+          <div class="ct-result-card">
+            <div class="ct-result-val" id="res-ccc">—</div>
+            <div class="ct-result-lbl">Est. CCC position</div>
+          </div>
+        </div>
+        <div class="ct-verdict" id="ct-verdict-box"></div>
+        <canvas id="ct-chart" height="160"></canvas>
+      </div>
+    </div>
+
+    <!-- Sector reference -->
+    <div>
+      <div class="ct-card">
+        <div class="ct-card-title">BEE Sector Intensity Targets <span class="badge">Indicative</span></div>
+        <table class="ct-sector-table" id="sector-table">
+          <thead>
+            <tr>
+              <th>Sector</th>
+              <th>Unit</th>
+              <th>Baseline</th>
+              <th>FY2030 Target</th>
+            </tr>
+          </thead>
+          <tbody id="sector-tbody"></tbody>
+        </table>
+        <p style="font-size:.65rem;color:var(--text-20);margin-top:10px;line-height:1.5">Indicative values based on BEE CCTS Detailed Procedure (July 2024). Official targets vary by entity-specific baseline assessment. Verify with BEE's notified values for your facility.</p>
+      </div>
+
+      <div class="ct-card" style="margin-top:20px">
+        <div class="ct-card-title">Key CCTS Dates</div>
+        <div style="font-size:.8rem;color:var(--text-70);line-height:2">
+          <div><strong style="color:#fff;min-width:100px;display:inline-block">Aug 2023</strong>CCTS notified under Energy Conservation Act</div>
+          <div><strong style="color:#fff;min-width:100px;display:inline-block">FY2023-24</strong>Baseline year for most sectors</div>
+          <div><strong style="color:#fff;min-width:100px;display:inline-block">FY2025-26</strong>First compliance assessment cycle</div>
+          <div><strong style="color:#fff;min-width:100px;display:inline-block">Mid-2026</strong>CCC trading expected on BSE/NSE</div>
+          <div><strong style="color:#fff;min-width:100px;display:inline-block">FY2029-30</strong>Final intensity target year</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="ct-disclaimer">
+    <strong>Disclaimer:</strong> This tool provides indicative estimates only. BEE targets, baselines, and CCC calculations are entity-specific and determined by BEE-accredited verifiers. Intensity targets vary by plant vintage, capacity, and product mix. Do not use these estimates for official BEE compliance submissions. Engage a BEE-designated energy auditor or accredited verifier for formal CCTS assessment. Data sources: BEE CCTS Detailed Procedure v1.0 (July 2024), Ministry of Power Government of India. Green Curve is not affiliated with BEE or the Ministry of Power.
+  </p>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/><circle cx="25" cy="5" r="2" fill="#4ade80"/></svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const header = document.getElementById('site-header');
+window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
+const burger = document.getElementById('nav-burger');
+const mobileNav = document.getElementById('nav-mobile');
+if (burger) burger.addEventListener('click', () => {
+  const open = burger.classList.toggle('open');
+  mobileNav.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+  burger.setAttribute('aria-expanded', String(open));
+});
+
+// Sector data: [label, unit, baseline tCO2e/unit, FY2030 target, reduction %]
+const SECTORS = {
+  aluminium:     { label:'Aluminium',          unit:'tonne Al produced',        baseline:8.5,  target2030:7.4,  unitShort:'t Al'  },
+  cement:        { label:'Cement',             unit:'tonne cementitious product',baseline:0.63, target2030:0.55, unitShort:'t cem' },
+  steel:         { label:'Iron & Steel',       unit:'tonne crude steel',         baseline:2.45, target2030:2.10, unitShort:'t CS'  },
+  chloralkali:   { label:'Chlor-Alkali',       unit:'tonne Cl₂ produced',        baseline:1.82, target2030:1.60, unitShort:'t Cl'  },
+  fertilizer:    { label:'Fertilizer (Urea)',  unit:'tonne urea',                baseline:2.15, target2030:1.88, unitShort:'t N'   },
+  paper:         { label:'Paper & Pulp',       unit:'tonne paper/paperboard',    baseline:1.25, target2030:1.05, unitShort:'t ppr' },
+  petrochemicals:{ label:'Petrochemicals',     unit:'tonne product',             baseline:1.52, target2030:1.32, unitShort:'t prd' },
+  refinery:      { label:'Petroleum Refinery', unit:'tonne crude throughput',    baseline:0.22, target2030:0.18, unitShort:'t crd' },
+  textile:       { label:'Textile',            unit:'tonne finished product',    baseline:3.20, target2030:2.75, unitShort:'t txt' },
+};
+
+function interpolateTarget(sector, fy) {
+  const s = SECTORS[sector];
+  if (!s) return null;
+  const year = parseInt(fy) || 2026;
+  // Linear interpolation from baseline (FY2024) to FY2030 target
+  const baseYear = 2024;
+  const targetYear = 2030;
+  const frac = Math.min(1, Math.max(0, (year - baseYear) / (targetYear - baseYear)));
+  return +(s.baseline - frac * (s.baseline - s.target2030)).toFixed(4);
+}
+
+function renderSectorTable(activeSector) {
+  const tbody = document.getElementById('sector-tbody');
+  tbody.innerHTML = Object.entries(SECTORS).map(([key, s]) => `
+    <tr class="${key === activeSector ? 'active' : ''}">
+      <td>${s.label}</td>
+      <td style="font-size:.65rem">${s.unitShort}</td>
+      <td>${s.baseline}</td>
+      <td>${s.target2030}</td>
+    </tr>`).join('');
+}
+renderSectorTable('');
+
+function onSectorChange() {
+  const sector = document.getElementById('ct-sector').value;
+  const show = !!sector;
+  const s = SECTORS[sector];
+  document.getElementById('ct-unit-field').style.display   = show ? '' : 'none';
+  document.getElementById('ct-emission-field').style.display = show ? '' : 'none';
+  document.getElementById('ct-fy-field').style.display     = show ? '' : 'none';
+  document.getElementById('ct-calc-btn').style.display     = show ? '' : 'none';
+  document.getElementById('ct-result').classList.remove('show');
+  if (s) {
+    document.getElementById('ct-unit-label').textContent = 'Annual production (' + s.unit + ')';
+    document.getElementById('ct-output').placeholder = 'e.g. 50,000';
+  }
+  renderSectorTable(sector);
+}
+
+let _chart = null;
+function calculate() {
+  const sector   = document.getElementById('ct-sector').value;
+  const output   = Number(document.getElementById('ct-output').value);
+  const emissions= Number(document.getElementById('ct-emissions').value);
+  const fy       = document.getElementById('ct-fy').value;
+  if (!sector || !output || !emissions) { alert('Please fill in all fields.'); return; }
+
+  const s = SECTORS[sector];
+  const yourIntensity = +(emissions / output).toFixed(4);
+  const beeTarget     = interpolateTarget(sector, fy);
+  const diff          = +(yourIntensity - beeTarget).toFixed(4);
+  const diffPct       = +((diff / beeTarget) * 100).toFixed(1);
+  const cccPos        = +(diff < 0 ? Math.abs(diff) * output / 1000 : -Math.abs(diff) * output / 1000).toFixed(0);
+
+  document.getElementById('res-your').textContent   = yourIntensity + ' tCO₂e/' + s.unitShort;
+  document.getElementById('res-target').textContent  = beeTarget    + ' tCO₂e/' + s.unitShort;
+  document.getElementById('res-diff').textContent    = (diff >= 0 ? '+' : '') + diffPct + '%';
+  document.getElementById('res-diff').style.color    = diff <= 0 ? '#34d399' : '#f87171';
+  document.getElementById('res-ccc').textContent     = (cccPos >= 0 ? '+' : '') + cccPos.toLocaleString('en-IN') + ' CCCs';
+  document.getElementById('res-ccc').style.color     = cccPos >= 0 ? '#34d399' : '#f87171';
+
+  const verdictBox = document.getElementById('ct-verdict-box');
+  if (diff <= 0) {
+    verdictBox.className = 'ct-verdict ct-verdict--surplus';
+    verdictBox.innerHTML = `<strong>Surplus — CCC earner</strong>Your intensity (${yourIntensity}) is ${Math.abs(diffPct)}% below the BEE target for FY ${fy.slice(-2)}. You would earn approximately ${Math.abs(cccPos).toLocaleString('en-IN')} Carbon Credit Certificates that can be traded when the exchange goes live.`;
+  } else if (diffPct <= 5) {
+    verdictBox.className = 'ct-verdict ct-verdict--ontrack';
+    verdictBox.innerHTML = `<strong>Borderline — Close to target</strong>Your intensity is ${diffPct}% above the BEE FY ${fy.slice(-2)} target. Minor operational improvements in energy efficiency or fuel switching should get you to compliance.`;
+  } else {
+    verdictBox.className = 'ct-verdict ct-verdict--deficit';
+    verdictBox.innerHTML = `<strong>Deficit — CCC buyer</strong>Your intensity (${yourIntensity}) is ${diffPct}% above the BEE target. You would need to purchase approximately ${Math.abs(cccPos).toLocaleString('en-IN')} CCCs to comply, or reduce emissions by ${+(diff * output).toFixed(0).toLocaleString('en-IN')} tCO₂e.`;
+  }
+
+  // Chart
+  const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
+  const targets = years.map(y => interpolateTarget(sector, y));
+  const yourLine = years.map(() => yourIntensity);
+
+  if (_chart) _chart.destroy();
+  _chart = new Chart(document.getElementById('ct-chart'), {
+    type: 'line',
+    data: {
+      labels: years.map(y => 'FY' + String(y+1).slice(-2)),
+      datasets: [
+        { label: 'BEE Target Trajectory', data: targets, borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,.08)', borderWidth:2, pointRadius:3, fill:true, tension:0.2 },
+        { label: 'Your Current Intensity', data: yourLine, borderColor: yourIntensity <= beeTarget ? '#34d399' : '#f87171', borderWidth:2, borderDash:[5,4], pointRadius:0 },
+      ]
+    },
+    options: {
+      plugins: { legend: { labels: { color:'rgba(221,228,240,.6)', font:{size:11} } } },
+      scales: {
+        x: { ticks:{color:'rgba(221,228,240,.4)'}, grid:{color:'rgba(255,255,255,.04)'} },
+        y: { ticks:{color:'rgba(221,228,240,.4)', callback: v => v + ' t'}, grid:{color:'rgba(255,255,255,.04)'}, title:{display:true,text:'tCO₂e / ' + s.unitShort, color:'rgba(221,228,240,.3)',font:{size:10}} }
+      }
+    }
+  });
+
+  document.getElementById('ct-result').classList.add('show');
+}
+</script>
+</body>
+</html>

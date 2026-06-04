@@ -788,8 +788,17 @@
 .chat-form button { background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-size: .8rem; cursor: pointer; }
 .chat-note { font-size: .65rem; color: #94a3b8; text-align: center; padding: 4px 12px 8px; }
 
+/* Water & Waste module */
+.ww-section-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #64748b; margin-bottom: 8px; }
+.ww-grid { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
+.ww-row { display: flex; align-items: center; gap: 10px; }
+.ww-cat { width: 190px; font-size: .8rem; color: #374151; flex-shrink: 0; }
+.ww-row .field-input { flex: 1; max-width: 130px; padding: 7px 10px; }
+.ww-preview { font-size: .82rem; color: #475569; background: #f1f5f9; border-radius: 8px; padding: 8px 12px; }
+
 @media (max-width: 640px) {
   .sbti-grid { grid-template-columns: 1fr; }
   .spend-cat { width: 110px; font-size: .75rem; }
+  .ww-cat { width: 130px; font-size: .74rem; }
   .chat-panel { width: calc(100vw - 32px); right: 16px; }
 }

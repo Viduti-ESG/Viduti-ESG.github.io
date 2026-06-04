@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TCFD Disclosure Tracker — Green Curve</title>
+  <meta name="description" content="Free TCFD climate disclosure tracker for Indian companies. Complete and track your Task Force on Climate-related Financial Disclosures across all 4 pillars: Governance, Strategy, Risk Management, and Metrics & Targets."/>
+  <meta name="keywords" content="TCFD India, climate disclosure tracker, IFRS S2 India, climate risk disclosure, TCFD 4 pillars, climate governance India"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://viduti-esg.github.io/tcfd.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="TCFD Disclosure Tracker — Green Curve"/>
+  <meta property="og:description" content="Track your TCFD climate disclosures across all 4 pillars. Free interactive tool for Indian companies aligned with IFRS S2 / ISSB."/>
+  <meta property="og:image" content="https://viduti-esg.github.io/assets/img/logo.png"/>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-VS37JR0KK7');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+
+  <style>
+    .tcfd-hero { background:var(--void); padding:80px 0 48px; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+    .tcfd-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(0,200,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .tcfd-orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); }
+    .tcfd-orb--1 { width:500px; height:500px; background:radial-gradient(circle,rgba(0,200,255,.1) 0%,transparent 65%); top:-180px; right:-80px; }
+    .tcfd-orb--2 { width:350px; height:350px; background:radial-gradient(circle,rgba(52,211,153,.07) 0%,transparent 65%); bottom:-60px; left:-60px; }
+    .tcfd-eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--cyan); margin-bottom:16px; padding:5px 14px; background:rgba(0,200,255,.06); border:1px solid rgba(0,200,255,.22); border-radius:100px; }
+    .tcfd-hero__title { font-family:var(--serif); font-size:clamp(2rem,4.5vw,3.2rem); color:#fff; letter-spacing:-.03em; line-height:1.1; margin-bottom:14px; }
+    .tcfd-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--cyan),var(--emerald)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .tcfd-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:580px; }
+
+    .tcfd-body { padding:40px 0 80px; }
+
+    /* Pillar nav tabs */
+    .tcfd-pillar-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+    .tcfd-tab { display:flex; align-items:center; gap:8px; padding:10px 18px; border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:all .2s; background:transparent; color:var(--text-70); font-size:.82rem; font-weight:600; font-family:var(--sans); }
+    .tcfd-tab:hover { border-color:var(--border-hi); color:#fff; }
+    .tcfd-tab.active { background:rgba(0,200,255,.08); border-color:rgba(0,200,255,.35); color:var(--cyan); }
+    .tcfd-tab__pct { font-size:.7rem; background:rgba(255,255,255,.07); border-radius:10px; padding:1px 7px; }
+
+    /* Overall score bar */
+    .tcfd-score-bar { background:var(--surface); border:1px solid var(--border-hi); border-radius:16px; padding:20px 24px; margin-bottom:28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .tcfd-score-val { font-family:var(--serif); font-size:2.8rem; color:#fff; flex-shrink:0; }
+    .tcfd-score-track { flex:1; min-width:160px; height:8px; background:rgba(255,255,255,.07); border-radius:4px; overflow:hidden; }
+    .tcfd-score-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--cyan),var(--emerald)); transition:width .5s ease; }
+    .tcfd-score-lbl { font-size:.75rem; color:var(--text-40); text-transform:uppercase; letter-spacing:.06em; }
+    .tcfd-export-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(0,200,255,.1); border:1px solid rgba(0,200,255,.3); color:var(--cyan); font-weight:700; font-size:.8rem; padding:8px 16px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+    .tcfd-export-btn:hover { background:rgba(0,200,255,.18); }
+    .tcfd-save-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.3); color:var(--emerald); font-weight:700; font-size:.8rem; padding:8px 16px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+    .tcfd-save-btn:hover { background:rgba(52,211,153,.18); }
+
+    /* Pillar panel */
+    .tcfd-pillar { display:none; }
+    .tcfd-pillar.active { display:block; }
+    .tcfd-pillar-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .tcfd-pillar-icon { font-size:1.6rem; }
+    .tcfd-pillar-title { font-family:var(--serif); font-size:1.4rem; color:#fff; }
+    .tcfd-pillar-sub { font-size:.8rem; color:var(--text-40); margin-top:2px; }
+
+    /* Disclosure item */
+    .tcfd-item { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:12px; transition:border-color .2s; }
+    .tcfd-item.done { border-color:rgba(52,211,153,.3); }
+    .tcfd-item.partial { border-color:rgba(251,191,36,.25); }
+    .tcfd-item-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
+    .tcfd-item-title { font-size:.88rem; font-weight:600; color:#fff; flex:1; }
+    .tcfd-item-status { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; border-radius:20px; padding:2px 9px; white-space:nowrap; flex-shrink:0; }
+    .tcfd-item-status--done { background:rgba(52,211,153,.12); color:#34d399; }
+    .tcfd-item-status--partial { background:rgba(251,191,36,.1); color:#fbbf24; }
+    .tcfd-item-status--missing { background:rgba(248,113,113,.1); color:#f87171; }
+    .tcfd-item-desc { font-size:.78rem; color:var(--text-40); line-height:1.6; margin-bottom:12px; }
+    .tcfd-item-controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .tcfd-item-sel { background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:.78rem; font-family:var(--sans); flex:1; min-width:160px; cursor:pointer; }
+    .tcfd-item-note { flex:2; background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:.78rem; font-family:var(--sans); resize:none; min-height:36px; }
+    .tcfd-item-note::placeholder { color:var(--text-20); }
+    .tcfd-ifrs-tag { font-size:.62rem; color:var(--text-20); margin-top:6px; }
+
+    .tcfd-info { background:rgba(0,200,255,.04); border:1px solid rgba(0,200,255,.15); border-radius:10px; padding:14px 16px; font-size:.8rem; color:var(--text-70); line-height:1.7; margin-bottom:24px; }
+    .tcfd-info strong { color:var(--cyan); }
+    .tcfd-disclaimer { font-size:.7rem; color:var(--text-20); line-height:1.6; margin-top:28px; }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="learn.html">Carbon Literacy</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="assurance.html">BRSR Assurance</a></li>
+      <li><a href="ccts.html">CCTS Tracker</a></li>
+      <li><a href="tcfd.html" style="color:var(--cyan)">TCFD</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+    </ul>
+    <a href="calculator.html" class="nav__cta">GHG Calculator &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation">
+  <a href="learn.html">Carbon Literacy</a>
+  <a href="calculator.html">GHG Calculator</a>
+  <a href="assurance.html">BRSR Assurance</a>
+  <a href="ccts.html">CCTS Tracker</a>
+  <a href="tcfd.html">TCFD</a>
+  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="esg-intelligence.html">ESG Quotient</a>
+</div>
+
+<section class="tcfd-hero">
+  <div class="tcfd-orb tcfd-orb--1" aria-hidden="true"></div>
+  <div class="tcfd-orb tcfd-orb--2" aria-hidden="true"></div>
+  <div class="container" style="position:relative">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:500;color:var(--text-70);border:1px solid var(--border-hi);border-radius:100px;padding:6px 16px;margin-bottom:28px">&larr; Back</a>
+    <div class="tcfd-eyebrow">TCFD &bull; IFRS S2 Aligned &bull; Free tool</div>
+    <h1 class="tcfd-hero__title">TCFD <em>Disclosure</em><br/>Tracker</h1>
+    <p class="tcfd-hero__sub">Track your climate disclosure progress across all 4 TCFD pillars. Aligned with IFRS S2 / ISSB. Your responses are saved locally — no account needed.</p>
+  </div>
+</section>
+
+<div class="tcfd-body container">
+
+  <div class="tcfd-info">
+    <strong>Why TCFD matters for Indian companies:</strong> TCFD is now embedded in IFRS S2 (ISSB), the global baseline adopted by 30+ jurisdictions. Large Indian companies with international investors, EU supply chain exposure, or plans to list abroad will face TCFD/IFRS S2 questions. BRSR Principle 6 partially overlaps — completing this tracker maps your gaps.
+  </div>
+
+  <!-- Score summary -->
+  <div class="tcfd-score-bar">
+    <div>
+      <div class="tcfd-score-lbl">Overall Disclosure Progress</div>
+      <div class="tcfd-score-val" id="total-pct">0%</div>
+    </div>
+    <div style="flex:1">
+      <div class="tcfd-score-track"><div class="tcfd-score-fill" id="total-bar" style="width:0%"></div></div>
+      <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap">
+        <span id="lbl-g" style="font-size:.72rem;color:var(--text-40)">Governance: 0%</span>
+        <span id="lbl-s" style="font-size:.72rem;color:var(--text-40)">Strategy: 0%</span>
+        <span id="lbl-r" style="font-size:.72rem;color:var(--text-40)">Risk Mgmt: 0%</span>
+        <span id="lbl-m" style="font-size:.72rem;color:var(--text-40)">Metrics: 0%</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="tcfd-save-btn" onclick="saveProgress()">Save progress</button>
+      <button class="tcfd-export-btn" onclick="exportCSV()">Export CSV</button>
+    </div>
+  </div>
+
+  <!-- Pillar tabs -->
+  <div class="tcfd-pillar-tabs">
+    <button class="tcfd-tab active" data-pillar="g" onclick="switchPillar('g')">
+      🏛️ Governance <span class="tcfd-tab__pct" id="tab-pct-g">0%</span>
+    </button>
+    <button class="tcfd-tab" data-pillar="s" onclick="switchPillar('s')">
+      📊 Strategy <span class="tcfd-tab__pct" id="tab-pct-s">0%</span>
+    </button>
+    <button class="tcfd-tab" data-pillar="r" onclick="switchPillar('r')">
+      ⚙️ Risk Management <span class="tcfd-tab__pct" id="tab-pct-r">0%</span>
+    </button>
+    <button class="tcfd-tab" data-pillar="m" onclick="switchPillar('m')">
+      📐 Metrics &amp; Targets <span class="tcfd-tab__pct" id="tab-pct-m">0%</span>
+    </button>
+  </div>
+
+  <!-- GOVERNANCE -->
+  <div class="tcfd-pillar active" id="pillar-g">
+    <div class="tcfd-pillar-header">
+      <span class="tcfd-pillar-icon">🏛️</span>
+      <div>
+        <div class="tcfd-pillar-title">Governance</div>
+        <div class="tcfd-pillar-sub">Disclose the organisation's governance around climate-related risks and opportunities.</div>
+      </div>
+    </div>
+
+    <div class="tcfd-item" data-id="g1">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">G1 — Board oversight of climate-related risks and opportunities</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-g1">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe the board's oversight of climate-related risks and opportunities — which committee, how often reviewed, board training on climate.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-g1" onchange="recalcPillar('g')">
+          <option value="0">Status</option>
+          <option value="1">Fully disclosed in Annual Report</option>
+          <option value="0.7">Partially disclosed — committee named only</option>
+          <option value="0.4">Mentioned but no detail</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-g1" placeholder="Internal notes (saved locally)..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 6 — also BRSR Section A (Board governance)</div>
+    </div>
+
+    <div class="tcfd-item" data-id="g2">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">G2 — Management's role in assessing and managing climate risks</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-g2">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe management-level positions or committees responsible for climate. How is the board informed by management?</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-g2" onchange="recalcPillar('g')">
+          <option value="0">Status</option>
+          <option value="1">Fully disclosed — role/committee described</option>
+          <option value="0.7">Partially — ESG team mentioned, no specifics</option>
+          <option value="0.4">Mentioned incidentally</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-g2" placeholder="Internal notes..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 6(b)</div>
+    </div>
+  </div>
+
+  <!-- STRATEGY -->
+  <div class="tcfd-pillar" id="pillar-s">
+    <div class="tcfd-pillar-header">
+      <span class="tcfd-pillar-icon">📊</span>
+      <div>
+        <div class="tcfd-pillar-title">Strategy</div>
+        <div class="tcfd-pillar-sub">Disclose actual and potential impacts of climate-related risks and opportunities on business, strategy and financial planning.</div>
+      </div>
+    </div>
+
+    <div class="tcfd-item" data-id="s1">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">S1 — Climate-related risks and opportunities identified</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-s1">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Identify physical risks (acute/chronic) and transition risks (policy, technology, market, reputation) relevant to the business. Short-, medium-, long-term horizons.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-s1" onchange="recalcPillar('s')">
+          <option value="0">Status</option>
+          <option value="1">Both physical and transition risks identified with horizons</option>
+          <option value="0.7">Risks listed, no time horizons</option>
+          <option value="0.4">General mentions only</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-s1" placeholder="Key risks identified..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 10 — also BRSR P6 (environmental risk)</div>
+    </div>
+
+    <div class="tcfd-item" data-id="s2">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">S2 — Impact on business, strategy and financial planning</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-s2">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe the impact of identified risks on the organisation's businesses, strategy, and financial planning — including revenue, capex, opex impacts.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-s2" onchange="recalcPillar('s')">
+          <option value="0">Status</option>
+          <option value="1">Quantified financial impacts disclosed</option>
+          <option value="0.7">Qualitative impact described</option>
+          <option value="0.4">Mentioned but not linked to financials</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-s2" placeholder="Financial impact estimates..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 13</div>
+    </div>
+
+    <div class="tcfd-item" data-id="s3">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">S3 — Resilience of strategy under climate scenarios</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-s3">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe resilience under different climate scenarios, including a 2°C or lower scenario. IPCC AR6 scenarios: SSP1-1.9 (1.5°C), SSP2-4.5 (2°C), SSP5-8.5 (4°C+).</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-s3" onchange="recalcPillar('s')">
+          <option value="0">Status</option>
+          <option value="1">Scenario analysis completed — 2°C + additional scenario</option>
+          <option value="0.7">1.5°C scenario only</option>
+          <option value="0.4">Qualitative scenario discussion only</option>
+          <option value="0">No scenario analysis</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-s3" placeholder="Scenarios used, methodology..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 22 — most challenging TCFD disclosure</div>
+    </div>
+  </div>
+
+  <!-- RISK MANAGEMENT -->
+  <div class="tcfd-pillar" id="pillar-r">
+    <div class="tcfd-pillar-header">
+      <span class="tcfd-pillar-icon">⚙️</span>
+      <div>
+        <div class="tcfd-pillar-title">Risk Management</div>
+        <div class="tcfd-pillar-sub">Disclose how climate-related risks are identified, assessed, and managed.</div>
+      </div>
+    </div>
+
+    <div class="tcfd-item" data-id="r1">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">R1 — Processes for identifying and assessing climate risks</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-r1">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe processes for identifying and assessing climate-related risks — risk horizon, risk criteria, tools used, frequency of assessment.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-r1" onchange="recalcPillar('r')">
+          <option value="0">Status</option>
+          <option value="1">Formal process documented with criteria and frequency</option>
+          <option value="0.7">Process described, no formal documentation</option>
+          <option value="0.4">Annual review mentioned</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-r1" placeholder="Process description, tools used..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 25</div>
+    </div>
+
+    <div class="tcfd-item" data-id="r2">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">R2 — Processes for managing climate risks</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-r2">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe risk mitigation actions, transfer mechanisms (insurance), accepted risks. How are decisions made on risk response?</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-r2" onchange="recalcPillar('r')">
+          <option value="0">Status</option>
+          <option value="1">Mitigation and transfer mechanisms described with examples</option>
+          <option value="0.7">High-level management approach described</option>
+          <option value="0.4">Referenced in risk management section</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-r2" placeholder="Mitigation actions, insurance..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 25(b)</div>
+    </div>
+
+    <div class="tcfd-item" data-id="r3">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">R3 — Integration into overall enterprise risk management</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-r3">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe how climate risk identification and management is integrated into the company's overall ERM framework.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-r3" onchange="recalcPillar('r')">
+          <option value="0">Status</option>
+          <option value="1">Integrated — climate in main risk register</option>
+          <option value="0.7">Separate climate risk section references ERM</option>
+          <option value="0.4">Mentioned but not integrated</option>
+          <option value="0">Siloed from ERM</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-r3" placeholder="ERM integration description..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 25(c)</div>
+    </div>
+  </div>
+
+  <!-- METRICS & TARGETS -->
+  <div class="tcfd-pillar" id="pillar-m">
+    <div class="tcfd-pillar-header">
+      <span class="tcfd-pillar-icon">📐</span>
+      <div>
+        <div class="tcfd-pillar-title">Metrics &amp; Targets</div>
+        <div class="tcfd-pillar-sub">Disclose metrics and targets used to assess and manage climate-related risks and opportunities.</div>
+      </div>
+    </div>
+
+    <div class="tcfd-item" data-id="m1">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">M1 — Scope 1, 2 and 3 GHG emissions disclosed</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-m1">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Disclose GHG emissions (Scope 1, 2, and if appropriate Scope 3) and related risks. Use GHG Protocol Corporate Standard methodology. Aligned with BRSR Principle 6 mandatory disclosure.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-m1" onchange="recalcPillar('m')">
+          <option value="0">Status</option>
+          <option value="1">All 3 scopes disclosed with methodology</option>
+          <option value="0.8">Scope 1 and 2 disclosed (BRSR mandatory)</option>
+          <option value="0.5">Scope 1 only or estimated</option>
+          <option value="0">Not disclosed</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-m1" placeholder="Link to GHG Calculator inventory..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 29(a) — use Green Curve GHG Calculator for this data</div>
+    </div>
+
+    <div class="tcfd-item" data-id="m2">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">M2 — Climate-related risks in financial statements</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-m2">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe the climate-related metrics used to assess performance vs strategy and risk management — energy use, water, waste, capex on low-carbon transition.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-m2" onchange="recalcPillar('m')">
+          <option value="0">Status</option>
+          <option value="1">Climate metrics linked to financial statements</option>
+          <option value="0.7">Separate climate metrics disclosed</option>
+          <option value="0.4">Energy and water metrics only</option>
+          <option value="0">No climate-related metrics</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-m2" placeholder="Key climate metrics tracked..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 29(b)</div>
+    </div>
+
+    <div class="tcfd-item" data-id="m3">
+      <div class="tcfd-item-header">
+        <div class="tcfd-item-title">M3 — Climate-related targets and performance against targets</div>
+        <span class="tcfd-item-status tcfd-item-status--missing" id="status-m3">Missing</span>
+      </div>
+      <div class="tcfd-item-desc">Describe targets used to manage climate risks — net zero target year, interim milestones, SBTi commitments, renewable energy %, water intensity targets.</div>
+      <div class="tcfd-item-controls">
+        <select class="tcfd-item-sel" id="sel-m3" onchange="recalcPillar('m')">
+          <option value="0">Status</option>
+          <option value="1">SBTi-validated or board-approved net zero target with milestones</option>
+          <option value="0.7">Targets set but not SBTi-validated</option>
+          <option value="0.4">General aspiration, no quantified targets</option>
+          <option value="0">No targets</option>
+        </select>
+        <textarea class="tcfd-item-note" id="note-m3" placeholder="Target year, interim milestones..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="tcfd-ifrs-tag">IFRS S2 para 33 — use Green Curve SBTi Generator for 2030/2050 targets</div>
+    </div>
+  </div>
+
+  <p class="tcfd-disclaimer">
+    TCFD framework developed by the Financial Stability Board (FSB). Now incorporated into IFRS S2 (ISSB). TCFD disbanded October 2023; IFRS Foundation monitors adoption. This tool uses the 4-pillar TCFD structure (publicly available) and IFRS S2 paragraph references. It does not reproduce IFRS S2 standard text, which requires an IFRS Foundation license. Progress is saved in your browser's localStorage. Green Curve is not affiliated with TCFD, FSB, or IFRS Foundation.
+  </p>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="index.html" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/><circle cx="25" cy="5" r="2" fill="#4ade80"/></svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const header = document.getElementById('site-header');
+window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
+const burger = document.getElementById('nav-burger');
+const mobileNav = document.getElementById('nav-mobile');
+if (burger) burger.addEventListener('click', () => {
+  const open = burger.classList.toggle('open');
+  mobileNav.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+  burger.setAttribute('aria-expanded', String(open));
+});
+
+const PILLARS = { g: ['g1','g2'], s: ['s1','s2','s3'], r: ['r1','r2','r3'], m: ['m1','m2','m3'] };
+const STORAGE_KEY = 'gc_tcfd_v1';
+
+function pctColor(p) { return p >= 75 ? '#34d399' : p >= 45 ? '#fbbf24' : '#f87171'; }
+
+function recalcPillar(pillar) {
+  const ids = PILLARS[pillar];
+  let sum = 0;
+  ids.forEach(id => {
+    const val = Number(document.getElementById('sel-' + id)?.value || 0);
+    sum += val;
+    const statusEl = document.getElementById('status-' + id);
+    const card = document.querySelector('[data-id="' + id + '"]');
+    if (statusEl && card) {
+      if (val >= 0.9) { statusEl.className = 'tcfd-item-status tcfd-item-status--done'; statusEl.textContent = 'Disclosed'; card.className = 'tcfd-item done'; }
+      else if (val >= 0.4) { statusEl.className = 'tcfd-item-status tcfd-item-status--partial'; statusEl.textContent = 'Partial'; card.className = 'tcfd-item partial'; }
+      else { statusEl.className = 'tcfd-item-status tcfd-item-status--missing'; statusEl.textContent = 'Missing'; card.className = 'tcfd-item'; }
+    }
+  });
+  const pct = Math.round(sum / ids.length * 100);
+  const tabPct = document.getElementById('tab-pct-' + pillar);
+  const lbl = document.getElementById('lbl-' + pillar);
+  if (tabPct) tabPct.textContent = pct + '%';
+  const names = { g:'Governance', s:'Strategy', r:'Risk Mgmt', m:'Metrics' };
+  if (lbl) { lbl.textContent = names[pillar] + ': ' + pct + '%'; lbl.style.color = pctColor(pct); }
+  recalcTotal();
+  autoSave();
+}
+
+function recalcTotal() {
+  let total = 0, count = 0;
+  Object.values(PILLARS).flat().forEach(id => { total += Number(document.getElementById('sel-' + id)?.value || 0); count++; });
+  const pct = Math.round(total / count * 100);
+  document.getElementById('total-pct').textContent = pct + '%';
+  document.getElementById('total-bar').style.width = pct + '%';
+}
+
+function switchPillar(p) {
+  document.querySelectorAll('.tcfd-pillar').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tcfd-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('pillar-' + p)?.classList.add('active');
+  document.querySelector('[data-pillar="' + p + '"]')?.classList.add('active');
+}
+
+function autoSave() {
+  const data = {};
+  Object.values(PILLARS).flat().forEach(id => {
+    data[id] = { val: document.getElementById('sel-' + id)?.value || '0', note: document.getElementById('note-' + id)?.value || '' };
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function saveProgress() {
+  autoSave();
+  const btn = document.querySelector('.tcfd-save-btn');
+  if (btn) { btn.textContent = 'Saved!'; setTimeout(() => btn.textContent = 'Save progress', 2000); }
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([id, d]) => {
+      const sel = document.getElementById('sel-' + id);
+      const note = document.getElementById('note-' + id);
+      if (sel)  sel.value  = d.val  || '0';
+      if (note) note.value = d.note || '';
+    });
+    Object.keys(PILLARS).forEach(p => recalcPillar(p));
+  } catch { /* ignore */ }
+}
+
+function exportCSV() {
+  const rows = [['Pillar','ID','Disclosure','Status','Score','Notes']];
+  const names = { g:'Governance', s:'Strategy', r:'Risk Management', m:'Metrics & Targets' };
+  const titles = {
+    g1:'Board oversight of climate risks',g2:"Management's role in climate risk",
+    s1:'Climate risks & opportunities identified',s2:'Impact on business & financial planning',s3:'Resilience under climate scenarios',
+    r1:'Processes for identifying climate risks',r2:'Processes for managing climate risks',r3:'Integration into ERM',
+    m1:'Scope 1,2,3 GHG emissions',m2:'Climate metrics in financial statements',m3:'Climate targets & performance'
+  };
+  const statusLabel = v => v >= 0.9 ? 'Disclosed' : v >= 0.4 ? 'Partial' : 'Missing';
+  Object.entries(PILLARS).forEach(([p, ids]) => {
+    ids.forEach(id => {
+      const val = Number(document.getElementById('sel-'+id)?.value || 0);
+      const note = document.getElementById('note-'+id)?.value || '';
+      rows.push([names[p], id.toUpperCase(), titles[id]||id, statusLabel(val), Math.round(val*100)+'%', note]);
+    });
+  });
+  const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = 'TCFD-Disclosure-Tracker-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+loadProgress();
+</script>
+</body>
+</html>
