@@ -110,6 +110,7 @@
   <button class="intel-tab" data-tab="supply"      role="tab" aria-selected="false">Supply Chain</button>
   <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
   <button class="intel-tab" data-tab="calendar"    role="tab" aria-selected="false">Reg Calendar</button>
+  <button class="intel-tab" data-tab="anomalies"  role="tab" aria-selected="false">Anomalies</button>
 </div>
 
 <main class="container intel-main">
@@ -374,6 +375,15 @@
     </div>
   </section>
 
+  <!-- ── ANOMALIES ──────────────────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-anomalies">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">BRSR Data Anomalies</h3>
+      <p class="dm-intro-text">Companies flagged for unusual ESG patterns vs sector peers — sector risk outliers and waste intensity anomalies from SEBI BRSR public data. For informational purposes only; not a regulatory determination.</p>
+    </div>
+    <div id="anomalyList"></div>
+  </section>
+
 </main>
 
 <!-- FOOTER -->
@@ -434,7 +444,7 @@
 <div class="cmp-tray" id="cmpTray" aria-live="polite">
   <div class="cmp-tray__slots" id="cmpSlots"></div>
   <div class="cmp-tray__actions">
-    <span class="cmp-tray__count" id="cmpCount">0 / 3 selected</span>
+    <span class="cmp-tray__count" id="cmpCount">0 / 10 selected</span>
     <button class="cmp-tray__btn" id="cmpBtn" disabled onclick="openCompareModal()">Compare</button>
     <button class="cmp-tray__clear" onclick="clearCompare()">✕ Clear</button>
   </div>

@@ -47,6 +47,7 @@ async function initDashboard() {
     renderSupplyChain();
     renderMaterials();
     renderCalendar();
+    renderAnomalies();
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
   } catch (e) {
@@ -340,7 +341,7 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
             onclick="toggleCompare('${esc(c.company_name)}',event)"
             title="${inCmp?'Remove from compare':'Add to compare'}">${inCmp?'✓':'+'}</button>
         </td>
-        <td class="company-name" title="${esc(c.company_name)}">${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}</td>
+        <td class="company-name" title="${esc(c.company_name)}">${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}${(c.anomaly_flags||[]).length ? `<span class="anomaly-dot" title="${esc((c.anomaly_flags||[]).map(f=>f.label).join(', '))}">⚠</span>` : ''}</td>
         <td class="sector-cell">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,30))}</td>
         <td><span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span></td>
         <td>${scoreBar(rb.ghg_intensity)}</td>
@@ -1305,7 +1306,7 @@ function toggleCompare(name, e) {
   if (idx > -1) {
     compareList.splice(idx, 1);
   } else {
-    if (compareList.length >= 3) return;
+    if (compareList.length >= 10) return;
     compareList.push(name);
   }
   updateCompareTray();
@@ -1325,7 +1326,7 @@ function updateCompareTray() {
   const countEl = document.getElementById('cmpCount');
   const btn     = document.getElementById('cmpBtn');
 
-  countEl.textContent = `${compareList.length} / 3 selected`;
+  countEl.textContent = `${compareList.length} / 10 selected`;
   btn.disabled = compareList.length < 2;
   tray.classList.toggle('cmp-tray--visible', compareList.length > 0);
 
@@ -1362,6 +1363,10 @@ document.getElementById('cmpOverlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('is-open');
 });
 
+const CMP_COLORS = ['#10b981','#6366f1','#f59e0b','#f87171','#38bdf8','#a78bfa','#34d399','#fb923c','#94a3b8','#e879f9'];
+const CMP_DIM_LABELS = ['GHG Intensity','Water Intensity','Waste Intensity','EPR Exposure','Compliance Risk','HR Risk','Governance Risk'];
+const CMP_DIM_KEYS   = ['ghg_intensity','water_intensity','waste_intensity','epr_exposure','compliance_risk','hr_risk','governance_risk'];
+
 function renderCompareModal() {
   const companies = compareList.map(n => allCompanies.find(c => c.company_name === n)).filter(Boolean);
   const dims = [
@@ -1376,8 +1381,11 @@ function renderCompareModal() {
 
   const tierCol = t => t==='High'?'#f87171':t==='Low'?'#34d399':'#fbbf24';
 
+  // Radar chart
+  let html = `<div id="cmpRadarChart" style="height:360px;width:100%;margin-bottom:24px"></div>`;
+
   // Header row
-  let html = `<div class="cmp-table">
+  html += `<div class="cmp-table">
     <div class="cmp-col cmp-col--label">
       <div class="cmp-cell cmp-cell--head"></div>
       <div class="cmp-cell cmp-cell--metric">Overall ESG Score</div>
@@ -1441,6 +1449,35 @@ function renderCompareModal() {
   </div>`;
 
   document.getElementById('cmpBody').innerHTML = html;
+
+  // Render Plotly radar after innerHTML is set
+  const traces = companies.map((c, i) => {
+    const values = CMP_DIM_KEYS.map(k => c.risk_breakdown?.[k] || 0);
+    return {
+      type: 'scatterpolar',
+      name: c.company_name.slice(0, 28),
+      r: [...values, values[0]],
+      theta: [...CMP_DIM_LABELS, CMP_DIM_LABELS[0]],
+      fill: 'toself',
+      fillcolor: CMP_COLORS[i] + '22',
+      line: { color: CMP_COLORS[i], width: 2 },
+      marker: { color: CMP_COLORS[i], size: 4 },
+      hovertemplate: `<b>${esc(c.company_name.slice(0, 28))}</b><br>%{theta}: %{r:.1f}/10<extra></extra>`,
+    };
+  });
+
+  Plotly.newPlot('cmpRadarChart', traces, {
+    paper_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    polar: {
+      radialaxis: { visible: true, range: [0, 10], gridcolor: 'rgba(255,255,255,.07)', tickfont: { color: '#94a3b8', size: 9 } },
+      angularaxis: { tickfont: { color: '#cbd5e1', size: 11 }, gridcolor: 'rgba(255,255,255,.07)' },
+      bgcolor: 'transparent',
+    },
+    legend: { font: { color: '#94a3b8' }, bgcolor: 'transparent', orientation: 'h', y: -0.12 },
+    margin: { l: 60, r: 60, t: 20, b: 60 },
+    height: 360,
+  }, { displayModeBar: false, responsive: true });
 }
 
 function copyCompareLink() {
@@ -1451,6 +1488,39 @@ function copyCompareLink() {
     msg.style.display = 'inline';
     setTimeout(() => { msg.style.display = 'none'; }, 2500);
   });
+}
+
+// ── Anomaly Detection ─────────────────────────────────────────────────────────
+function renderAnomalies() {
+  const flagged = allCompanies.filter(c => (c.anomaly_flags || []).length > 0)
+    .sort((a, b) => b.esg_risk_score - a.esg_risk_score);
+  const el = document.getElementById('anomalyList');
+  if (!el) return;
+
+  if (!flagged.length) {
+    el.innerHTML = '<p style="color:#94a3b8;padding:20px">No anomalies detected in current dataset.</p>';
+    return;
+  }
+
+  const rows = flagged.flatMap(c =>
+    (c.anomaly_flags || []).map(f => `
+      <tr style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">
+        <td class="company-name">${esc((c.company_name||'').slice(0, 28))}${c.company_name.length > 28 ? '…' : ''}</td>
+        <td style="font-size:.78rem;color:#94a3b8">${esc((c.sector||'').replace('Manufacturing — ','').slice(0, 30))}</td>
+        <td><span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span></td>
+        <td><span class="anomaly-badge anomaly-badge--${f.severity}">${esc(f.label)}</span></td>
+        <td style="font-size:.78rem;color:#94a3b8">${esc(f.detail)}</td>
+      </tr>`)
+  ).join('');
+
+  el.innerHTML = `
+    <p style="margin-bottom:14px;font-size:.82rem;color:#94a3b8">${flagged.length} companies flagged across ${flagged.reduce((s,c)=>(s+(c.anomaly_flags||[]).length),0)} signals</p>
+    <div class="table-wrap">
+      <table class="screener-table">
+        <thead><tr><th>Company</th><th>Sector</th><th>ESG Score</th><th>Flag</th><th>Detail</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 // Re-expose for HTML onclick

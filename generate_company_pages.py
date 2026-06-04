@@ -124,9 +124,10 @@ def make_page(c):
     gov       = c.get('governance', {})
     dm        = c.get('double_materiality', {})
     targets   = c.get('esg_targets', [])
-    materials = c.get('materials_exposed', [])
-    top_risks = c.get('top_risk_factors', [])
-    ai_sum    = c.get('ai_summary', '')
+    materials      = c.get('materials_exposed', [])
+    top_risks      = c.get('top_risk_factors', [])
+    ai_sum         = c.get('ai_summary', '')
+    anomaly_flags  = c.get('anomaly_flags', [])
 
     t_color   = tier_color(tier)
     risks_str = ', '.join(top_risks[:3]) if top_risks else 'N/A'
@@ -177,6 +178,22 @@ def make_page(c):
     if materials:
         pills = ''.join(f'<span class="mat-pill">{esc(m)}</span>' for m in materials)
         mats_html = f'<div class="cp-card"><h2 class="cp-section-title">Material Risks</h2><div class="pills">{pills}</div></div>'
+
+    # Anomaly flags
+    anomaly_html = ''
+    if anomaly_flags:
+        sev_color = {'high': '#f87171', 'medium': '#fbbf24'}
+        flags_inner = ''.join(f"""
+          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+            <span style="background:{sev_color.get(fl.get('severity','medium'),'#fbbf24')}22;color:{sev_color.get(fl.get('severity','medium'),'#fbbf24')};border:1px solid {sev_color.get(fl.get('severity','medium'),'#fbbf24')}44;border-radius:4px;padding:2px 8px;font-size:.72rem;font-weight:700;white-space:nowrap">{esc(fl.get('label',''))}</span>
+            <span style="font-size:.8rem;color:#94a3b8">{esc(fl.get('detail',''))}</span>
+          </div>""" for fl in anomaly_flags)
+        anomaly_html = f"""
+        <div class="cp-card" style="border-color:rgba(251,191,36,.3)">
+          <h2 class="cp-section-title">⚠ Data Anomaly Flags</h2>
+          <p style="font-size:.78rem;color:#94a3b8;margin-bottom:8px">Automated sector-relative analysis of public BRSR data. Not a regulatory determination.</p>
+          {flags_inner}
+        </div>"""
 
     # AI summary
     ai_html = ''
@@ -308,6 +325,7 @@ def make_page(c):
 
   </div><!-- /cp-grid -->
 
+  {anomaly_html}
   {mats_html}
   {targets_html}
   {ai_html}
