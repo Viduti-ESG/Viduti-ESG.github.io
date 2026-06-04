@@ -5,7 +5,7 @@
 // Anomaly Detection, AI Chat
 // ═══════════════════════════════════════════════════════
 
-// ── Net Zero Pathway ──────────────────────────────────────
+// ── Net Zero Pathway (Multi-Scenario, Plotly) ─────────────────────────────
 function renderNetZeroPathway() {
   const section = document.getElementById('nz-section');
   if (!section) return;
@@ -13,53 +13,51 @@ function renderNetZeroPathway() {
   if (totals.total <= 0) { section.hidden = true; return; }
   section.hidden = false;
 
-  const baseYear = new Date().getFullYear();
-  const RATE = 0.042; // SBTi 1.5 degrees: ~4.2% per year
-  const milestones = [2030, 2040, 2050];
-  const vals = milestones.map(yr => +(totals.total * Math.pow(1 - RATE, yr - baseYear)).toFixed(2));
-  vals[2] = +(totals.total * 0.10).toFixed(2); // 90% cut by 2050
+  const plotDiv = document.getElementById('nzChart');
+  if (!plotDiv || !window.Plotly) return;
 
-  const canvas = document.getElementById('nzChart');
-  if (!canvas) return;
-  if (window._nzChart) window._nzChart.destroy();
+  const baseYear  = new Date().getFullYear();
+  const endYear   = 2050;
+  const years     = Array.from({length: endYear - baseYear + 1}, (_, i) => baseYear + i);
+  const highlight = document.getElementById('nz-scenario-highlight')?.value || 'all';
 
-  const allYears = Array.from({length: 2050 - baseYear + 1}, (_, i) => baseYear + i);
-  const allVals  = allYears.map((yr, i) => {
-    if (yr <= 2050) return +(totals.total * Math.pow(1 - RATE, i)).toFixed(2);
-    return 0;
-  });
+  const bau    = years.map(() => +totals.total.toFixed(2));
+  const b2deg  = years.map((_,i) => +(totals.total * Math.pow(1-0.025, i)).toFixed(2));
+  const p15    = years.map((_,i) => +(totals.total * Math.pow(1-0.042, i)).toFixed(2));
+  const nzs    = years.map((_,i) => +(totals.total * Math.max(0.10, 1-(i/(endYear-baseYear))*0.90)).toFixed(2));
 
-  window._nzChart = new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: allYears.filter((_, i) => i % 5 === 0),
-      datasets: [{
-        label: '1.5°C Required Pathway',
-        data: allVals.filter((_, i) => i % 5 === 0),
-        borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.08)',
-        borderWidth: 2.5, pointRadius: 3, fill: true, tension: 0.3,
-      }],
-    },
-    options: {
-      plugins: { legend: { labels: { color: '#374151', font: { size: 11 } } } },
-      scales: {
-        x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(0,0,0,.05)' } },
-        y: {
-          ticks: { color: '#6b7280', callback: v => v + 't' },
-          grid: { color: 'rgba(0,0,0,.05)' },
-          title: { display: true, text: 't CO2e/year', color: '#6b7280' },
-        },
-      },
-    },
+  const showAll = highlight === 'all';
+  const traces = [
+    { x:years, y:bau,   name:'BAU (no action)',              line:{color:'#f87171',dash:'dot',width:2},              mode:'lines', visible: showAll ? true : 'legendonly' },
+    { x:years, y:b2deg, name:'Well-below 2°C (−2.5%/yr)',   line:{color:'#fbbf24',width:2},                         mode:'lines', visible: showAll ? true : 'legendonly' },
+    { x:years, y:p15,   name:'1.5°C Paris (−4.2%/yr)',      line:{color:'#10b981',width:2.5}, fill:'tozeroy', fillcolor:'rgba(16,185,129,.07)', mode:'lines', visible: (showAll || highlight==='paris') ? true : 'legendonly' },
+    { x:years, y:nzs,   name:'SBTi Net-Zero (−90% by 2050)',line:{color:'#6366f1',dash:'dash',width:2},              mode:'lines', visible: (showAll || highlight==='nzs') ? true : 'legendonly' },
+  ];
+
+  const layout = {
+    paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+    font:{ family:'DM Sans, system-ui', color:'#64748b', size:11 },
+    xaxis:{ gridcolor:'rgba(0,0,0,.06)', tickformat:'d', color:'#94a3b8', dtick:5 },
+    yaxis:{ gridcolor:'rgba(0,0,0,.06)', title:{text:'t CO₂e/year',font:{size:10,color:'#94a3b8'}}, ticksuffix:'t', color:'#94a3b8' },
+    legend:{ orientation:'h', x:0, y:-0.35, font:{size:10} },
+    margin:{ t:8, r:8, b:90, l:55 },
+    hovermode:'x unified',
+    hoverlabel:{ bgcolor:'#1e293b', bordercolor:'#334155', font:{color:'#e2e8f0',size:11} },
+  };
+
+  Plotly.newPlot(plotDiv, traces, layout, {
+    displayModeBar:true, displaylogo:false, responsive:true,
+    modeBarButtonsToKeep:['toImage','zoom2d','resetScale2d','pan2d'],
   });
 
   const el = document.getElementById('nz-milestones');
   if (el) {
-    el.innerHTML = milestones.map((yr, i) => `
-      <div class="nz-milestone">
-        <strong>${vals[i]} t</strong>
-        <span>${yr}<br/>${((1 - vals[i]/totals.total)*100).toFixed(0)}% reduction</span>
-      </div>`).join('');
+    el.innerHTML = [2030,2040,2050].map(yr => {
+      const i   = yr - baseYear;
+      const val = p15[i] || 0;
+      const pct = ((1 - val/totals.total)*100).toFixed(0);
+      return `<div class="nz-milestone"><strong>${val.toFixed(1)} t</strong><span>${yr}<br/>${pct}% reduction</span></div>`;
+    }).join('');
   }
 }
 
@@ -316,6 +314,44 @@ function updateLastChatMsg(text) {
   const el = document.querySelector('#chat-messages .chat-msg--loading');
   if (el) { el.textContent = text; el.classList.remove('chat-msg--loading'); }
 }
+
+// ── Feature 14: Python Math Verification ─────────────────
+async function verifyGHGMath() {
+  const label = document.getElementById('verify-ghg-label');
+  if (!label) return;
+  if (!state.items.length) { alert('Add items first.'); return; }
+  const api = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
+  if (!api) {
+    label.textContent = '✗ Backend offline';
+    setTimeout(() => { label.textContent = '✓ Verify Math'; }, 3000);
+    return;
+  }
+  label.textContent = '⏳ Verifying…';
+  try {
+    const res = await fetch(api + '/api/verify-ghg', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: state.items.map(i => ({
+          description: i.description, scope: i.scope,
+          amount: i.amount, unit: i.unit, factor: i.factor,
+        })),
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await res.json();
+    if (data.verified) {
+      const jsTotal = calcTotals().total;
+      const pyTotal = data.total_t;
+      const match = Math.abs(jsTotal - pyTotal) < 0.005;
+      label.textContent = match ? `✓ Verified ${pyTotal.toFixed(3)} t` : `⚠ Mismatch JS:${jsTotal.toFixed(3)} Py:${pyTotal.toFixed(3)}`;
+      setTimeout(() => { label.textContent = '✓ Verify Math'; }, 6000);
+    }
+  } catch {
+    label.textContent = '✗ Verify failed';
+    setTimeout(() => { label.textContent = '✓ Verify Math'; }, 3000);
+  }
+}
+window.verifyGHGMath = verifyGHGMath;
 
 // ── Patch updateResults ───────────────────────────────────
 const _origUR2 = updateResults;

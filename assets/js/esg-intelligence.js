@@ -48,6 +48,7 @@ async function initDashboard() {
     renderMaterials();
     renderCalendar();
     renderAnomalies();
+    renderHeatMap();
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
   } catch (e) {
@@ -1043,6 +1044,37 @@ function renderDDBenchmark(p, data) {
           <span style="font-size:.78rem;color:#64748b">${c.revenue_crore?'₹'+fmt(c.revenue_crore)+' Cr':'—'}</span>
         </div>`).join('')}
     </div>
+    ${(() => {
+      const peersW = allCompanies.filter(c =>
+        c.company_name !== p.company_name &&
+        (c.sector || '').slice(0, 20).toLowerCase() === sector.slice(0, 20).toLowerCase() &&
+        c.financial_exposure?.waste_tonnes && c.revenue_crore > 0
+      );
+      if (peersW.length < 3) return '';
+      const sorted = peersW.map(c => c.financial_exposure.waste_tonnes / c.revenue_crore).sort((a, b) => a - b);
+      const n = sorted.length;
+      const minV = sorted[0], maxV = sorted[n - 1], median = sorted[Math.floor(n / 2)];
+      const mine = p.financial_exposure?.waste_tonnes && p.revenue_crore > 0
+        ? p.financial_exposure.waste_tonnes / p.revenue_crore : null;
+      const percentile = mine !== null
+        ? Math.round(sorted.filter(v => v <= mine).length / n * 100) : null;
+      const posLeft = v => Math.min(98, Math.max(2, ((v - minV) / (maxV - minV + 0.001)) * 100)).toFixed(1);
+      const pColor = percentile > 75 ? '#f87171' : percentile > 50 ? '#fbbf24' : '#34d399';
+      return `
+        <div class="dd-section-title" style="margin-top:16px">Waste Intensity vs Sector</div>
+        <div style="font-size:.72rem;color:#64748b;margin-bottom:10px">${n} sector peers with disclosed data · t/₹Cr</div>
+        <div style="padding:0 4px">
+          <div style="position:relative;height:6px;background:linear-gradient(90deg,#34d399,#fbbf24,#f87171);border-radius:4px">
+            ${mine !== null ? `<div style="position:absolute;top:50%;left:${posLeft(mine)}%;transform:translate(-50%,-50%)"><div style="width:3px;height:16px;background:#fff;border-radius:2px;box-shadow:0 0 6px rgba(0,0,0,.6)"></div></div>` : ''}
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;color:#475569;margin-top:3px">
+            <span>${minV.toFixed(1)}</span><span>med ${median.toFixed(1)}</span><span>${maxV.toFixed(1)}</span>
+          </div>
+        </div>
+        ${mine !== null
+          ? `<div style="font-size:.8rem;margin-top:6px">This company: <strong style="color:${pColor}">${mine.toFixed(1)} t/₹Cr</strong> · <strong>${percentile}th percentile</strong></div>`
+          : `<div style="font-size:.75rem;color:#64748b;margin-top:4px">Waste not disclosed in BRSR filing.</div>`}`;
+    })()}
     ${data?.benchmark_vs_peers ? `
     <div class="dd-section-title" style="margin-top:16px">AI Benchmark Analysis</div>
     ${data.benchmark_vs_peers.strengths?.length ? `
@@ -1522,6 +1554,91 @@ function renderAnomalies() {
       </table>
     </div>`;
 }
+
+// ── Sector ESG Heat Map (Feature 11) ─────────────────────────────────────────
+let _hmClickAttached = false;
+
+function renderHeatMap() {
+  const sectorFilter = document.getElementById('hm-sector-filter')?.value || '';
+  const sizeBy       = document.getElementById('hm-size-by')?.value || 'uniform';
+  const countEl      = document.getElementById('hm-count');
+  const div          = document.getElementById('heatmapChart');
+  if (!div) return;
+
+  // Populate sector dropdown once
+  const sel = document.getElementById('hm-sector-filter');
+  if (sel && sel.options.length <= 1) {
+    const sectors = [...new Set(allCompanies.map(c =>
+      (c.sector || '').replace('Manufacturing — ', '').trim()
+    ))].filter(Boolean).sort();
+    sectors.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s.length > 45 ? s.slice(0, 43) + '…' : s;
+      sel.appendChild(o);
+    });
+  }
+
+  const data = sectorFilter
+    ? allCompanies.filter(c => (c.sector || '').replace('Manufacturing — ', '').trim() === sectorFilter)
+    : allCompanies;
+
+  if (countEl) countEl.textContent = `${data.length} companies`;
+
+  // Build treemap hierarchy
+  const ids = ['__root__'], labels = ['All Companies'], parents = [''], values = [0];
+  const colors = ['transparent'], texts = [''];
+
+  const sectorGroups = {};
+  data.forEach(c => {
+    const sec = (c.sector || 'Other').replace('Manufacturing — ', '').trim().slice(0, 40);
+    if (!sectorGroups[sec]) sectorGroups[sec] = [];
+    sectorGroups[sec].push(c);
+  });
+
+  Object.entries(sectorGroups).sort((a, b) => b[1].length - a[1].length).forEach(([sec, cos]) => {
+    const secId = 'sec:' + sec;
+    const avg = cos.reduce((s, c) => s + (c.esg_risk_score || 0), 0) / cos.length;
+    ids.push(secId); labels.push(sec.length > 28 ? sec.slice(0, 26) + '…' : sec);
+    parents.push('__root__'); values.push(cos.length);
+    colors.push(avg >= 6.5 ? 'rgba(248,113,113,.2)' : avg >= 4.5 ? 'rgba(251,191,36,.15)' : 'rgba(52,211,153,.12)');
+    texts.push(`${sec}<br>${cos.length} companies · avg ${avg.toFixed(1)}`);
+
+    cos.forEach(c => {
+      const v = sizeBy === 'revenue' ? (c.revenue_crore || 1)
+              : sizeBy === 'market_cap' ? (c.market_data?.market_cap_crore || 1) : 1;
+      const score = c.esg_risk_score || 0;
+      ids.push(c.company_name); labels.push((c.company_name || '').slice(0, 20));
+      parents.push(secId); values.push(Math.max(v, 1));
+      colors.push(score >= 6.5 ? 'rgba(248,113,113,.85)' : score >= 4.5 ? 'rgba(251,191,36,.85)' : 'rgba(52,211,153,.85)');
+      texts.push(`<b>${esc(c.company_name)}</b><br>ESG Risk: ${score} (${c.risk_tier})<br>${c.sector ? (c.sector).replace('Manufacturing — ','').slice(0,30) : ''}<br>${c.revenue_crore ? '₹' + c.revenue_crore.toFixed(0) + ' Cr revenue' : 'Revenue N/A'}`);
+    });
+  });
+
+  Plotly.react(div, [{
+    type: 'treemap', ids, labels, parents, values, text: texts,
+    marker: { colors, line: { width: 0.5, color: '#0f172a' }, pad: { t: 18 } },
+    hovertemplate: '%{text}<extra></extra>',
+    textinfo: 'label', textfont: { size: 9, color: '#fff' },
+    pathbar: { visible: true, side: 'top', thickness: 20 },
+    tiling: { packing: 'squarify', pad: 2 },
+    branchvalues: 'total',
+  }], {
+    paper_bgcolor: 'transparent',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 10 },
+    margin: { l: 0, r: 0, t: 0, b: 0 }, height: 560,
+  }, { displayModeBar: false, responsive: true });
+
+  if (!_hmClickAttached) {
+    _hmClickAttached = true;
+    div.on('plotly_click', evData => {
+      const pt = evData?.points?.[0];
+      if (pt && pt.id && !String(pt.id).startsWith('sec:') && pt.id !== '__root__') {
+        openDeepDive(pt.id);
+      }
+    });
+  }
+}
+window.renderHeatMap = renderHeatMap;
 
 // Re-expose for HTML onclick
 window.toggleCompare  = toggleCompare;
