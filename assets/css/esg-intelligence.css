@@ -860,3 +860,54 @@
 .cal-leg--high::before     { background: #fbbf24; }
 .cal-leg--medium::before   { background: #34d399; }
 .cal-leg--passed::before   { background: #334155; }
+
+/* ── Column Sort & Filter Row ────────────────────────────────────────────── */
+.th-sort {
+  cursor: pointer;
+  user-select: none;
+  transition: color .15s;
+}
+.th-sort:hover { color: var(--emerald); }
+.th-sort--asc,
+.th-sort--desc { color: var(--emerald); }
+.sort-icon {
+  font-size: .65rem;
+  opacity: .5;
+  margin-left: 3px;
+}
+.th-sort--asc .sort-icon,
+.th-sort--desc .sort-icon { opacity: 1; }
+
+.filter-row td {
+  background: #0a1120;
+  padding: 5px 6px;
+  border-bottom: 2px solid var(--border-hi);
+}
+.col-filter {
+  width: 100%;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 4px 7px;
+  font-size: .72rem;
+  font-family: var(--sans);
+  min-width: 0;
+  transition: border-color .2s;
+}
+.col-filter:focus { outline: none; border-color: var(--emerald); }
+.col-filter::placeholder { color: var(--text-20); }
+.cf-score { max-width: 60px; text-align: center; }
+.cf-reset-btn {
+  background: rgba(248,113,113,.1);
+  border: 1px solid rgba(248,113,113,.25);
+  color: #f87171;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: .68rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+}
+.cf-reset-btn:hover { background: rgba(248,113,113,.2); }

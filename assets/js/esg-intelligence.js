@@ -36,6 +36,11 @@ async function initDashboard() {
     renderKPIs(s);
     renderCharts();
     renderScreener();
+    populateSectorDropdown();
+    // Wire column sort headers
+    document.querySelectorAll('.th-sort').forEach(th => {
+      th.addEventListener('click', () => setColSort(th.dataset.col));
+    });
     renderDoubleMateriality();
     renderRegulations();
     renderTargets();
@@ -201,22 +206,126 @@ function renderMaterialsChart() {
 }
 
 // ── Company Screener ──────────────────────────────────────────────────────────
-function renderScreener(filter = '', risk = '', sort = 'esg_risk_score') {
+// ── Column sort state ─────────────────────────────────────────────────────────
+const colSort = { col: 'esg_risk_score', dir: 'desc' };
+
+function setColSort(col) {
+  if (colSort.col === col) colSort.dir = colSort.dir === 'desc' ? 'asc' : 'desc';
+  else { colSort.col = col; colSort.dir = 'desc'; }
+  // Update all sort icons
+  document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '↕');
+  document.querySelectorAll('.th-sort').forEach(el => el.classList.remove('th-sort--asc','th-sort--desc'));
+  const icon = document.getElementById('si-' + col);
+  const th   = document.querySelector(`.th-sort[data-col="${col}"]`);
+  if (icon) icon.textContent = colSort.dir === 'desc' ? '↓' : '↑';
+  if (th) th.classList.add(colSort.dir === 'desc' ? 'th-sort--desc' : 'th-sort--asc');
+  applyColFilters();
+}
+
+// ── Populate sector dropdown ──────────────────────────────────────────────────
+function populateSectorDropdown() {
+  const sel = document.getElementById('cf-sector');
+  if (!sel || sel.options.length > 1) return;
+  const sectors = [...new Set(allCompanies.map(c =>
+    (c.sector || '').replace('Manufacturing — ', '').trim()
+  ).filter(Boolean))].sort();
+  sectors.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s.slice(0, 40);
+    sel.appendChild(opt);
+  });
+}
+
+// ── Column filters ────────────────────────────────────────────────────────────
+function applyColFilters() {
+  const company  = (document.getElementById('cf-company')?.value  || '').toLowerCase();
+  const sector   = document.getElementById('cf-sector')?.value   || '';
+  const riskTier = document.getElementById('cf-risk-tier')?.value || '';
+  const ghgMin   = Number(document.getElementById('cf-ghg')?.value   || 0);
+  const waterMin = Number(document.getElementById('cf-water')?.value || 0);
+  const eprMin   = Number(document.getElementById('cf-epr')?.value   || 0);
+  const compMin  = Number(document.getElementById('cf-comp')?.value  || 0);
+  const revMin   = Number(document.getElementById('cf-rev-min')?.value || 0);
+  const capMin   = Number(document.getElementById('cf-cap-min')?.value || 0);
+  const retDir   = document.getElementById('cf-return')?.value || '';
+  // Also sync legacy top-bar filters
+  const topSearch = (document.getElementById('screenerSearch')?.value || '').toLowerCase();
+
+  renderScreener('', '', '', {
+    company, sector, riskTier, ghgMin, waterMin, eprMin, compMin, revMin, capMin, retDir, topSearch
+  });
+}
+
+function resetColFilters() {
+  ['cf-company','cf-ghg','cf-water','cf-epr','cf-comp','cf-rev-min','cf-cap-min'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['cf-sector','cf-risk-tier','cf-return'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  // Also reset legacy top-bar
+  const ss = document.getElementById('screenerSearch');
+  const sr = document.getElementById('screenerRisk');
+  if (ss) ss.value = '';
+  if (sr) sr.value = '';
+  colSort.col = 'esg_risk_score'; colSort.dir = 'desc';
+  document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '↕');
+  document.querySelectorAll('.th-sort').forEach(el => el.classList.remove('th-sort--asc','th-sort--desc'));
+  renderScreener();
+}
+window.applyColFilters  = applyColFilters;
+window.resetColFilters  = resetColFilters;
+window.setColSort       = setColSort;
+
+function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
   let data = [...allCompanies];
 
-  if (filter) {
-    const q = filter.toLowerCase();
-    data = data.filter(c =>
-      (c.company_name || '').toLowerCase().includes(q) ||
-      (c.sector || '').toLowerCase().includes(q)
-    );
-  }
-  if (risk) data = data.filter(c => c.risk_tier === risk);
+  // Legacy top-bar filters (kept for backwards compat)
+  const f = colFilters?.topSearch || filter.toLowerCase();
+  if (f) data = data.filter(c =>
+    (c.company_name||'').toLowerCase().includes(f) ||
+    (c.sector||'').toLowerCase().includes(f)
+  );
 
-  if (sort === 'esg_risk_score') data.sort((a,b) => b.esg_risk_score - a.esg_risk_score);
-  else if (sort === 'revenue_crore') data.sort((a,b) => (b.revenue_crore||0) - (a.revenue_crore||0));
-  else if (sort === 'ghg') data.sort((a,b) => (b.risk_breakdown?.ghg_intensity||0) - (a.risk_breakdown?.ghg_intensity||0));
-  else if (sort === 'market_return') data.sort((a,b) => (b.market_data?.return_1y_pct||0) - (a.market_data?.return_1y_pct||0));
+  const rt = colFilters?.riskTier || risk;
+  if (rt) data = data.filter(c => c.risk_tier === rt);
+
+  // Column filters
+  if (colFilters) {
+    if (colFilters.company)  data = data.filter(c => (c.company_name||'').toLowerCase().includes(colFilters.company));
+    if (colFilters.sector)   data = data.filter(c => (c.sector||'').replace('Manufacturing — ','').trim().startsWith(colFilters.sector));
+    if (colFilters.ghgMin)   data = data.filter(c => (c.risk_breakdown?.ghg_intensity||0)   >= colFilters.ghgMin);
+    if (colFilters.waterMin) data = data.filter(c => (c.risk_breakdown?.water_intensity||0) >= colFilters.waterMin);
+    if (colFilters.eprMin)   data = data.filter(c => (c.risk_breakdown?.epr_exposure||0)    >= colFilters.eprMin);
+    if (colFilters.compMin)  data = data.filter(c => (c.risk_breakdown?.compliance_risk||0) >= colFilters.compMin);
+    if (colFilters.revMin)   data = data.filter(c => (c.revenue_crore||0) >= colFilters.revMin);
+    if (colFilters.capMin)   data = data.filter(c => (c.market_data?.market_cap_crore||0)   >= colFilters.capMin);
+    if (colFilters.retDir === 'pos') data = data.filter(c => (c.market_data?.return_1y_pct||0) >= 0);
+    if (colFilters.retDir === 'neg') data = data.filter(c => (c.market_data?.return_1y_pct||0) < 0);
+  }
+
+  // Sort — column header sort takes priority
+  const sortCol = colSort.col;
+  const sortDir = colSort.dir === 'desc' ? -1 : 1;
+  data.sort((a, b) => {
+    let va, vb;
+    switch (sortCol) {
+      case 'company_name':   va = a.company_name||''; vb = b.company_name||''; return va.localeCompare(vb) * sortDir;
+      case 'sector':         va = a.sector||'';       vb = b.sector||'';       return va.localeCompare(vb) * sortDir;
+      case 'esg_risk_score': va = a.esg_risk_score||0; vb = b.esg_risk_score||0; break;
+      case 'ghg':            va = a.risk_breakdown?.ghg_intensity||0;   vb = b.risk_breakdown?.ghg_intensity||0;   break;
+      case 'water':          va = a.risk_breakdown?.water_intensity||0; vb = b.risk_breakdown?.water_intensity||0; break;
+      case 'epr':            va = a.risk_breakdown?.epr_exposure||0;    vb = b.risk_breakdown?.epr_exposure||0;    break;
+      case 'compliance':     va = a.risk_breakdown?.compliance_risk||0; vb = b.risk_breakdown?.compliance_risk||0; break;
+      case 'revenue_crore':  va = a.revenue_crore||0;                   vb = b.revenue_crore||0;                   break;
+      case 'market_cap':     va = a.market_data?.market_cap_crore||0;   vb = b.market_data?.market_cap_crore||0;   break;
+      case 'return_1y':      va = a.market_data?.return_1y_pct??-999;   vb = b.market_data?.return_1y_pct??-999;   break;
+      default:               va = a.esg_risk_score||0; vb = b.esg_risk_score||0;
+    }
+    return (vb - va) * sortDir;
+  });
 
   document.getElementById('screenerCount').textContent = `${data.length} companies`;
 
@@ -260,13 +369,19 @@ function scoreBar(val) {
   </div>`;
 }
 
-// Screener filter wiring
-document.getElementById('screenerSearch').addEventListener('input', e =>
-  renderScreener(e.target.value, document.getElementById('screenerRisk').value, document.getElementById('screenerSort').value));
-document.getElementById('screenerRisk').addEventListener('change', e =>
-  renderScreener(document.getElementById('screenerSearch').value, e.target.value, document.getElementById('screenerSort').value));
-document.getElementById('screenerSort').addEventListener('change', e =>
-  renderScreener(document.getElementById('screenerSearch').value, document.getElementById('screenerRisk').value, e.target.value));
+// Screener filter wiring — top bar syncs with column filters
+document.getElementById('screenerSearch')?.addEventListener('input', applyColFilters);
+document.getElementById('screenerRisk')?.addEventListener('change', e => {
+  const cfRisk = document.getElementById('cf-risk-tier');
+  if (cfRisk) cfRisk.value = e.target.value;
+  applyColFilters();
+});
+document.getElementById('screenerSort')?.addEventListener('change', e => {
+  const map = { esg_risk_score:'esg_risk_score', revenue_crore:'revenue_crore', ghg:'ghg', market_return:'return_1y' };
+  const col = map[e.target.value] || 'esg_risk_score';
+  colSort.col = col; colSort.dir = 'desc';
+  applyColFilters();
+});
 
 // ── Regulation Tracker ────────────────────────────────────────────────────────
 function renderRegulations(filter = '', urgency = '') {

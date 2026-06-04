@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/css/style.css"/>
-  <link rel="stylesheet" href="assets/css/esg-intelligence.css?v=20260603b"/>
+  <link rel="stylesheet" href="assets/css/esg-intelligence.css?v=20260606"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -162,19 +162,52 @@
     <div class="table-wrap">
       <table class="screener-table" id="screenerTable">
         <thead>
+          <!-- Sort row -->
           <tr>
             <th></th>
-            <th>Company</th>
-            <th>Sector</th>
-            <th>ESG Risk</th>
-            <th>GHG</th>
-            <th>Water</th>
-            <th>EPR</th>
-            <th>Compliance</th>
-            <th>Revenue (₹Cr)</th>
-            <th>Mkt Cap (₹Cr)</th>
-            <th>1Y Return</th>
-            <th>Top Risk Factor</th>
+            <th class="th-sort" data-col="company_name">Company <span class="sort-icon" id="si-company_name">↕</span></th>
+            <th class="th-sort" data-col="sector">Sector <span class="sort-icon" id="si-sector">↕</span></th>
+            <th class="th-sort" data-col="esg_risk_score">ESG Risk <span class="sort-icon" id="si-esg_risk_score">↕</span></th>
+            <th class="th-sort" data-col="ghg">GHG <span class="sort-icon" id="si-ghg">↕</span></th>
+            <th class="th-sort" data-col="water">Water <span class="sort-icon" id="si-water">↕</span></th>
+            <th class="th-sort" data-col="epr">EPR <span class="sort-icon" id="si-epr">↕</span></th>
+            <th class="th-sort" data-col="compliance">Compliance <span class="sort-icon" id="si-compliance">↕</span></th>
+            <th class="th-sort" data-col="revenue_crore">Revenue (₹Cr) <span class="sort-icon" id="si-revenue_crore">↕</span></th>
+            <th class="th-sort" data-col="market_cap">Mkt Cap (₹Cr) <span class="sort-icon" id="si-market_cap">↕</span></th>
+            <th class="th-sort" data-col="return_1y">1Y Return <span class="sort-icon" id="si-return_1y">↕</span></th>
+            <th>Top Risk</th>
+          </tr>
+          <!-- Filter row -->
+          <tr class="filter-row">
+            <td></td>
+            <td><input type="search" class="col-filter" id="cf-company" placeholder="Company…" oninput="applyColFilters()"/></td>
+            <td>
+              <select class="col-filter" id="cf-sector" onchange="applyColFilters()">
+                <option value="">All sectors</option>
+              </select>
+            </td>
+            <td>
+              <select class="col-filter" id="cf-risk-tier" onchange="applyColFilters()">
+                <option value="">All</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </td>
+            <td><input type="number" class="col-filter cf-score" id="cf-ghg"   placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
+            <td><input type="number" class="col-filter cf-score" id="cf-water" placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
+            <td><input type="number" class="col-filter cf-score" id="cf-epr"   placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
+            <td><input type="number" class="col-filter cf-score" id="cf-comp"  placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
+            <td><input type="number" class="col-filter" id="cf-rev-min" placeholder="Min" min="0" oninput="applyColFilters()"/></td>
+            <td><input type="number" class="col-filter" id="cf-cap-min" placeholder="Min" min="0" oninput="applyColFilters()"/></td>
+            <td>
+              <select class="col-filter" id="cf-return" onchange="applyColFilters()">
+                <option value="">All</option>
+                <option value="pos">Positive</option>
+                <option value="neg">Negative</option>
+              </select>
+            </td>
+            <td><button class="cf-reset-btn" onclick="resetColFilters()" title="Clear all filters">✕ Reset</button></td>
           </tr>
         </thead>
         <tbody id="screenerBody"></tbody>
@@ -389,7 +422,7 @@
   </div>
 </div>
 
-<script src="assets/js/esg-intelligence.js?v=20260603c" defer></script>
+<script src="assets/js/esg-intelligence.js?v=20260606" defer></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
   const header   = document.getElementById('site-header');
