@@ -885,9 +885,9 @@
 }
 .col-filter {
   width: 100%;
-  background: rgba(255,255,255,.05);
+  background: #1e293b;
   border: 1px solid var(--border);
-  color: var(--text);
+  color: #e2e8f0;
   border-radius: 6px;
   padding: 4px 7px;
   font-size: .72rem;
@@ -896,7 +896,11 @@
   transition: border-color .2s;
 }
 .col-filter:focus { outline: none; border-color: var(--emerald); }
-.col-filter::placeholder { color: var(--text-20); }
+.col-filter::placeholder { color: #64748b; }
+.col-filter option {
+  background: #1e293b;
+  color: #e2e8f0;
+}
 .cf-score { max-width: 60px; text-align: center; }
 .cf-reset-btn {
   background: rgba(248,113,113,.1);
