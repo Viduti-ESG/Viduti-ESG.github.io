@@ -50,14 +50,28 @@ def risk_bar(val, label):
 with open(DATA_FILE, encoding='utf-8') as f:
     intel = json.load(f)
 
-companies  = intel.get('companies', [])
-data_as_of = intel.get('data_as_of', TODAY)
-slug_map   = {}   # company_name → slug (for cross-links)
+companies_raw = intel.get('companies', [])
+data_as_of    = intel.get('data_as_of', TODAY)
 
-for c in companies:
-    slug_map[c['company_name']] = slugify(c['company_name'])
+# Deduplicate by slug — keep the entry with more data (longer ai_summary or actual FY)
+_seen_slugs = {}
+for c in companies_raw:
+    slug = slugify(c['company_name'])
+    if slug not in _seen_slugs:
+        _seen_slugs[slug] = c
+    else:
+        prev = _seen_slugs[slug]
+        # Prefer whichever has actual FY data or longer ai_summary
+        if (c.get('financial_year', '-') not in ('-', '') and
+                prev.get('financial_year', '-') in ('-', '')):
+            _seen_slugs[slug] = c
+        elif len(c.get('ai_summary', '')) > len(prev.get('ai_summary', '')):
+            _seen_slugs[slug] = c
 
-print(f"Generating {len(companies)} company pages…")
+companies  = list(_seen_slugs.values())
+slug_map   = {c['company_name']: slugify(c['company_name']) for c in companies}
+
+print(f"Generating {len(companies)} company pages ({len(companies_raw) - len(companies)} duplicates removed)…")
 
 # ── Per-company HTML ───────────────────────────────────────────────────────────
 NAV = """
@@ -98,7 +112,7 @@ def make_page(c):
     name      = c['company_name']
     score     = c.get('esg_risk_score', 0)
     tier      = c.get('risk_tier', 'Medium')
-    sector    = c.get('sector', '')
+    sector    = c.get('sector', '').replace('\n', ' ').replace('\r', '').strip()
     products  = c.get('products', '')
     fy        = c.get('financial_year', '')
     cin       = c.get('cin', '')
@@ -116,8 +130,9 @@ def make_page(c):
 
     t_color   = tier_color(tier)
     risks_str = ', '.join(top_risks[:3]) if top_risks else 'N/A'
+    fy_display = fy if fy and fy not in ('-', '') else '2024-25'
     meta_desc = (f"ESG risk score {score}/10 ({tier} Risk). Key risks: {risks_str}. "
-                 f"Sector: {sector[:60]}. Based on SEBI BRSR FY {fy}.")
+                 f"Sector: {sector[:60]}. Based on SEBI BRSR FY {fy_display}.")
 
     # Schema.org JSON-LD
     schema = json.dumps({
@@ -393,8 +408,10 @@ print(f"  Written company/index.html")
 with open('sitemap.xml', encoding='utf-8') as f:
     sitemap = f.read()
 
-# Remove old company entries if any, then insert before closing </urlset>
+# Remove old company entries (both the block and any stale index entries)
 sitemap = re.sub(r'\s*<!-- COMPANY PAGES -->.*?<!-- /COMPANY PAGES -->', '',
+                 sitemap, flags=re.DOTALL)
+sitemap = re.sub(r'\s*<url>\s*<loc>[^<]*/company/[^<]*</loc>.*?</url>', '',
                  sitemap, flags=re.DOTALL)
 
 company_urls = '\n'.join(f"""  <url>
