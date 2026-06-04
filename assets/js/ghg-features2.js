@@ -315,6 +315,65 @@ function updateLastChatMsg(text) {
   if (el) { el.textContent = text; el.classList.remove('chat-msg--loading'); }
 }
 
+// ── Feature: PDF Electricity Bill Import ─────────────────
+async function uploadBill(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('bill-extract-status');
+  const api = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
+  if (!api) {
+    status.textContent = '✗ Backend offline — start the BRSR backend first';
+    status.style.color = '#f87171';
+    input.value = '';
+    return;
+  }
+  status.textContent = '⏳ Reading bill…';
+  status.style.color = '#94a3b8';
+  try {
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch(api + '/api/extract-bill', {
+      method: 'POST', body: form,
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Server error');
+    }
+    const result = await res.json();
+    const d = result.data;
+
+    // Pre-fill kWh field
+    if (d.kwh) document.getElementById('cea-kwh').value = d.kwh;
+
+    // Match state in dropdown
+    if (d.state) {
+      const sel = document.getElementById('cea-state');
+      const needle = d.state.toLowerCase();
+      const match = Array.from(sel.options).find(o =>
+        o.text.toLowerCase().includes(needle) ||
+        needle.includes(o.text.toLowerCase().split(/[\s—–]/)[0].trim())
+      );
+      if (match) sel.value = match.value;
+    }
+
+    const parts = [`${d.kwh.toLocaleString('en-IN')} kWh`];
+    if (d.state)  parts.push(d.state);
+    if (d.discom) parts.push(d.discom);
+    if (d.period_months > 1) parts.push(`${d.period_months}-month bill`);
+    status.textContent = `✓ ${parts.join(' · ')} — review state & click Add`;
+    status.style.color = '#10b981';
+
+    document.getElementById('cea-module')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (typeof gtag === 'function') gtag('event', 'bill_pdf_extracted', { kwh: d.kwh, state: d.state });
+  } catch (e) {
+    status.textContent = `✗ ${e.message || 'Extraction failed'} — enter kWh manually`;
+    status.style.color = '#f87171';
+  }
+  input.value = '';
+}
+window.uploadBill = uploadBill;
+
 // ── Feature 14: Python Math Verification ─────────────────
 async function verifyGHGMath() {
   const label = document.getElementById('verify-ghg-label');

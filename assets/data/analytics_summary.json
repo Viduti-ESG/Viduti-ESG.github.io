@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-06-04T20:30:19.851377+00:00",
+  "content": {
+    "blog_drafts_14d": 36,
+    "news_published_14d": 30,
+    "social_posts_total": 0,
+    "social_queued": 0
+  },
+  "data": {
+    "companies_tracked": 1227,
+    "high_risk": 36,
+    "medium_risk": 1190,
+    "regulations": 6,
+    "anomalies_flagged": 24,
+    "avg_risk_score": 5.4,
+    "data_as_of": "03 Jun 2026"
+  },
+  "agent_runs": [
+    {
+      "date": "2026-05-12",
+      "blogs": 0,
+      "news": 0,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-12",
+      "blogs": 0,
+      "news": 0,
+      "status": "success"
+    },
+    {
+      "date": "2026-05-12",
+      "blogs": 0,
+      "news": 0,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-12",
+      "blogs": 0,
+      "news": 0,
+      "status": "success"
+    },
+    {
+      "date": "2026-05-12",
+      "blogs": 0,
+      "news": 0,
+      "status": "success"
+    },
+    {
+      "date": "2026-05-15",
+      "blogs": 0,
+      "news": 0,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-17",
+      "blogs": 0,
+      "news": 0,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-19",
+      "blogs": 0,
+      "news": 0,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-20",
+      "blogs": 0,
+      "news": 0,
+      "status": "success"
+    },
+    {
+      "date": "2026-05-22",
+      "blogs": 8,
+      "news": 5,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-26",
+      "blogs": 8,
+      "news": 5,
+      "status": "partial"
+    },
+    {
+      "date": "2026-05-30",
+      "blogs": 10,
+      "news": 10,
+      "status": "partial"
+    },
+    {
+      "date": "2026-06-03",
+      "blogs": 10,
+      "news": 10,
+      "status": "partial"
+    }
+  ]
+}

@@ -288,6 +288,7 @@ function handleAddItem() {
   });
 
   els.qty.value = '';
+  _track('calc_item_added', { scope: entry.scope, item_count: state.items.length });
   updateResults();
 }
 
@@ -400,7 +401,12 @@ function buildPayload() {
   };
 }
 
+function _track(event, params) {
+  if (typeof gtag === 'function') gtag('event', event, params || {});
+}
+
 function downloadCSV() {
+  _track('calc_download_csv', { item_count: state.items.length });
   if (!state.items.length) { alert('Add at least one item before downloading.'); return; }
   const header = ['Description','Scope','Amount','Unit','Factor (kg CO2e/unit)','Result (t CO2e)'];
   const rows = state.items.map(i => {

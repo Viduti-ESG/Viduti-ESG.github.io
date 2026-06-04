@@ -822,6 +822,10 @@ document.querySelectorAll('.dd-tab').forEach(btn => {
 let _currentDDData = null;
 let _currentDDCompany = null;
 
+function _track(event, params) {
+  if (typeof gtag === 'function') gtag('event', event, params || {});
+}
+
 async function openDeepDive(companyName) {
   const overlay = document.getElementById('deepDiveOverlay');
   const body    = document.getElementById('deepDiveBody');
@@ -830,6 +834,7 @@ async function openDeepDive(companyName) {
   // Find basic profile from local data
   const profile = allCompanies.find(c => c.company_name === companyName);
   if (!profile) return;
+  _track('esg_company_viewed', { company: companyName, sector: profile.sector, risk_tier: profile.risk_tier });
 
   _currentDDCompany = profile;
   _currentDDData    = null;

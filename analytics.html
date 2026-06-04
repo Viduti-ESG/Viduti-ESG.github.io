@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Analytics — Green Curve Internal</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+  <style>
+    body { background: var(--void); }
+    .an-page { padding: 48px 0 80px; }
+    .an-header { margin-bottom: 32px; }
+    .an-title { font-family: var(--serif); font-size: 2rem; color: #fff; margin-bottom: 6px; }
+    .an-sub { font-size: .85rem; color: var(--text-40); }
+    .an-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .an-card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 12px; padding: 20px; }
+    .an-card__val { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .an-card__lbl { font-size: .75rem; color: var(--text-40); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+    .an-card__sub { font-size: .72rem; color: var(--text-20); margin-top: 4px; }
+    .an-section { margin-bottom: 32px; }
+    .an-section-title { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-40); margin-bottom: 14px; }
+    .an-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .an-table th { text-align: left; padding: 8px 12px; color: var(--text-40); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border); }
+    .an-table td { padding: 10px 12px; color: var(--text-70); border-bottom: 1px solid rgba(255,255,255,.04); }
+    .an-table tr:hover td { background: rgba(255,255,255,.02); }
+    .status-ok  { color: #34d399; font-weight: 700; }
+    .status-err { color: #f87171; font-weight: 700; }
+    .status-par { color: #fbbf24; font-weight: 700; }
+    .an-events { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .an-event { background: rgba(99,102,241,.08); border: 1px solid rgba(99,102,241,.2); border-radius: 8px; padding: 12px 16px; }
+    .an-event__name { font-size: .82rem; font-weight: 700; color: #818cf8; font-family: monospace; margin-bottom: 4px; }
+    .an-event__desc { font-size: .75rem; color: var(--text-40); }
+    .an-event__params { font-size: .7rem; color: var(--text-20); margin-top: 4px; font-family: monospace; }
+    .an-loading { color: var(--text-40); font-size: .85rem; padding: 40px 0; text-align: center; }
+    .an-error   { color: #f87171; font-size: .82rem; padding: 16px; background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.2); border-radius: 8px; margin-bottom: 24px; }
+    .an-refresh { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; color: var(--emerald); border: 1px solid rgba(52,211,153,.3); border-radius: 6px; padding: 5px 12px; cursor: pointer; background: rgba(52,211,153,.06); transition: all .2s; }
+    .an-refresh:hover { background: rgba(52,211,153,.14); }
+    .an-ga4-link { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: #6366f1; text-decoration: none; margin-left: 12px; }
+    .an-ga4-link:hover { color: #818cf8; }
+  </style>
+</head>
+<body>
+
+<header class="site-header scrolled" id="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve" style="height:32px"/>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <div style="font-size:.75rem;color:var(--text-40);font-weight:600;letter-spacing:.06em;text-transform:uppercase">Internal Analytics</div>
+  </nav>
+</header>
+
+<section class="an-page container">
+  <div class="an-header">
+    <h1 class="an-title">Growth Intelligence</h1>
+    <p class="an-sub" id="an-generated">Loading…</p>
+    <button class="an-refresh" onclick="loadData()">↻ Refresh</button>
+    <a class="an-ga4-link" href="https://analytics.google.com/analytics/web/#/p$(GA4_PROPERTY)/reports" target="_blank" rel="noopener">
+      Open GA4 Console ↗
+    </a>
+  </div>
+
+  <div id="an-error" style="display:none" class="an-error"></div>
+
+  <!-- KPI cards -->
+  <div id="an-kpi-grid" class="an-grid">
+    <div class="an-loading">Loading analytics data…</div>
+  </div>
+
+  <!-- Agent run history -->
+  <div class="an-section" id="an-runs-section" style="display:none">
+    <div class="an-section-title">Agent Run History (last 14 days)</div>
+    <div style="overflow-x:auto">
+      <table class="an-table" id="an-runs-table">
+        <thead><tr><th>Date</th><th>Blog Drafts</th><th>News Published</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GA4 event reference -->
+  <div class="an-section">
+    <div class="an-section-title">Custom GA4 Events Tracked</div>
+    <div class="an-events" id="an-events"></div>
+  </div>
+
+  <!-- Social calendar -->
+  <div class="an-section" id="an-social-section" style="display:none">
+    <div class="an-section-title">Social Media Calendar</div>
+    <div id="an-social-stats"></div>
+  </div>
+</section>
+
+<script>
+const GA4_EVENTS = [
+  { name: 'calc_item_added',      desc: 'User adds an emission entry to GHG calculator',  params: 'scope, item_count' },
+  { name: 'calc_download_csv',    desc: 'User downloads GHG inventory as CSV report',      params: 'item_count' },
+  { name: 'bill_pdf_extracted',   desc: 'Electricity bill PDF successfully parsed',         params: 'kwh, state' },
+  { name: 'esg_company_viewed',   desc: 'User opens company deep-dive modal',               params: 'company, sector, risk_tier' },
+  { name: 'esg_tab_viewed',       desc: 'User switches tabs in ESG Quotient dashboard',     params: 'tab' },
+  { name: 'esg_compare_opened',   desc: 'User opens peer comparison modal',                 params: '' },
+];
+
+async function loadData() {
+  const errEl = document.getElementById('an-error');
+  errEl.style.display = 'none';
+  try {
+    const res = await fetch('assets/data/analytics_summary.json?_=' + Date.now());
+    if (!res.ok) throw new Error(`${res.status} — analytics_summary.json not found. Run the cpcb_agent to generate it.`);
+    const d = await res.json();
+
+    document.getElementById('an-generated').textContent =
+      `Updated: ${new Date(d.generated_at).toLocaleString('en-IN')} · Internal use only`;
+
+    // KPI grid
+    const c = d.content || {};
+    const dt = d.data || {};
+    const kpis = [
+      { val: dt.companies_tracked || 0,   lbl: 'Companies Tracked',    sub: `${dt.high_risk || 0} high risk` },
+      { val: dt.regulations || 0,         lbl: 'Regulations Monitored', sub: `Avg risk ${dt.avg_risk_score || 0}` },
+      { val: dt.anomalies_flagged || 0,   lbl: 'Anomalies Flagged',    sub: 'sector outliers' },
+      { val: c.blog_drafts_14d || 0,      lbl: 'Blog Drafts (14d)',    sub: '' },
+      { val: c.news_published_14d || 0,   lbl: 'News Published (14d)', sub: '' },
+      { val: c.social_posts_total || 0,   lbl: 'Social Posts Total',   sub: `${c.social_queued || 0} queued` },
+    ];
+    document.getElementById('an-kpi-grid').innerHTML = kpis.map(k => `
+      <div class="an-card">
+        <div class="an-card__val">${Number(k.val).toLocaleString('en-IN')}</div>
+        <div class="an-card__lbl">${k.lbl}</div>
+        ${k.sub ? `<div class="an-card__sub">${k.sub}</div>` : ''}
+      </div>`).join('');
+
+    // Agent run history
+    const runs = d.agent_runs || [];
+    if (runs.length) {
+      document.getElementById('an-runs-section').style.display = '';
+      document.querySelector('#an-runs-table tbody').innerHTML = runs.slice().reverse().map(r => `
+        <tr>
+          <td>${r.date}</td>
+          <td>${r.blogs}</td>
+          <td>${r.news}</td>
+          <td><span class="status-${r.status === 'success' ? 'ok' : r.status === 'partial' ? 'par' : 'err'}">${r.status}</span></td>
+        </tr>`).join('');
+    }
+
+    // Social
+    if (c.social_queued > 0 || c.social_posts_total > 0) {
+      document.getElementById('an-social-section').style.display = '';
+      document.getElementById('an-social-stats').innerHTML = `
+        <div style="font-size:.85rem;color:var(--text-70)">
+          <span style="margin-right:20px">✓ Posted: <strong>${c.social_posts_total}</strong></span>
+          <span>⏳ Queued: <strong>${c.social_queued}</strong></span>
+        </div>`;
+    }
+
+  } catch (e) {
+    errEl.textContent = `⚠ ${e.message}`;
+    errEl.style.display = '';
+    document.getElementById('an-kpi-grid').innerHTML = '';
+  }
+
+  // Always render event reference
+  document.getElementById('an-events').innerHTML = GA4_EVENTS.map(e => `
+    <div class="an-event">
+      <div class="an-event__name">${e.name}</div>
+      <div class="an-event__desc">${e.desc}</div>
+      ${e.params ? `<div class="an-event__params">params: ${e.params}</div>` : ''}
+    </div>`).join('');
+}
+
+loadData();
+
+const h = document.getElementById('site-header');
+window.addEventListener('scroll', () => h.classList.toggle('scrolled', scrollY > 20), { passive: true });
+</script>
+</body>
+</html>

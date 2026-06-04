@@ -375,6 +375,15 @@
           </div>
         </div>
         <button id="cea-add" class="btn-secondary">Add CEA Scope 2 entry</button>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <span style="font-size:.75rem;color:#475569">or</span>
+          <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--cyan);border:1px solid rgba(0,200,255,.3);border-radius:6px;padding:5px 12px;background:rgba(0,200,255,.05);transition:all .2s" for="bill-pdf-input">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload electricity bill PDF
+          </label>
+          <input type="file" id="bill-pdf-input" accept="application/pdf" style="display:none" onchange="uploadBill(this)"/>
+          <span id="bill-extract-status" style="font-size:.75rem;color:#94a3b8"></span>
+        </div>
         <p class="calc-note" style="margin-top:8px">Source: CEA CO₂ Baseline Database V21.0, Nov 2025, Ministry of Power, GoI. Factors in tCO₂/MWh.</p>
       </div>
 
