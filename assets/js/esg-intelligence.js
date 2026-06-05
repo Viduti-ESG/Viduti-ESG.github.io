@@ -1683,13 +1683,8 @@ function renderHeatMap() {
   Object.entries(sectorGroups).sort((a, b) => b[1].length - a[1].length).forEach(([sec, cos]) => {
     const secId = 'sec:' + sec;
     const avg = cos.reduce((s, c) => s + (c.esg_risk_score || 0), 0) / cos.length;
-    const secValue = sizeBy === 'uniform'
-      ? cos.length
-      : cos.reduce((sum, c) => sum + Math.max(
-          sizeBy === 'revenue' ? (c.revenue_crore || 1) : (c.market_data?.market_cap_crore || 1), 1
-        ), 0);
     ids.push(secId); labels.push(sec.length > 28 ? sec.slice(0, 26) + '…' : sec);
-    parents.push('__root__'); values.push(secValue);
+    parents.push('__root__'); values.push(0);
     colors.push(avg >= 6.5 ? 'rgba(248,113,113,.2)' : avg >= 4.5 ? 'rgba(251,191,36,.15)' : 'rgba(52,211,153,.12)');
     texts.push(`${sec}<br>${cos.length} companies · avg ${avg.toFixed(1)}`);
 
@@ -1711,7 +1706,7 @@ function renderHeatMap() {
     textinfo: 'label', textfont: { size: 9, color: '#fff' },
     pathbar: { visible: true, side: 'top', thickness: 20 },
     tiling: { packing: 'squarify', pad: 2 },
-    branchvalues: 'total',
+    branchvalues: 'remainder',
   }], {
     paper_bgcolor: 'transparent',
     font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 10 },
