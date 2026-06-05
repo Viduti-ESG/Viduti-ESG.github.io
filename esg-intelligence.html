@@ -219,30 +219,64 @@
 
   <!-- ── ESG HEAT MAP ────────────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-heatmap">
-    <div class="heatmap-header">
-      <div>
-        <h3 class="dm-intro-title">ESG Risk Heat Map — All Companies</h3>
-        <p class="dm-intro-text">Each rectangle = one company. <strong>Size</strong> = relative weight. <strong>Colour</strong> = ESG risk score (green = low, red = high). Grouped by sector. Click any company to open deep dive.</p>
+
+    <!-- Header row -->
+    <div class="hm-header">
+      <div class="hm-header-text">
+        <h3 class="hm-title">ESG Risk Heat Map</h3>
+        <p class="hm-subtitle">Each rectangle = one company &nbsp;·&nbsp; <strong>Size</strong> = selected metric &nbsp;·&nbsp; <strong>Colour</strong> = ESG risk score &nbsp;·&nbsp; Grouped by sector</p>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px">
-        <select class="screener-filter" id="hm-sector-filter" onchange="renderHeatMap()" style="max-width:220px">
-          <option value="">All sectors</option>
-        </select>
-        <select class="screener-filter" id="hm-size-by" onchange="renderHeatMap()" style="max-width:160px">
-          <option value="uniform">Size: Uniform</option>
-          <option value="revenue">Size: Revenue</option>
-          <option value="market_cap">Size: Mkt Cap</option>
-        </select>
-        <span class="screener-count" id="hm-count"></span>
+      <div class="hm-controls">
+        <div class="hm-select-wrap">
+          <select id="hm-sector-filter" onchange="renderHeatMap()">
+            <option value="">All Sectors</option>
+          </select>
+        </div>
+        <div class="hm-select-wrap">
+          <select id="hm-size-by" onchange="renderHeatMap()">
+            <option value="uniform">Size: Equal Weight</option>
+            <option value="revenue">Size: Revenue</option>
+            <option value="market_cap">Size: Market Cap</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div id="heatmapChart" style="height:560px;margin-top:8px"></div>
-    <div class="heatmap-legend">
-      <span style="color:#10b981;font-weight:700">● Low risk (0–4)</span>
-      <span style="color:#fbbf24;font-weight:700">● Medium risk (4–7)</span>
-      <span style="color:#f87171;font-weight:700">● High risk (7–10)</span>
-      <span style="color:#94a3b8;font-size:.72rem">Click any company to open deep dive</span>
+
+    <!-- KPI strip -->
+    <div class="hm-kpi-strip">
+      <div class="hm-kpi-card">
+        <span class="hm-kpi-value" id="hm-total">—</span>
+        <span class="hm-kpi-label">Companies</span>
+      </div>
+      <div class="hm-kpi-card">
+        <span class="hm-kpi-value" id="hm-avg-score">—</span>
+        <span class="hm-kpi-label">Avg ESG Score</span>
+      </div>
+      <div class="hm-kpi-card hm-kpi-high">
+        <span class="hm-kpi-value" id="hm-high-count">—</span>
+        <span class="hm-kpi-label">High Risk</span>
+      </div>
+      <div class="hm-kpi-card hm-kpi-med">
+        <span class="hm-kpi-value" id="hm-med-count">—</span>
+        <span class="hm-kpi-label">Medium Risk</span>
+      </div>
+      <div class="hm-kpi-card hm-kpi-low">
+        <span class="hm-kpi-value" id="hm-low-count">—</span>
+        <span class="hm-kpi-label">Low Risk</span>
+      </div>
     </div>
+
+    <!-- Chart -->
+    <div id="heatmapChart" style="height:520px;border-radius:8px 8px 0 0;overflow:hidden"></div>
+
+    <!-- Legend bar -->
+    <div class="hm-legend">
+      <div class="hm-legend-item hm-legend-low"><span class="hm-legend-dot"></span>Low Risk &nbsp;0 – 4</div>
+      <div class="hm-legend-item hm-legend-med"><span class="hm-legend-dot"></span>Medium Risk &nbsp;4 – 7</div>
+      <div class="hm-legend-item hm-legend-high"><span class="hm-legend-dot"></span>High Risk &nbsp;7 – 10</div>
+      <span class="hm-legend-hint">Click any company rectangle to open its full ESG deep dive</span>
+    </div>
+
   </section>
 
   <!-- ── DOUBLE MATERIALITY ──────────────────────────────────────────────── -->

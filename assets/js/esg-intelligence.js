@@ -1669,6 +1669,18 @@ function renderHeatMap() {
 
   if (countEl) countEl.textContent = `${data.length} companies`;
 
+  // Populate KPI strip
+  const high = data.filter(c => (c.esg_risk_score || 0) >= 6.5).length;
+  const med  = data.filter(c => (c.esg_risk_score || 0) >= 4.5 && (c.esg_risk_score || 0) < 6.5).length;
+  const low  = data.filter(c => (c.esg_risk_score || 0) < 4.5).length;
+  const avg  = data.length ? data.reduce((s, c) => s + (c.esg_risk_score || 0), 0) / data.length : 0;
+  const _set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  _set('hm-total',     data.length);
+  _set('hm-avg-score', avg.toFixed(1));
+  _set('hm-high-count', high);
+  _set('hm-med-count',  med);
+  _set('hm-low-count',  low);
+
   // Build treemap hierarchy
   const ids = ['__root__'], labels = ['All Companies'], parents = [''], values = [0];
   const colors = ['transparent'], texts = [''];
