@@ -232,6 +232,15 @@
         </div>
         <div class="ct-verdict" id="ct-verdict-box"></div>
         <canvas id="ct-chart" height="160"></canvas>
+
+        <!-- AI Remediation Scorecard -->
+        <div id="scorecard-section" style="display:none;margin-top:20px;border-top:1px solid rgba(255,255,255,.07);padding-top:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:.82rem;font-weight:700;color:#fff">AI Remediation Scorecard</span>
+            <button id="scorecard-btn" onclick="getScorecard()" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.35);color:#818cf8;font-size:.75rem;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer">Get AI Plan →</button>
+          </div>
+          <div id="scorecard-output"></div>
+        </div>
       </div>
     </div>
 
@@ -288,6 +297,62 @@
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
+
+async function getScorecard() {
+  const r = window._ctResult;
+  if (!r) return;
+  const api = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
+  const btn = document.getElementById('scorecard-btn');
+  const out = document.getElementById('scorecard-output');
+  if (!api) {
+    out.innerHTML = '<p style="color:#f87171;font-size:.78rem">Backend offline — start the BRSR backend first.</p>';
+    return;
+  }
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+  try {
+    const res = await fetch(api + '/api/ccts-scorecard', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sector: r.sector, sector_label: r.sectorLabel,
+        your_intensity: r.yourIntensity, target_intensity: r.beeTarget,
+        diff_pct: r.diffPct, ccc_estimate: r.cccPos,
+        fy: r.fy, unit_short: r.unitShort,
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!res.ok) throw new Error('Server error');
+    const d = await res.json();
+    const statusIcon = s => s === 'met' ? '✓' : s === 'attention' ? '⚠' : '✗';
+    const statusColor = s => s === 'met' ? '#34d399' : s === 'attention' ? '#fbbf24' : '#f87171';
+    const priColor = p => p === 'high' ? '#f87171' : p === 'medium' ? '#fbbf24' : '#34d399';
+    out.innerHTML = `
+      <div style="display:grid;gap:8px;margin-bottom:14px">
+        ${(d.obligations || []).map(o => `
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:8px;border-left:3px solid ${statusColor(o.status)}">
+            <span style="color:${statusColor(o.status)};font-weight:700;font-size:.9rem;flex-shrink:0">${statusIcon(o.status)}</span>
+            <div>
+              <div style="font-size:.8rem;font-weight:700;color:#fff">${o.name}</div>
+              <div style="font-size:.75rem;color:#94a3b8;margin-top:2px">${o.detail}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:8px">
+        Action Plan
+        <span style="font-size:.7rem;font-weight:600;color:${priColor(d.priority)};margin-left:8px;background:${priColor(d.priority)}22;padding:2px 8px;border-radius:4px">${(d.priority||'').toUpperCase()} PRIORITY</span>
+      </div>
+      <ol style="margin:0;padding-left:18px">
+        ${(d.actions || []).map(a => `<li style="font-size:.78rem;color:#cbd5e1;margin-bottom:6px;line-height:1.5">${a}</li>`).join('')}
+      </ol>
+      <p style="font-size:.65rem;color:#475569;margin-top:10px;line-height:1.5">${d.disclaimer || ''}</p>`;
+    btn.textContent = '✓ Done';
+  } catch (e) {
+    out.innerHTML = `<p style="color:#f87171;font-size:.78rem">Failed: ${e.message}</p>`;
+    btn.textContent = 'Retry';
+    btn.disabled = false;
+  }
+}
+window.getScorecard = getScorecard;
 const header = document.getElementById('site-header');
 window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
 const burger = document.getElementById('nav-burger');
@@ -365,6 +430,14 @@ function calculate() {
   const diff          = +(yourIntensity - beeTarget).toFixed(4);
   const diffPct       = +((diff / beeTarget) * 100).toFixed(1);
   const cccPos        = +(diff < 0 ? Math.abs(diff) * output / 1000 : -Math.abs(diff) * output / 1000).toFixed(0);
+
+  // Store for scorecard
+  window._ctResult = { sector, sectorLabel: s.label, yourIntensity, beeTarget, diffPct, cccPos, fy, unitShort: s.unitShort };
+  document.getElementById('scorecard-section').style.display = 'none';
+  document.getElementById('scorecard-output').innerHTML = '';
+  document.getElementById('scorecard-btn').textContent = 'Get AI Plan →';
+  document.getElementById('scorecard-btn').disabled = false;
+  document.getElementById('scorecard-section').style.display = 'block';
 
   document.getElementById('res-your').textContent   = yourIntensity + ' tCO₂e/' + s.unitShort;
   document.getElementById('res-target').textContent  = beeTarget    + ' tCO₂e/' + s.unitShort;

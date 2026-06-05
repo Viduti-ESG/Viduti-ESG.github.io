@@ -838,6 +838,11 @@ async function openDeepDive(companyName) {
 
   _currentDDCompany = profile;
   _currentDDData    = null;
+  const briefBtn = document.getElementById('ddBriefingBtn');
+  if (briefBtn) {
+    briefBtn.style.display = (window._gcApiBase || localStorage.getItem('gc_api_base')) ? '' : 'none';
+    briefBtn.textContent = '↓ Board Briefing PDF';
+  }
 
   document.getElementById('ddCompany').textContent = profile.company_name;
   document.getElementById('ddSector').textContent  = (profile.sector||'').replace('Manufacturing — ','');
@@ -1559,6 +1564,37 @@ function renderAnomalies() {
       </table>
     </div>`;
 }
+
+// ── Board ESG Briefing PDF download ──────────────────────────────────────────
+async function downloadBoardBriefing() {
+  const company = _currentDDCompany;
+  if (!company) return;
+  const api = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
+  if (!api) { alert('Backend offline — start the BRSR backend first.'); return; }
+  const btn = document.getElementById('ddBriefingBtn');
+  if (btn) { btn.textContent = '⏳ Generating PDF…'; btn.disabled = true; }
+  try {
+    const res = await fetch(api + '/api/board-briefing', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company_name: company.company_name }),
+      signal: AbortSignal.timeout(45000),
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.detail || 'Server error'); }
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `Board_ESG_Briefing_${company.company_name.replace(/[^A-Za-z0-9]/g,'_').slice(0,40)}.pdf`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    _track('board_briefing_downloaded', { company: company.company_name });
+    if (btn) { btn.textContent = '✓ Downloaded'; setTimeout(() => { btn.textContent = '↓ Board Briefing PDF'; btn.disabled = false; }, 3000); }
+  } catch (e) {
+    alert(`Board briefing failed: ${e.message}`);
+    if (btn) { btn.textContent = '↓ Board Briefing PDF'; btn.disabled = false; }
+  }
+}
+window.downloadBoardBriefing = downloadBoardBriefing;
 
 // ── Sector ESG Heat Map (Feature 11) ─────────────────────────────────────────
 let _hmClickAttached = false;

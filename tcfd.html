@@ -155,6 +155,23 @@
     </div>
   </div>
 
+  <!-- AI Gap Checker -->
+  <div style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:14px;padding:20px 24px;margin-bottom:28px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+      <div>
+        <div style="font-size:.88rem;font-weight:700;color:#fff">Check Existing Sustainability Report</div>
+        <div style="font-size:.75rem;color:#94a3b8;margin-top:3px">Upload your PDF — Claude Sonnet maps it against all 11 TCFD recommendations</div>
+      </div>
+      <label for="tcfd-pdf-input" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;font-weight:700;color:#818cf8;border:1px solid rgba(99,102,241,.4);border-radius:8px;padding:7px 16px;background:rgba(99,102,241,.1);white-space:nowrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload PDF
+      </label>
+      <input type="file" id="tcfd-pdf-input" accept="application/pdf" style="display:none" onchange="runTcfdCheck(this)"/>
+    </div>
+    <div id="tcfd-gap-status" style="font-size:.75rem;color:#94a3b8"></div>
+    <div id="tcfd-gap-result" style="margin-top:14px"></div>
+  </div>
+
   <!-- Pillar tabs -->
   <div class="tcfd-pillar-tabs">
     <button class="tcfd-tab active" data-pillar="g" onclick="switchPillar('g')">
@@ -446,6 +463,82 @@
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
+
+async function runTcfdCheck(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const api = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
+  const status = document.getElementById('tcfd-gap-status');
+  const result = document.getElementById('tcfd-gap-result');
+  if (!api) {
+    status.textContent = '✗ Backend offline — start the BRSR backend first.';
+    status.style.color = '#f87171';
+    input.value = '';
+    return;
+  }
+  status.textContent = `⏳ Analysing ${file.name} against 11 TCFD recommendations…`;
+  status.style.color = '#94a3b8';
+  result.innerHTML = '';
+  try {
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch(api + '/api/tcfd-check', {
+      method: 'POST', body: form,
+      signal: AbortSignal.timeout(60000),
+    });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    const d = await res.json();
+    const score = d.overall_score || 0;
+    const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171';
+    const statusLabel = v => v === 'DISCLOSED' ? ['✓','#34d399'] : v === 'PARTIAL' ? ['~','#fbbf24'] : ['✗','#f87171'];
+    const LABELS = {
+      G1:'Board oversight of climate risks/opportunities', G2:"Management's role in climate risk",
+      S1:'Climate risks over short/medium/long-term', S2:'Impact on business strategy', S3:'Scenario resilience (2°C)',
+      R1:'Process for identifying climate risks', R2:'Process for managing climate risks', R3:'Integration into overall risk mgmt',
+      M1:'Metrics for climate risks/opportunities', M2:'Scope 1, 2 and 3 GHG emissions', M3:'Climate targets',
+    };
+    const pillars = [
+      {key:'governance',label:'Governance',items:d.governance||{}},
+      {key:'strategy',label:'Strategy',items:d.strategy||{}},
+      {key:'risk_management',label:'Risk Management',items:d.risk_management||{}},
+      {key:'metrics_targets',label:'Metrics & Targets',items:d.metrics_targets||{}},
+    ];
+    result.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:12px 16px;background:rgba(255,255,255,.04);border-radius:10px">
+        <div style="font-size:2rem;font-weight:800;color:${scoreColor}">${score}%</div>
+        <div>
+          <div style="font-size:.82rem;font-weight:700;color:#fff">Overall TCFD Coverage</div>
+          <div style="font-size:.75rem;color:#94a3b8;margin-top:2px">${d.overall_comment || ''}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:14px">
+        ${pillars.map(p => `
+          <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px">
+            <div style="font-size:.78rem;font-weight:700;color:#fff;margin-bottom:8px">${p.label} <span style="color:${scoreColor}">${d.scores?.[p.key] ?? ''}%</span></div>
+            ${Object.entries(p.items).map(([k,v]) => {
+              const [ic,cc] = statusLabel(v);
+              return `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px">
+                <span style="color:${cc};font-size:.8rem;flex-shrink:0">${ic}</span>
+                <span style="font-size:.72rem;color:${v==='MISSING'?'#94a3b8':'#cbd5e1'}">${LABELS[k]||k}</span>
+              </div>`;
+            }).join('')}
+          </div>`).join('')}
+      </div>
+      ${d.top_gaps?.length ? `
+        <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:12px 16px">
+          <div style="font-size:.78rem;font-weight:700;color:#f87171;margin-bottom:6px">Top Gaps to Address</div>
+          ${d.top_gaps.map(g => `<div style="font-size:.75rem;color:#94a3b8;margin-bottom:4px">• ${g}</div>`).join('')}
+        </div>` : ''}
+      <p style="font-size:.65rem;color:#475569;margin-top:10px">${d.disclaimer||''}</p>`;
+    status.textContent = `✓ Analysis complete — ${file.name}`;
+    status.style.color = '#34d399';
+  } catch (e) {
+    status.textContent = `✗ ${e.message}`;
+    status.style.color = '#f87171';
+  }
+  input.value = '';
+}
+window.runTcfdCheck = runTcfdCheck;
 const header = document.getElementById('site-header');
 window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
 const burger = document.getElementById('nav-burger');
