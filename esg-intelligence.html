@@ -484,6 +484,7 @@
       btn.setAttribute('aria-selected','true');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (typeof gtag === 'function') gtag('event', 'esg_tab_viewed', { tab: btn.dataset.tab });
+      if (btn.dataset.tab === 'heatmap' && typeof renderHeatMap === 'function') renderHeatMap();
     });
   });
   // Mobile nav
