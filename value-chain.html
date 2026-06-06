@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRSR Value-Chain Supplier Assessment — Green Curve</title>
+  <meta name="description" content="Send ESG questionnaires to your suppliers and aggregate BRSR value-chain data — aligned to SEBI BRSR Core FY2026-27 mandate." />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/value-chain.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="/" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve" />
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html#insights">Insights</a></li>
+      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="value-chain.html" class="active">Value Chain</a></li>
+    </ul>
+    <a href="brsr-simple.html" class="nav__cta">BRSR Report &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="vc-hero">
+  <div class="container">
+    <div class="vc-hero__badge">SEBI BRSR Core · FY2026-27 Mandate</div>
+    <h1 class="vc-hero__title">BRSR Value-Chain<br>Supplier Assessment</h1>
+    <p class="vc-hero__subtitle">
+      Invite your key suppliers to complete a lightweight ESG questionnaire. Collect data on
+      emissions, labour practices, and governance — and meet SEBI's value-chain disclosure
+      requirement for BRSR Core.
+    </p>
+    <div style="display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+      <div style="text-align:center">
+        <div style="font-size:1.8rem;font-family:var(--serif);color:#fff">5 min</div>
+        <div style="font-size:.75rem;color:var(--text-40);text-transform:uppercase;letter-spacing:.06em">Supplier form</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:1.8rem;font-family:var(--serif);color:#fff">0–100</div>
+        <div style="font-size:.75rem;color:var(--text-40);text-transform:uppercase;letter-spacing:.06em">ESG Score per supplier</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:1.8rem;font-family:var(--serif);color:#fff">BRSR</div>
+        <div style="font-size:.75rem;color:var(--text-40);text-transform:uppercase;letter-spacing:.06em">P2 &amp; P8 aligned</div>
+      </div>
+    </div>
+    <div class="vc-notice vc-notice--info" style="max-width:580px;margin:0 auto">
+      <strong>Regulatory context:</strong> SEBI BRSR Core requires top 250 companies to disclose
+      value-chain ESG data from FY2026-27. This tool helps you collect and aggregate that data.
+    </div>
+  </div>
+</section>
+
+<!-- APP MOUNT POINT -->
+<main class="container" style="padding-bottom:80px">
+  <div id="vc-app">
+    <div class="vc-loading"><div class="vc-spinner"></div>Initialising…</div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--border);padding:32px 0;text-align:center">
+  <div class="container">
+    <p style="font-size:.8rem;color:var(--text-40)">
+      © 2026 Green Curve · ESG Quotient for India ·
+      Data collected via this form is stored securely and shared only with the inviting company.
+    </p>
+    <p style="font-size:.78rem;color:var(--text-40);margin-top:6px">
+      ESG scoring is based on BRSR Principles 2, 3, 5, 6 &amp; 8 (SEBI public regulation).
+      This is not an ESG Rating under SEBI (CRA) Regulations.
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Sticky nav scroll behaviour (from main site)
+  const hdr = document.getElementById("site-header");
+  window.addEventListener("scroll", () => {
+    hdr.classList.toggle("scrolled", window.scrollY > 20);
+  }, { passive: true });
+
+  // Mobile burger
+  const burger = document.getElementById("nav-burger");
+  if (burger) {
+    burger.addEventListener("click", () => {
+      const expanded = burger.getAttribute("aria-expanded") === "true";
+      burger.setAttribute("aria-expanded", String(!expanded));
+      document.querySelector(".nav__links")?.classList.toggle("open", !expanded);
+    });
+  }
+</script>
+<script src="assets/js/value-chain.js?v=20260606"></script>
+</body>
+</html>

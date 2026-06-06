@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supplier ESG Questionnaire — Green Curve</title>
+  <meta name="description" content="Complete your ESG questionnaire for BRSR value-chain disclosure." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/value-chain.css" />
+</head>
+<body>
+
+<div class="sf-wrap">
+
+  <!-- Top bar -->
+  <header class="sf-topbar">
+    <div class="sf-topbar__brand">
+      <img src="assets/img/logo.png" alt="Green Curve" />
+      <span>Green <span style="color:var(--cyan)">Curve</span></span>
+    </div>
+    <div class="sf-topbar__invited-by" id="sf-invited-by">ESG Value-Chain Questionnaire</div>
+  </header>
+
+  <!-- Main content -->
+  <main class="sf-main">
+
+    <!-- Progress bar -->
+    <div class="sf-progress-wrap" id="sf-progress-wrap">
+      <div class="sf-progress-labels">
+        <span class="sf-progress-label active">Identity</span>
+        <span class="sf-progress-label">Environment</span>
+        <span class="sf-progress-label">Social</span>
+        <span class="sf-progress-label">Governance</span>
+        <span class="sf-progress-label">Products</span>
+      </div>
+      <div class="sf-progress-track">
+        <div class="sf-progress-fill" id="sf-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Step content -->
+    <div id="sf-content">
+      <div class="vc-loading"><div class="vc-spinner"></div>Loading…</div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="sf-nav" id="sf-nav" style="display:none">
+      <button class="sf-btn sf-btn--ghost" id="sf-back-btn" style="display:none">← Back</button>
+      <span class="sf-nav__step-count" id="sf-step-count"></span>
+      <div class="sf-nav__right">
+        <button class="sf-btn sf-btn--primary" id="sf-next-btn">Next →</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer note -->
+  <footer style="padding:20px 32px;border-top:1px solid var(--border);text-align:center">
+    <p style="font-size:.72rem;color:var(--text-40);line-height:1.6">
+      Your responses are collected under SEBI BRSR value-chain disclosure requirements and
+      will be shared only with the company that invited you. This is not an ESG Rating.
+      Green Curve · <a href="index.html" style="color:var(--text-40)">greencurve.in</a>
+    </p>
+  </footer>
+
+</div>
+
+<script src="assets/js/supplier-form.js?v=20260606"></script>
+</body>
+</html>
