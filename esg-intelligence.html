@@ -88,6 +88,18 @@
   <span>For informational purposes only. Not investment advice. These are data aggregation summaries derived solely from companies' own publicly filed SEBI BRSR disclosures — not ESG Ratings under SEBI (Credit Rating Agencies) Regulations. Green Curve is not a SEBI-registered Research Analyst or ESG Rating Provider (ERP). <a href="methodology.html" style="color:#fbbf24;text-decoration:underline">How scores are calculated &rarr;</a></span>
 </div>
 
+<!-- WATCHLIST ALERT STRIP -->
+<div id="wl-alert-strip" class="wl-alert-strip" hidden>
+  <div class="container wl-alert-inner">
+    <svg class="wl-alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <div class="wl-alert-body">
+      <div class="wl-alert-title">Watchlist Alerts</div>
+      <ul class="wl-alert-items" id="wl-alert-list"></ul>
+    </div>
+    <button class="wl-alert-dismiss" onclick="document.getElementById('wl-alert-strip').hidden=true">Dismiss</button>
+  </div>
+</div>
+
 <!-- SEARCH BAR -->
 <div class="intel-search-bar container">
   <div class="intel-search-wrap">
@@ -111,6 +123,7 @@
   <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
   <button class="intel-tab" data-tab="calendar"    role="tab" aria-selected="false">Reg Calendar</button>
   <button class="intel-tab" data-tab="anomalies"  role="tab" aria-selected="false">Anomalies</button>
+  <button class="intel-tab" data-tab="watchlist"  role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
 </div>
 
 <main class="container intel-main">
@@ -418,6 +431,15 @@
     <div id="anomalyList"></div>
   </section>
 
+  <!-- ── WATCHLIST ──────────────────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-watchlist">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">My Watchlist</h3>
+      <p class="dm-intro-text">Track companies and get alerted when their ESG risk tier or score changes. Click ☆ on any row in the Company Screener to add a company here.</p>
+    </div>
+    <div id="wl-panel-content"></div>
+  </section>
+
 </main>
 
 <!-- FOOTER -->
@@ -519,6 +541,7 @@
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (typeof gtag === 'function') gtag('event', 'esg_tab_viewed', { tab: btn.dataset.tab });
       if (btn.dataset.tab === 'heatmap' && typeof renderHeatMap === 'function') renderHeatMap();
+      if (btn.dataset.tab === 'watchlist' && typeof renderWatchlist === 'function') renderWatchlist();
     });
   });
   // Mobile nav

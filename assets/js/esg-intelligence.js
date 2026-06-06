@@ -92,6 +92,7 @@ async function initDashboard() {
     renderMaterials();
     renderCalendar();
     renderAnomalies();
+    checkAlerts();
     // Heat map renders lazily when the tab is clicked (Plotly needs a visible container)
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
@@ -382,10 +383,13 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
     const cov = _dcCoverage(c);
     return `
       <tr style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">
-        <td onclick="event.stopPropagation()" style="padding:0 6px;width:32px">
+        <td onclick="event.stopPropagation()" style="padding:0 6px;width:56px;white-space:nowrap">
           <button class="cmp-btn${inCmp?' cmp-btn--active':''}" data-name="${esc(c.company_name)}"
             onclick="toggleCompare('${esc(c.company_name)}',event)"
             title="${inCmp?'Remove from compare':'Add to compare'}">${inCmp?'✓':'+'}</button>
+          <button class="wl-btn${_WL.has(c.company_name)?' wl-btn--active':''}" data-name="${esc(c.company_name)}"
+            onclick="toggleWatchlist('${esc(c.company_name)}',event)"
+            title="${_WL.has(c.company_name)?'Remove from watchlist':'Add to watchlist'}">${_WL.has(c.company_name)?'★':'☆'}</button>
         </td>
         <td class="company-name" title="${esc(c.company_name)}">
           ${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}${(c.anomaly_flags||[]).length ? `<span class="anomaly-dot" title="${esc((c.anomaly_flags||[]).map(f=>f.label).join(', '))}">⚠</span>` : ''}
@@ -1812,6 +1816,157 @@ window.toggleCompare  = toggleCompare;
 window.clearCompare   = clearCompare;
 window.openCompareModal = openCompareModal;
 window.copyCompareLink  = copyCompareLink;
+
+// ── Watchlist + Alerts ─────────────────────────────────────────────────────────
+const _WL = {
+  _K:  'gc_watchlist',
+  _SK: 'gc_wl_snapshots',
+  _PK: 'gc_wl_alert_prefs',
+  list()  { try { return JSON.parse(localStorage.getItem(this._K)  || '[]');  } catch { return []; } },
+  save(a) { localStorage.setItem(this._K, JSON.stringify(a)); },
+  add(n)  { const l = this.list(); if (!l.includes(n)) { l.push(n); this.save(l); } },
+  remove(n){ this.save(this.list().filter(x => x !== n)); },
+  has(n)  { return this.list().includes(n); },
+  getSnaps()   { try { return JSON.parse(localStorage.getItem(this._SK) || '{}'); } catch { return {}; } },
+  saveSnaps(o) { localStorage.setItem(this._SK, JSON.stringify(o)); },
+  getPrefs()   { try { return JSON.parse(localStorage.getItem(this._PK) || '{"tier_change":true,"high_risk":true}'); } catch { return {tier_change:true,high_risk:true}; } },
+  savePrefs(o) { localStorage.setItem(this._PK, JSON.stringify(o)); },
+};
+
+function toggleWatchlist(name, event) {
+  event.stopPropagation();
+  const wasWatching = _WL.has(name);
+  if (wasWatching) {
+    _WL.remove(name);
+  } else {
+    _WL.add(name);
+    const co = allCompanies.find(c => c.company_name === name);
+    if (co) {
+      const snaps = _WL.getSnaps();
+      if (!snaps[name]) {
+        snaps[name] = { esg_risk_score: co.esg_risk_score, risk_tier: co.risk_tier, snapped_at: new Date().toISOString().slice(0,10) };
+        _WL.saveSnaps(snaps);
+      }
+    }
+  }
+  const nowWatching = _WL.has(name);
+  document.querySelectorAll(`.wl-btn[data-name="${CSS.escape(name)}"]`).forEach(btn => {
+    btn.textContent = nowWatching ? '★' : '☆';
+    btn.title = nowWatching ? 'Remove from watchlist' : 'Add to watchlist';
+    btn.classList.toggle('wl-btn--active', nowWatching);
+  });
+  const panel = document.getElementById('tab-watchlist');
+  if (panel && panel.classList.contains('active')) renderWatchlist();
+}
+window.toggleWatchlist = toggleWatchlist;
+
+function renderWatchlist() {
+  const container = document.getElementById('wl-panel-content');
+  if (!container) return;
+  const names    = _WL.list();
+  const prefs    = _WL.getPrefs();
+  const snaps    = _WL.getSnaps();
+
+  if (names.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:80px 20px">
+        <div style="font-size:3rem;margin-bottom:16px;opacity:.35">☆</div>
+        <h3 style="color:var(--text-60);margin-bottom:8px;font-size:1.05rem;font-weight:600">No companies tracked yet</h3>
+        <p style="color:var(--text-40);font-size:.88rem;max-width:360px;margin:0 auto">
+          Go to the <strong>Company Screener</strong> tab and click ☆ next to any company to start tracking it here.
+        </p>
+      </div>`;
+    return;
+  }
+
+  const companies = names.map(n => allCompanies.find(c => c.company_name === n)).filter(Boolean);
+
+  const prefHtml = `
+    <div class="wl-prefs" style="margin-bottom:20px">
+      <div class="wl-prefs__title">Alert preferences</div>
+      <div class="wl-prefs__row">
+        <span class="wl-prefs__label">Alert when risk tier changes</span>
+        <label class="wl-toggle">
+          <input type="checkbox" ${prefs.tier_change ? 'checked' : ''}
+            onchange="window._wlSavePref('tier_change',this.checked)">
+          <span class="wl-toggle__slider"></span>
+        </label>
+      </div>
+      <div class="wl-prefs__row">
+        <span class="wl-prefs__label">Alert when score enters High risk zone</span>
+        <label class="wl-toggle">
+          <input type="checkbox" ${prefs.high_risk ? 'checked' : ''}
+            onchange="window._wlSavePref('high_risk',this.checked)">
+          <span class="wl-toggle__slider"></span>
+        </label>
+      </div>
+    </div>`;
+
+  const cards = companies.map(c => {
+    const snap = snaps[c.company_name];
+    const tierChanged = snap && snap.risk_tier !== c.risk_tier;
+    const diff = snap ? +(c.esg_risk_score - snap.esg_risk_score).toFixed(1) : null;
+    const changeCls = diff === null ? '' : diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+    const changeHtml = diff !== null
+      ? `<span class="wl-card__change wl-card__change--${changeCls}">${diff > 0 ? '▲' : diff < 0 ? '▼' : '─'}${Math.abs(diff)}</span>`
+      : '';
+    return `
+      <div class="wl-card${tierChanged ? ' wl-card--alert' : ''}">
+        <div class="wl-card__header">
+          <div style="flex:1;min-width:0">
+            <div class="wl-card__name" onclick="openDeepDive('${esc(c.company_name)}')" title="Open deep dive">${esc(c.company_name)}</div>
+            <div class="wl-card__sector">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,36))}</div>
+          </div>
+          <button class="wl-card__remove" data-name="${esc(c.company_name)}"
+            onclick="toggleWatchlist('${esc(c.company_name)}',event)" title="Remove from watchlist">✕</button>
+        </div>
+        <div class="wl-card__meta">
+          <span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span>
+          <span class="wl-card__risk-label">${c.risk_tier} Risk</span>
+          ${changeHtml}
+          ${tierChanged ? `<span class="wl-card__alert-tag">⚠ Tier changed</span>` : ''}
+        </div>
+        ${snap ? `<div class="wl-card__top-risk"><strong>Baseline</strong>${snap.snapped_at}: ${snap.esg_risk_score} (${snap.risk_tier})</div>` : ''}
+      </div>`;
+  }).join('');
+
+  container.innerHTML = `${prefHtml}<div class="wl-grid">${cards}</div>`;
+}
+window.renderWatchlist = renderWatchlist;
+
+function _wlSavePref(key, val) {
+  const p = _WL.getPrefs(); p[key] = val; _WL.savePrefs(p);
+}
+window._wlSavePref = _wlSavePref;
+
+function checkAlerts() {
+  const names = _WL.list();
+  if (!names.length) return;
+  const prefs  = _WL.getPrefs();
+  const snaps  = _WL.getSnaps();
+  const alerts = [];
+
+  names.forEach(name => {
+    const co   = allCompanies.find(c => c.company_name === name);
+    const snap = snaps[name];
+    if (!co || !snap) return;
+    if (prefs.tier_change && snap.risk_tier !== co.risk_tier) {
+      alerts.push(`<strong>${esc(name)}</strong>: tier changed ${snap.risk_tier} → ${co.risk_tier}`);
+    } else if (prefs.high_risk && co.risk_tier === 'High' && snap.risk_tier !== 'High') {
+      alerts.push(`<strong>${esc(name)}</strong>: entered High risk zone (score ${co.esg_risk_score})`);
+    }
+  });
+
+  if (!alerts.length) return;
+  const strip = document.getElementById('wl-alert-strip');
+  const list  = document.getElementById('wl-alert-list');
+  if (strip && list) {
+    list.innerHTML = alerts.map(a => `<li>${a}</li>`).join('');
+    strip.hidden = false;
+  }
+  const tabBtn = document.getElementById('wl-tab-btn');
+  if (tabBtn) tabBtn.innerHTML = `★ Watchlist <span class="wl-tab-badge">${alerts.length}</span>`;
+}
 
 // ── Utilities ──────────────────────────────────────────────────────────────────
 function esc(s) {
