@@ -379,6 +379,7 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
       ? `<span style="color:${ret >= 0 ? '#10b981' : '#f87171'}">${ret >= 0 ? '+' : ''}${ret}%</span>`
       : '<span style="color:#475569">N/A</span>';
     const inCmp = compareList.includes(c.company_name);
+    const cov = _dcCoverage(c);
     return `
       <tr style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">
         <td onclick="event.stopPropagation()" style="padding:0 6px;width:32px">
@@ -386,7 +387,13 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
             onclick="toggleCompare('${esc(c.company_name)}',event)"
             title="${inCmp?'Remove from compare':'Add to compare'}">${inCmp?'✓':'+'}</button>
         </td>
-        <td class="company-name" title="${esc(c.company_name)}">${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}${(c.anomaly_flags||[]).length ? `<span class="anomaly-dot" title="${esc((c.anomaly_flags||[]).map(f=>f.label).join(', '))}">⚠</span>` : ''}</td>
+        <td class="company-name" title="${esc(c.company_name)}">
+          ${esc((c.company_name||'').slice(0,28))}${(c.company_name||'').length > 28 ? '…' : ''}${(c.anomaly_flags||[]).length ? `<span class="anomaly-dot" title="${esc((c.anomaly_flags||[]).map(f=>f.label).join(', '))}">⚠</span>` : ''}
+          <div class="dc-coverage" title="Data coverage: ${cov.reported}/${cov.total} key fields reported in BRSR">
+            <div class="dc-coverage__bar"><div class="dc-coverage__fill" style="width:${cov.pct}%"></div></div>
+            <span class="dc-coverage__txt">${cov.pct}%</span>
+          </div>
+        </td>
         <td class="sector-cell">${esc((c.sector||'').replace('Manufacturing — ','').slice(0,30))}</td>
         <td><span class="risk-badge risk-badge--${c.risk_tier}">${c.esg_risk_score}</span></td>
         <td>${scoreBar(rb.ghg_intensity)}</td>
@@ -965,6 +972,46 @@ function renderDDTab(tab) {
   }
 }
 
+// ── Data Confidence helpers (Feature #3) ──────────────────────────────────────
+
+/**
+ * Returns a coloured badge indicating how confident we are in a KPI value.
+ * source: 'reported' | 'estimated' | 'assured' | 'missing'
+ * When rawValue is falsy/zero/unknown the badge is always 'missing'.
+ */
+function _dcBadge(rawValue, source) {
+  const empty = !rawValue || rawValue === '—' || rawValue === 'Unknown' || rawValue === 0;
+  if (empty) return '<span class="dc-badge dc-missing" title="Not reported in BRSR filing">Missing</span>';
+  const cfg = {
+    assured:   ['dc-assured',   'Assured',   'Third-party verified (BRSR Core assurance)'],
+    reported:  ['dc-reported',  'Reported',  'Company self-reported in SEBI BRSR filing'],
+    estimated: ['dc-estimated', 'Estimated', 'Modelled by Green Curve from public data'],
+  };
+  const [cls, label, tip] = cfg[source] || cfg.reported;
+  return `<span class="dc-badge ${cls}" title="${tip}">${label}</span>`;
+}
+
+/**
+ * Computes a simple data-coverage score for a company profile.
+ * Returns { reported, total, pct } based on key environmental KPIs.
+ */
+function _dcCoverage(p) {
+  const fe = p.financial_exposure || {};
+  const checks = [
+    !!fe.scope1_emissions_tco2e,
+    !!fe.scope2_emissions_tco2e,
+    !!fe.water_withdrawal_m3,
+    !!fe.waste_tonnes,
+    !!(fe.epr_applicable && fe.epr_applicable !== 'Unknown'),
+    !!p.revenue_crore,
+    !!(p.risk_breakdown?.ghg_intensity),
+  ];
+  const reported = checks.filter(Boolean).length;
+  return { reported, total: checks.length, pct: Math.round((reported / checks.length) * 100) };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function renderDDOverviewLocal(p) {
   const rb = p.risk_breakdown || {};
   const fe = p.financial_exposure || {};
@@ -987,14 +1034,37 @@ function renderDDOverviewLocal(p) {
     </div>
     <div class="dd-section">
       <div class="dd-section-title">Financial Exposure</div>
+      ${(() => {
+        const cov = _dcCoverage(p);
+        return `
+        <div class="dc-summary-row">
+          <span class="dc-summary-row__label">Data Coverage</span>
+          <div class="dc-summary-row__bar-wrap">
+            <div class="dc-summary-row__bar" style="width:${cov.pct}%"></div>
+          </div>
+          <span class="dc-summary-row__count">${cov.reported}/${cov.total} fields reported</span>
+        </div>
+        <div class="dc-legend">
+          <span class="dc-legend__title">Key:</span>
+          <span class="dc-legend__item"><span class="dc-badge dc-reported">Reported</span> Company BRSR filing (SEBI)</span>
+          <span class="dc-legend__item"><span class="dc-badge dc-estimated">Estimated</span> Green Curve model</span>
+          <span class="dc-legend__item"><span class="dc-badge dc-missing">Missing</span> Not in filing</span>
+        </div>`;
+      })()}
       <div class="dd-kv-grid">
         ${[
-          ['Scope 1 Emissions', fe.scope1_emissions_tco2e ? fe.scope1_emissions_tco2e+' tCO2e' : '—'],
-          ['Scope 2 Emissions', fe.scope2_emissions_tco2e ? fe.scope2_emissions_tco2e+' tCO2e' : '—'],
-          ['Water Withdrawal', fe.water_withdrawal_m3 ? fmt(fe.water_withdrawal_m3)+' m³' : '—'],
-          ['Waste Generated', fe.waste_tonnes ? fmt(fe.waste_tonnes)+' tonnes' : '—'],
-          ['EPR Applicable', fe.epr_applicable||'Unknown'],
-        ].map(([l,v]) => `<div class="dd-kv"><span class="dd-kv-label">${l}</span><span class="dd-kv-val">${v}</span></div>`).join('')}
+          ['Scope 1 Emissions',    fe.scope1_emissions_tco2e,                                       fe.scope1_emissions_tco2e ? fe.scope1_emissions_tco2e+' tCO2e' : '—',  'reported'],
+          ['Scope 2 Emissions',    fe.scope2_emissions_tco2e,                                       fe.scope2_emissions_tco2e ? fe.scope2_emissions_tco2e+' tCO2e' : '—',  'reported'],
+          ['Water Withdrawal',     fe.water_withdrawal_m3,                                          fe.water_withdrawal_m3 ? fmt(fe.water_withdrawal_m3)+' m³' : '—',      'reported'],
+          ['Waste Generated',      fe.waste_tonnes,                                                 fe.waste_tonnes ? fmt(fe.waste_tonnes)+' tonnes' : '—',                'reported'],
+          ['EPR Applicable',       fe.epr_applicable && fe.epr_applicable !== 'Unknown' ? fe.epr_applicable : null, fe.epr_applicable||'Unknown',                         'reported'],
+          ['Est. Compliance Cost', fe.estimated_compliance_cost_band,                               fe.estimated_compliance_cost_band||'—',                                'estimated'],
+        ].map(([l, rawVal, display, src]) =>
+          `<div class="dd-kv">
+            <span class="dd-kv-label">${l}</span>
+            <span class="dd-kv-val">${display}${_dcBadge(rawVal, src)}</span>
+          </div>`
+        ).join('')}
       </div>
     </div>`;
 }

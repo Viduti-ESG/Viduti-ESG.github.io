@@ -1071,3 +1071,128 @@
   color: #475569;
   font-style: italic;
 }
+
+/* ── Data Confidence Indicator (Feature #3) ──────────────────────────────────
+   Four states: Assured · Reported · Estimated · Missing
+   Applied to Financial Exposure KPIs in the company deep-dive and
+   coverage mini-bars in the screener table.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.dc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: 7px;
+  white-space: nowrap;
+}
+.dc-badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dc-assured   { background: rgba(52,211,153,.12); color: #34d399; border: 1px solid rgba(52,211,153,.28); }
+.dc-assured::before   { background: #34d399; }
+.dc-reported  { background: rgba(0,200,255,.10);  color: #00c8ff; border: 1px solid rgba(0,200,255,.25); }
+.dc-reported::before  { background: #00c8ff; }
+.dc-estimated { background: rgba(251,191,36,.10); color: #fbbf24; border: 1px solid rgba(251,191,36,.25); }
+.dc-estimated::before { background: #fbbf24; }
+.dc-missing   { background: rgba(100,116,139,.12); color: #64748b; border: 1px solid rgba(100,116,139,.25); }
+.dc-missing::before   { background: #64748b; }
+
+/* Legend strip inside deep-dive panels */
+.dc-legend {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 7px 12px;
+  background: rgba(255,255,255,.025);
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+.dc-legend__title {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: #475569;
+}
+.dc-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .72rem;
+  color: #64748b;
+}
+.dc-legend__item .dc-badge { margin-left: 0; }
+
+/* Coverage mini-bar in screener rows */
+.dc-coverage {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+}
+.dc-coverage__bar {
+  width: 38px;
+  height: 3px;
+  background: rgba(255,255,255,.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.dc-coverage__fill {
+  height: 100%;
+  border-radius: 2px;
+  background: #00c8ff;
+  transition: width .3s;
+}
+.dc-coverage__txt {
+  font-size: .68rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Data coverage summary panel inside deep-dive overview */
+.dc-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(0,200,255,.04);
+  border: 1px solid rgba(0,200,255,.12);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.dc-summary-row__label {
+  font-size: .76rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+.dc-summary-row__bar-wrap {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dc-summary-row__bar {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #00c8ff, #34d399);
+}
+.dc-summary-row__count {
+  font-size: .8rem;
+  font-weight: 600;
+  color: #00c8ff;
+  white-space: nowrap;
+}
