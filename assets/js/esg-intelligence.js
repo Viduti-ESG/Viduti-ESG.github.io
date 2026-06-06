@@ -279,7 +279,57 @@ function populateSectorDropdown() {
 }
 
 // ── Column filters ────────────────────────────────────────────────────────────
-function applyColFilters() {
+// ── Pre-built Screener Templates ───────────────────────────────────────────────
+const SCREENER_TEMPLATES = [
+  { name: 'High GHG',                ghgMin: 7 },
+  { name: 'High Water Risk',         waterMin: 7 },
+  { name: 'EPR Exposed',             eprMin: 7 },
+  { name: 'Compliance Lag',          compMin: 7 },
+  { name: 'Large-Cap High Risk',     riskTier: 'High', revMin: 5000 },
+  { name: 'Chemicals Sector',        topSearch: 'chemical' },
+  { name: 'Green Leaders',           riskTier: 'Low', revMin: 1000 },
+  { name: 'Positive Return Low Risk',retDir: 'pos', riskTier: 'Low' },
+];
+
+function applyTemplate(idx) {
+  const tmpl = SCREENER_TEMPLATES[idx];
+  if (!tmpl) return;
+
+  // Highlight active pill
+  document.querySelectorAll('.st-pill[data-tmpl]').forEach(b => b.classList.toggle('st-pill--active', Number(b.dataset.tmpl) === idx));
+
+  // Clear all filter inputs first
+  ['cf-company','cf-ghg','cf-water','cf-epr','cf-comp','cf-rev-min','cf-cap-min'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['cf-sector','cf-risk-tier','cf-return','screenerSearch','screenerRisk'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+
+  // Apply template values to DOM inputs
+  if (tmpl.ghgMin)     { const el = document.getElementById('cf-ghg');      if (el) el.value = tmpl.ghgMin; }
+  if (tmpl.waterMin)   { const el = document.getElementById('cf-water');    if (el) el.value = tmpl.waterMin; }
+  if (tmpl.eprMin)     { const el = document.getElementById('cf-epr');      if (el) el.value = tmpl.eprMin; }
+  if (tmpl.compMin)    { const el = document.getElementById('cf-comp');     if (el) el.value = tmpl.compMin; }
+  if (tmpl.revMin)     { const el = document.getElementById('cf-rev-min');  if (el) el.value = tmpl.revMin; }
+  if (tmpl.riskTier)   { const el = document.getElementById('cf-risk-tier'); if (el) el.value = tmpl.riskTier; }
+  if (tmpl.retDir)     { const el = document.getElementById('cf-return');   if (el) el.value = tmpl.retDir; }
+  if (tmpl.topSearch)  { const el = document.getElementById('screenerSearch'); if (el) el.value = tmpl.topSearch; }
+
+  applyColFilters(false);
+}
+
+function clearTemplate() {
+  document.querySelectorAll('.st-pill[data-tmpl]').forEach(b => b.classList.remove('st-pill--active'));
+  resetColFilters();
+}
+window.applyTemplate = applyTemplate;
+window.clearTemplate = clearTemplate;
+
+function applyColFilters(clearActiveTmpl) {
+  if (clearActiveTmpl !== false) {
+    document.querySelectorAll('.st-pill[data-tmpl]').forEach(b => b.classList.remove('st-pill--active'));
+  }
   const company  = (document.getElementById('cf-company')?.value  || '').toLowerCase();
   const sector   = document.getElementById('cf-sector')?.value   || '';
   const riskTier = document.getElementById('cf-risk-tier')?.value || '';

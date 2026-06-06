@@ -159,6 +159,21 @@
 
   <!-- ── COMPANY SCREENER ─────────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-screener">
+
+    <!-- Pre-built screener templates -->
+    <div class="st-strip" id="st-strip">
+      <span class="st-strip__label">Quick filters:</span>
+      <button class="st-pill" data-tmpl="0" onclick="applyTemplate(0)">🌫️ High GHG</button>
+      <button class="st-pill" data-tmpl="1" onclick="applyTemplate(1)">💧 High Water Risk</button>
+      <button class="st-pill" data-tmpl="2" onclick="applyTemplate(2)">♻️ EPR Exposed</button>
+      <button class="st-pill" data-tmpl="3" onclick="applyTemplate(3)">⚠️ Compliance Lag</button>
+      <button class="st-pill" data-tmpl="4" onclick="applyTemplate(4)">🏭 Large-Cap High Risk</button>
+      <button class="st-pill" data-tmpl="5" onclick="applyTemplate(5)">🧪 Chemicals Sector</button>
+      <button class="st-pill" data-tmpl="6" onclick="applyTemplate(6)">🌱 Green Leaders</button>
+      <button class="st-pill" data-tmpl="7" onclick="applyTemplate(7)">📈 Positive Return + Low ESG Risk</button>
+      <button class="st-pill st-pill--reset" onclick="clearTemplate()">✕ Clear</button>
+    </div>
+
     <div class="screener-controls">
       <input  class="screener-search" id="screenerSearch" type="search" placeholder="Search company or sector…"/>
       <select class="screener-filter" id="screenerRisk">
