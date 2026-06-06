@@ -1470,3 +1470,80 @@
 @media (max-width: 640px) {
   .wl-grid { grid-template-columns: 1fr; }
 }
+
+/* ── BRSR Filing Tracker ──────────────────────────────────────────────────── */
+.ft-kpi-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.ft-kpi {
+  flex: 1 1 130px;
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 18px 20px;
+  text-align: center;
+}
+.ft-kpi__val {
+  font-size: 1.7rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.ft-kpi__lbl { font-size: .72rem; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
+.ft-kpi--green .ft-kpi__val { color: #34d399; }
+.ft-kpi--amber .ft-kpi__val { color: #fbbf24; }
+.ft-kpi--red   .ft-kpi__val { color: #f87171; }
+.ft-kpi--cyan  .ft-kpi__val { color: #00c8ff; }
+
+.ft-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Assurance badge */
+.ft-ass-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+}
+.ft-ass--full    { background: rgba(52,211,153,.12); color: #34d399; }
+.ft-ass--partial { background: rgba(251,191,36,.12); color: #fbbf24; }
+.ft-ass--none    { background: rgba(100,116,139,.1); color: #64748b; }
+
+/* Mandate badge */
+.ft-mandate-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 700;
+}
+.ft-mandate--top250 { background: rgba(0,200,255,.1); color: #00c8ff; }
+.ft-mandate--other  { background: rgba(71,85,105,.12); color: #475569; }
+
+/* BRSR Core status */
+.ft-status { font-size: .75rem; font-weight: 600; }
+.ft-status--ready   { color: #34d399; }
+.ft-status--partial { color: #fbbf24; }
+.ft-status--gap     { color: #f87171; }
+.ft-status--na      { color: #475569; }
+
+/* CIN link */
+.ft-cin-link {
+  font-size: .68rem;
+  color: #334155;
+  text-decoration: none;
+  font-family: monospace;
+  letter-spacing: .01em;
+}
+.ft-cin-link:hover { color: #00c8ff; text-decoration: underline; }

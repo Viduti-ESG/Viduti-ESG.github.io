@@ -123,6 +123,7 @@
   <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
   <button class="intel-tab" data-tab="calendar"    role="tab" aria-selected="false">Reg Calendar</button>
   <button class="intel-tab" data-tab="anomalies"  role="tab" aria-selected="false">Anomalies</button>
+  <button class="intel-tab" data-tab="filing"     role="tab" aria-selected="false">BRSR Filing</button>
   <button class="intel-tab" data-tab="watchlist"  role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
 </div>
 
@@ -431,6 +432,47 @@
     <div id="anomalyList"></div>
   </section>
 
+  <!-- ── BRSR FILING TRACKER ───────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-filing">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">BRSR Filing Tracker</h3>
+      <p class="dm-intro-text">Assurance status and BRSR Core readiness across 1,227 companies based on SEBI BRSR public disclosures. Revenue ≥ ₹5,000 Cr companies are BRSR Core mandated (FY2024-25 onwards). Data sourced from publicly filed Annual Reports and SEBI BRSR disclosures.</p>
+    </div>
+    <div id="ft-kpi-row" class="ft-kpi-row"></div>
+    <div class="ft-controls">
+      <input type="search" id="ft-search" class="screener-search" placeholder="Search company…" oninput="applyFTFilters()"/>
+      <select id="ft-sector" class="screener-filter" onchange="applyFTFilters()"><option value="">All Sectors</option></select>
+      <select id="ft-assurance" class="screener-filter" onchange="applyFTFilters()">
+        <option value="">All Assurance Levels</option>
+        <option value="All">Full Assurance</option>
+        <option value="Partial">Partial Assurance</option>
+        <option value="None">No Assurance</option>
+      </select>
+      <select id="ft-mandate" class="screener-filter" onchange="applyFTFilters()">
+        <option value="">All Companies</option>
+        <option value="top250">Top 250 (BRSR Core)</option>
+        <option value="other">Other Listed</option>
+      </select>
+      <span class="screener-count" id="ft-count"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="screener-table" id="ft-table">
+        <thead>
+          <tr>
+            <th class="th-sort ft-th" data-ftcol="company_name">Company <span class="sort-icon" id="ftsi-name">↕</span></th>
+            <th class="th-sort ft-th" data-ftcol="sector">Sector <span class="sort-icon">↕</span></th>
+            <th class="th-sort ft-th" data-ftcol="revenue_crore">Revenue (₹Cr) <span class="sort-icon">↕</span></th>
+            <th>Mandate</th>
+            <th class="th-sort ft-th" data-ftcol="assurance">Assurance <span class="sort-icon">↕</span></th>
+            <th>BRSR Core Status</th>
+            <th>CIN</th>
+          </tr>
+        </thead>
+        <tbody id="ft-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- ── WATCHLIST ──────────────────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-watchlist">
     <div class="dm-intro">
@@ -541,6 +583,7 @@
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (typeof gtag === 'function') gtag('event', 'esg_tab_viewed', { tab: btn.dataset.tab });
       if (btn.dataset.tab === 'heatmap' && typeof renderHeatMap === 'function') renderHeatMap();
+      if (btn.dataset.tab === 'filing'    && typeof renderFilingTracker === 'function') renderFilingTracker();
       if (btn.dataset.tab === 'watchlist' && typeof renderWatchlist === 'function') renderWatchlist();
     });
   });

@@ -1817,6 +1817,124 @@ window.clearCompare   = clearCompare;
 window.openCompareModal = openCompareModal;
 window.copyCompareLink  = copyCompareLink;
 
+// ── BRSR Filing Tracker ────────────────────────────────────────────────────────
+let _ftRendered = false;
+let _ftSortCol = 'revenue_crore';
+let _ftSortDir = -1;
+
+function _ftAssuranceRank(a) { return a === 'All' ? 2 : a === 'Partial' ? 1 : 0; }
+
+function _ftEnrich(c, rankMap) {
+  const rev = c.revenue_crore || 0;
+  const assurance = c.governance?.brsr_assurance || 'None';
+  const rank = rankMap[c.company_name] || 9999;
+  const isTop250 = rank <= 250;
+  let coreStatus, coreCls;
+  if (isTop250) {
+    if (assurance === 'All')     { coreStatus = 'BRSR Core Ready'; coreCls = 'ft-status--ready'; }
+    else if (assurance === 'Partial') { coreStatus = 'Partial Gap'; coreCls = 'ft-status--partial'; }
+    else                         { coreStatus = 'Core Gap';        coreCls = 'ft-status--gap'; }
+  } else {
+    coreStatus = 'Not Mandated'; coreCls = 'ft-status--na';
+  }
+  return { ...c, _rev: rev, _assurance: assurance, _rank: rank, _isTop250: isTop250, _coreStatus: coreStatus, _coreCls: coreCls };
+}
+
+function renderFilingTracker() {
+  if (_ftRendered) return;
+  _ftRendered = true;
+
+  // Build revenue rank map O(n log n) once
+  const ranked = allCompanies.slice().sort((a,b) => (b.revenue_crore||0) - (a.revenue_crore||0));
+  const rankMap = {};
+  ranked.forEach((c, i) => { rankMap[c.company_name] = i + 1; });
+  const enriched = allCompanies.map(c => _ftEnrich(c, rankMap));
+  enriched.sort((a,b) => _ftSortDir * ((b._rev||0) - (a._rev||0)));
+
+  // KPIs
+  const total     = enriched.length;
+  const fullAss   = enriched.filter(c => c._assurance === 'All').length;
+  const partAss   = enriched.filter(c => c._assurance === 'Partial').length;
+  const noAss     = enriched.filter(c => c._assurance === 'None').length;
+  const top250    = enriched.filter(c => c._isTop250).length;
+  const coreReady = enriched.filter(c => c._isTop250 && c._assurance === 'All').length;
+
+  document.getElementById('ft-kpi-row').innerHTML = `
+    <div class="ft-kpi"><div class="ft-kpi__val">${total.toLocaleString('en-IN')}</div><div class="ft-kpi__lbl">Companies Tracked</div></div>
+    <div class="ft-kpi ft-kpi--green"><div class="ft-kpi__val">${fullAss}</div><div class="ft-kpi__lbl">Full Assurance</div></div>
+    <div class="ft-kpi ft-kpi--amber"><div class="ft-kpi__val">${partAss}</div><div class="ft-kpi__lbl">Partial Assurance</div></div>
+    <div class="ft-kpi ft-kpi--red"><div class="ft-kpi__val">${noAss}</div><div class="ft-kpi__lbl">No Assurance</div></div>
+    <div class="ft-kpi ft-kpi--cyan"><div class="ft-kpi__val">${coreReady} / ${top250}</div><div class="ft-kpi__lbl">BRSR Core Ready (Top 250)</div></div>`;
+
+  // Sector dropdown
+  const sectors = [...new Set(enriched.map(c => _cleanSector(c.sector)))].sort();
+  const sel = document.getElementById('ft-sector');
+  if (sel && sel.options.length === 1) {
+    sectors.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+  }
+
+  // Store enriched for filtering
+  window._ftData = enriched;
+
+  // Column sort
+  document.querySelectorAll('.ft-th').forEach(th => {
+    th.addEventListener('click', () => {
+      if (_ftSortCol === th.dataset.ftcol) _ftSortDir *= -1;
+      else { _ftSortCol = th.dataset.ftcol; _ftSortDir = -1; }
+      applyFTFilters();
+    });
+  });
+
+  applyFTFilters();
+}
+window.renderFilingTracker = renderFilingTracker;
+
+function applyFTFilters() {
+  if (!window._ftData) return;
+  const q       = (document.getElementById('ft-search')?.value || '').toLowerCase();
+  const sector  = document.getElementById('ft-sector')?.value  || '';
+  const assur   = document.getElementById('ft-assurance')?.value || '';
+  const mandate = document.getElementById('ft-mandate')?.value || '';
+
+  let rows = window._ftData.filter(c => {
+    if (q && !c.company_name.toLowerCase().includes(q)) return false;
+    if (sector && _cleanSector(c.sector) !== sector) return false;
+    if (assur  && c._assurance !== assur) return false;
+    if (mandate === 'top250' && !c._isTop250) return false;
+    if (mandate === 'other'  &&  c._isTop250) return false;
+    return true;
+  });
+
+  const colMap = { company_name: 'company_name', sector: 'sector', revenue_crore: '_rev', assurance: '_assurance' };
+  const col = colMap[_ftSortCol] || '_rev';
+  rows.sort((a,b) => {
+    const av = a[col] ?? '';
+    const bv = b[col] ?? '';
+    if (typeof av === 'number') return _ftSortDir * (bv - av);
+    return _ftSortDir * String(bv).localeCompare(String(av));
+  });
+
+  const countEl = document.getElementById('ft-count');
+  if (countEl) countEl.textContent = `${rows.length.toLocaleString('en-IN')} companies`;
+
+  const assBadge = a => {
+    const cls = a === 'All' ? 'ft-ass--full' : a === 'Partial' ? 'ft-ass--partial' : 'ft-ass--none';
+    return `<span class="ft-ass-badge ${cls}">${a === 'All' ? 'Full' : a}</span>`;
+  };
+
+  document.getElementById('ft-tbody').innerHTML = rows.map(c => `
+    <tr>
+      <td class="company-name" title="${esc(c.company_name)}" style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">${esc(c.company_name.slice(0,32))}${c.company_name.length>32?'…':''}</td>
+      <td style="font-size:.78rem;color:#94a3b8">${esc(_cleanSector(c.sector).slice(0,28))}</td>
+      <td style="text-align:right">${c._rev ? fmt(c._rev) : '—'}</td>
+      <td>${c._isTop250 ? `<span class="ft-mandate-badge ft-mandate--top250">Top ${c._rank}</span>` : '<span class="ft-mandate-badge ft-mandate--other">Listed</span>'}</td>
+      <td>${assBadge(c._assurance)}</td>
+      <td><span class="ft-status ${c._coreCls}">${c._coreStatus}</span></td>
+      <td><a class="ft-cin-link" href="https://www.mca.gov.in/mcafoportal/viewCompanyMasterData.do?cin=${esc(c.cin||'')}" target="_blank" rel="noopener" title="MCA Portal">${esc(c.cin||'—')}</a></td>
+    </tr>`).join('');
+}
+window.applyFTFilters = applyFTFilters;
+
 // ── Watchlist + Alerts ─────────────────────────────────────────────────────────
 const _WL = {
   _K:  'gc_watchlist',
