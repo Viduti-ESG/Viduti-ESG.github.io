@@ -53,11 +53,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     setInvitedBy(formInfo.company_name);
-    renderStep(0);
+
+    // Show DPDP consent screen before rendering the form
+    const consentKey = 'gc_sf_consent_' + supplierToken;
+    if (sessionStorage.getItem(consentKey) === 'granted') {
+      renderStep(0);
+    } else {
+      showDPDPConsent(consentKey);
+    }
   } catch (err) {
     showInvalidToken(`Could not load form: ${err.message}. Ensure the backend is reachable.`);
   }
 });
+
+// ── DPDP Consent Pre-screen ───────────────────────────────────────────────────
+
+function showDPDPConsent(consentKey) {
+  document.getElementById("sf-nav").style.display = "none";
+  document.getElementById("sf-progress-wrap").style.display = "none";
+
+  document.getElementById("sf-content").innerHTML = `
+    <div class="sf-dpdp-consent">
+      <div class="sf-dpdp-icon">🔒</div>
+      <div class="sf-dpdp-title">Data Privacy Notice</div>
+      <div class="sf-dpdp-invited">
+        You have been invited by <strong style="color:var(--cyan)">${escHtml(formInfo.company_name || "your buyer")}</strong>
+        to complete an ESG questionnaire for their BRSR value-chain disclosure.
+      </div>
+
+      <div class="sf-dpdp-body">
+        <p><strong>What data we collect:</strong> Company details, CIN, sector, employee count, environmental metrics (GHG, energy, water, waste), social metrics (workplace safety, labour practices), governance information, and product/EPR data.</p>
+        <p><strong>Why it's collected:</strong> Exclusively to fulfil SEBI BRSR Core value-chain disclosure requirements (BRSR Principle 2 &amp; 8). Your responses are scored and shared only with the company that invited you.</p>
+        <p><strong>Who stores it:</strong> Green Curve's secure backend server. Your data is not sold or shared with any third party other than the inviting company.</p>
+        <p><strong>How long it's kept:</strong> 3 years, aligned to BRSR audit periods, then permanently deleted.</p>
+        <p><strong>Your rights (DPDP Act 2023):</strong> You have the right to access, correct, and request deletion of your data. Contact us via <a href="https://www.linkedin.com/in/neha-kumari-701872a4/" target="_blank" rel="noopener" style="color:var(--cyan)">LinkedIn</a>.</p>
+        <p>Read our full <a href="privacy-policy.html" target="_blank" style="color:var(--cyan)">Privacy Policy</a> for complete details.</p>
+      </div>
+
+      <label class="sf-dpdp-check-label" id="sf-dpdp-label">
+        <input type="checkbox" id="sf-dpdp-checkbox" onchange="document.getElementById('sf-dpdp-btn').disabled = !this.checked" />
+        <span>I have read and understood the above privacy notice, and I <strong>consent</strong> to my data being collected and processed as described.</span>
+      </label>
+
+      <button class="sf-btn sf-btn--primary" id="sf-dpdp-btn" disabled
+        onclick="window._sfDPDPAccept(${JSON.stringify(consentKey)})">
+        Continue to Form →
+      </button>
+
+      <p class="sf-dpdp-note">
+        If you do not consent, close this window. Your buyer may still be able to manually enter your data with your permission.
+      </p>
+    </div>
+  `;
+}
+
+window._sfDPDPAccept = function(consentKey) {
+  sessionStorage.setItem(consentKey, 'granted');
+  renderStep(0);
+};
 
 // ── Screen helpers ────────────────────────────────────────────────────────────
 

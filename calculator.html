@@ -13,11 +13,14 @@
   <meta property="og:description" content="Estimate Scope 1, 2 and 3 carbon emissions using 3,000+ UNFCCC emission factors." />
   <meta property="og:image"   content="https://viduti-esg.github.io/assets/img/logo.png" />
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <!-- Google Analytics (consent mode — analytics blocked until user accepts) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
     gtag('js', new Date());
     gtag('config', 'G-VS37JR0KK7');
   </script>
@@ -697,6 +700,12 @@
     </div>
     <div class="footer__right">
       <p>Published daily &bull; Green Curve Research</p>
+      
+      <p style="font-size:.71rem;color:#334155;margin-top:8px;line-height:1.8">
+        <a href="privacy-policy.html" style="color:#64748b;text-decoration:none">Privacy Policy</a>
+        &nbsp;&middot;&nbsp;
+        <a href="terms-of-use.html" style="color:#64748b;text-decoration:none">Terms of Use</a>
+      </p>
       <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
     </div>
   </div>
@@ -753,5 +762,7 @@
 <script src="assets/js/ghg-calculator.js?v=20260606" defer></script>
 <script src="assets/js/ghg-features2.js?v=20260606" defer></script>
 <script src="assets/js/ghg-features3.js?v=20260606" defer></script>
+
+<script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>

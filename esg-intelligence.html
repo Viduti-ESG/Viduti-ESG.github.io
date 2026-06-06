@@ -11,9 +11,17 @@
   <meta property="og:description" content="ESG compliance financial impact analysis for Indian listed companies."/>
   <meta property="og:image" content="https://viduti-esg.github.io/assets/img/logo.png"/>
 
-  <!-- Google Analytics -->
+    <!-- Google Analytics (consent mode — analytics blocked until user accepts) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-VS37JR0KK7');</script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-VS37JR0KK7');
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -127,7 +135,7 @@
   <button class="intel-tab" data-tab="watchlist"  role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
   <button class="intel-tab" data-tab="cap"         role="tab" aria-selected="false">Improvement Plan</button>
   <button class="intel-tab" data-tab="controversy"  role="tab" aria-selected="false">Controversy Feed</button>
-  <button class="intel-tab" data-tab="badge"        role="tab" aria-selected="false">Excellence Badge</button>
+  <button class="intel-tab" data-tab="badge"        role="tab" aria-selected="false">BRSR Recognition</button>
   <button class="intel-tab" data-tab="marketmap"    role="tab" aria-selected="false">Market Map</button>
 </div>
 
@@ -543,15 +551,15 @@
     <div id="ctv-feed" class="ctv-feed"></div>
   </section>
 
-  <!-- ── BRSR EXCELLENCE BADGE ─────────────────────────────────────────────── -->
+  <!-- ── BRSR RECOGNITION ───────────────────────────────────────────────── -->
   <section class="intel-panel" id="tab-badge">
     <div class="dm-intro">
-      <h3 class="dm-intro-title">BRSR Excellence Badge</h3>
-      <p class="dm-intro-text">Green Curve recognition for companies in the Low Risk tier based on publicly filed SEBI BRSR disclosures. Click any company to get a shareable embed badge for your sustainability report or website.</p>
+      <h3 class="dm-intro-title">BRSR Recognition Mark</h3>
+      <p class="dm-intro-text">Green Curve recognition for companies in the Low Risk tier based on publicly filed SEBI BRSR disclosures. Click any company to get a shareable embed mark for your sustainability report or website.</p>
     </div>
-    <div class="badge-disclaimer">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      These badges are based solely on Green Curve's own analytical output from publicly filed SEBI BRSR disclosures — not a SEBI-registered ESG rating or certification.
+    <div class="badge-disclaimer" style="border-color:rgba(251,191,36,.35);padding:14px 16px;margin-bottom:16px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.5" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span><strong style="color:#fbbf24">Not a SEBI Rating or Certification.</strong> This Recognition Mark is Green Curve's own analytical output derived from publicly filed SEBI BRSR disclosures only. It is <strong>not</strong> issued by SEBI, is <strong>not</strong> an ESG Rating as defined under SEBI's ESG Rating Provider regulations, and does not constitute investment advice. Companies must verify their own compliance independently.</span>
     </div>
     <div id="badge-panel"></div>
     <div id="badge-embed-panel" class="badge-embed-panel" hidden></div>
@@ -585,6 +593,12 @@
     <div class="footer__right">
       <p>Data sourced from companies' publicly filed SEBI BRSR annual disclosures &amp; CPCB public portal. Risk scores are Green Curve's own analytical output — not ratings issued by any SEBI-registered ESG Rating Provider.</p>
       <p style="font-size:.72rem;color:#475569;margin-top:6px">This tool does not constitute investment advice, a buy/sell recommendation, or a legal/regulatory determination. Always verify data against original company filings.</p>
+      
+      <p style="font-size:.71rem;color:#334155;margin-top:8px;line-height:1.8">
+        <a href="privacy-policy.html" style="color:#64748b;text-decoration:none">Privacy Policy</a>
+        &nbsp;&middot;&nbsp;
+        <a href="terms-of-use.html" style="color:#64748b;text-decoration:none">Terms of Use</a>
+      </p>
       <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
     </div>
   </div>
@@ -688,5 +702,7 @@
     });
   }
 </script>
+
+<script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>
