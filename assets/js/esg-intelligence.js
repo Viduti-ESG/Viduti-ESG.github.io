@@ -2144,4 +2144,512 @@ function fmt(n) {
   return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n);
 }
 
+// ── Feature #3: Filing Deadline Countdown ─────────────────────────────────────
+function _renderFilingDeadline() {
+  const container = document.getElementById('ft-deadline-strip');
+  if (!container) return;
+  const deadlines = [
+    { label: 'EPR Annual Return FY2025-26',         date: '2026-06-30', who: 'EPR-obligated entities',           urgency: 'high' },
+    { label: 'BRSR Core Annual Report Filing',       date: '2026-09-30', who: 'Top 500 companies by revenue',    urgency: 'high' },
+    { label: 'Annual Report — All Listed Companies', date: '2026-09-30', who: 'All BSE/NSE listed companies',    urgency: 'medium' },
+    { label: 'Value-Chain Data Collection Deadline', date: '2026-12-31', who: 'Top 1000 (BRSR FY2026-27 prep)', urgency: 'medium' },
+  ];
+  const now = new Date();
+  container.innerHTML = deadlines.map(d => {
+    const dt   = new Date(d.date);
+    const days = Math.ceil((dt - now) / 86400000);
+    const passed = days < 0;
+    const cls = passed ? 'ft-dl--passed' : (d.urgency === 'high' && days <= 120) ? 'ft-dl--urgent' : 'ft-dl--ok';
+    const daysLabel = passed ? 'Passed' : days + 'd';
+    return `
+    <div class="ft-dl-item ${cls}">
+      <div class="ft-dl-days">${daysLabel}</div>
+      <div class="ft-dl-info">
+        <div class="ft-dl-label">${esc(d.label)}</div>
+        <div class="ft-dl-who">${esc(d.who)} · ${esc(d.date)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window._renderFilingDeadline = _renderFilingDeadline;
+
+// ── Feature #1: BRSR Improvement Plan (CAP) ───────────────────────────────────
+const _CAP_KEY = 'gc_cap_progress';
+
+function _capActions(c) {
+  if (!c) return [];
+  const rb   = c.risk_breakdown || {};
+  const assur = (c.governance && c.governance.brsr_assurance) || 'None';
+  const actions = [];
+  let id = 0;
+  const add = (cat, priority, title, desc, estCost, deadline) =>
+    actions.push({ id: c.company_name + '::' + (id++), cat, priority, title, desc, estCost, deadline });
+
+  if ((rb.ghg_intensity || 0) >= 7)
+    add('GHG', 'High', 'Set Science-Based GHG Target',
+      'Commission a third-party energy audit and set a Science-Based Target (SBT) for Scope 1 & 2. Disclose baseline year and reduction pathway in BRSR Principle 6.',
+      '₹15–40 lakh', 'Within 6 months');
+  else if ((rb.ghg_intensity || 0) >= 4)
+    add('GHG', 'Medium', 'Initiate Monthly GHG Monitoring',
+      'Deploy an automated GHG inventory system with monthly intensity tracking. Target 10% intensity reduction by next BRSR cycle.',
+      '₹5–15 lakh', 'Within 12 months');
+
+  if ((rb.water_intensity || 0) >= 7)
+    add('Water', 'High', 'Implement Zero Liquid Discharge (ZLD) Plan',
+      'Engage a certified water-technology provider to design ZLD infrastructure. Report recycling rate (target ≥60%) in BRSR Principle 6.',
+      '₹20–80 lakh', 'Within 9 months');
+  else if ((rb.water_intensity || 0) >= 4)
+    add('Water', 'Medium', 'Deploy Water Metering & Recycling',
+      'Install sub-metering at all high-consumption points. Target 20% reduction in freshwater withdrawal per unit output.',
+      '₹3–10 lakh', 'Within 6 months');
+
+  if ((rb.waste_intensity || 0) >= 7)
+    add('Waste', 'High', 'Critical: EPR Registration & Waste Management Plan',
+      'Register on MoEFCC Extended Producer Responsibility (EPR) portal immediately. Engage MoEFCC-approved processor. Non-registration attracts ₹5–15 crore penalty.',
+      '₹10–30 lakh', 'Immediate — within 30 days');
+  else if ((rb.waste_intensity || 0) >= 4)
+    add('Waste', 'Medium', 'Waste Segregation & Recycler Tie-up',
+      'Implement source-level waste segregation and sign MoU with authorised recyclers. Disclose waste recycled (tonnes) in BRSR P6-24.',
+      '₹2–8 lakh', 'Within 6 months');
+
+  if ((rb.epr_exposure || 0) >= 7)
+    add('EPR', 'High', 'File EPR Annual Return & Reconcile Credits',
+      'Submit Annual EPR return on MoEFCC portal before deadline. Reconcile plastic credits to match generation data and avoid auto-suspension.',
+      '₹1–5 lakh', 'June 30, 2026');
+
+  if ((rb.compliance_risk || 0) >= 7)
+    add('Compliance', 'High', 'Immediate BRSR Core Gap Assessment',
+      'Engage a SEBI-recognised assurance provider for a pre-filing BRSR Core gap assessment. Prepare board briefing on financial exposure to non-compliance.',
+      '₹8–25 lakh', 'Within 3 months');
+  else if ((rb.compliance_risk || 0) >= 4)
+    add('Compliance', 'Medium', 'Internal Compliance Review & Team Training',
+      'Conduct internal BRSR compliance review workshop. Map all KPIs to BRSR Core mandatory indicators and document gaps.',
+      '₹1–3 lakh', 'Within 6 months');
+
+  if ((rb.hr_risk || 0) >= 7)
+    add('Social', 'High', 'Establish Worker Grievance Mechanism',
+      'Implement formal grievance redressal aligned with BRSR Principle 5. Disclose number of grievances received and resolved in Annual Report.',
+      '₹2–6 lakh', 'Within 6 months');
+
+  if ((rb.governance_risk || 0) >= 6)
+    add('Governance', 'Medium', 'Appoint Board-Level ESG Committee',
+      'Constitute a Board-level ESG/Sustainability Committee with at least one independent director. Disclose committee charter in BRSR Principle 1.',
+      '₹0 (board resolution)', 'Next AGM');
+
+  if (assur === 'None')
+    add('Assurance', 'High', 'Engage BRSR Core Assurance Provider',
+      'Engage a SEBI-recognised assurance provider (Big 4 or accredited CA firm) for BRSR Core attestation. Full Assurance is mandatory for BRSR Core-mandated companies.',
+      '₹8–20 lakh', 'Before September 30, 2026');
+  else if (assur === 'Partial')
+    add('Assurance', 'Medium', 'Upgrade to Full BRSR Core Assurance',
+      'Extend assurance scope from Partial to Full. Work with your existing provider to include all mandatory KPIs in the engagement scope.',
+      '₹3–8 lakh additional', 'Before September 30, 2026');
+
+  const ord = { High: 0, Medium: 1, Low: 2 };
+  actions.sort((a, b) => ord[a.priority] - ord[b.priority]);
+  return actions;
+}
+
+function _capGetProgress() {
+  try { return JSON.parse(localStorage.getItem(_CAP_KEY) || '{}'); } catch { return {}; }
+}
+function _capSaveProgress(p) { localStorage.setItem(_CAP_KEY, JSON.stringify(p)); }
+
+function populateCAPDropdown() {
+  const sel = document.getElementById('cap-company-select');
+  if (!sel || sel.options.length > 1) return;
+  allCompanies.slice()
+    .sort((a, b) => a.company_name.localeCompare(b.company_name))
+    .forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.company_name;
+      o.textContent = c.company_name.slice(0, 55);
+      sel.appendChild(o);
+    });
+}
+window.populateCAPDropdown = populateCAPDropdown;
+
+function renderCAP() {
+  const sel    = document.getElementById('cap-company-select');
+  const name   = sel ? sel.value : '';
+  const content = document.getElementById('cap-content');
+  if (!content) return;
+
+  if (!name) {
+    content.innerHTML = `<div style="text-align:center;padding:80px 20px">
+      <div style="font-size:3rem;margin-bottom:16px;opacity:.3">📋</div>
+      <p style="color:#64748b;font-size:.9rem">Select a company above to view its BRSR Improvement Plan.</p>
+    </div>`;
+    return;
+  }
+
+  const c = allCompanies.find(x => x.company_name === name);
+  if (!c) return;
+
+  const actions  = _capActions(c);
+  const progress = _capGetProgress();
+  const countEl  = document.getElementById('cap-actions-count');
+  if (countEl) countEl.textContent = `${actions.length} actions · ${actions.filter(a => (progress[a.id] || 'Open') === 'Closed').length} closed`;
+
+  const priCls = { High: 'cap-pri--high', Medium: 'cap-pri--medium', Low: 'cap-pri--low' };
+  const ringColor = c.risk_tier === 'High' ? '#f87171' : c.risk_tier === 'Low' ? '#34d399' : '#fbbf24';
+  const dash = ((c.esg_risk_score || 0) / 10) * 188.5;
+
+  const header = `
+    <div class="cap-header">
+      <div class="cap-header__left">
+        <div class="cap-header__name">${esc(c.company_name)}</div>
+        <div class="cap-header__meta">${esc(_cleanSector(c.sector))} &nbsp;·&nbsp; ESG Risk ${c.esg_risk_score}/10 &nbsp;·&nbsp; ${(c.governance && c.governance.brsr_assurance) || 'No'} Assurance</div>
+      </div>
+      <div class="cap-header__right">
+        <div class="cap-score-ring">
+          <svg width="72" height="72" viewBox="0 0 72 72" aria-hidden="true">
+            <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
+            <circle cx="36" cy="36" r="30" fill="none" stroke="${ringColor}" stroke-width="6"
+              stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} 188.5"
+              transform="rotate(-90 36 36)"/>
+            <text x="36" y="41" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="16" font-weight="700" fill="#fff">${c.esg_risk_score}</text>
+          </svg>
+        </div>
+        <div>
+          <div class="cap-badge cap-badge--${c.risk_tier.toLowerCase()}">${c.risk_tier} Risk</div>
+          <div style="font-size:.72rem;color:#64748b;margin-top:4px" id="cap-closed-count">
+            ${actions.filter(a => (progress[a.id] || 'Open') === 'Closed').length}/${actions.length} actions closed
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  const statusOpts = ['Open', 'In Progress', 'Closed'];
+  const cards = actions.map(a => {
+    const status = progress[a.id] || 'Open';
+    const cardCls = status === 'Closed' ? 'cap-card--done' : status === 'In Progress' ? 'cap-card--wip' : '';
+    const safeId  = a.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `
+    <div class="cap-card ${cardCls}" id="capcard_${safeId}">
+      <div class="cap-card__top">
+        <span class="cap-pri ${priCls[a.priority] || ''}">${a.priority}</span>
+        <span class="cap-cat">${esc(a.cat)}</span>
+        <select class="cap-status-sel" onchange="window.setCAPStatus(${JSON.stringify(a.id)},this.value,${JSON.stringify(name)})">
+          ${statusOpts.map(s => `<option${s === status ? ' selected' : ''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cap-card__title">${esc(a.title)}</div>
+      <div class="cap-card__desc">${esc(a.desc)}</div>
+      <div class="cap-card__footer">
+        <span class="cap-meta">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          ${esc(a.deadline)}
+        </span>
+        <span class="cap-meta cap-meta--cost">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Est. ${esc(a.estCost)}
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+
+  content.innerHTML = header + `<div class="cap-grid">${cards}</div>`;
+}
+window.renderCAP = renderCAP;
+
+window.setCAPStatus = function(id, status, companyName) {
+  const p = _capGetProgress();
+  p[id] = status;
+  _capSaveProgress(p);
+  const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const card = document.getElementById('capcard_' + safeId);
+  if (card) {
+    card.classList.remove('cap-card--done', 'cap-card--wip');
+    if (status === 'Closed')      card.classList.add('cap-card--done');
+    else if (status === 'In Progress') card.classList.add('cap-card--wip');
+  }
+  const c       = allCompanies.find(x => x.company_name === companyName);
+  const actions = c ? _capActions(c) : [];
+  const prog    = _capGetProgress();
+  const closed  = actions.filter(a => (prog[a.id] || 'Open') === 'Closed').length;
+  const ccEl = document.getElementById('cap-closed-count');
+  if (ccEl) ccEl.textContent = `${closed}/${actions.length} actions closed`;
+  const countEl = document.getElementById('cap-actions-count');
+  if (countEl) countEl.textContent = `${actions.length} actions · ${closed} closed`;
+};
+
+// ── Feature #2: ESG Controversy / Anomaly Feed ────────────────────────────────
+let _ctvRendered = false;
+let _ctvItems    = [];
+
+const _ANOMALY_MAP = {
+  sector_risk_outlier:    { cat: 'Environmental', label: 'Sector Risk Outlier' },
+  waste_intensity_anomaly:{ cat: 'Environmental', label: 'Waste Intensity Anomaly' },
+  compliance_outlier:     { cat: 'Governance',    label: 'Compliance Gap Detected' },
+  water_anomaly:          { cat: 'Environmental', label: 'Water Intensity Anomaly' },
+  ghg_anomaly:            { cat: 'Environmental', label: 'GHG Intensity Anomaly' },
+  epr_gap:                { cat: 'Regulatory',    label: 'EPR Compliance Gap' },
+};
+
+function renderControversy() {
+  if (_ctvRendered) { applyCtv(); return; }
+  _ctvRendered = true;
+
+  _ctvItems = [];
+  const dataDate = INTEL && INTEL.data_as_of ? INTEL.data_as_of : 'Jun 2026';
+  allCompanies.forEach(c => {
+    (c.anomaly_flags || []).forEach(flag => {
+      const m = _ANOMALY_MAP[flag.type] || { cat: 'Regulatory', label: flag.label || 'Risk Flag' };
+      const sev = flag.severity === 'high' ? 'High' : flag.severity === 'medium' ? 'Medium' : 'Low';
+      _ctvItems.push({
+        company:   c.company_name,
+        sector:    _cleanSector(c.sector),
+        date:      dataDate,
+        title:     m.label,
+        desc:      flag.detail || '',
+        severity:  sev,
+        type:      m.cat,
+        esg_score: c.esg_risk_score || 0,
+      });
+    });
+  });
+
+  const ord = { High: 0, Medium: 1, Low: 2 };
+  _ctvItems.sort((a, b) => ord[a.severity] - ord[b.severity] || b.esg_score - a.esg_score);
+  applyCtv();
+}
+window.renderControversy = renderControversy;
+
+function applyCtv() {
+  const q    = (document.getElementById('ctv-search') ? document.getElementById('ctv-search').value : '').toLowerCase();
+  const sev  = document.getElementById('ctv-severity') ? document.getElementById('ctv-severity').value : '';
+  const type = document.getElementById('ctv-type')     ? document.getElementById('ctv-type').value     : '';
+
+  const items = _ctvItems.filter(item => {
+    if (q   && !item.company.toLowerCase().includes(q) && !item.title.toLowerCase().includes(q) && !item.desc.toLowerCase().includes(q)) return false;
+    if (sev  && item.severity !== sev) return false;
+    if (type && item.type     !== type) return false;
+    return true;
+  });
+
+  const countEl = document.getElementById('ctv-count');
+  if (countEl) countEl.textContent = `${items.length.toLocaleString('en-IN')} events`;
+
+  const feed = document.getElementById('ctv-feed');
+  if (!feed) return;
+
+  if (!items.length) {
+    feed.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#64748b">No events match your filters.</div>`;
+    return;
+  }
+
+  const sevCls  = { High: 'ctv-sev--high', Medium: 'ctv-sev--medium', Low: 'ctv-sev--low' };
+  const typeCls = { Environmental: 'ctv-type--env', Regulatory: 'ctv-type--reg', Governance: 'ctv-type--gov', Social: 'ctv-type--soc' };
+
+  feed.innerHTML = items.slice(0, 150).map(item => `
+    <div class="ctv-card">
+      <div class="ctv-card__badges">
+        <span class="ctv-sev ${sevCls[item.severity] || ''}">${item.severity}</span>
+        <span class="ctv-type-badge ${typeCls[item.type] || ''}">${esc(item.type)}</span>
+      </div>
+      <div class="ctv-card__title">${esc(item.title)}</div>
+      <div class="ctv-card__desc">${esc(item.desc)}</div>
+      <div class="ctv-card__footer">
+        <span class="ctv-company" onclick="openDeepDive('${esc(item.company)}')">${esc(item.company.slice(0, 42))}</span>
+        <span class="ctv-sector">${esc(item.sector.slice(0, 28))}</span>
+        <span class="ctv-score">ESG ${item.esg_score}</span>
+        <span class="ctv-date">${esc(item.date)}</span>
+      </div>
+    </div>`).join('');
+}
+window.applyCtv = applyCtv;
+
+// ── Feature #4: BRSR Excellence Badge ────────────────────────────────────────
+let _badgeRendered = false;
+
+function _badgeTier(c) {
+  const assur = (c.governance && c.governance.brsr_assurance) || 'None';
+  if (c.risk_tier === 'Low' && assur === 'All')
+    return { name: 'BRSR Leader',    color: '#4ade80', emoji: '🏅' };
+  if (c.risk_tier === 'Low')
+    return { name: 'ESG Monitor',    color: '#818cf8', emoji: '🔵' };
+  return   { name: 'BRSR Reporter',  color: '#fbbf24', emoji: '🟡' };
+}
+
+function _buildBadgeSVG(name, tier) {
+  const nm = name.length > 26 ? name.slice(0, 24) + '…' : name;
+  const rgb = tier.color === '#4ade80' ? '74,222,128' : tier.color === '#818cf8' ? '129,140,248' : '251,191,36';
+  return `<svg width="220" height="88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(nm)} — ${tier.name} 2025-26">
+  <rect width="220" height="88" rx="10" fill="#0c1629" stroke="${tier.color}" stroke-width="1.5"/>
+  <text x="14" y="26" font-family="DM Sans,sans-serif" font-size="8.5" fill="${tier.color}" font-weight="700" letter-spacing="1.5">GREEN CURVE · ESG ANALYTICS</text>
+  <text x="14" y="48" font-family="DM Sans,sans-serif" font-size="13.5" fill="#f1f5f9" font-weight="600">${esc(tier.name)} 2025-26</text>
+  <text x="14" y="64" font-family="DM Sans,sans-serif" font-size="9" fill="#94a3b8">${esc(nm)}</text>
+  <text x="14" y="78" font-family="DM Sans,sans-serif" font-size="7.5" fill="#475569">Not a SEBI-registered Rating · viduti-esg.github.io</text>
+  <circle cx="196" cy="44" r="18" fill="rgba(${rgb},.1)" stroke="${tier.color}" stroke-width="1.5"/>
+  <text x="196" y="50" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="18" fill="${tier.color}">✓</text>
+</svg>`;
+}
+
+function renderBadge() {
+  if (_badgeRendered) return;
+  _badgeRendered = true;
+
+  const panel = document.getElementById('badge-panel');
+  if (!panel) return;
+
+  const ranked = allCompanies.slice().sort((a, b) => (a.esg_risk_score || 10) - (b.esg_risk_score || 10));
+  const rankMap = {};
+  ranked.forEach((c, i) => { rankMap[c.company_name] = i + 1; });
+
+  const eligible = allCompanies.filter(c =>
+    c.risk_tier === 'Low' ||
+    (c.risk_tier === 'Medium' && (c.governance && c.governance.brsr_assurance) === 'All')
+  ).sort((a, b) => (a.esg_risk_score || 10) - (b.esg_risk_score || 10));
+
+  window._badgeState = { eligible, rankMap };
+
+  panel.innerHTML = `
+    <div class="badge-tiers">
+      <div class="badge-tier badge-tier--gold">
+        <div class="badge-tier__icon">🏅</div>
+        <div class="badge-tier__name">BRSR Leader</div>
+        <div class="badge-tier__desc">Low Risk · Full Assurance</div>
+      </div>
+      <div class="badge-tier badge-tier--silver">
+        <div class="badge-tier__icon">🔵</div>
+        <div class="badge-tier__name">ESG Monitor</div>
+        <div class="badge-tier__desc">Low Risk · Partial / No Assurance</div>
+      </div>
+      <div class="badge-tier badge-tier--bronze">
+        <div class="badge-tier__icon">🟡</div>
+        <div class="badge-tier__name">BRSR Reporter</div>
+        <div class="badge-tier__desc">Medium Risk · Full Assurance</div>
+      </div>
+    </div>
+    <h4 style="margin:0 0 16px;font-size:.8rem;color:#64748b;text-transform:uppercase;letter-spacing:.08em">${eligible.length} eligible companies — click any card to get embed code</h4>
+    <div class="badge-grid">
+      ${eligible.map(c => {
+        const t = _badgeTier(c);
+        return `<div class="badge-co-card" onclick="window.showBadgeEmbed('${esc(c.company_name)}')">
+          <div class="badge-co-preview">${_buildBadgeSVG(c.company_name, t)}</div>
+          <div class="badge-co-name">${esc(c.company_name.slice(0, 36))}</div>
+          <div class="badge-co-meta">Rank #${rankMap[c.company_name] || '—'} · ${esc(_cleanSector(c.sector).slice(0, 26))}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+window.renderBadge = renderBadge;
+
+window.showBadgeEmbed = function(name) {
+  const embedPanel = document.getElementById('badge-embed-panel');
+  if (!embedPanel || !window._badgeState) return;
+  const c = window._badgeState.eligible.find(x => x.company_name === name);
+  if (!c) return;
+  const t   = _badgeTier(c);
+  const svg = _buildBadgeSVG(name, t);
+  const b64 = btoa(unescape(encodeURIComponent(svg)));
+  const verifyUrl = 'https://viduti-esg.github.io/esg-intelligence.html';
+  const embedCode = `<a href="${verifyUrl}" target="_blank" rel="noopener">\n  <img src="data:image/svg+xml;base64,${b64}"\n       alt="${name} — ${t.name} 2025-26 — Green Curve ESG Analytics"\n       width="220" height="88"/>\n</a>`;
+  embedPanel.hidden = false;
+  embedPanel.innerHTML = `
+    <div class="badge-embed__title">Embed Code — ${esc(name)}</div>
+    <pre class="badge-embed__code">${esc(embedCode)}</pre>
+    <button class="cap-status-sel" style="margin-top:10px;padding:6px 18px;cursor:pointer;border-radius:8px"
+      onclick="navigator.clipboard.writeText(${JSON.stringify(embedCode)}).then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='Copy Embed Code',2000)}).catch(()=>{})">
+      Copy Embed Code
+    </button>
+    <div class="badge-embed__note">Paste into your Annual Report website, investor deck, or company sustainability page. The badge links back to Green Curve for verification.</div>`;
+  embedPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
+
+// ── Feature #6: India ESG Market Map ─────────────────────────────────────────
+let _mmRendered = false;
+
+function renderMarketMap() {
+  if (_mmRendered) return;
+  _mmRendered = true;
+
+  const sectors = {};
+  allCompanies.forEach(c => {
+    const sec = _cleanSector(c.sector) || 'Other';
+    if (!sec || sec === 'Other' || sec.startsWith('NIC ')) return;
+    if (!sectors[sec]) sectors[sec] = { cos: [], totalRev: 0, totalRisk: 0 };
+    sectors[sec].cos.push(c);
+    sectors[sec].totalRev  += c.revenue_crore || 0;
+    sectors[sec].totalRisk += c.esg_risk_score || 0;
+  });
+
+  const entries = Object.entries(sectors)
+    .map(([name, d]) => ({
+      name,
+      count:   d.cos.length,
+      avgRisk: d.totalRisk / d.cos.length,
+      totalRev: d.totalRev,
+      highRisk: d.cos.filter(x => x.risk_tier === 'High').length,
+    }))
+    .filter(e => e.count >= 2)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 26);
+
+  const colors = entries.map(e =>
+    e.avgRisk >= 6.5 ? 'rgba(248,113,113,.8)' :
+    e.avgRisk >= 4.5 ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)');
+
+  Plotly.newPlot('mm-chart', [{
+    type: 'scatter', mode: 'markers+text',
+    x: entries.map(e => +e.avgRisk.toFixed(2)),
+    y: entries.map(e => +(e.totalRev / 1e5).toFixed(2)),
+    text: entries.map(e => e.name.slice(0, 16)),
+    textposition: 'top center',
+    textfont: { size: 9, color: '#94a3b8' },
+    marker: {
+      size: entries.map(e => Math.max(14, Math.min(56, e.count * 3))),
+      color: colors,
+      line: { color: 'rgba(0,0,0,.4)', width: 1 },
+    },
+    customdata: entries.map(e => [e.name, e.count, e.avgRisk.toFixed(1), (e.totalRev / 1e5).toFixed(2), e.highRisk]),
+    hovertemplate: '<b>%{customdata[0]}</b><br>Companies: %{customdata[1]}<br>Avg ESG Risk: %{customdata[2]}/10<br>Total Revenue: ₹%{customdata[3]}L Cr<br>High Risk cos: %{customdata[4]}<extra></extra>',
+  }], {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'rgba(12,22,41,.6)',
+    font: { color: '#94a3b8', family: 'DM Sans, sans-serif', size: 11 },
+    xaxis: {
+      title: { text: 'Average ESG Risk Score →', font: { size: 11, color: '#64748b' } },
+      range: [3, 9.5], gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' }, zeroline: false,
+    },
+    yaxis: {
+      title: { text: 'Total Sector Revenue (₹ lakh crore) →', font: { size: 11, color: '#64748b' } },
+      gridcolor: 'rgba(255,255,255,.05)', tickfont: { color: '#94a3b8' }, zeroline: false,
+    },
+    shapes: [
+      { type: 'line', x0: 6.5, x1: 6.5, y0: 0, y1: 1, yref: 'paper', line: { color: 'rgba(248,113,113,.25)', width: 1, dash: 'dot' } },
+      { type: 'line', x0: 4.5, x1: 4.5, y0: 0, y1: 1, yref: 'paper', line: { color: 'rgba(251,191,36,.25)',  width: 1, dash: 'dot' } },
+    ],
+    annotations: [
+      { x: 3.8, y: 0.97, yref: 'paper', text: 'Low Risk Zone',   showarrow: false, font: { size: 9, color: 'rgba(52,211,153,.55)'  } },
+      { x: 5.5, y: 0.97, yref: 'paper', text: 'Medium Risk',     showarrow: false, font: { size: 9, color: 'rgba(251,191,36,.55)'  } },
+      { x: 7.8, y: 0.97, yref: 'paper', text: 'High Risk Zone',  showarrow: false, font: { size: 9, color: 'rgba(248,113,113,.55)' } },
+    ],
+    margin: { l: 70, r: 30, t: 30, b: 60 }, height: 480,
+  }, { displayModeBar: false, responsive: true });
+
+  const grid = document.getElementById('mm-sector-grid');
+  if (grid) {
+    grid.innerHTML = entries.map(e => `
+      <div class="mm-sector-card" style="border-color:${e.avgRisk >= 6.5 ? 'rgba(248,113,113,.2)' : e.avgRisk >= 4.5 ? 'rgba(251,191,36,.15)' : 'rgba(52,211,153,.12)'}">
+        <div class="mm-sector-name">${esc(e.name.slice(0, 32))}</div>
+        <div class="mm-sector-stats">
+          <span>${e.count} cos</span>
+          <span style="color:${e.avgRisk >= 6.5 ? '#f87171' : e.avgRisk >= 4.5 ? '#fbbf24' : '#34d399'}">${e.avgRisk.toFixed(1)} avg risk</span>
+          <span>${e.highRisk} high</span>
+        </div>
+      </div>`).join('');
+  }
+}
+window.renderMarketMap = renderMarketMap;
+
+// ── Utilities ──────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmt(n) {
+  return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n);
+}
+
 initDashboard();

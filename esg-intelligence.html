@@ -125,6 +125,10 @@
   <button class="intel-tab" data-tab="anomalies"  role="tab" aria-selected="false">Anomalies</button>
   <button class="intel-tab" data-tab="filing"     role="tab" aria-selected="false">BRSR Filing</button>
   <button class="intel-tab" data-tab="watchlist"  role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
+  <button class="intel-tab" data-tab="cap"         role="tab" aria-selected="false">Improvement Plan</button>
+  <button class="intel-tab" data-tab="controversy"  role="tab" aria-selected="false">Controversy Feed</button>
+  <button class="intel-tab" data-tab="badge"        role="tab" aria-selected="false">Excellence Badge</button>
+  <button class="intel-tab" data-tab="marketmap"    role="tab" aria-selected="false">Market Map</button>
 </div>
 
 <main class="container intel-main">
@@ -453,6 +457,7 @@
       <h3 class="dm-intro-title">BRSR Filing Tracker</h3>
       <p class="dm-intro-text">Assurance status and BRSR Core readiness across 1,227 companies based on SEBI BRSR public disclosures. Revenue ≥ ₹5,000 Cr companies are BRSR Core mandated (FY2024-25 onwards). Data sourced from publicly filed Annual Reports and SEBI BRSR disclosures.</p>
     </div>
+    <div id="ft-deadline-strip" class="ft-deadline-strip"></div>
     <div id="ft-kpi-row" class="ft-kpi-row"></div>
     <div class="ft-controls">
       <input type="search" id="ft-search" class="screener-search" placeholder="Search company…" oninput="applyFTFilters()"/>
@@ -495,6 +500,71 @@
       <p class="dm-intro-text">Track companies and get alerted when their ESG risk tier or score changes. Click ☆ on any row in the Company Screener to add a company here.</p>
     </div>
     <div id="wl-panel-content"></div>
+  </section>
+
+  <!-- ── IMPROVEMENT PLAN (CAP) ───────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-cap">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">BRSR Improvement Plan</h3>
+      <p class="dm-intro-text">Select a company to view its BRSR gap analysis and auto-generated corrective action plan. Track progress toward compliance milestones — saved in your browser.</p>
+    </div>
+    <div class="cap-controls">
+      <select id="cap-company-select" class="screener-filter cap-select" onchange="renderCAP()">
+        <option value="">— Select a company —</option>
+      </select>
+      <span class="screener-count" id="cap-actions-count"></span>
+    </div>
+    <div id="cap-content"></div>
+  </section>
+
+  <!-- ── CONTROVERSY FEED ─────────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-controversy">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">ESG Controversy &amp; Anomaly Feed</h3>
+      <p class="dm-intro-text">Risk flags and statistical anomalies detected across analysed companies from SEBI BRSR public disclosures. Click any entry to open the company's full ESG deep dive.</p>
+    </div>
+    <div class="screener-controls">
+      <input class="screener-search" id="ctv-search" type="search" placeholder="Search company or event…" oninput="applyCtv()"/>
+      <select class="screener-filter" id="ctv-severity" onchange="applyCtv()">
+        <option value="">All Severity</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      <select class="screener-filter" id="ctv-type" onchange="applyCtv()">
+        <option value="">All Types</option>
+        <option value="Environmental">Environmental</option>
+        <option value="Regulatory">Regulatory</option>
+        <option value="Governance">Governance</option>
+        <option value="Social">Social</option>
+      </select>
+      <span class="screener-count" id="ctv-count"></span>
+    </div>
+    <div id="ctv-feed" class="ctv-feed"></div>
+  </section>
+
+  <!-- ── BRSR EXCELLENCE BADGE ─────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-badge">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">BRSR Excellence Badge</h3>
+      <p class="dm-intro-text">Green Curve recognition for companies in the Low Risk tier based on publicly filed SEBI BRSR disclosures. Click any company to get a shareable embed badge for your sustainability report or website.</p>
+    </div>
+    <div class="badge-disclaimer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      These badges are based solely on Green Curve's own analytical output from publicly filed SEBI BRSR disclosures — not a SEBI-registered ESG rating or certification.
+    </div>
+    <div id="badge-panel"></div>
+    <div id="badge-embed-panel" class="badge-embed-panel" hidden></div>
+  </section>
+
+  <!-- ── INDIA ESG MARKET MAP ──────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-marketmap">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">India ESG Market Map</h3>
+      <p class="dm-intro-text">Visual landscape of ESG risk across Indian sectors. Bubble size = number of companies · X-axis = avg ESG risk · Y-axis = total sector revenue (₹ lakh crore). Source: SEBI BRSR public disclosures.</p>
+    </div>
+    <div id="mm-chart" style="height:480px;width:100%"></div>
+    <div id="mm-sector-grid" class="mm-sector-grid"></div>
   </section>
 
 </main>
@@ -577,7 +647,7 @@
   </div>
 </div>
 
-<script src="assets/js/esg-intelligence.js?v=20260606" defer></script>
+<script src="assets/js/esg-intelligence.js?v=20260607" defer></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
   const header   = document.getElementById('site-header');
@@ -597,9 +667,13 @@
       btn.setAttribute('aria-selected','true');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (typeof gtag === 'function') gtag('event', 'esg_tab_viewed', { tab: btn.dataset.tab });
-      if (btn.dataset.tab === 'heatmap' && typeof renderHeatMap === 'function') renderHeatMap();
-      if (btn.dataset.tab === 'filing'    && typeof renderFilingTracker === 'function') renderFilingTracker();
-      if (btn.dataset.tab === 'watchlist' && typeof renderWatchlist === 'function') renderWatchlist();
+      if (btn.dataset.tab === 'heatmap'      && typeof renderHeatMap === 'function') renderHeatMap();
+      if (btn.dataset.tab === 'filing'       && typeof renderFilingTracker === 'function') { if (typeof _renderFilingDeadline === 'function') _renderFilingDeadline(); renderFilingTracker(); }
+      if (btn.dataset.tab === 'watchlist'    && typeof renderWatchlist === 'function') renderWatchlist();
+      if (btn.dataset.tab === 'cap'          && typeof renderCAP === 'function') { if (typeof populateCAPDropdown === 'function') populateCAPDropdown(); renderCAP(); }
+      if (btn.dataset.tab === 'controversy'  && typeof renderControversy === 'function') renderControversy();
+      if (btn.dataset.tab === 'badge'        && typeof renderBadge === 'function') renderBadge();
+      if (btn.dataset.tab === 'marketmap'    && typeof renderMarketMap === 'function') renderMarketMap();
     });
   });
   // Mobile nav

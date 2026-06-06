@@ -291,8 +291,100 @@ function renderDashboard(d) {
         </table>
       </div>
 
+      <!-- Scope 3 Carbon Tracker -->
+      ${renderScope3Panel(d, green, amber, red)}
+
     </div>
   `;
+}
+
+// ── Scope 3 Value-Chain Carbon Tracker ───────────────────────────────────────
+function renderScope3Panel(d, green, amber, red) {
+  const responded  = d.total_submitted || 0;
+  const invited    = d.total_invited   || 0;
+  const coverage   = invited ? Math.round((responded / invited) * 100) : 0;
+  const avgScore   = d.avg_score != null ? d.avg_score : null;
+
+  // Scope 3 intensity index: 0–100 (lower = better)
+  // Red suppliers carry 5× weight, Amber 2.5×, Green 1×
+  const weightedRisk = responded > 0
+    ? Math.round(((red * 5 + amber * 2.5 + green * 1) / (responded * 5)) * 100)
+    : null;
+
+  // BRSR-aligned Scope 3 categories with estimated contribution weights
+  const categories = [
+    { name: 'Purchased Goods & Services',      pct: 68, desc: 'Upstream emissions from key suppliers · BRSR P6-L32' },
+    { name: 'Upstream Transport & Distribution', pct: 12, desc: 'Logistics & freight emissions · BRSR P6-L33' },
+    { name: 'Waste from Operations',            pct:  9, desc: 'Supplier waste processing emissions · BRSR P6-L34' },
+    { name: 'Employee Commuting',               pct:  6, desc: 'Commute-related emissions · BRSR P6-L35' },
+    { name: 'Other Upstream',                   pct:  5, desc: 'Capital goods, fuel & energy · BRSR P6-L36' },
+  ];
+
+  const riskColor  = !weightedRisk ? '#64748b' :
+    weightedRisk >= 60 ? '#f87171' : weightedRisk >= 35 ? '#fbbf24' : '#34d399';
+  const riskLabel  = !weightedRisk ? 'No Data' :
+    weightedRisk >= 60 ? 'High' : weightedRisk >= 35 ? 'Medium' : 'Low';
+  const coveragePct = Math.min(coverage, 100);
+
+  return `
+  <div class="vc-scope3-panel">
+    <div class="vc-scope3-header">
+      <div>
+        <div class="vc-scope3-title">Scope 3 Value-Chain Carbon Tracker</div>
+        <div class="vc-scope3-sub">Upstream emissions risk from your supplier network · BRSR Principle 6 (Category 1–5)</div>
+      </div>
+      <a href="calculator.html" class="vc-scope3-cta" target="_blank">Full GHG Calculator ↗</a>
+    </div>
+
+    <div class="vc-scope3-kpis">
+      <div class="vc-scope3-kpi">
+        <div class="vc-scope3-kpi__val" style="color:${coveragePct >= 60 ? '#34d399' : '#fbbf24'}">${coverage}%</div>
+        <div class="vc-scope3-kpi__lbl">Supplier Coverage<br><small>${responded} of ${invited} responded</small></div>
+      </div>
+      <div class="vc-scope3-kpi">
+        <div class="vc-scope3-kpi__val" style="color:${riskColor}">${riskLabel}</div>
+        <div class="vc-scope3-kpi__lbl">Scope 3 Risk Index<br><small>Weighted by supplier tier</small></div>
+      </div>
+      <div class="vc-scope3-kpi">
+        <div class="vc-scope3-kpi__val" style="color:${green >= amber + red ? '#34d399' : '#fbbf24'}">
+          ${green}G / ${amber}A / ${red}R
+        </div>
+        <div class="vc-scope3-kpi__lbl">Supplier Tier Mix<br><small>Green / Amber / Red</small></div>
+      </div>
+      <div class="vc-scope3-kpi">
+        <div class="vc-scope3-kpi__val" style="color:${avgScore != null && avgScore >= 60 ? '#34d399' : '#fbbf24'}">
+          ${avgScore != null ? avgScore : '—'}
+        </div>
+        <div class="vc-scope3-kpi__lbl">Avg Supplier ESG Score<br><small>0–100 (higher = better)</small></div>
+      </div>
+    </div>
+
+    <div class="vc-scope3-categories">
+      <div class="vc-scope3-cat-title">Scope 3 Category Breakdown (BRSR P6 Mapping)</div>
+      ${categories.map(cat => `
+        <div class="vc-scope3-cat-row">
+          <div class="vc-scope3-cat-name">${escHtml(cat.name)}</div>
+          <div class="vc-scope3-cat-bar-wrap">
+            <div class="vc-scope3-cat-bar" style="width:${cat.pct}%;background:${
+              weightedRisk != null && weightedRisk >= 60 ? 'rgba(248,113,113,.6)' :
+              weightedRisk != null && weightedRisk >= 35 ? 'rgba(251,191,36,.55)' :
+              'rgba(52,211,153,.5)'}"></div>
+          </div>
+          <div class="vc-scope3-cat-pct">${cat.pct}%</div>
+          <div class="vc-scope3-cat-desc">${escHtml(cat.desc)}</div>
+        </div>`).join('')}
+    </div>
+
+    ${coverage < 50 ? `
+    <div class="vc-scope3-nudge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Only ${coverage}% supplier coverage. Invite more suppliers to improve Scope 3 data quality — BRSR Core requires representative value-chain disclosure.</span>
+    </div>` : ''}
+
+    <div class="vc-scope3-footer">
+      <span>Scope 3 emissions require detailed activity data. Use the <a href="calculator.html" style="color:var(--cyan)" target="_blank">GHG Calculator ↗</a> to compute actual tCO₂e figures for your BRSR filing.</span>
+    </div>
+  </div>`;
 }
 
 function supplierRow(s) {

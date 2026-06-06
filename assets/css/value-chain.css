@@ -761,6 +761,116 @@
 .sf-checkbox-wrap input[type="checkbox"] { accent-color: var(--cyan); width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; }
 .sf-checkbox-wrap span { font-size: .85rem; color: var(--text-70); line-height: 1.5; }
 
+/* ── Scope 3 Carbon Tracker ───────────────────────────────────────────────── */
+.vc-scope3-panel {
+  margin-top: 28px;
+  background: rgba(12, 22, 41, .7);
+  border: 1px solid rgba(0,200,255,.15);
+  border-radius: 14px;
+  padding: 24px;
+}
+.vc-scope3-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.vc-scope3-title { font-size: 1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+.vc-scope3-sub   { font-size: .78rem; color: #64748b; }
+.vc-scope3-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 8px;
+  background: rgba(0,200,255,.08);
+  border: 1px solid rgba(0,200,255,.25);
+  color: #00c8ff;
+  font-size: .78rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .2s;
+}
+.vc-scope3-cta:hover { background: rgba(0,200,255,.15); }
+
+.vc-scope3-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.vc-scope3-kpi {
+  background: #071022;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.vc-scope3-kpi__val {
+  font-size: 1.45rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.vc-scope3-kpi__lbl { font-size: .72rem; color: #475569; line-height: 1.5; }
+.vc-scope3-kpi__lbl small { display: block; font-size: .68rem; color: #334155; }
+
+.vc-scope3-categories { margin-bottom: 18px; }
+.vc-scope3-cat-title  {
+  font-size: .78rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 14px;
+}
+.vc-scope3-cat-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: .8rem;
+}
+.vc-scope3-cat-name { color: #cbd5e1; font-weight: 500; font-size: .78rem; }
+.vc-scope3-cat-bar-wrap {
+  background: rgba(255,255,255,.05);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+.vc-scope3-cat-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .5s ease;
+}
+.vc-scope3-cat-pct { font-size: .75rem; color: #64748b; text-align: right; }
+.vc-scope3-cat-desc { display: none; }
+
+.vc-scope3-nudge {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(251,191,36,.05);
+  border: 1px solid rgba(251,191,36,.18);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: .78rem;
+  color: #fbbf24;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.vc-scope3-footer {
+  font-size: .76rem;
+  color: #475569;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.05);
+  line-height: 1.5;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .vc-stats   { grid-template-columns: 1fr 1fr; }
@@ -774,4 +884,6 @@
   .sf-two-col { grid-template-columns: 1fr; }
   .sf-main { padding: 32px 16px 60px; }
   .sf-topbar { padding: 12px 16px; }
+  .vc-scope3-cat-row { grid-template-columns: 1fr 1fr 30px; }
+  .vc-scope3-cat-name { grid-column: 1 / -1; }
 }

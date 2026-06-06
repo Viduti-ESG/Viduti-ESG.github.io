@@ -1582,3 +1582,310 @@
   letter-spacing: .01em;
 }
 .ft-cin-link:hover { color: #00c8ff; text-decoration: underline; }
+
+/* ── Filing Deadline Countdown Strip ──────────────────────────────────────── */
+.ft-deadline-strip {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.ft-dl-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 220px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: #0c1629;
+}
+.ft-dl-days {
+  font-size: 1.55rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  min-width: 52px;
+  text-align: center;
+  line-height: 1;
+}
+.ft-dl-label { font-size: .82rem; color: #cbd5e1; font-weight: 600; margin-bottom: 3px; }
+.ft-dl-who   { font-size: .72rem; color: #475569; }
+.ft-dl--urgent { border-color: rgba(248,113,113,.25); }
+.ft-dl--urgent .ft-dl-days { color: #f87171; }
+.ft-dl--ok { border-color: rgba(52,211,153,.15); }
+.ft-dl--ok .ft-dl-days { color: #34d399; }
+.ft-dl--passed { opacity: .5; }
+.ft-dl--passed .ft-dl-days { color: #475569; font-size: 1rem; }
+
+/* ── BRSR Improvement Plan (CAP) ──────────────────────────────────────────── */
+.cap-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.cap-select { min-width: 300px; max-width: 480px; }
+
+.cap-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.cap-header__name { font-size: 1.05rem; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+.cap-header__meta { font-size: .8rem; color: #64748b; }
+.cap-header__right { display: flex; align-items: center; gap: 14px; }
+
+.cap-score-ring svg { display: block; }
+
+.cap-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.cap-badge--high   { background: rgba(248,113,113,.12); color: #f87171; }
+.cap-badge--medium { background: rgba(251,191,36,.12);  color: #fbbf24; }
+.cap-badge--low    { background: rgba(52,211,153,.12);  color: #34d399; }
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.cap-card {
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color .2s;
+}
+.cap-card--wip  { border-color: rgba(251,191,36,.3);  background: rgba(251,191,36,.03); }
+.cap-card--done { border-color: rgba(52,211,153,.25); background: rgba(52,211,153,.03); opacity: .65; }
+
+.cap-card__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.cap-pri {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: .67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.cap-pri--high   { background: rgba(248,113,113,.15); color: #f87171; }
+.cap-pri--medium { background: rgba(251,191,36,.12);  color: #fbbf24; }
+.cap-pri--low    { background: rgba(52,211,153,.1);   color: #34d399; }
+
+.cap-cat {
+  font-size: .72rem;
+  color: #64748b;
+  padding: 2px 8px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 999px;
+}
+.cap-status-sel {
+  margin-left: auto;
+  background: #071022;
+  border: 1px solid rgba(255,255,255,.12);
+  color: #cbd5e1;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: .74rem;
+  cursor: pointer;
+}
+.cap-card__title { font-size: .9rem; font-weight: 600; color: #f1f5f9; margin-bottom: 8px; line-height: 1.4; }
+.cap-card__desc  { font-size: .8rem; color: #94a3b8; line-height: 1.6; margin-bottom: 12px; }
+.cap-card__footer {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.cap-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .73rem;
+  color: #475569;
+}
+.cap-meta svg { flex-shrink: 0; }
+.cap-meta--cost { color: #34d399; }
+
+/* ── Controversy Feed ──────────────────────────────────────────────────────── */
+.ctv-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ctv-card {
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color .2s;
+}
+.ctv-card:hover { border-color: rgba(255,255,255,.14); }
+.ctv-card__badges { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.ctv-sev {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: .67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.ctv-sev--high   { background: rgba(248,113,113,.15); color: #f87171; }
+.ctv-sev--medium { background: rgba(251,191,36,.12);  color: #fbbf24; }
+.ctv-sev--low    { background: rgba(52,211,153,.1);   color: #34d399; }
+
+.ctv-type-badge {
+  font-size: .67rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.1);
+  color: #94a3b8;
+}
+.ctv-type--env { border-color: rgba(52,211,153,.3);  color: #34d399; }
+.ctv-type--reg { border-color: rgba(248,113,113,.3); color: #f87171; }
+.ctv-type--gov { border-color: rgba(99,102,241,.3);  color: #818cf8; }
+.ctv-type--soc { border-color: rgba(251,191,36,.3);  color: #fbbf24; }
+
+.ctv-card__title { font-size: .9rem; font-weight: 600; color: #e2e8f0; margin-bottom: 5px; }
+.ctv-card__desc  { font-size: .8rem; color: #94a3b8; line-height: 1.55; margin-bottom: 10px; }
+.ctv-card__footer {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: .75rem;
+}
+.ctv-company {
+  color: #00c8ff;
+  cursor: pointer;
+  font-weight: 600;
+}
+.ctv-company:hover { text-decoration: underline; }
+.ctv-sector { color: #475569; }
+.ctv-score  { color: #64748b; }
+.ctv-date   { color: #334155; margin-left: auto; }
+
+/* ── BRSR Excellence Badge ─────────────────────────────────────────────────── */
+.badge-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(251,191,36,.05);
+  border: 1px solid rgba(251,191,36,.18);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: .78rem;
+  color: #fbbf24;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.badge-tiers {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.badge-tier {
+  flex: 1 1 160px;
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+}
+.badge-tier__icon { font-size: 1.8rem; margin-bottom: 8px; }
+.badge-tier__name { font-size: .88rem; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+.badge-tier__desc { font-size: .74rem; color: #64748b; }
+.badge-tier--gold   { border-color: rgba(74,222,128,.2); }
+.badge-tier--silver { border-color: rgba(129,140,248,.2); }
+.badge-tier--bronze { border-color: rgba(251,191,36,.2); }
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.badge-co-card {
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color .2s, transform .15s;
+}
+.badge-co-card:hover { border-color: rgba(52,211,153,.3); transform: translateY(-2px); }
+.badge-co-preview { margin-bottom: 10px; line-height: 0; }
+.badge-co-preview svg { border-radius: 8px; max-width: 100%; }
+.badge-co-name { font-size: .8rem; font-weight: 600; color: #e2e8f0; margin-bottom: 3px; }
+.badge-co-meta { font-size: .72rem; color: #475569; }
+
+.badge-embed-panel {
+  margin-top: 28px;
+  background: #0c1629;
+  border: 1px solid rgba(52,211,153,.25);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+.badge-embed__title { font-size: .9rem; font-weight: 700; color: #34d399; margin-bottom: 12px; }
+.badge-embed__code {
+  background: #071022;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: .74rem;
+  color: #94a3b8;
+  overflow-x: auto;
+  white-space: pre;
+  font-family: 'Consolas', 'Monaco', monospace;
+  margin-bottom: 0;
+}
+.badge-embed__note {
+  margin-top: 12px;
+  font-size: .75rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* ── India ESG Market Map ──────────────────────────────────────────────────── */
+.mm-sector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+.mm-sector-card {
+  background: #0c1629;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.mm-sector-name  { font-size: .8rem; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; }
+.mm-sector-stats { display: flex; gap: 10px; font-size: .73rem; color: #64748b; flex-wrap: wrap; }
+
+@media (max-width: 640px) {
+  .cap-grid { grid-template-columns: 1fr; }
+  .badge-grid { grid-template-columns: 1fr; }
+  .mm-sector-grid { grid-template-columns: 1fr 1fr; }
+  .cap-select { min-width: 100%; }
+}
