@@ -74,8 +74,11 @@ async function initDashboard() {
     allCompanies = INTEL.companies || [];
 
     const s = INTEL.summary || {};
-    statusEl.textContent =
-      `${s.total_companies || 0} companies analysed · ${s.regulations_analysed || 0} regulations tracked · Updated ${INTEL.data_as_of || ''}`;
+    statusEl.textContent = INTEL.data_as_of || '—';
+
+    // populate hero stat badges
+    const hrEl = document.getElementById('heroHighRisk');
+    if (hrEl) hrEl.textContent = (s.high_risk_count || s.risk_distribution?.High || '—');
 
     renderKPIs(s);
     renderCharts();
