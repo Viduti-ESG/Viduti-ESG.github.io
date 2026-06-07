@@ -1983,7 +1983,7 @@ button:focus:not(:focus-visible) { outline: none; }
    ══════════════════════════════════════════════════════════════ */
 .hero__metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0;
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
@@ -2010,11 +2010,11 @@ button:focus:not(:focus-visible) { outline: none; }
   letter-spacing: .08em;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 700px) {
   .hero__metrics { grid-template-columns: repeat(2, 1fr); }
   .metric:nth-child(2) { border-right: none; }
   .metric { border-bottom: 1px solid var(--border); }
-  .metric:nth-child(3), .metric:last-child { border-bottom: none; }
+  .metric:last-child { border-bottom: none; border-right: none; }
 }
 @media (max-width: 500px) {
   .hero__metrics { grid-template-columns: 1fr 1fr; }
