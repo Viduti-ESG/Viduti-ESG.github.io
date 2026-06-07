@@ -92,6 +92,7 @@ async function loadPosts() {
     statPosts.textContent = allPosts.length;
     buildBadges();
     applyFilter(activeFilter);
+    buildInsightCarousel(allPosts);
   } catch {
     grid.innerHTML = '';
     empty.classList.remove('hidden');
@@ -474,6 +475,69 @@ function fmtDate(d) {
 function esc(s) {
   return String(s || '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── TRENDING CAROUSEL (imagine.art "What's New" pattern) ────────────────── */
+function buildInsightCarousel(posts) {
+  const track = document.getElementById('insightCarousel');
+  if (!track || !posts || !posts.length) return;
+
+  // Use top 12 most recent posts for the carousel
+  const recent = posts.slice(0, 12);
+
+  // Tag → accent color mapping
+  const tagColors = {
+    'CPCB / EPR':            'var(--emerald)',
+    'SEBI / BRSR':           'var(--cyan)',
+    'MoEFCC':                '#4ade80',
+    'BEE / Energy Efficiency':'#f97316',
+    'ISSB / IFRS Sustainability': 'var(--violet)',
+    'EU CSRD / EFRAG':       'var(--amber)',
+    'GHG Protocol':          '#f87171',
+    'GRI':                   '#06b6d4',
+    'CDP':                   'var(--violet)',
+    'SBTi':                  '#a3e635',
+    'TNFD':                  '#2dd4bf',
+    'Daily Digest':          '#38bdf8',
+  };
+
+  const cards = recent.map((p, i) => {
+    const accent  = tagColors[p.category] || 'var(--cyan)';
+    const dateStr = fmtDate(p.date);
+    const el = document.createElement('div');
+    el.className = 'gc-insight-card';
+    el.style.setProperty('--ic-accent', accent);
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('data-carousel-idx', i);
+    el.innerHTML = `<div class="gc-insight-card__tag">${esc(p.category || '')}</div>
+      <div class="gc-insight-card__title">${esc(p.title)}</div>
+      <div class="gc-insight-card__date">${dateStr}</div>`;
+    el.addEventListener('click', () => openModal(p));
+    return el;
+  });
+  track.innerHTML = '';
+  cards.forEach(c => track.appendChild(c));
+
+  // Carousel nav buttons
+  const prev = document.getElementById('carouselPrev');
+  const next = document.getElementById('carouselNext');
+  const scrollBy = 300;
+
+  function updateBtns() {
+    if (prev) prev.disabled = track.scrollLeft < 10;
+    if (next) next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 10;
+  }
+
+  if (prev) prev.addEventListener('click', () => { track.scrollLeft -= scrollBy; setTimeout(updateBtns, 350); });
+  if (next) next.addEventListener('click', () => { track.scrollLeft += scrollBy; setTimeout(updateBtns, 350); });
+  track.addEventListener('scroll', updateBtns, { passive: true });
+  setTimeout(updateBtns, 100);
+
+  // Keyboard navigation on cards
+  track.querySelectorAll('.gc-insight-card').forEach(card => {
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') card.click(); });
+  });
 }
 
 /* ── INIT ── */

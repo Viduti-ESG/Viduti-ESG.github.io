@@ -2139,3 +2139,235 @@ button:focus:not(:focus-visible) { outline: none; }
   0%   { background-position: 100% 0; }
   100% { background-position: -100% 0; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   IMAGINE.ART-INSPIRED COMPONENTS
+   Central creation prompt · Mode tabs · Horizontal carousel
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── Central creation/discovery bar ───────────────────────────── */
+.gc-creation-wrap { max-width: 740px; margin: 0 auto; position: relative; }
+
+.gc-creation-label {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: #fff;
+  text-align: center;
+  letter-spacing: -.028em;
+  line-height: 1.18;
+  margin-bottom: 10px;
+}
+.gc-creation-label em {
+  font-style: italic;
+  background: linear-gradient(110deg, var(--cyan) 0%, var(--violet) 50%, var(--emerald) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 5s ease infinite;
+}
+.gc-creation-sub {
+  text-align: center;
+  font-size: .9rem;
+  color: var(--text-40);
+  margin-bottom: 28px;
+}
+
+/* Mode tabs */
+.gc-mode-tabs {
+  display: flex; align-items: center; justify-content: center;
+  gap: 4px; margin-bottom: 16px;
+}
+.gc-mode-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px; border-radius: 100px;
+  font-size: .8rem; font-weight: 600; font-family: var(--sans);
+  color: var(--text-40); background: transparent;
+  border: 1px solid var(--border-hi); cursor: pointer;
+  transition: all var(--t-base) var(--ease-smooth);
+  white-space: nowrap;
+}
+.gc-mode-tab:hover {
+  color: var(--text-70);
+  border-color: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.04);
+}
+.gc-mode-tab--active {
+  color: #fff;
+  background: rgba(0,200,255,.1);
+  border-color: rgba(0,200,255,.45);
+  box-shadow: 0 0 16px rgba(0,200,255,.12);
+}
+
+/* Prompt input bar */
+.gc-prompt-bar {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(12,22,41,.85);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--r-2xl);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.05);
+  transition: border-color var(--t-base) var(--ease-smooth),
+              box-shadow var(--t-base) var(--ease-smooth);
+}
+.gc-prompt-bar:focus-within {
+  border-color: rgba(0,200,255,.45);
+  box-shadow: 0 8px 48px rgba(0,0,0,.5), 0 0 0 3px rgba(0,200,255,.08), var(--glow-cyan);
+}
+.gc-prompt-bar__input {
+  flex: 1; background: transparent; border: none; outline: none;
+  padding: 18px 24px; font-family: var(--sans);
+  font-size: 1rem; color: var(--text); min-width: 0;
+}
+.gc-prompt-bar__input::placeholder { color: var(--text-20); }
+.gc-prompt-bar__btn {
+  flex-shrink: 0; margin: 6px; padding: 12px 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--cyan) 0%, #0080ff 100%);
+  color: #fff; font-family: var(--sans);
+  font-size: .88rem; font-weight: 700; border: none; cursor: pointer;
+  transition: all var(--t-base) var(--ease-spring);
+  display: flex; align-items: center; gap: 7px; white-space: nowrap;
+  box-shadow: 0 2px 16px rgba(0,200,255,.2);
+}
+.gc-prompt-bar__btn:hover { transform: scale(1.03); box-shadow: 0 4px 28px rgba(0,200,255,.4); }
+.gc-prompt-bar__btn:active { transform: scale(.98); }
+
+/* Suggestion chips */
+.gc-prompt-suggestions {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center; margin-top: 14px;
+}
+.gc-suggestion {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 14px; border-radius: 100px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border-hi);
+  font-size: .76rem; color: var(--text-40); cursor: pointer;
+  transition: all var(--t-base) var(--ease-smooth); font-family: var(--sans);
+  white-space: nowrap;
+}
+.gc-suggestion:hover {
+  color: var(--cyan);
+  border-color: rgba(0,200,255,.35);
+  background: rgba(0,200,255,.05);
+}
+
+/* ── Horizontal carousel ────────────────────────────────────────── */
+.gc-carousel-section { padding: 20px 0 32px; }
+.gc-carousel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.gc-carousel-title {
+  font-size: .72rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-20);
+  display: flex; align-items: center; gap: 8px;
+}
+.gc-carousel-title::before {
+  content: ''; width: 3px; height: 14px;
+  background: var(--grad-cyan-violet); border-radius: 2px; flex-shrink: 0;
+}
+.gc-carousel-nav { display: flex; gap: 6px; }
+.gc-carousel-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border-hi);
+  color: var(--text-40); display: flex; align-items: center;
+  justify-content: center; cursor: pointer;
+  transition: all var(--t-base) var(--ease-smooth); font-size: .85rem;
+}
+.gc-carousel-btn:hover {
+  background: rgba(0,200,255,.08);
+  border-color: rgba(0,200,255,.35); color: var(--cyan);
+}
+.gc-carousel-btn:disabled { opacity: .3; cursor: default; }
+
+.gc-carousel-track-wrap { position: relative; }
+.gc-carousel-track-wrap::before,
+.gc-carousel-track-wrap::after {
+  content: ''; position: absolute; top: 0; bottom: 0;
+  width: 60px; z-index: 2; pointer-events: none;
+}
+.gc-carousel-track-wrap::before {
+  left: 0; background: linear-gradient(90deg, var(--deep), transparent);
+}
+.gc-carousel-track-wrap::after {
+  right: 0; background: linear-gradient(-90deg, var(--deep), transparent);
+}
+.gc-carousel-track {
+  display: flex; gap: 14px; overflow-x: auto;
+  scroll-behavior: smooth; scrollbar-width: none; padding: 4px 2px 12px;
+}
+.gc-carousel-track::-webkit-scrollbar { display: none; }
+
+.gc-insight-card {
+  flex-shrink: 0; width: 280px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 20px 20px 16px; cursor: pointer;
+  transition: border-color var(--t-base) var(--ease-smooth),
+              transform var(--t-base) var(--ease-spring),
+              box-shadow var(--t-base) var(--ease-smooth);
+  display: flex; flex-direction: column; gap: 10px;
+  text-decoration: none; color: inherit;
+  position: relative; overflow: hidden;
+}
+.gc-insight-card::before {
+  content: ''; position: absolute;
+  left: 0; top: 16px; bottom: 16px; width: 3px;
+  background: var(--ic-accent, var(--cyan));
+  border-radius: 0 2px 2px 0; opacity: .6;
+  transition: top var(--t-base), bottom var(--t-base), opacity var(--t-base);
+}
+.gc-insight-card:hover {
+  border-color: var(--ic-accent, var(--cyan));
+  transform: translateY(-4px); box-shadow: var(--shadow-lg);
+}
+.gc-insight-card:hover::before { top: 0; bottom: 0; opacity: 1; }
+.gc-insight-card__tag {
+  font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ic-accent, var(--cyan)); opacity: .85;
+}
+.gc-insight-card__title {
+  font-family: var(--serif); font-size: .95rem; color: #fff;
+  line-height: 1.4; letter-spacing: -.01em;
+  display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.gc-insight-card__date {
+  font-size: .68rem; color: var(--text-20);
+  margin-top: auto; font-variant-numeric: tabular-nums;
+}
+
+/* Hero prompt section for esg-intelligence.html */
+.intel-prompt-hero {
+  background: var(--void); padding: 72px 0 56px;
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.intel-prompt-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% -10%, rgba(0,200,255,.09) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(129,140,248,.08) 0%, transparent 55%),
+    linear-gradient(rgba(0,200,255,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,.02) 1px, transparent 1px);
+  background-size: auto, auto, 60px 60px, 60px 60px;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .gc-creation-label { font-size: 1.7rem; }
+  .gc-prompt-bar__input { padding: 14px 16px; font-size: .9rem; }
+  .gc-prompt-bar__btn  { padding: 10px 16px; font-size: .82rem; }
+  .gc-mode-tabs { flex-wrap: wrap; gap: 6px; }
+  .gc-insight-card { width: 240px; }
+}

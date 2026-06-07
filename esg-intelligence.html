@@ -67,26 +67,80 @@
   <a href="index.html#contact">Contact</a>
 </div>
 
-<!-- HERO -->
-<section class="intel-hero">
+<!-- HERO — imagine.art style: prompt is the product -->
+<section class="intel-prompt-hero">
   <div class="intel-hero__orb intel-hero__orb--1" aria-hidden="true"></div>
   <div class="intel-hero__orb intel-hero__orb--2" aria-hidden="true"></div>
-  <div class="container intel-hero__content">
-    <div class="intel-hero__eyebrow">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M5 2v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-      </svg>
-      AI-Powered ESG Financial Quotient
+  <div class="container" style="position:relative">
+
+    <!-- Eyebrow -->
+    <div style="text-align:center;margin-bottom:24px">
+      <span class="intel-hero__eyebrow" style="display:inline-flex">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+          <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M5 2v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        1,227 companies · 28 sectors · SEBI BRSR data
+      </span>
     </div>
-    <h1 class="intel-hero__title">
-      ESG <em>Financial</em><br/>Quotient
-    </h1>
-    <p class="intel-hero__sub">
-      Identify financial bottlenecks from ESG compliance. Track which companies, sectors and materials
-      are most exposed — powered by SEBI BRSR filings, CPCB data and NSE market signals.
-    </p>
-    <div class="intel-hero-stats">
+
+    <!-- Central prompt (imagine.art pattern) -->
+    <div class="gc-creation-wrap">
+      <h1 class="gc-creation-label">
+        What do you want to<br/><em>discover about ESG?</em>
+      </h1>
+      <p class="gc-creation-sub">Search any company, sector, regulation or risk — powered by public SEBI BRSR filings</p>
+
+      <!-- Mode tabs -->
+      <div class="gc-mode-tabs" role="tablist" aria-label="Search mode">
+        <button class="gc-mode-tab gc-mode-tab--active" data-mode="company" role="tab" aria-selected="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+          Company
+        </button>
+        <button class="gc-mode-tab" data-mode="sector" role="tab" aria-selected="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l5 3"/></svg>
+          Sector
+        </button>
+        <button class="gc-mode-tab" data-mode="risk" role="tab" aria-selected="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Risk Factor
+        </button>
+        <button class="gc-mode-tab" data-mode="regulation" role="tab" aria-selected="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Regulation
+        </button>
+      </div>
+
+      <!-- The big prompt bar -->
+      <div class="gc-prompt-bar" id="heroPromptBar">
+        <input
+          id="heroPromptInput"
+          class="gc-prompt-bar__input"
+          type="search"
+          placeholder="e.g. &quot;Cement companies with high EPR risk&quot; or &quot;Reliance Industries ESG score&quot;"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Search companies, sectors or regulations"
+        />
+        <button class="gc-prompt-bar__btn" id="heroPromptBtn" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Search
+        </button>
+      </div>
+
+      <!-- Quick suggestions -->
+      <div class="gc-prompt-suggestions" aria-label="Quick searches">
+        <button class="gc-suggestion" data-query="high EPR exposure companies">🏭 High EPR risk</button>
+        <button class="gc-suggestion" data-query="low risk companies BRSR">🟢 Low risk companies</button>
+        <button class="gc-suggestion" data-query="pharma sector ESG risk">💊 Pharma sector</button>
+        <button class="gc-suggestion" data-query="governance risk companies">⚖️ Governance risk</button>
+        <button class="gc-suggestion" data-query="BRSR assurance companies">📋 BRSR assured</button>
+        <button class="gc-suggestion" data-query="water intensity risk">💧 Water intensity</button>
+      </div>
+    </div>
+
+    <!-- Stat strip -->
+    <div class="intel-hero-stats" style="margin-top:36px;max-width:600px;margin-left:auto;margin-right:auto">
       <div class="intel-hero-stat">
         <div class="intel-hero-stat__val">1,227</div>
         <div class="intel-hero-stat__lbl">Companies</div>
@@ -96,14 +150,15 @@
         <div class="intel-hero-stat__lbl">High Risk</div>
       </div>
       <div class="intel-hero-stat">
-        <div class="intel-hero-stat__val" id="heroSectors">28</div>
+        <div class="intel-hero-stat__val">28</div>
         <div class="intel-hero-stat__lbl">Sectors</div>
       </div>
       <div class="intel-hero-stat">
         <div class="intel-hero-stat__val" id="heroMeta">—</div>
-        <div class="intel-hero-stat__lbl">Data vintage</div>
+        <div class="intel-hero-stat__lbl">Updated</div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -707,6 +762,59 @@
       if (btn.dataset.tab === 'marketmap'    && typeof renderMarketMap === 'function') renderMarketMap();
     });
   });
+  // ── Hero prompt bar wiring (imagine.art-style) ────────────────────────────
+  const heroInput = document.getElementById('heroPromptInput');
+  const heroBtn   = document.getElementById('heroPromptBtn');
+  const globalSearchInput = document.getElementById('globalSearch');
+
+  function runHeroSearch() {
+    const q = heroInput ? heroInput.value.trim() : '';
+    if (!q) return;
+    // wire into the existing global search
+    if (globalSearchInput) {
+      globalSearchInput.value = q;
+      globalSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    // scroll down to search results
+    const resultsEl = document.getElementById('searchResults');
+    if (resultsEl) resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // also trigger the search button
+    const globalBtn = document.getElementById('globalSearchBtn');
+    if (globalBtn) globalBtn.click();
+  }
+
+  if (heroBtn) heroBtn.addEventListener('click', runHeroSearch);
+  if (heroInput) {
+    heroInput.addEventListener('keydown', e => { if (e.key === 'Enter') runHeroSearch(); });
+  }
+
+  // Mode tabs — update placeholder text
+  document.querySelectorAll('.gc-mode-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.gc-mode-tab').forEach(t => {
+        t.classList.remove('gc-mode-tab--active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('gc-mode-tab--active');
+      tab.setAttribute('aria-selected', 'true');
+      const placeholders = {
+        company:    'e.g. "Reliance Industries ESG score" or "Tata Steel risk profile"',
+        sector:     'e.g. "Cement sector GHG risk" or "Pharma EPR exposure"',
+        risk:       'e.g. "High water intensity companies" or "Governance risk alerts"',
+        regulation: 'e.g. "CCTS exposure" or "EPR plastic compliance gap"',
+      };
+      if (heroInput) heroInput.placeholder = placeholders[tab.dataset.mode] || heroInput.placeholder;
+    });
+  });
+
+  // Suggestion chips
+  document.querySelectorAll('.gc-suggestion').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (heroInput) { heroInput.value = chip.dataset.query; heroInput.focus(); }
+      runHeroSearch();
+    });
+  });
+
   // Mobile nav
   const burger = document.getElementById('nav-burger');
   const mobileNav = document.getElementById('nav-mobile');
