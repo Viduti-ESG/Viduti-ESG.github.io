@@ -4,8 +4,8 @@
  * submits to /api/generate-report, and displays the result.
  */
 
-const API_BASE = "https://833b7cc3eb08ad.lhr.life";
-// const API_BASE = "https://833b7cc3eb08ad.lhr.life";  // uncomment for local dev
+const API_BASE = "https://1b636fdd8c8a06.lhr.life";
+// const API_BASE = "https://1b636fdd8c8a06.lhr.life";  // uncomment for local dev
 
 let formSchema   = null;
 let currentStep  = 0;
