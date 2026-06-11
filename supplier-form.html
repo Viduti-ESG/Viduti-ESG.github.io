@@ -1,75 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Supplier ESG Questionnaire — Green Curve</title>
-  <meta name="description" content="Complete your ESG questionnaire for BRSR value-chain disclosure." />
-  <meta name="robots" content="noindex" />
-  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="stylesheet" href="assets/css/value-chain.css" />
+  <meta name="description" content="BRSR Value-Chain Supplier ESG Disclosure Form — Green Curve"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/supplier-form.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
 </head>
 <body>
 
-<div class="sf-wrap">
+<!-- ── Header ────────────────────────────────────────────────────────────────── -->
+<header class="sf-header">
+  <a href="esg-intelligence.html" class="sf-logo">
+    <img src="assets/img/logo.png" alt="Green Curve"/>
+    <span class="sf-logo-text">Green <span class="sf-logo-accent">Curve</span></span>
+  </a>
+  <div class="sf-header-divider"></div>
+  <div class="sf-header-label">
+    <strong>BRSR Value-Chain Supplier Form</strong>
+    Commissioned by <span class="js-mandating-name">your partner company</span> · FY2026-27
+  </div>
+</header>
 
-  <!-- Top bar -->
-  <header class="sf-topbar">
-    <div class="sf-topbar__brand">
-      <img src="assets/img/logo.png" alt="Green Curve" />
-      <span>Green <span style="color:var(--cyan)">Curve</span></span>
-    </div>
-    <div class="sf-topbar__invited-by" id="sf-invited-by">ESG Value-Chain Questionnaire</div>
-  </header>
+<!-- ── Hero ──────────────────────────────────────────────────────────────────── -->
+<section class="sf-hero">
+  <div class="sf-hero__badge">SEBI BRSR Core · FY2026-27 Mandatory</div>
+  <h1 class="sf-hero__title">Supplier ESG Questionnaire</h1>
+  <p class="sf-hero__sub">
+    <span class="js-mandating-name">Your partner company</span> is required under SEBI's BRSR Core
+    framework to collect ESG data from key value-chain suppliers.
+    This form takes 5–8 minutes. Your responses are kept confidential.
+  </p>
+  <div class="sf-hero__meta">
+    <span class="sf-hero__meta-item">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      5–8 minutes
+    </span>
+    <span class="sf-hero__meta-item">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Confidential
+    </span>
+    <span class="sf-hero__meta-item">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+      BRSR-aligned
+    </span>
+  </div>
+</section>
 
-  <!-- Main content -->
-  <main class="sf-main">
-
-    <!-- Progress bar -->
-    <div class="sf-progress-wrap" id="sf-progress-wrap">
-      <div class="sf-progress-labels">
-        <span class="sf-progress-label active">Identity</span>
-        <span class="sf-progress-label">Environment</span>
-        <span class="sf-progress-label">Social</span>
-        <span class="sf-progress-label">Governance</span>
-        <span class="sf-progress-label">Products</span>
-      </div>
-      <div class="sf-progress-track">
-        <div class="sf-progress-fill" id="sf-progress-fill" style="width:0%"></div>
-      </div>
-    </div>
-
-    <!-- Step content -->
-    <div id="sf-content">
-      <div class="vc-loading"><div class="vc-spinner"></div>Loading…</div>
-    </div>
-
-    <!-- Navigation -->
-    <div class="sf-nav" id="sf-nav" style="display:none">
-      <button class="sf-btn sf-btn--ghost" id="sf-back-btn" style="display:none">← Back</button>
-      <span class="sf-nav__step-count" id="sf-step-count"></span>
-      <div class="sf-nav__right">
-        <button class="sf-btn sf-btn--primary" id="sf-next-btn">Next →</button>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- Footer note -->
-  <footer style="padding:20px 32px;border-top:1px solid var(--border);text-align:center">
-    <p style="font-size:.72rem;color:var(--text-40);line-height:1.6">
-      Your responses are collected under SEBI BRSR value-chain disclosure requirements and
-      will be shared only with the company that invited you. This is not an ESG Rating. &nbsp;|&nbsp;
-      <a href="privacy-policy.html" style="color:var(--text-40);text-decoration:underline">Privacy Policy</a> &nbsp;|&nbsp;
-      <a href="terms-of-use.html" style="color:var(--text-40);text-decoration:underline">Terms of Use</a> &nbsp;|&nbsp;
-      Green Curve · <a href="index.html" style="color:var(--text-40)">greencurve.in</a>
-    </p>
-  </footer>
-
+<!-- ── Progress indicator ─────────────────────────────────────────────────────── -->
+<div class="sf-progress" aria-label="Form progress">
+  <div class="sf-step active" id="step-a">
+    <div class="sf-step__circle">A</div>
+    <div class="sf-step__label">Identity</div>
+  </div>
+  <div class="sf-step" id="step-b">
+    <div class="sf-step__circle">B</div>
+    <div class="sf-step__label">Environmental</div>
+  </div>
+  <div class="sf-step" id="step-c">
+    <div class="sf-step__circle">C</div>
+    <div class="sf-step__label">Social</div>
+  </div>
+  <div class="sf-step" id="step-d">
+    <div class="sf-step__circle">D</div>
+    <div class="sf-step__label">Governance</div>
+  </div>
 </div>
 
-<script src="assets/js/supplier-form.js?v=20260606"></script>
+<!-- ── FORM ───────────────────────────────────────────────────────────────────── -->
+<div id="sf-form-wrap" class="sf-wrap">
+  <form id="sf-form" onsubmit="submitSupplierForm(event)" novalidate>
+
+    <!-- Hidden context fields -->
+    <input type="hidden" id="f-token"         name="token"/>
+    <input type="hidden" id="f-mandating-name" name="mandating_name"/>
+    <input type="hidden" id="f-mandating-cin"  name="mandating_cin"/>
+
+    <!-- ── Section A: Supplier Identity ────────────────────────────────────── -->
+    <section class="sf-section" id="sf-sec-a">
+      <div class="sf-section-header">
+        <div class="sf-section-icon sf-section-icon--a">🏢</div>
+        <div>
+          <div class="sf-section-title">A. Supplier Identity</div>
+          <div class="sf-section-sub">Basic company information for verification</div>
+        </div>
+      </div>
+      <div class="sf-section-body">
+
+        <div class="sf-field">
+          <label class="sf-label" for="supplier_name">
+            Company / Trade Name <span class="req">*</span>
+          </label>
+          <input class="sf-input" type="text" id="supplier_name" name="supplier_name"
+            placeholder="e.g. Infra Components Private Limited" required maxlength="200"/>
+        </div>
+
+        <div class="sf-grid-2">
+          <div class="sf-field">
+            <label class="sf-label" for="supplier_gstin">GSTIN (optional)</label>
+            <input class="sf-input" type="text" id="supplier_gstin" name="supplier_gstin"
+              placeholder="22AAAAA0000A1Z5" maxlength="15" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}"/>
+            <span class="sf-hint">15-character GST registration number</span>
+          </div>
+          <div class="sf-field">
+            <label class="sf-label" for="supplier_cin">CIN (optional)</label>
+            <input class="sf-input" type="text" id="supplier_cin" name="supplier_cin"
+              placeholder="U12345MH2000PTC123456" maxlength="21"/>
+            <span class="sf-hint">Corporate Identification Number</span>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Annual Revenue Band <span class="req">*</span></label>
+          <div class="sf-radio-group">
+            <label class="sf-radio-label">
+              <input type="radio" name="annual_revenue_band" value="&lt;10Cr" required/>
+              &lt; ₹10 Cr
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="annual_revenue_band" value="10-100Cr"/>
+              ₹10–100 Cr
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="annual_revenue_band" value="100-500Cr"/>
+              ₹100–500 Cr
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="annual_revenue_band" value="&gt;500Cr"/>
+              &gt; ₹500 Cr
+            </label>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Registered as MSME? <span class="req">*</span></label>
+          <div class="sf-radio-group">
+            <label class="sf-radio-label">
+              <input type="radio" name="is_msme" value="yes" required/> Yes
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="is_msme" value="no"/> No
+            </label>
+          </div>
+          <span class="sf-hint">As per Udyam / MSME registration</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Section B: Environmental ─────────────────────────────────────────── -->
+    <section class="sf-section" id="sf-sec-b">
+      <div class="sf-section-header">
+        <div class="sf-section-icon sf-section-icon--b">🌿</div>
+        <div>
+          <div class="sf-section-title">B. Environmental Disclosures</div>
+          <div class="sf-section-sub">BRSR Core: Energy, Emissions, Water &amp; Waste — FY2025-26</div>
+        </div>
+      </div>
+      <div class="sf-section-body">
+
+        <div class="sf-field">
+          <label class="sf-label">Does your company have a documented Environmental / Sustainability Policy? <span class="req">*</span></label>
+          <div class="sf-radio-group">
+            <label class="sf-radio-label">
+              <input type="radio" name="has_environmental_policy" value="yes" required/> Yes
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="has_environmental_policy" value="no"/> No
+            </label>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Scope 1 GHG Emissions (direct) <span class="req">*</span></label>
+          <div class="sf-nd-row">
+            <div class="sf-num-wrap">
+              <input class="sf-input" type="number" id="inp-scope1" name="scope1_tco2e"
+                placeholder="e.g. 450" min="0" step="0.1"/>
+              <span class="sf-num-unit">tCO₂e / year</span>
+            </div>
+            <label class="sf-nd-label">
+              <input type="checkbox" id="chk-scope1-nd" name="scope1_not_disclosed"/>
+              Not yet measured / disclosed
+            </label>
+          </div>
+          <span class="sf-hint">From fuel combustion, industrial processes (Scope 1 per GHG Protocol)</span>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Scope 2 GHG Emissions (purchased electricity) <span class="req">*</span></label>
+          <div class="sf-nd-row">
+            <div class="sf-num-wrap">
+              <input class="sf-input" type="number" id="inp-scope2" name="scope2_tco2e"
+                placeholder="e.g. 120" min="0" step="0.1"/>
+              <span class="sf-num-unit">tCO₂e / year</span>
+            </div>
+            <label class="sf-nd-label">
+              <input type="checkbox" id="chk-scope2-nd" name="scope2_not_disclosed"/>
+              Not yet measured / disclosed
+            </label>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Total Water Withdrawal <span class="req">*</span></label>
+          <div class="sf-nd-row">
+            <div class="sf-num-wrap">
+              <input class="sf-input" type="number" id="inp-water" name="water_m3"
+                placeholder="e.g. 15000" min="0"/>
+              <span class="sf-num-unit">m³ / year</span>
+            </div>
+            <label class="sf-nd-label">
+              <input type="checkbox" id="chk-water-nd" name="water_not_disclosed"/>
+              Not yet measured / disclosed
+            </label>
+          </div>
+          <span class="sf-hint">Total water consumed from all sources (ground, surface, municipal)</span>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Total Waste Generated <span class="req">*</span></label>
+          <div class="sf-nd-row">
+            <div class="sf-num-wrap">
+              <input class="sf-input" type="number" id="inp-waste" name="waste_tonnes"
+                placeholder="e.g. 25" min="0" step="0.1"/>
+              <span class="sf-num-unit">tonnes / year</span>
+            </div>
+            <label class="sf-nd-label">
+              <input type="checkbox" id="chk-waste-nd" name="waste_not_disclosed"/>
+              Not yet measured / disclosed
+            </label>
+          </div>
+          <span class="sf-hint">All solid waste (hazardous + non-hazardous) before disposal/recycling</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Section C: Social ─────────────────────────────────────────────────── -->
+    <section class="sf-section" id="sf-sec-c">
+      <div class="sf-section-header">
+        <div class="sf-section-icon sf-section-icon--c">👥</div>
+        <div>
+          <div class="sf-section-title">C. Social &amp; Human Resources</div>
+          <div class="sf-section-sub">Workforce composition, safety, and HR policies</div>
+        </div>
+      </div>
+      <div class="sf-section-body">
+
+        <div class="sf-grid-2">
+          <div class="sf-field">
+            <label class="sf-label" for="total_employees">
+              Total Employees <span class="req">*</span>
+            </label>
+            <input class="sf-input" type="number" id="total_employees" name="total_employees"
+              placeholder="e.g. 85" min="0" required/>
+            <span class="sf-hint">Permanent + contract workers</span>
+          </div>
+          <div class="sf-field">
+            <label class="sf-label" for="women_pct">Women Employees (%)</label>
+            <div class="sf-num-wrap">
+              <input class="sf-input" type="number" id="women_pct" name="women_pct"
+                placeholder="e.g. 22" min="0" max="100" step="1"/>
+              <span class="sf-num-unit">%</span>
+            </div>
+            <span class="sf-hint">Approximate % across all roles</span>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">HR / Equal Opportunity Policy in place? <span class="req">*</span></label>
+          <div class="sf-radio-group">
+            <label class="sf-radio-label">
+              <input type="radio" name="has_hr_policy" value="yes" required/> Yes
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="has_hr_policy" value="no"/> No
+            </label>
+          </div>
+          <span class="sf-hint">Includes anti-harassment, POSH, and equal opportunity policies</span>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label" for="safety_incidents">
+            Worker Safety Incidents (last 12 months) <span class="req">*</span>
+          </label>
+          <input class="sf-input" type="number" id="safety_incidents" name="safety_incidents"
+            placeholder="0" min="0" value="0" required/>
+          <span class="sf-hint">Count of reportable injuries, lost-time accidents, or fatalities</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Section D: Governance ─────────────────────────────────────────────── -->
+    <section class="sf-section" id="sf-sec-d">
+      <div class="sf-section-header">
+        <div class="sf-section-icon sf-section-icon--d">⚖️</div>
+        <div>
+          <div class="sf-section-title">D. Governance &amp; Compliance</div>
+          <div class="sf-section-sub">Policies, reporting, and regulatory record</div>
+        </div>
+      </div>
+      <div class="sf-section-body">
+
+        <div class="sf-field">
+          <label class="sf-label">Does your company publish a BRSR, Sustainability, or ESG Report? <span class="req">*</span></label>
+          <div class="sf-radio-group">
+            <label class="sf-radio-label">
+              <input type="radio" name="has_brsr_disclosure" value="yes" required/> Yes — publicly disclosed
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="has_brsr_disclosure" value="no"/> No
+            </label>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label">Code of Conduct / Anti-Corruption Policy? <span class="req">*</span></label>
+          <div class="sf-radio-group">
+            <label class="sf-radio-label">
+              <input type="radio" name="has_code_of_conduct" value="yes" required/> Yes
+            </label>
+            <label class="sf-radio-label">
+              <input type="radio" name="has_code_of_conduct" value="no"/> No
+            </label>
+          </div>
+        </div>
+
+        <div class="sf-field">
+          <label class="sf-label" for="regulatory_violations">
+            Regulatory Violations (last 3 years) <span class="req">*</span>
+          </label>
+          <input class="sf-input" type="number" id="regulatory_violations" name="regulatory_violations"
+            placeholder="0" min="0" value="0" required/>
+          <span class="sf-hint">Count of fines, show-cause notices, or penalties under environment or labour laws</span>
+        </div>
+
+        <div class="sf-notice">
+          <strong>Data Use Notice:</strong> Your responses will be used solely by
+          <span class="js-mandating-name">the requesting company</span> for SEBI BRSR value-chain
+          disclosure (FY2026-27). Green Curve processes this data as a service provider and does not
+          share it with third parties. All data is treated as confidential commercial information.
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Submit ─────────────────────────────────────────────────────────────── -->
+    <div class="sf-submit-row">
+      <button type="submit" class="sf-btn-submit" id="sf-submit-btn">
+        Submit ESG Questionnaire →
+      </button>
+      <p class="sf-submit-note">
+        By submitting, you confirm the information provided is accurate to the best of your knowledge.<br/>
+        If a backend server is not configured, your response will download as a JSON file.
+      </p>
+    </div>
+
+  </form>
+</div>
+
+<!-- ── Thank-you screen (hidden until submission) ─────────────────────────────── -->
+<div id="sf-thankyou" class="sf-thankyou sf-wrap">
+  <div class="sf-ty__icon">✅</div>
+  <h2 class="sf-ty__title">Thank you for your submission!</h2>
+  <p class="sf-ty__sub">
+    Your ESG questionnaire for <strong id="ty-company"></strong> has been received by
+    <span class="js-mandating-name">the requesting company</span>.
+  </p>
+  <div class="sf-ty__score-card">
+    <div class="sf-ty__score-val" id="ty-score">—</div>
+    <div class="sf-ty__score-lbl">Preliminary ESG Risk Score (0–10)</div>
+    <div class="sf-ty__score-tier" id="ty-tier"></div>
+  </div>
+  <p class="sf-ty__note">
+    This is a preliminary estimate based on your disclosures.
+    Lower scores indicate lower ESG risk. Your mandating company may follow up
+    for additional information or verification.
+  </p>
+  <p id="ty-download-note" class="sf-ty__note" style="display:none;margin-top:14px;
+    background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);
+    border-radius:8px;padding:12px;color:#fbbf24;"></p>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────────── -->
+<footer class="sf-footer">
+  <p>
+    This form is powered by <a href="esg-intelligence.html">Green Curve</a> — India's ESG Analytics Platform.<br/>
+    For SEBI BRSR Core compliance queries contact your mandating company's ESG team.<br/>
+    Data processed under SEBI BRSR value-chain disclosure framework (FY2026-27 onwards).
+  </p>
+</footer>
+
+<script src="assets/js/supplier-form.js"></script>
 </body>
 </html>

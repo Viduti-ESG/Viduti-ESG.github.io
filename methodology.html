@@ -17,7 +17,7 @@
     "headline": "ESG Financial Quotient — Scoring Methodology",
     "description": "How Green Curve calculates ESG risk scores for Indian listed companies using SEBI BRSR public filings.",
     "publisher": { "@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io" },
-    "dateModified": "2026-06-03",
+    "dateModified": "2026-06-08",
     "mainEntityOfPage": "https://viduti-esg.github.io/methodology.html"
   }
   </script>
@@ -86,12 +86,13 @@
       <li><a href="#scoring-overview">2. Scoring Overview</a></li>
       <li><a href="#dimensions">3. The 7 Risk Dimensions</a></li>
       <li><a href="#weights">4. Dimension Weights</a></li>
-      <li><a href="#risk-tiers">5. Risk Tier Thresholds</a></li>
-      <li><a href="#financial-exposure">6. Financial Exposure Estimates</a></li>
-      <li><a href="#double-materiality">7. Double Materiality</a></li>
-      <li><a href="#update-cycle">8. Update Cycle</a></li>
-      <li><a href="#limitations">9. Limitations &amp; Disclaimers</a></li>
-      <li><a href="#faq">10. FAQ</a></li>
+      <li><a href="#sector-weights">5. Sector-Adjusted Weight Profiles</a></li>
+      <li><a href="#risk-tiers">6. Risk Tier Thresholds</a></li>
+      <li><a href="#financial-exposure">7. Financial Exposure Estimates</a></li>
+      <li><a href="#double-materiality">8. Double Materiality</a></li>
+      <li><a href="#update-cycle">9. Update Cycle</a></li>
+      <li><a href="#limitations">10. Limitations &amp; Disclaimers</a></li>
+      <li><a href="#faq">11. FAQ</a></li>
     </ol>
   </nav>
 
@@ -358,9 +359,149 @@
     </div>
   </section>
 
-  <!-- 5. Risk Tiers -->
+  <!-- 5. Sector-Adjusted Weight Profiles -->
+  <section class="meth-section" id="sector-weights">
+    <h2 class="meth-h2">5. Sector-Adjusted Weight Profiles</h2>
+    <p class="meth-p">The base formula above applies equal 20% weight to GHG Intensity, EPR Exposure, and Compliance Risk across all companies. In practice, ESG financial materiality is highly sector-dependent — a steel plant's dominant exposure is carbon (CCTS, PAT Scheme), while a bank's is governance and HR. Green Curve applies the following sector-adjusted profiles so scores reflect where regulatory penalties are most likely to land for that specific business.</p>
+
+    <div class="meth-callout meth-callout--blue">
+      <strong>Assignment:</strong> Each company is assigned to one of six sector groups based on its BRSR-declared NIC classification and primary business segment. The sector-adjusted formula replaces the universal formula for that company's scoring run. Where a company spans multiple segments, the primary revenue segment determines the profile applied.
+    </div>
+
+    <div style="overflow-x:auto;margin-top:28px">
+      <table class="meth-table">
+        <thead>
+          <tr>
+            <th style="min-width:130px">Dimension</th>
+            <th>Base</th>
+            <th>Heavy Industry<br/><small style="font-weight:400;opacity:.6">Steel · Metals · Mining<br/>Cement · Chemicals</small></th>
+            <th>Power &amp; Energy<br/><small style="font-weight:400;opacity:.6">Power Gen · Oil &amp; Gas<br/>Utilities</small></th>
+            <th>Financial Services<br/><small style="font-weight:400;opacity:.6">Banks · NBFC<br/>Insurance · AMC</small></th>
+            <th>IT &amp; Software<br/><small style="font-weight:400;opacity:.6">IT Services · SaaS<br/>Tech</small></th>
+            <th>Consumer &amp; FMCG<br/><small style="font-weight:400;opacity:.6">FMCG · Retail<br/>Food · Textiles</small></th>
+            <th>Real Estate &amp; Infra<br/><small style="font-weight:400;opacity:.6">Realty · Construction<br/>Infrastructure</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>GHG Intensity</strong></td>
+            <td><span class="weight-badge weight-badge--med">20%</span></td>
+            <td><span class="weight-badge weight-badge--high">30% ↑</span></td>
+            <td><span class="weight-badge weight-badge--high">35% ↑</span></td>
+            <td><span class="weight-badge weight-badge--low">10% ↓</span></td>
+            <td><span class="weight-badge weight-badge--med">15% ↓</span></td>
+            <td><span class="weight-badge weight-badge--low">10% ↓</span></td>
+            <td><span class="weight-badge weight-badge--med">20%</span></td>
+          </tr>
+          <tr>
+            <td><strong>EPR Exposure</strong></td>
+            <td><span class="weight-badge weight-badge--high">20%</span></td>
+            <td><span class="weight-badge weight-badge--med">15% ↓</span></td>
+            <td><span class="weight-badge weight-badge--low">8% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
+            <td><span class="weight-badge weight-badge--high">28% ↑</span></td>
+            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
+          </tr>
+          <tr>
+            <td><strong>Compliance Risk</strong></td>
+            <td><span class="weight-badge weight-badge--high">20%</span></td>
+            <td><span class="weight-badge weight-badge--med">18%</span></td>
+            <td><span class="weight-badge weight-badge--high">20%</span></td>
+            <td><span class="weight-badge weight-badge--high">30% ↑</span></td>
+            <td><span class="weight-badge weight-badge--high">30% ↑</span></td>
+            <td><span class="weight-badge weight-badge--high">22% ↑</span></td>
+            <td><span class="weight-badge weight-badge--high">25% ↑</span></td>
+          </tr>
+          <tr>
+            <td><strong>Waste Intensity</strong></td>
+            <td><span class="weight-badge weight-badge--med">15%</span></td>
+            <td><span class="weight-badge weight-badge--high">20% ↑</span></td>
+            <td><span class="weight-badge weight-badge--med">15%</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--med">15%</span></td>
+            <td><span class="weight-badge weight-badge--med">17% ↑</span></td>
+          </tr>
+          <tr>
+            <td><strong>Water Intensity</strong></td>
+            <td><span class="weight-badge weight-badge--low">10%</span></td>
+            <td><span class="weight-badge weight-badge--low">10%</span></td>
+            <td><span class="weight-badge weight-badge--med">15% ↑</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">8% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--med">18% ↑</span></td>
+          </tr>
+          <tr>
+            <td><strong>HR Risk</strong></td>
+            <td><span class="weight-badge weight-badge--low">10%</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
+            <td><span class="weight-badge weight-badge--high">20% ↑</span></td>
+            <td><span class="weight-badge weight-badge--high">22% ↑</span></td>
+            <td><span class="weight-badge weight-badge--med">18% ↑</span></td>
+            <td><span class="weight-badge weight-badge--low">8% ↓</span></td>
+          </tr>
+          <tr>
+            <td><strong>Governance Risk</strong></td>
+            <td><span class="weight-badge weight-badge--min">5%</span></td>
+            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
+            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
+            <td><span class="weight-badge weight-badge--high">25% ↑</span></td>
+            <td><span class="weight-badge weight-badge--med">18% ↑</span></td>
+            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
+            <td><span class="weight-badge weight-badge--low">10% ↑</span></td>
+          </tr>
+          <tr class="meth-table__total">
+            <td><strong>Total</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>100%</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px;margin-top:24px">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">⚙️ Heavy Industry</div>
+        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Carbon pricing under the Carbon Credit Trading Scheme (₹600–900/tCO₂e) and PAT Scheme non-compliance are the largest quantifiable financial exposures. Hazardous waste from Schedule I industries amplifies Waste Intensity weight over EPR, which is narrower here than in consumer sectors.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">⚡ Power &amp; Energy</div>
+        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Scope 1 emissions define the ESG risk profile — thermal plants account for the majority of India's industrial GHG. Water intensity raised because cooling water withdrawals at thermal stations create a direct operational and regulatory exposure under CPCB consent conditions.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">🏦 Financial Services</div>
+        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Negligible direct emissions but high governance exposure — RBI and SEBI dual regulation, board accountability under SEBI LODR, and climate risk embedded in loan books. HR Risk elevated for workforce-intensive operations and POSH compliance obligations.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">💻 IT &amp; Software</div>
+        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Low physical footprint, but Compliance and Governance dominate — SEBI BRSR mandatory disclosures, upcoming DPDP Act obligations, and board-level ESG accountability. HR Risk elevated due to talent-intensive workforce, DEI scrutiny, and complex global supply chain labour standards.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">🛒 Consumer &amp; FMCG</div>
+        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Highest EPR exposure of any sector group: multi-layer plastic packaging, PET bottles, and extended supply chains create layered obligations under the Plastic Waste Management Rules, Battery Rules, and upcoming packaging EPR targets. HR Risk elevated for supply chain labour conditions.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">🏗️ Real Estate &amp; Infra</div>
+        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Construction water consumption and solid waste (concrete, steel, cement) are disproportionately material. Governance weight raised due to elevated related-party transaction risk and project-level accountability gaps consistently observed in sector BRSR filings.</p>
+      </div>
+    </div>
+
+    <div class="meth-callout meth-callout--amber" style="margin-top:24px">
+      <strong>Methodology versioning:</strong> Sector weight profiles are versioned with each annual BRSR data update cycle. Any revision to a sector profile is logged in the methodology changelog and the effective date is shown on affected company score cards. Revisions are available on request.
+    </div>
+  </section>
+
+  <!-- 6. Risk Tiers -->
   <section class="meth-section" id="risk-tiers">
-    <h2 class="meth-h2">5. Risk Tier Thresholds</h2>
+    <h2 class="meth-h2">6. Risk Tier Thresholds</h2>
     <p class="meth-p">Companies are classified into three tiers based on their composite EFQ score. Thresholds are calibrated to the Indian listed company universe — most companies score in the Medium range due to widespread partial disclosures across BRSR mandatory fields.</p>
 
     <div class="meth-tier-grid">
@@ -382,9 +523,9 @@
     </div>
   </section>
 
-  <!-- 6. Financial Exposure -->
+  <!-- 7. Financial Exposure -->
   <section class="meth-section" id="financial-exposure">
-    <h2 class="meth-h2">6. Financial Exposure Estimates</h2>
+    <h2 class="meth-h2">7. Financial Exposure Estimates</h2>
     <p class="meth-p">The <strong>Estimated Compliance Cost Band</strong> shown on company profiles (e.g., <em>₹10–38 crore</em>) is a directional estimate of potential regulatory compliance costs, not an audited figure. It is derived from:</p>
     <ul class="meth-list">
       <li>Published penalty structures under SEBI BRSR enforcement guidelines</li>
@@ -397,9 +538,9 @@
     </div>
   </section>
 
-  <!-- 7. Double Materiality -->
+  <!-- 8. Double Materiality -->
   <section class="meth-section" id="double-materiality">
-    <h2 class="meth-h2">7. Double Materiality Assessment</h2>
+    <h2 class="meth-h2">8. Double Materiality Assessment</h2>
     <p class="meth-p">Following the ISSB IFRS S1/S2 and EU CSRD double materiality framework, each company is assessed on two axes:</p>
     <div class="meth-dm-grid">
       <div class="meth-dm-card">
@@ -422,9 +563,9 @@
     </table>
   </section>
 
-  <!-- 8. Update Cycle -->
+  <!-- 9. Update Cycle -->
   <section class="meth-section" id="update-cycle">
-    <h2 class="meth-h2">8. Update Cycle</h2>
+    <h2 class="meth-h2">9. Update Cycle</h2>
     <div class="meth-update-grid">
       <div class="meth-update-card">
         <div class="meth-update-icon">🔄</div>
@@ -444,9 +585,9 @@
     </div>
   </section>
 
-  <!-- 9. Limitations -->
+  <!-- 10. Limitations -->
   <section class="meth-section" id="limitations">
-    <h2 class="meth-h2">9. Limitations &amp; Disclaimers</h2>
+    <h2 class="meth-h2">10. Limitations &amp; Disclaimers</h2>
     <div class="meth-limitations">
       <div class="meth-limit-item">
         <div class="meth-limit-icon">⚠️</div>
@@ -486,9 +627,9 @@
     </div>
   </section>
 
-  <!-- 10. FAQ -->
+  <!-- 11. FAQ -->
   <section class="meth-section" id="faq">
-    <h2 class="meth-h2">10. Frequently Asked Questions</h2>
+    <h2 class="meth-h2">11. Frequently Asked Questions</h2>
     <div class="meth-faq">
 
       <details class="meth-faq-item">

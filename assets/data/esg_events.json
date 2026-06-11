@@ -1,0 +1,126 @@
+{
+  "updated_at": "2026-06-11",
+  "source": "Green Curve ESG Intelligence",
+  "events": [
+    {
+      "id": "E001",
+      "date": "2026-06-05",
+      "source": "SEBI",
+      "category": "Regulatory",
+      "severity": "Critical",
+      "title": "SEBI Circular: BRSR Core Assurance Mandatory — Top 1000 Companies from FY2026-27",
+      "summary": "SEBI has extended BRSR Core mandatory third-party assurance to the top 1000 NSE/BSE listed companies by market capitalisation with effect from FY2026-27. Companies must engage a SEBI-recognised Assurance Provider (RAP) by September 30, 2026.",
+      "affected_sectors": ["All"],
+      "reference": "SEBI/HO/CFD/PoD-2/CIR/2026/0081",
+      "companies": []
+    },
+    {
+      "id": "E002",
+      "date": "2026-05-28",
+      "source": "MoEFCC",
+      "category": "Regulatory",
+      "severity": "High",
+      "title": "Carbon Credit Trading Scheme (CCTS) Phase I — Registration Opens July 2026",
+      "summary": "MoEFCC has notified that Phase I CCTS registration on the BEE Carbon Credit Trading platform will open in July 2026. Obligated entities in cement, steel, aluminium, petrochemicals, and thermal power must complete baseline GHG inventory submission by September 30, 2026.",
+      "affected_sectors": ["Cement", "Steel", "Aluminium", "Petrochemicals", "Thermal Power", "Chlor-Alkali", "Paper & Pulp"],
+      "reference": "MoEFCC Notification G.S.R. 412(E)",
+      "companies": []
+    },
+    {
+      "id": "E003",
+      "date": "2026-05-20",
+      "source": "NGT",
+      "category": "Environmental",
+      "severity": "High",
+      "title": "NGT Orders Closure of 143 Industrial Units for CPCB Non-Compliance in Indo-Gangetic Plain",
+      "summary": "The National Green Tribunal ordered closure of 143 industrial units across UP, Bihar, and West Bengal for failing to comply with CPCB effluent treatment norms. Affected units in textiles, tannery, and food processing sectors. Units must submit compliance reports before reopening.",
+      "affected_sectors": ["Textile", "Food Processing", "Chemical"],
+      "reference": "NGT OA No. 1644/2025",
+      "companies": []
+    },
+    {
+      "id": "E004",
+      "date": "2026-05-15",
+      "source": "BSE",
+      "category": "Governance",
+      "severity": "Medium",
+      "title": "BSE Issues Revised ESG Disclosure Template for Business Responsibility and Sustainability Report",
+      "summary": "BSE has issued a revised BRSR submission template effective FY2026-27. The updated template includes new mandatory fields for Scope 3 emissions (Category 1, 2, 11), water stewardship certifications, and gender pay-gap disclosures. Companies must use the new template for annual filings.",
+      "affected_sectors": ["All"],
+      "reference": "BSE Notice 20260515-001",
+      "companies": []
+    },
+    {
+      "id": "E005",
+      "date": "2026-05-08",
+      "source": "CPCB",
+      "category": "Environmental",
+      "severity": "Critical",
+      "title": "CPCB Issues Show-Cause Notices to 67 Cement Manufacturers for EPR Non-Compliance",
+      "summary": "CPCB has issued show-cause notices to 67 cement companies for failing to meet EPR waste recycling obligations under the Plastic Waste Management Rules FY2024-25. Companies have 30 days to respond with a remediation plan or face penalty under Section 15 of the Environment Protection Act.",
+      "affected_sectors": ["Cement"],
+      "reference": "CPCB/EPR/2026/417",
+      "companies": ["ACC LIMITED", "AMBUJA CEMENTS LIMITED", "THE RAMCO CEMENTS LIMITED"]
+    },
+    {
+      "id": "E006",
+      "date": "2026-04-30",
+      "source": "SEBI",
+      "category": "Market",
+      "severity": "Medium",
+      "title": "SEBI Mandates ESG Rating Disclosure for Index Funds and ETFs from October 2026",
+      "summary": "SEBI has directed all AMFI-registered mutual funds offering index funds and ETFs to disclose weighted-average ESG ratings of constituent companies on fund factsheets from October 2026. Ratings must come from SEBI-registered ESG rating providers (ESGRPs).",
+      "affected_sectors": ["Banking", "Financial Services"],
+      "reference": "SEBI/HO/IMD/IMD-PoD-1/P/CIR/2026/0052",
+      "companies": []
+    },
+    {
+      "id": "E007",
+      "date": "2026-04-18",
+      "source": "NGT",
+      "category": "Environmental",
+      "severity": "High",
+      "title": "NGT Bans New Thermal Power Plant Approvals within 10 km of Critically Polluted Areas",
+      "summary": "The National Green Tribunal has banned grant of new environmental clearances for coal-based thermal power plants within 10 km of CPCB-designated Critically Polluted Areas (CEPI score > 70). Existing plants must submit air quality improvement plans within 90 days.",
+      "affected_sectors": ["Power Generation", "Thermal Power"],
+      "reference": "NGT OA No. 2891/2025",
+      "companies": []
+    },
+    {
+      "id": "E008",
+      "date": "2026-04-10",
+      "source": "BEE",
+      "category": "Regulatory",
+      "severity": "High",
+      "title": "BEE PAT Cycle VI — Targets Finalised for 13 Designated Consumer Sectors",
+      "summary": "Bureau of Energy Efficiency has finalised energy efficiency targets for PAT Cycle VI (2026-2031) covering 13 industrial sectors including steel, cement, aluminium, chlor-alkali, fertilizer, paper, and glass. Designated Consumers (DCs) must register on BEEFY portal by June 30, 2026.",
+      "affected_sectors": ["Steel", "Cement", "Aluminium", "Chlor-Alkali", "Fertilizer", "Paper", "Glass"],
+      "reference": "BEE/PAT-VI/2026/Notification",
+      "companies": []
+    },
+    {
+      "id": "E009",
+      "date": "2026-03-31",
+      "source": "SEBI",
+      "category": "Regulatory",
+      "severity": "Medium",
+      "title": "SEBI ESG Funds — New Disclosure Norms: Stewardship Policy Mandatory from April 2026",
+      "summary": "SEBI has mandated all SEBI-registered ESG funds to publish a Stewardship Policy disclosing engagement strategies with investee companies on climate, board diversity, and executive pay. Policies must be published on AMC websites by April 30, 2026 and updated annually.",
+      "affected_sectors": ["Financial Services"],
+      "reference": "SEBI/HO/IMD/2026/CIR/0031",
+      "companies": []
+    },
+    {
+      "id": "E010",
+      "date": "2026-03-15",
+      "source": "MoEFCC",
+      "category": "Environmental",
+      "severity": "High",
+      "title": "India Updates National GHG Inventory — New Baseline Factors for Electricity Grid (0.82 kg CO₂/kWh)",
+      "summary": "MoEFCC has released updated national GHG inventory with a revised India electricity grid emission factor of 0.82 kg CO₂/kWh for FY2023-24, replacing the previous 0.79 kg CO₂/kWh. Companies using electricity-based Scope 2 calculations must update their FY2025-26 BRSR figures accordingly.",
+      "affected_sectors": ["All"],
+      "reference": "MoEFCC/GHG/2026/Inventory-Update",
+      "companies": []
+    }
+  ]
+}

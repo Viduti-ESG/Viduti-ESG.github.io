@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCFD Gap Checker — Green Curve</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #0a0f1a;
+      --surface:  #111827;
+      --border:   rgba(255,255,255,.08);
+      --text:     #e2e8f0;
+      --muted:    #94a3b8;
+      --dim:      #64748b;
+      --green:    #34d399;
+      --green-dk: #059669;
+      --amber:    #fbbf24;
+      --red:      #f87171;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,15,26,.9);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .95rem; font-weight: 700; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo svg { width: 24px; height: 18px; }
+    .nav-back {
+      margin-left: auto;
+      font-size: .8rem; color: var(--dim);
+      text-decoration: none;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: color .15s, border-color .15s;
+    }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,.18); }
+
+    /* PAGE */
+    .page { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+    .page-header { margin-bottom: 36px; }
+    .page-badge {
+      display: inline-block;
+      background: rgba(52,211,153,.12);
+      color: var(--green);
+      font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+      border-radius: 20px; padding: 3px 12px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .page-title { font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1.25; margin-bottom: 12px; }
+    .page-sub   { font-size: .95rem; color: var(--muted); line-height: 1.6; max-width: 580px; }
+
+    /* TCFD INTRO CARDS */
+    .pillar-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 12px;
+      margin-bottom: 32px;
+    }
+    .pillar-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .pillar-card__icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .pillar-card__name { font-size: .82rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .pillar-card__desc { font-size: .73rem; color: var(--dim); line-height: 1.4; }
+
+    /* UPLOAD ZONE */
+    .upload-zone {
+      background: rgba(255,255,255,.025);
+      border: 2px dashed rgba(52,211,153,.25);
+      border-radius: 14px;
+      padding: 40px 32px;
+      text-align: center;
+      transition: border-color .2s, background .2s;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .upload-zone:hover, .upload-zone.drag { border-color: rgba(52,211,153,.55); background: rgba(52,211,153,.04); }
+    .upload-zone__icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .upload-zone__title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .upload-zone__sub   { font-size: .82rem; color: var(--dim); margin-bottom: 16px; }
+    .upload-zone__note  { font-size: .72rem; color: #334155; margin-top: 10px; }
+    #fileInput { display: none; }
+
+    .btn-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--green-dk), var(--green));
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 28px; font-size: .9rem; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: opacity .15s;
+    }
+    .btn-primary:hover { opacity: .88; }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+    .file-selected {
+      display: none;
+      align-items: center; gap: 10px;
+      background: rgba(52,211,153,.07);
+      border: 1px solid rgba(52,211,153,.2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: .85rem;
+    }
+    .file-selected.show { display: flex; }
+    .file-selected__name { font-weight: 600; color: var(--green); }
+    .file-selected__size { color: var(--dim); font-size: .76rem; }
+    .file-remove { margin-left: auto; background: none; border: none; color: var(--dim); cursor: pointer; font-size: 1rem; }
+
+    /* STATUS */
+    .status-bar {
+      display: none;
+      align-items: center; gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: .85rem;
+      margin-bottom: 16px;
+    }
+    .status-bar.show { display: flex; }
+    .status-bar--loading { background: rgba(52,211,153,.07); color: var(--green); border: 1px solid rgba(52,211,153,.15); }
+    .status-bar--error   { background: rgba(248,113,113,.07); color: var(--red);   border: 1px solid rgba(248,113,113,.15); }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(52,211,153,.2);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* NO BACKEND FALLBACK */
+    .fallback-info {
+      background: rgba(251,191,36,.06);
+      border: 1px solid rgba(251,191,36,.18);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 24px;
+    }
+    .fallback-info__title { font-size: .88rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+    .fallback-info__body  { font-size: .82rem; color: var(--muted); line-height: 1.55; }
+    .fallback-info code   { background: rgba(255,255,255,.06); border-radius: 4px; padding: 1px 5px; font-family: monospace; font-size: .8rem; color: #e2e8f0; }
+
+    /* RESULTS */
+    #results { display: none; margin-top: 32px; }
+    .result-header {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 20px 24px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .result-score-ring {
+      flex-shrink: 0;
+      width: 72px; height: 72px;
+    }
+    .result-meta { flex: 1; }
+    .result-company  { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .result-doctype  { font-size: .76rem; color: var(--dim); margin-bottom: 8px; }
+    .result-summary  { font-size: .85rem; color: var(--muted); line-height: 1.55; }
+
+    .pillars-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 12px;
+      margin-bottom: 16px;
+    }
+    .pillar-result {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .pillar-result__head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px;
+    }
+    .pillar-result__label { font-size: .88rem; font-weight: 700; color: var(--text); flex: 1; }
+    .pillar-result__score {
+      font-size: .78rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 8px;
+    }
+    .score--strong { background: rgba(52,211,153,.15); color: var(--green); }
+    .score--partial { background: rgba(251,191,36,.15); color: var(--amber); }
+    .score--weak   { background: rgba(248,113,113,.15); color: var(--red); }
+
+    .el-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      font-size: .8rem;
+    }
+    .el-row:last-child { border-bottom: none; }
+    .el-icon { flex-shrink: 0; font-size: .85rem; margin-top: 1px; }
+    .el-body { flex: 1; }
+    .el-label    { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .el-evidence { color: var(--dim); font-size: .74rem; line-height: 1.4; font-style: italic; margin-bottom: 2px; }
+    .el-rec      { color: #475569; font-size: .72rem; }
+
+    .gaps-section, .strengths-section {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+    .gaps-section__title { font-size: .82rem; font-weight: 700; color: var(--red);   margin-bottom: 10px; }
+    .strengths-section__title { font-size: .82rem; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+    .gaps-list, .strengths-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .gaps-list li::before      { content: '✕ '; color: var(--red); font-weight: 700; }
+    .strengths-list li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+    .gaps-list li, .strengths-list li { font-size: .82rem; color: var(--muted); line-height: 1.4; }
+
+    .disclaimer { font-size: .73rem; color: #334155; margin-top: 20px; line-height: 1.5; text-align: center; }
+
+    @media (max-width: 600px) {
+      .page { padding: 28px 16px 60px; }
+      .page-title { font-size: 1.5rem; }
+      nav { padding: 12px 16px; }
+      .pillars-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="esg-intelligence.html">
+    <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+    </svg>
+    Green Curve
+  </a>
+  <a class="nav-back" href="esg-intelligence.html">← Back to Dashboard</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-badge">P4-E · New Tool</div>
+    <h1 class="page-title">PDF / TCFD Gap Checker</h1>
+    <p class="page-sub">Upload any corporate sustainability report, BRSR, or annual report and get an instant AI assessment of TCFD (Task Force on Climate-related Financial Disclosures) alignment across all four pillars — using Claude Sonnet.</p>
+  </div>
+
+  <!-- TCFD pillars intro -->
+  <div class="pillar-grid">
+    <div class="pillar-card">
+      <div class="pillar-card__icon">🏛</div>
+      <div class="pillar-card__name">Governance</div>
+      <div class="pillar-card__desc">Board oversight of climate risks &amp; management's role in assessing climate issues</div>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-card__icon">📐</div>
+      <div class="pillar-card__name">Strategy</div>
+      <div class="pillar-card__desc">Physical &amp; transition risks, opportunities, and scenario analysis (1.5°C / 2°C)</div>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-card__icon">⚠</div>
+      <div class="pillar-card__name">Risk Management</div>
+      <div class="pillar-card__desc">Processes for identifying, assessing &amp; managing climate risks; enterprise integration</div>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-card__icon">📊</div>
+      <div class="pillar-card__name">Metrics &amp; Targets</div>
+      <div class="pillar-card__desc">Scope 1, 2 &amp; 3 GHG disclosures; climate targets with measurable year commitments</div>
+    </div>
+  </div>
+
+  <!-- Backend status notice -->
+  <div class="fallback-info" id="noBackendNotice" style="display:none">
+    <div class="fallback-info__title">⚡ Backend Not Connected</div>
+    <div class="fallback-info__body">
+      AI analysis requires the Green Curve backend. Start it with:<br>
+      <code>ANTHROPIC_API_KEY=sk-... uvicorn ai_api:app --reload --port 8002</code><br><br>
+      Then set the API base URL in the dashboard Settings, or open the console and run:<br>
+      <code>localStorage.setItem('gc_api_base', 'http://localhost:8002')</code><br><br>
+      Without the backend, this tool shows a manual TCFD checklist instead.
+    </div>
+  </div>
+
+  <!-- Upload zone -->
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+    ondragover="event.preventDefault();this.classList.add('drag')"
+    ondragleave="this.classList.remove('drag')"
+    ondrop="handleDrop(event)">
+    <div class="upload-zone__icon">📄</div>
+    <div class="upload-zone__title">Drop your sustainability report here</div>
+    <div class="upload-zone__sub">or click to browse files</div>
+    <button class="btn-primary" onclick="event.stopPropagation();document.getElementById('fileInput').click()">Choose File</button>
+    <div class="upload-zone__note">Accepts PDF · TXT · DOCX (text extracted client-side, max 15 MB)</div>
+  </div>
+  <input type="file" id="fileInput" accept=".pdf,.txt,.docx" onchange="handleFileSelect(this.files[0])">
+
+  <div class="file-selected" id="fileSelected">
+    <span>📄</span>
+    <div>
+      <div class="file-selected__name" id="selectedName"></div>
+      <div class="file-selected__size" id="selectedSize"></div>
+    </div>
+    <button class="file-remove" onclick="clearFile()" title="Remove file">✕</button>
+  </div>
+
+  <div id="analyseWrap" style="display:none;margin-bottom:16px">
+    <button class="btn-primary" id="analyseBtn" onclick="runAnalysis()">Analyse TCFD Alignment</button>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner" id="statusSpinner"></div>
+    <span id="statusMsg"></span>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="result-header">
+      <svg class="result-score-ring" id="scoreRingSvg" viewBox="0 0 72 72" aria-hidden="true">
+        <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
+        <circle id="scoreArc" cx="36" cy="36" r="30" fill="none" stroke="#34d399" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="0 188.5" transform="rotate(-90 36 36)"/>
+        <text id="scoreText" x="36" y="41" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="16" font-weight="700" fill="#fff">—</text>
+      </svg>
+      <div class="result-meta">
+        <div class="result-company" id="resCompany">—</div>
+        <div class="result-doctype" id="resDoctype">—</div>
+        <div class="result-summary" id="resSummary">—</div>
+      </div>
+    </div>
+
+    <div class="pillars-grid" id="pillarsGrid"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="gaps-section">
+        <div class="gaps-section__title">Top TCFD Gaps</div>
+        <ul class="gaps-list" id="gapsList"></ul>
+      </div>
+      <div class="strengths-section">
+        <div class="strengths-section__title">Disclosure Strengths</div>
+        <ul class="strengths-list" id="strengthsList"></ul>
+      </div>
+    </div>
+
+    <p class="disclaimer">AI-generated assessment using Claude Sonnet. Results are indicative only — not a formal TCFD assurance or audit. Always verify against the company's original filing. Green Curve is not a SEBI-registered ESG Rating Provider.</p>
+  </div>
+
+  <!-- Manual checklist fallback (shown when no backend) -->
+  <div id="manualChecklist" style="display:none;margin-top:32px">
+    <h2 style="font-size:1.1rem;font-weight:700;color:#e2e8f0;margin-bottom:16px">Manual TCFD Checklist</h2>
+    <p style="font-size:.85rem;color:#94a3b8;margin-bottom:20px">Use this checklist to manually assess TCFD alignment in any sustainability document. Check each item as present, partial, or absent.</p>
+    <div id="manualChecklistBody"></div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = localStorage.getItem('gc_api_base') || window._gcApiBase || '';
+  let _selectedFile = null;
+  let _selectedText = '';
+
+  const MANUAL_ITEMS = [
+    { pillar:'Governance', icon:'🏛', items:[
+      'Board has explicit oversight of climate-related risks',
+      'Management role in assessing climate risks described',
+      'Climate governance structures disclosed (committee, frequency)',
+    ]},
+    { pillar:'Strategy', icon:'📐', items:[
+      'Physical risks (flooding, heat, water) identified by geography or asset',
+      'Transition risks (carbon pricing, policy, technology) identified',
+      'Scenario analysis conducted (at minimum 2°C and 1.5°C)',
+      'Financial impact of climate risks quantified or described',
+    ]},
+    { pillar:'Risk Management', icon:'⚠', items:[
+      'Process for identifying climate risks described',
+      'Climate risk assessment process documented',
+      'Climate risks integrated into enterprise risk management',
+    ]},
+    { pillar:'Metrics & Targets', icon:'📊', items:[
+      'Scope 1 GHG emissions disclosed (tCO₂e)',
+      'Scope 2 GHG emissions disclosed (market-based and/or location-based)',
+      'Scope 3 emissions disclosed (at minimum Category 11)',
+      'Climate target with base year and reduction percentage stated',
+      'Net-zero or carbon neutrality commitment with target year',
+    ]},
+  ];
+
+  function buildManualChecklist() {
+    const body = document.getElementById('manualChecklistBody');
+    body.innerHTML = MANUAL_ITEMS.map(section => `
+      <div style="margin-bottom:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 18px">
+        <div style="font-size:.88rem;font-weight:700;color:#e2e8f0;margin-bottom:12px">${section.icon} ${section.pillar}</div>
+        ${section.items.map((item,i) => `
+          <label style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;font-size:.82rem;color:#94a3b8">
+            <select style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 6px;font-size:.75rem;color:#e2e8f0;font-family:inherit;outline:none">
+              <option value="gap">✕ Gap</option>
+              <option value="partial">⚠ Partial</option>
+              <option value="disclosed">✓ Disclosed</option>
+            </select>
+            ${item}
+          </label>`).join('')}
+      </div>`).join('');
+  }
+
+  async function extractText(file) {
+    if (file.name.endsWith('.txt')) {
+      return new Promise(resolve => {
+        const r = new FileReader();
+        r.onload = e => resolve(e.target.result);
+        r.readAsText(file);
+      });
+    }
+    // For PDF and DOCX: read as text (basic extraction — for PDFs this gets raw bytes,
+    // real extraction needs a library like pdf.js; we warn the user)
+    return new Promise(resolve => {
+      const r = new FileReader();
+      r.onload = e => resolve(e.target.result);
+      r.readAsText(file);
+    });
+  }
+
+  function handleFileSelect(file) {
+    if (!file) return;
+    _selectedFile = file;
+    document.getElementById('fileSelected').classList.add('show');
+    document.getElementById('selectedName').textContent = file.name;
+    document.getElementById('selectedSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
+    document.getElementById('analyseWrap').style.display = 'block';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('uploadZone').classList.remove('drag');
+    if (e.dataTransfer.files.length) handleFileSelect(e.dataTransfer.files[0]);
+  }
+
+  function clearFile() {
+    _selectedFile = null; _selectedText = '';
+    document.getElementById('fileSelected').classList.remove('show');
+    document.getElementById('analyseWrap').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('results').style.display = 'none';
+  }
+
+  function showStatus(msg, type) {
+    const bar = document.getElementById('statusBar');
+    const sp  = document.getElementById('statusSpinner');
+    bar.className = 'status-bar show status-bar--' + type;
+    document.getElementById('statusMsg').textContent = msg;
+    sp.style.display = type === 'loading' ? 'block' : 'none';
+  }
+
+  function hideStatus() { document.getElementById('statusBar').classList.remove('show'); }
+
+  async function runAnalysis() {
+    if (!_selectedFile) return;
+
+    const btn = document.getElementById('analyseBtn');
+    btn.disabled = true;
+    showStatus('Extracting text from document…', 'loading');
+
+    try {
+      _selectedText = await extractText(_selectedFile);
+    } catch(e) {
+      showStatus('Could not read file: ' + e.message, 'error');
+      btn.disabled = false;
+      return;
+    }
+
+    if (!API_BASE) {
+      hideStatus();
+      document.getElementById('noBackendNotice').style.display = 'block';
+      document.getElementById('manualChecklist').style.display = 'block';
+      buildManualChecklist();
+      btn.disabled = false;
+      return;
+    }
+
+    showStatus('Analysing TCFD alignment with Claude Sonnet — this may take 15–30 seconds…', 'loading');
+    try {
+      const res = await fetch(API_BASE + '/api/tcfd-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: _selectedText.slice(0, 15000), filename: _selectedFile.name }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || res.statusText);
+      }
+      const data = await res.json();
+      hideStatus();
+      renderResults(data);
+    } catch(e) {
+      showStatus('Analysis failed: ' + e.message, 'error');
+    }
+    btn.disabled = false;
+  }
+
+  function renderResults(data) {
+    const score = data.overall_score || 0;
+    const color = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171';
+    const dash  = (score / 100) * 188.5;
+
+    document.getElementById('scoreArc').setAttribute('stroke-dasharray', dash.toFixed(1) + ' 188.5');
+    document.getElementById('scoreArc').setAttribute('stroke', color);
+    document.getElementById('scoreText').textContent = score;
+    document.getElementById('resCompany').textContent = data.company_name || 'Unknown';
+    document.getElementById('resDoctype').textContent = data.document_type || '—';
+    document.getElementById('resSummary').textContent = data.summary || '';
+
+    const pillarIcon = { governance:'🏛', strategy:'📐', risk_mgmt:'⚠', metrics:'📊' };
+    const statusColor = { disclosed:'#34d399', partial:'#fbbf24', gap:'#f87171' };
+    const statusIcon  = { disclosed:'✓', partial:'⚠', gap:'✕' };
+
+    document.getElementById('pillarsGrid').innerHTML = (data.pillars || []).map(p => {
+      const st = p.status || (p.score >= 70 ? 'strong' : p.score >= 40 ? 'partial' : 'weak');
+      const elements = (p.elements || []).map(el => `
+        <div class="el-row">
+          <div class="el-icon" style="color:${statusColor[el.status]||'#64748b'}">${statusIcon[el.status]||'—'}</div>
+          <div class="el-body">
+            <div class="el-label">${el.label||''}</div>
+            ${el.evidence ? `<div class="el-evidence">"${el.evidence}"</div>` : ''}
+            ${el.recommendation ? `<div class="el-rec">→ ${el.recommendation}</div>` : ''}
+          </div>
+        </div>`).join('');
+      return `
+      <div class="pillar-result">
+        <div class="pillar-result__head">
+          <span style="font-size:1.2rem">${pillarIcon[p.id]||'📋'}</span>
+          <span class="pillar-result__label">${p.label||p.id}</span>
+          <span class="pillar-result__score score--${st}">${p.score != null ? p.score + '%' : '—'}</span>
+        </div>
+        ${elements}
+      </div>`;
+    }).join('');
+
+    document.getElementById('gapsList').innerHTML = (data.top_gaps||[]).map(g => `<li>${g}</li>`).join('');
+    document.getElementById('strengthsList').innerHTML = (data.strengths||[]).map(s => `<li>${s}</li>`).join('');
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  // Check backend on load
+  window.addEventListener('DOMContentLoaded', () => {
+    if (!API_BASE) {
+      document.getElementById('noBackendNotice').style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>

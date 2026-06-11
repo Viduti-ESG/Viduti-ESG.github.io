@@ -35,6 +35,12 @@
 
 <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
 
+<!-- Announcement banner -->
+<div class="gc-announce-bar" id="gcAnnounce" role="alert">
+  <span>🚀 <strong>Controversy Feed</strong> &amp; <strong>Improvement Plan</strong> are now live in the ESG dashboard</span>
+  <button class="gc-announce-close" id="gcAnnounceClose" aria-label="Dismiss announcement">&times;</button>
+</div>
+
 <header class="site-header" id="site-header">
   <nav class="nav container">
     <a href="index.html" class="nav__logo">
@@ -50,6 +56,12 @@
       <li><a href="esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
       <li><a href="index.html#contact">Contact</a></li>
     </ul>
+    <div class="nav__search-compact" id="navCompactSearch" aria-label="Quick company search">
+      <input class="nav__search-compact__input" id="navCompactInput" type="search" placeholder="Search companies…" autocomplete="off" aria-label="Search companies"/>
+      <button class="nav__search-compact__btn" id="navCompactBtn" type="button" aria-label="Search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </div>
     <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
     <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -111,21 +123,27 @@
         </button>
       </div>
 
-      <!-- The big prompt bar -->
-      <div class="gc-prompt-bar" id="heroPromptBar">
-        <input
-          id="heroPromptInput"
-          class="gc-prompt-bar__input"
-          type="search"
-          placeholder="e.g. &quot;Cement companies with high EPR risk&quot; or &quot;Reliance Industries ESG score&quot;"
-          autocomplete="off"
-          spellcheck="false"
-          aria-label="Search companies, sectors or regulations"
-        />
-        <button class="gc-prompt-bar__btn" id="heroPromptBtn" type="button">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          Search
-        </button>
+      <!-- The big prompt bar + autocomplete wrapper -->
+      <div style="position:relative">
+        <div class="gc-prompt-bar" id="heroPromptBar">
+          <input
+            id="heroPromptInput"
+            class="gc-prompt-bar__input"
+            type="search"
+            placeholder="e.g. &quot;Cement companies with high EPR risk&quot; or &quot;Reliance Industries ESG score&quot;"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search companies, sectors or regulations"
+            aria-autocomplete="list"
+            aria-controls="heroAutocomplete"
+          />
+          <button class="gc-prompt-bar__btn" id="heroPromptBtn" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Search
+          </button>
+        </div>
+        <!-- Autocomplete dropdown — populated by JS -->
+        <div class="gc-autocomplete" id="heroAutocomplete" role="listbox" aria-label="Company suggestions"></div>
       </div>
 
       <!-- Quick suggestions -->
@@ -168,6 +186,26 @@
   <span>For informational purposes only. Not investment advice. These are data aggregation summaries derived solely from companies' own publicly filed SEBI BRSR disclosures — not ESG Ratings under SEBI (Credit Rating Agencies) Regulations. Green Curve is not a SEBI-registered Research Analyst or ESG Rating Provider (ERP). <a href="methodology.html" style="color:#fbbf24;text-decoration:underline">How scores are calculated &rarr;</a></span>
 </div>
 
+<!-- TRUST BADGES STRIP — data provenance -->
+<div class="gc-trust-strip" aria-label="Data provenance information">
+  <span class="gc-trust-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    SEBI BRSR public data only
+  </span>
+  <span class="gc-trust-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+    No proprietary scores
+  </span>
+  <span class="gc-trust-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Not investment advice
+  </span>
+  <span class="gc-trust-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    1,227 companies · Updated daily
+  </span>
+</div>
+
 <!-- WATCHLIST ALERT STRIP -->
 <div id="wl-alert-strip" class="wl-alert-strip" hidden>
   <div class="container wl-alert-inner">
@@ -205,10 +243,17 @@
   <button class="intel-tab" data-tab="anomalies"  role="tab" aria-selected="false">Anomalies</button>
   <button class="intel-tab" data-tab="filing"     role="tab" aria-selected="false">BRSR Filing</button>
   <button class="intel-tab" data-tab="watchlist"  role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
-  <button class="intel-tab" data-tab="cap"         role="tab" aria-selected="false">Improvement Plan</button>
-  <button class="intel-tab" data-tab="controversy"  role="tab" aria-selected="false">Controversy Feed</button>
-  <button class="intel-tab" data-tab="badge"        role="tab" aria-selected="false">BRSR Recognition</button>
-  <button class="intel-tab" data-tab="marketmap"    role="tab" aria-selected="false">Market Map</button>
+  <button class="intel-tab" data-tab="cap"         role="tab" aria-selected="false">Improvement Plan <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="controversy"  role="tab" aria-selected="false">Controversy Feed <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="badge"        role="tab" aria-selected="false">BRSR Recognition <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="marketmap"    role="tab" aria-selected="false">Market Map <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="supplier"     role="tab" aria-selected="false">Supplier ESG <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="sectordist"   role="tab" aria-selected="false">Sector Distribution <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="brsrheatmap"  role="tab" aria-selected="false">BRSR Heatmap <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="aiquery"      role="tab" aria-selected="false">AI Query <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="climaterisk"  role="tab" aria-selected="false">Climate Risk <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="esgEvents"    role="tab" aria-selected="false">ESG Events <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab" data-tab="digest"       role="tab" aria-selected="false">ESG Digest <span class="intel-tab-new">NEW</span></button>
 </div>
 
 <main class="container intel-main">
@@ -217,6 +262,17 @@
   <section class="intel-panel active" id="tab-overview">
 
     <div class="kpi-grid" id="kpiGrid"></div>
+
+    <!-- ESG Leaders Spotlight — populated by JS -->
+    <div class="gc-spotlight" id="gcSpotlight">
+      <div class="gc-spotlight__head">
+        <div class="gc-spotlight__title">Low-Risk ESG Leaders</div>
+        <div class="gc-spotlight__sub">Companies with lowest risk scores from public BRSR filings</div>
+      </div>
+      <div class="gc-spotlight__grid" id="spotlightGrid">
+        <!-- JS populated -->
+      </div>
+    </div>
 
     <div class="charts-row">
       <div class="chart-card">
@@ -255,6 +311,7 @@
       <button class="st-pill" data-tmpl="5" onclick="applyTemplate(5)">🧪 Chemicals Sector</button>
       <button class="st-pill" data-tmpl="6" onclick="applyTemplate(6)">🌱 Green Leaders</button>
       <button class="st-pill" data-tmpl="7" onclick="applyTemplate(7)">📈 Positive Return + Low ESG Risk</button>
+      <button class="st-pill" data-tmpl="8" onclick="applyTemplate(8)">✅ BRSR Core Assured</button>
       <button class="st-pill st-pill--reset" onclick="clearTemplate()">✕ Clear</button>
     </div>
 
@@ -272,6 +329,14 @@
         <option value="ghg">Sort: GHG Score ↓</option>
         <option value="market_return">Sort: 1Y Return ↓</option>
       </select>
+      <select class="screener-filter" id="cf-confidence" onchange="applyColFilters()">
+        <option value="">All Data Quality</option>
+        <option value="assured">✅ BRSR Core Assured</option>
+        <option value="reported">🔵 High Coverage</option>
+        <option value="partial">🟡 Partial Coverage</option>
+        <option value="missing">⬜ Missing Data</option>
+      </select>
+      <button class="stc-btn" id="scoreTrackBtn" onclick="toggleScoreTrack()" title="Toggle between Standard (all data) and Conservative (confidence-adjusted) ESG risk score">⚖ Standard Score</button>
       <span class="screener-count" id="screenerCount"></span>
     </div>
     <div class="table-wrap">
@@ -282,7 +347,8 @@
             <th></th>
             <th class="th-sort" data-col="company_name">Company <span class="sort-icon" id="si-company_name">↕</span></th>
             <th class="th-sort" data-col="sector">Sector <span class="sort-icon" id="si-sector">↕</span></th>
-            <th class="th-sort" data-col="esg_risk_score">ESG Risk <span class="sort-icon" id="si-esg_risk_score">↕</span></th>
+            <th class="th-sort" data-col="esg_risk_score" id="th-esg-risk">ESG Risk <span class="sort-icon" id="si-esg_risk_score">↕</span></th>
+            <th title="Percentile within sector — higher % = higher risk relative to peers">Sector %ile</th>
             <th class="th-sort" data-col="ghg">GHG <span class="sort-icon" id="si-ghg">↕</span></th>
             <th class="th-sort" data-col="water">Water <span class="sort-icon" id="si-water">↕</span></th>
             <th class="th-sort" data-col="epr">EPR <span class="sort-icon" id="si-epr">↕</span></th>
@@ -309,6 +375,7 @@
                 <option value="Low">Low</option>
               </select>
             </td>
+            <td></td>
             <td><input type="number" class="col-filter cf-score" id="cf-ghg"   placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
             <td><input type="number" class="col-filter cf-score" id="cf-water" placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
             <td><input type="number" class="col-filter cf-score" id="cf-epr"   placeholder="&ge;0" min="0" max="10" step="0.5" oninput="applyColFilters()"/></td>
@@ -539,6 +606,14 @@
     </div>
     <div id="ft-deadline-strip" class="ft-deadline-strip"></div>
     <div id="ft-kpi-row" class="ft-kpi-row"></div>
+    <!-- F-D: Live BSE Filing Feed -->
+    <div class="ft-recent-section">
+      <div class="ft-recent-header">
+        <h4 class="ft-recent-title">Recent BRSR Filings Detected on BSE</h4>
+        <span class="ft-recent-hint">Powered by <code>check_brsr_filings.py</code> — run weekly to refresh</span>
+      </div>
+      <div id="ft-recent-feed"></div>
+    </div>
     <div class="ft-controls">
       <input type="search" id="ft-search" class="screener-search" placeholder="Search company…" oninput="applyFTFilters()"/>
       <select id="ft-sector" class="screener-filter" onchange="applyFTFilters()"><option value="">All Sectors</option></select>
@@ -647,6 +722,203 @@
     <div id="mm-sector-grid" class="mm-sector-grid"></div>
   </section>
 
+  <!-- ── SUPPLIER ESG TRACKER ──────────────────────────────────────────────── -->
+  <section class="intel-panel" id="tab-supplier">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">BRSR Value-Chain Supplier ESG Tracker</h3>
+      <p class="dm-intro-text">Collect ESG disclosures from your Tier-1 suppliers as mandated by SEBI BRSR Core (FY2026-27 onwards for top 250 companies). Generate shareable supplier form links, track response status, and view aggregated supplier ESG risk.</p>
+    </div>
+
+    <!-- Link generator -->
+    <div class="supp-link-card" id="supp-link-card">
+      <div class="supp-link-header">
+        <h4 class="supp-link-title">Generate Supplier Form Link</h4>
+        <span class="supp-link-sub">Share this link with your suppliers — they fill a 5-minute ESG questionnaire</span>
+      </div>
+      <div class="supp-link-row">
+        <input class="screener-search supp-link-input" type="text" id="supp-co-input"
+          placeholder="Your company name (e.g. Tata Steel Limited)" style="flex:1"/>
+        <input class="screener-search supp-link-input" type="text" id="supp-cin-input"
+          placeholder="CIN (optional)" style="max-width:220px"/>
+        <button class="supp-gen-btn" onclick="generateSupplierLink()">Generate Link</button>
+      </div>
+      <div id="supp-link-output" class="supp-link-output" style="display:none">
+        <div class="supp-link-url-row">
+          <code class="supp-link-url" id="supp-link-url"></code>
+          <button class="supp-copy-btn" onclick="copySupplierLink()" id="supp-copy-btn">Copy</button>
+        </div>
+        <p class="supp-link-hint">Email this link to each supplier. Their responses will be stored in <code>assets/data/supplier_responses.json</code> when a backend is running, or downloaded as individual JSON files.</p>
+      </div>
+    </div>
+
+    <!-- KPI summary row -->
+    <div id="supp-kpi-row" class="supp-kpi-row"></div>
+
+    <!-- Controls -->
+    <div class="ft-controls">
+      <input type="search" id="supp-search" class="screener-search" placeholder="Search supplier or company…" oninput="applySupplierFilters()"/>
+      <select id="supp-risk-filter" class="screener-filter" onchange="applySupplierFilters()">
+        <option value="">All Risk Levels</option>
+        <option value="low">Low Risk (&lt; 3.5)</option>
+        <option value="medium">Medium Risk (3.5–6.4)</option>
+        <option value="high">High Risk (≥ 6.5)</option>
+      </select>
+      <select id="supp-disc-filter" class="screener-filter" onchange="applySupplierFilters()">
+        <option value="">All Disclosure Levels</option>
+        <option value="full">Full disclosure</option>
+        <option value="partial">Partial disclosure</option>
+        <option value="none">No GHG disclosure</option>
+      </select>
+      <span class="screener-count" id="supp-count"></span>
+    </div>
+
+    <!-- Response table -->
+    <div class="table-wrap" id="supp-table-wrap">
+      <table class="screener-table" id="supp-table">
+        <thead>
+          <tr>
+            <th>Supplier Name</th>
+            <th>Mandating Company</th>
+            <th>Revenue Band</th>
+            <th>MSME</th>
+            <th>Scope 1+2 (tCO₂e)</th>
+            <th>ESG Risk Score</th>
+            <th>BRSR Report</th>
+            <th>Submitted</th>
+          </tr>
+        </thead>
+        <tbody id="supp-tbody"></tbody>
+      </table>
+      <div id="supp-empty" class="supp-empty-state" style="display:none">
+        <div class="supp-empty-icon">📋</div>
+        <div class="supp-empty-title">No supplier responses yet</div>
+        <div class="supp-empty-sub">Generate a form link above and share it with your suppliers.<br/>Responses appear here once submitted (requires backend) or after uploading downloaded JSON files.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P2-C: Sector ESG Distribution -->
+  <section class="intel-panel" id="tab-sectordist">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">Sector ESG Distribution</h3>
+      <p class="dm-intro-text">Compare how ESG risk scores are distributed across all companies within a sector. Identify outliers, understand the spread, and see where individual companies stand relative to peers.</p>
+    </div>
+    <div class="sd-controls">
+      <select id="sd-sector-select" class="screener-filter sd-sector-select" onchange="renderSectorDistTab()">
+        <option value="">— Select a Sector —</option>
+      </select>
+      <select id="sd-dim-select" class="screener-filter" onchange="renderSectorDistTab()">
+        <option value="esg_quotient">Overall ESG Score</option>
+        <option value="ghg_intensity">GHG Intensity</option>
+        <option value="water_intensity">Water Intensity</option>
+        <option value="waste_intensity">Waste Intensity</option>
+        <option value="epr_exposure">EPR Exposure</option>
+        <option value="compliance_risk">Compliance Risk</option>
+        <option value="hr_risk">HR Risk</option>
+        <option value="governance_risk">Governance Risk</option>
+      </select>
+      <span class="screener-count" id="sd-count"></span>
+    </div>
+    <div id="sd-chart" style="height:380px;width:100%;margin:16px 0 8px"></div>
+    <div id="sd-stats-row" class="sd-stats-row"></div>
+    <div id="sd-outlier-row" class="sd-outlier-row"></div>
+    <div id="sd-empty" class="supp-empty-state" style="display:none">
+      <div class="supp-empty-icon">📊</div>
+      <div class="supp-empty-title">Select a sector above to view its distribution</div>
+      <div class="supp-empty-sub">Distribution charts show all companies in the sector ranked by ESG score with statistical overlays.</div>
+    </div>
+  </section>
+
+  <!-- P2-D: BRSR Disclosure Heatmap -->
+  <section class="intel-panel" id="tab-brsrheatmap">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">BRSR Disclosure Heatmap</h3>
+      <p class="dm-intro-text">Visualise which ESG risk dimensions are disclosed (or missing) across companies in a sector. Darker cells = higher disclosed score; grey = not disclosed. Use to identify disclosure gaps and peer comparison opportunities.</p>
+    </div>
+    <div class="bh-controls">
+      <select id="bh-sector-select" class="screener-filter bh-sector-select" onchange="renderBRSRHeatmap()">
+        <option value="">— Select a Sector —</option>
+      </select>
+      <input type="search" id="bh-search" class="screener-search" placeholder="Filter companies…" oninput="renderBRSRHeatmap()" style="max-width:240px"/>
+      <span class="screener-count" id="bh-count"></span>
+    </div>
+    <div id="bh-chart-wrap" class="bh-chart-wrap">
+      <div id="bh-empty" class="supp-empty-state">
+        <div class="supp-empty-icon">🔲</div>
+        <div class="supp-empty-title">Select a sector to render the heatmap</div>
+        <div class="supp-empty-sub">Each row is a company; each column is a BRSR risk dimension. Cell color indicates risk level.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P4-F: Weekly ESG Digest Subscription -->
+  <section class="intel-panel" id="tab-digest">
+    <div class="dm-intro">
+      <h3 class="dm-intro__title">Weekly ESG Digest</h3>
+      <p class="dm-intro__sub">Get a personalised weekly briefing — regulatory deadlines, peer risk insights, and data quality tips — generated by Claude AI and tailored to your company and watchlist. Delivered by email.</p>
+    </div>
+    <div class="digest-card" id="digest-form-card">
+      <div class="digest-card__title">Subscribe to Your Weekly Digest</div>
+      <div class="digest-card__sub">Claude Haiku generates a bespoke digest based on your sector, ESG risk profile, and watchlist. Typical generation cost: ₹0.95 per digest. Activate when subscriber base reaches 200+.</div>
+      <div class="digest-form" id="digestForm">
+        <input class="digest-input" id="digestEmail" type="email" placeholder="your@email.com" required>
+        <input class="digest-input" id="digestCompany" type="text" placeholder="Your company name (optional)">
+        <button class="digest-btn" onclick="subscribeDigest()">Subscribe — Get Weekly ESG Briefing</button>
+      </div>
+      <p class="digest-note" style="margin-top:10px">No spam. Unsubscribe anytime. Data used only to personalise your digest.</p>
+    </div>
+    <div class="digest-card" id="digest-preview-card" style="margin-top:16px;display:none">
+      <div class="digest-card__title">Preview This Week's Digest</div>
+      <div class="digest-card__sub">See what a personalised digest looks like based on your current watchlist and ESG risk data.</div>
+      <button class="digest-btn" id="digestPreviewBtn" onclick="previewDigest()" style="margin-top:10px">Generate Preview Digest</button>
+      <div id="digestPreviewStatus" style="display:none;margin-top:12px;font-size:.82rem;color:#94a3b8"></div>
+      <div id="digestPreviewContent" style="display:none;margin-top:16px"></div>
+    </div>
+  </section>
+
+  <!-- P4-C: India Physical Climate Risk by State -->
+  <section class="intel-panel" id="tab-climaterisk">
+  </section>
+
+  <!-- P4-D: SEBI/BSE/NGT ESG Event Alert Feed -->
+  <section class="intel-panel" id="tab-esgEvents">
+  </section>
+
+  <!-- P3-D: AI ESG Query Assistant -->
+  <section class="intel-panel" id="tab-aiquery">
+    <div class="dm-intro">
+      <h3 class="dm-intro-title">AI ESG Query Assistant</h3>
+      <p class="dm-intro-text">Ask questions in plain English about the 1,227 Indian listed companies in the Green Curve dataset. With backend active, Claude AI parses your query into filters. Without backend, keyword search is used as fallback.</p>
+    </div>
+    <div class="aiq-input-wrap">
+      <input type="text" id="aiq-input" class="aiq-input" placeholder='e.g. "Steel companies with GHG intensity above 7" or "Low-risk pharma companies with BRSR assurance"' autocomplete="off"/>
+      <button class="aiq-btn" onclick="runAIQuery()">Ask AI</button>
+    </div>
+    <div class="aiq-examples">
+      <span class="aiq-ex-label">Try:</span>
+      <button class="aiq-chip" onclick="aiqSetAndRun('Show cement companies with compliance risk above 6')">Cement + high compliance risk</button>
+      <button class="aiq-chip" onclick="aiqSetAndRun('Power sector companies with no Scope 1 disclosure')">Power + no Scope 1</button>
+      <button class="aiq-chip" onclick="aiqSetAndRun('Low ESG risk pharma companies with BRSR assurance')">Low-risk pharma with assurance</button>
+      <button class="aiq-chip" onclick="aiqSetAndRun('Top 10 highest water intensity companies')">Top 10 water intensity</button>
+    </div>
+    <div id="aiq-status" class="aiq-status" style="display:none"></div>
+    <div id="aiq-result" style="display:none">
+      <div class="aiq-result-header">
+        <span id="aiq-result-count" class="screener-count"></span>
+        <span id="aiq-result-explain" class="aiq-explain"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="screener-table">
+          <thead><tr>
+            <th>Company</th><th>Sector</th><th>ESG Score</th>
+            <th>GHG</th><th>Water</th><th>Compliance</th><th>Revenue (₹Cr)</th>
+          </tr></thead>
+          <tbody id="aiq-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <!-- FOOTER -->
@@ -701,6 +973,12 @@
       <button class="dd-tab" data-ddtab="benchmark">Benchmarking</button>
       <button class="dd-tab" data-ddtab="targets">Targets</button>
       <button class="dd-tab" data-ddtab="actions">Actions</button>
+      <button class="dd-tab" data-ddtab="netzero">Net Zero Path <span class="intel-tab-new">NEW</span></button>
+      <button class="dd-tab" data-ddtab="waterfall">Score Waterfall <span class="intel-tab-new">NEW</span></button>
+      <button class="dd-tab" data-ddtab="wwbench">W&amp;W Bench <span class="intel-tab-new">NEW</span></button>
+      <button class="dd-tab" data-ddtab="datagaps">Data Gaps <span class="intel-tab-new">NEW</span></button>
+      <button class="dd-tab" data-ddtab="ccts">CCTS Score <span class="intel-tab-new">NEW</span></button>
+      <button class="dd-tab" data-ddtab="tcfd">TCFD Gap <span class="intel-tab-new">NEW</span></button>
     </div>
 
     <div class="deepdive-body" id="deepDiveBody">
@@ -760,6 +1038,13 @@
       if (btn.dataset.tab === 'controversy'  && typeof renderControversy === 'function') renderControversy();
       if (btn.dataset.tab === 'badge'        && typeof renderBadge === 'function') renderBadge();
       if (btn.dataset.tab === 'marketmap'    && typeof renderMarketMap === 'function') renderMarketMap();
+      if (btn.dataset.tab === 'supplier'     && typeof renderSupplierTab === 'function') renderSupplierTab();
+      if (btn.dataset.tab === 'sectordist'   && typeof renderSectorDistTab === 'function') renderSectorDistTab();
+      if (btn.dataset.tab === 'brsrheatmap'  && typeof renderBRSRHeatmap === 'function') renderBRSRHeatmap();
+      if (btn.dataset.tab === 'aiquery'      && typeof initAIQuery === 'function') initAIQuery();
+      if (btn.dataset.tab === 'climaterisk'  && typeof renderClimateRisk === 'function') renderClimateRisk();
+      if (btn.dataset.tab === 'esgEvents'    && typeof renderESGEvents === 'function') renderESGEvents();
+      if (btn.dataset.tab === 'digest') initDigestTab();
     });
   });
   // ── Hero prompt bar wiring (imagine.art-style) ────────────────────────────
@@ -825,6 +1110,221 @@
       document.body.style.overflow = open ? 'hidden' : '';
       burger.setAttribute('aria-expanded', String(open));
     });
+  }
+
+  // ── Announcement bar dismiss ──────────────────────────────────────────────
+  (function() {
+    const bar   = document.getElementById('gcAnnounce');
+    const close = document.getElementById('gcAnnounceClose');
+    if (!bar) return;
+    if (localStorage.getItem('gc_announce_v2_dismissed')) bar.style.display = 'none';
+    if (close) close.addEventListener('click', () => {
+      bar.style.display = 'none';
+      localStorage.setItem('gc_announce_v2_dismissed', '1');
+    });
+  })();
+
+  // ── Compact nav search (shows when hero scrolls out of view) ─────────────
+  (function() {
+    const siteHeader = document.getElementById('site-header');
+    const heroSection = document.querySelector('.intel-prompt-hero');
+    const compactInput = document.getElementById('navCompactInput');
+    const compactBtn   = document.getElementById('navCompactBtn');
+    if (!heroSection || !siteHeader) return;
+
+    const obs = new IntersectionObserver(entries => {
+      siteHeader.classList.toggle('has-compact-search', !entries[0].isIntersecting);
+    }, { threshold: 0.15 });
+    obs.observe(heroSection);
+
+    function runCompactSearch() {
+      const q = compactInput ? compactInput.value.trim() : '';
+      if (!q) return;
+      if (globalSearchInput) {
+        globalSearchInput.value = q;
+        globalSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      const resultsEl = document.getElementById('searchResults');
+      if (resultsEl) resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const globalBtn = document.getElementById('globalSearchBtn');
+      if (globalBtn) globalBtn.click();
+    }
+    if (compactBtn) compactBtn.addEventListener('click', runCompactSearch);
+    if (compactInput) compactInput.addEventListener('keydown', e => { if (e.key === 'Enter') runCompactSearch(); });
+  })();
+
+  // ── Autocomplete on hero prompt bar ──────────────────────────────────────
+  (function() {
+    const input  = document.getElementById('heroPromptInput');
+    const dropEl = document.getElementById('heroAutocomplete');
+    if (!input || !dropEl) return;
+
+    let acIdx = -1;
+
+    function getCompanies() {
+      // allCompanies is a global populated by esg-intelligence.js after data loads
+      return typeof allCompanies !== 'undefined' ? allCompanies : [];
+    }
+
+    function clearAC() {
+      dropEl.innerHTML = '';
+      acIdx = -1;
+    }
+
+    function renderAC(q) {
+      clearAC();
+      if (!q || q.length < 2) return;
+      const companies = getCompanies();
+      if (!companies.length) return;
+
+      const ql = q.toLowerCase();
+      const matches = companies
+        .filter(c => (c.company_name || '').toLowerCase().includes(ql))
+        .slice(0, 8);
+
+      if (!matches.length) return;
+
+      matches.forEach((c, i) => {
+        const item = document.createElement('div');
+        item.className = 'gc-autocomplete__item';
+        item.setAttribute('role', 'option');
+        item.setAttribute('data-idx', i);
+
+        const tier = c.risk_tier || '';
+        const riskCls = tier ? ` gc-autocomplete__risk--${tier}` : '';
+        item.innerHTML = `
+          <div class="gc-autocomplete__icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+          </div>
+          <div class="gc-autocomplete__right">
+            <div class="gc-autocomplete__name">${c.company_name || ''}</div>
+            <div class="gc-autocomplete__meta">${c.sector ? c.sector.slice(0,40) : ''} · Score ${c.esg_risk_score != null ? c.esg_risk_score.toFixed(1) : '—'}</div>
+          </div>
+          ${tier ? `<span class="gc-autocomplete__risk${riskCls}">${tier}</span>` : ''}
+        `;
+        item.addEventListener('mousedown', e => {
+          e.preventDefault();
+          input.value = c.company_name || '';
+          clearAC();
+          runHeroSearch();
+        });
+        dropEl.appendChild(item);
+      });
+    }
+
+    input.addEventListener('input', () => renderAC(input.value.trim()));
+    input.addEventListener('keydown', e => {
+      const items = dropEl.querySelectorAll('.gc-autocomplete__item');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        acIdx = Math.min(acIdx + 1, items.length - 1);
+        items.forEach((el, i) => el.classList.toggle('ac-focused', i === acIdx));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        acIdx = Math.max(acIdx - 1, -1);
+        items.forEach((el, i) => el.classList.toggle('ac-focused', i === acIdx));
+      } else if (e.key === 'Enter') {
+        if (acIdx >= 0 && items[acIdx]) {
+          items[acIdx].dispatchEvent(new MouseEvent('mousedown'));
+          e.preventDefault(); return;
+        }
+      } else if (e.key === 'Escape') {
+        clearAC();
+      }
+    });
+    input.addEventListener('blur', () => setTimeout(clearAC, 200));
+  })();
+
+  // ── P4-F: Weekly ESG Digest ────────────────────────────────────────────────
+  const _DIGEST_KEY = 'gc_digest_sub';
+
+  function initDigestTab() {
+    const sub = JSON.parse(localStorage.getItem(_DIGEST_KEY) || 'null');
+    if (sub && sub.email) {
+      document.getElementById('digestEmail').value    = sub.email || '';
+      document.getElementById('digestCompany').value  = sub.company || '';
+      document.getElementById('digest-preview-card').style.display = 'block';
+    }
+    const apiBase = localStorage.getItem('gc_api_base') || '';
+    if (!apiBase) {
+      document.getElementById('digestPreviewBtn') && (document.getElementById('digestPreviewBtn').title = 'Requires backend');
+    }
+  }
+
+  function subscribeDigest() {
+    const email   = document.getElementById('digestEmail').value.trim();
+    const company = document.getElementById('digestCompany').value.trim();
+    if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    localStorage.setItem(_DIGEST_KEY, JSON.stringify({ email, company, subscribed_at: new Date().toISOString() }));
+    const form = document.getElementById('digestForm');
+    form.innerHTML = '<div class="digest-success">✓ Subscribed! Your first digest will arrive next Monday.</div>';
+    document.getElementById('digest-preview-card').style.display = 'block';
+  }
+
+  async function previewDigest() {
+    const apiBase = localStorage.getItem('gc_api_base') || '';
+    const statusEl = document.getElementById('digestPreviewStatus');
+    const contentEl = document.getElementById('digestPreviewContent');
+    const btn = document.getElementById('digestPreviewBtn');
+
+    if (!apiBase) {
+      statusEl.style.display = 'block';
+      statusEl.textContent = 'Backend not connected. Set gc_api_base in localStorage or start the FastAPI server.';
+      return;
+    }
+
+    const sub = JSON.parse(localStorage.getItem(_DIGEST_KEY) || '{}');
+    const watchlist = JSON.parse(localStorage.getItem('gc_watchlist') || '[]');
+    const company = typeof allCompanies !== 'undefined' && allCompanies.length
+      ? allCompanies.find(c => c.company_name === sub.company)
+      : null;
+
+    btn.disabled = true;
+    statusEl.style.display = 'block';
+    statusEl.textContent = 'Generating your personalised digest with Claude Haiku…';
+    contentEl.style.display = 'none';
+
+    try {
+      const res = await fetch(apiBase + '/api/generate-digest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: sub.email || '',
+          company_name: sub.company || '',
+          sector: company?.sector || '',
+          watchlist: watchlist.slice(0, 10),
+          esg_risk_score: company?.esg_risk_score || null,
+          week_of: new Date().toISOString().split('T')[0],
+        }),
+      });
+      if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.detail || res.statusText); }
+      const data = await res.json();
+      statusEl.style.display = 'none';
+      contentEl.style.display = 'block';
+      contentEl.innerHTML = renderDigestPreview(data);
+    } catch(e) {
+      statusEl.textContent = 'Failed: ' + e.message;
+    }
+    btn.disabled = false;
+  }
+
+  function renderDigestPreview(data) {
+    const sections = (data.sections || []).map(s => `
+      <div style="margin-bottom:14px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px">
+        <div style="font-size:.82rem;font-weight:700;color:#e2e8f0;margin-bottom:6px">${s.title||''}</div>
+        <div style="font-size:.8rem;color:#94a3b8;line-height:1.55">${s.content||''}</div>
+      </div>`).join('');
+    const actions = (data.action_items || []).map(a => `<li style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">${a}</li>`).join('');
+    return `
+      <div style="background:rgba(5,150,105,.06);border:1px solid rgba(52,211,153,.15);border-radius:12px;padding:20px">
+        <div style="font-size:.72rem;font-weight:700;color:#34d399;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Preview</div>
+        <div style="font-size:1rem;font-weight:700;color:#e2e8f0;margin-bottom:4px">${data.subject||'Weekly ESG Digest'}</div>
+        <div style="font-size:.83rem;color:#94a3b8;margin-bottom:16px">${data.greeting||''}</div>
+        ${sections}
+        ${actions ? `<div style="font-size:.8rem;font-weight:700;color:#e2e8f0;margin-bottom:8px">This Week's Action Items</div><ul style="padding-left:18px">${actions}</ul>` : ''}
+        ${data.quote ? `<div style="margin-top:14px;padding:12px;border-left:3px solid rgba(52,211,153,.3);font-size:.8rem;color:#64748b;font-style:italic">"${data.quote}"</div>` : ''}
+      </div>`;
   }
 </script>
 

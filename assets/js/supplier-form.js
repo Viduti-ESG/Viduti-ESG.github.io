@@ -1,672 +1,188 @@
-/**
- * supplier-form.js — Supplier ESG Questionnaire (BRSR Value-Chain)
- * Reads ?t=<supplier_token> from URL, fetches context, renders 5-step form.
- */
+// Green Curve — BRSR Supplier ESG Form Logic
 
-const API_BASE = "https://7334807f62be7d.lhr.life";
+(function () {
+  'use strict';
 
-const STEPS = ["Identity", "Environment", "Social", "Governance", "Products"];
-const STEP_MAXPTS = [null, 30, 30, 25, 15]; // null for identity (no score)
+  // ── Parse URL params ────────────────────────────────────────────────────────
+  var params          = new URLSearchParams(window.location.search);
+  var mandatingName   = decodeURIComponent(params.get('company') || '');
+  var mandatingCin    = decodeURIComponent(params.get('cin')     || '');
+  var token           = decodeURIComponent(params.get('token')   || '');
+  var gcApiBase       = (function () {
+    try { return localStorage.getItem('gc_api_base') || ''; } catch (_) { return ''; }
+  })();
 
-const SECTORS = [
-  "Banking & Financial Services","IT & Software","Manufacturing — Steel/Metals",
-  "Manufacturing — Chemicals","Manufacturing — Pharmaceuticals","Manufacturing — FMCG",
-  "Manufacturing — Textiles","Manufacturing — Cement/Construction Materials",
-  "Manufacturing — Auto & Auto Components","Manufacturing — Capital Goods",
-  "Manufacturing — Others","Oil & Gas / Energy","Power & Utilities",
-  "Infrastructure & Construction","Real Estate","Telecom",
-  "Retail & Consumer","Healthcare","Agriculture & Food Processing",
-  "Mining & Minerals","Media & Entertainment","Logistics & Transport","Other",
-];
+  // ── On DOMContentLoaded ─────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-mandating-name').forEach(function (el) {
+      el.textContent = mandatingName || 'the requesting company';
+    });
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let supplierToken = null;
-let formInfo      = null;
-let currentStep   = 0;   // 0-indexed; step 5 = result screen
-const formData    = {};
+    var fToken    = document.getElementById('f-token');
+    var fMandName = document.getElementById('f-mandating-name');
+    var fMandCin  = document.getElementById('f-mandating-cin');
+    if (fToken)    fToken.value    = token;
+    if (fMandName) fMandName.value = mandatingName;
+    if (fMandCin)  fMandCin.value  = mandatingCin;
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+    bindNd('chk-scope1-nd', 'inp-scope1');
+    bindNd('chk-scope2-nd', 'inp-scope2');
+    bindNd('chk-water-nd',  'inp-water');
+    bindNd('chk-waste-nd',  'inp-waste');
 
-document.addEventListener("DOMContentLoaded", async () => {
-  supplierToken = new URLSearchParams(window.location.search).get("t");
+    wireScrollProgress();
+  });
 
-  if (!supplierToken) {
-    showInvalidToken("No invite token found in URL. Please use the link provided by your buyer.");
-    return;
+  function bindNd(checkId, inputId) {
+    var chk = document.getElementById(checkId);
+    var inp = document.getElementById(inputId);
+    if (!chk || !inp) return;
+    chk.addEventListener('change', function () {
+      inp.disabled = chk.checked;
+      if (chk.checked) inp.value = '';
+      inp.required = !chk.checked;
+    });
   }
 
-  showLoading();
+  function wireScrollProgress() {
+    var sections = ['sf-sec-a', 'sf-sec-b', 'sf-sec-c', 'sf-sec-d'];
+    var steps    = document.querySelectorAll('.sf-step');
+    if (!steps.length) return;
+    window.addEventListener('scroll', function () {
+      var scrollMid = window.scrollY + window.innerHeight * 0.4;
+      var activeIdx = 0;
+      sections.forEach(function (id, i) {
+        var el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollMid) activeIdx = i;
+      });
+      steps.forEach(function (s, i) {
+        s.classList.toggle('active', i <= activeIdx);
+      });
+    }, { passive: true });
+  }
 
-  try {
-    const res = await fetch(`${API_BASE}/api/value-chain/form-info/${supplierToken}`);
-    if (res.status === 404) {
-      showInvalidToken("This invite link is not valid or has expired. Please contact your buyer for a new link.");
-      return;
-    }
-    if (!res.ok) throw new Error(`Server error ${res.status}`);
+  // ── ESG risk score (0–10 scale, consistent with dashboard scoring) ──────────
+  function computeSupplierEsgRisk(d) {
+    var score = 5.0;
 
-    formInfo = await res.json();
+    if (!d.has_environmental_policy) score += 1.0;
+    if (d.scope1_not_disclosed)      score += 0.5;
+    if (d.scope2_not_disclosed)      score += 0.5;
+    if (d.water_not_disclosed)       score += 0.2;
+    if (d.waste_not_disclosed)       score += 0.2;
+    if (!d.has_hr_policy)            score += 0.5;
+    if (d.safety_incidents > 0)      score += Math.min(1.0, d.safety_incidents * 0.3);
+    if (!d.has_code_of_conduct)      score += 0.5;
+    if (d.regulatory_violations > 0) score += Math.min(2.0, d.regulatory_violations * 0.8);
 
-    if (formInfo.already_submitted) {
-      showAlreadySubmitted();
-      return;
-    }
+    if (d.has_brsr_disclosure)      score -= 1.0;
+    if (d.has_environmental_policy) score -= 0.3;
+    if (d.is_msme)                  score -= 0.2;
 
-    setInvitedBy(formInfo.company_name);
+    return Math.max(1.0, Math.min(9.5, Math.round(score * 10) / 10));
+  }
 
-    // Show DPDP consent screen before rendering the form
-    const consentKey = 'gc_sf_consent_' + supplierToken;
-    if (sessionStorage.getItem(consentKey) === 'granted') {
-      renderStep(0);
+  // ── Submit ──────────────────────────────────────────────────────────────────
+  function submitSupplierForm(e) {
+    e.preventDefault();
+    var form = document.getElementById('sf-form');
+    if (!form) return;
+
+    var btn = document.getElementById('sf-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+    var fd = new FormData(form);
+    var scope1Nd = fd.get('scope1_not_disclosed') === 'on';
+    var scope2Nd = fd.get('scope2_not_disclosed') === 'on';
+    var waterNd  = fd.get('water_not_disclosed')  === 'on';
+    var wasteNd  = fd.get('waste_not_disclosed')  === 'on';
+
+    var data = {
+      token:                  fd.get('token') || token,
+      mandating_company_name: fd.get('mandating_name') || mandatingName,
+      mandating_company_cin:  fd.get('mandating_cin')  || mandatingCin,
+      submitted_at:           new Date().toISOString(),
+      supplier_name:          (fd.get('supplier_name')  || '').trim(),
+      supplier_gstin:         (fd.get('supplier_gstin') || '').trim().toUpperCase(),
+      supplier_cin:           (fd.get('supplier_cin')   || '').trim().toUpperCase(),
+      annual_revenue_band:    fd.get('annual_revenue_band') || '',
+      is_msme:                fd.get('is_msme') === 'yes',
+      has_environmental_policy: fd.get('has_environmental_policy') === 'yes',
+      scope1_tco2e:           scope1Nd ? null : (parseFloat(fd.get('scope1_tco2e')) || null),
+      scope1_not_disclosed:   scope1Nd,
+      scope2_tco2e:           scope2Nd ? null : (parseFloat(fd.get('scope2_tco2e')) || null),
+      scope2_not_disclosed:   scope2Nd,
+      water_m3:               waterNd  ? null : (parseFloat(fd.get('water_m3'))     || null),
+      water_not_disclosed:    waterNd,
+      waste_tonnes:           wasteNd  ? null : (parseFloat(fd.get('waste_tonnes')) || null),
+      waste_not_disclosed:    wasteNd,
+      total_employees:        parseInt(fd.get('total_employees'), 10) || 0,
+      has_hr_policy:          fd.get('has_hr_policy') === 'yes',
+      safety_incidents:       parseInt(fd.get('safety_incidents'), 10) || 0,
+      women_pct:              parseFloat(fd.get('women_pct')) || 0,
+      has_brsr_disclosure:    fd.get('has_brsr_disclosure') === 'yes',
+      has_code_of_conduct:    fd.get('has_code_of_conduct') === 'yes',
+      regulatory_violations:  parseInt(fd.get('regulatory_violations'), 10) || 0,
+    };
+    data.esg_risk_score = computeSupplierEsgRisk(data);
+
+    if (gcApiBase) {
+      fetch(gcApiBase + '/api/supplier-response', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(data),
+      })
+        .then(function (r) {
+          if (r.ok) { showThankYou(data, false); }
+          else      { fallbackDownload(data); }
+        })
+        .catch(function () { fallbackDownload(data); });
     } else {
-      showDPDPConsent(consentKey);
+      fallbackDownload(data);
     }
-  } catch (err) {
-    showInvalidToken(`Could not load form: ${err.message}. Ensure the backend is reachable.`);
-  }
-});
-
-// ── DPDP Consent Pre-screen ───────────────────────────────────────────────────
-
-function showDPDPConsent(consentKey) {
-  document.getElementById("sf-nav").style.display = "none";
-  document.getElementById("sf-progress-wrap").style.display = "none";
-
-  document.getElementById("sf-content").innerHTML = `
-    <div class="sf-dpdp-consent">
-      <div class="sf-dpdp-icon">🔒</div>
-      <div class="sf-dpdp-title">Data Privacy Notice</div>
-      <div class="sf-dpdp-invited">
-        You have been invited by <strong style="color:var(--cyan)">${escHtml(formInfo.company_name || "your buyer")}</strong>
-        to complete an ESG questionnaire for their BRSR value-chain disclosure.
-      </div>
-
-      <div class="sf-dpdp-body">
-        <p><strong>What data we collect:</strong> Company details, CIN, sector, employee count, environmental metrics (GHG, energy, water, waste), social metrics (workplace safety, labour practices), governance information, and product/EPR data.</p>
-        <p><strong>Why it's collected:</strong> Exclusively to fulfil SEBI BRSR Core value-chain disclosure requirements (BRSR Principle 2 &amp; 8). Your responses are scored and shared only with the company that invited you.</p>
-        <p><strong>Who stores it:</strong> Green Curve's secure backend server. Your data is not sold or shared with any third party other than the inviting company.</p>
-        <p><strong>How long it's kept:</strong> 3 years, aligned to BRSR audit periods, then permanently deleted.</p>
-        <p><strong>Your rights (DPDP Act 2023):</strong> You have the right to access, correct, and request deletion of your data. Contact us via <a href="https://www.linkedin.com/in/neha-kumari-701872a4/" target="_blank" rel="noopener" style="color:var(--cyan)">LinkedIn</a>.</p>
-        <p>Read our full <a href="privacy-policy.html" target="_blank" style="color:var(--cyan)">Privacy Policy</a> for complete details.</p>
-      </div>
-
-      <label class="sf-dpdp-check-label" id="sf-dpdp-label">
-        <input type="checkbox" id="sf-dpdp-checkbox" onchange="document.getElementById('sf-dpdp-btn').disabled = !this.checked" />
-        <span>I have read and understood the above privacy notice, and I <strong>consent</strong> to my data being collected and processed as described.</span>
-      </label>
-
-      <button class="sf-btn sf-btn--primary" id="sf-dpdp-btn" disabled
-        onclick="window._sfDPDPAccept(${JSON.stringify(consentKey)})">
-        Continue to Form →
-      </button>
-
-      <p class="sf-dpdp-note">
-        If you do not consent, close this window. Your buyer may still be able to manually enter your data with your permission.
-      </p>
-    </div>
-  `;
-}
-
-window._sfDPDPAccept = function(consentKey) {
-  sessionStorage.setItem(consentKey, 'granted');
-  renderStep(0);
-};
-
-// ── Screen helpers ────────────────────────────────────────────────────────────
-
-function showLoading() {
-  document.getElementById("sf-content").innerHTML = `
-    <div class="vc-loading"><div class="vc-spinner"></div>Loading your form…</div>
-  `;
-  document.getElementById("sf-nav").style.display = "none";
-  document.getElementById("sf-progress-wrap").style.display = "none";
-}
-
-function showInvalidToken(msg) {
-  document.getElementById("sf-content").innerHTML = `
-    <div class="sf-invalid">
-      <div class="sf-invalid__icon">🔗</div>
-      <div class="sf-invalid__title">Invalid invite link</div>
-      <div class="sf-invalid__sub">${escHtml(msg)}</div>
-    </div>
-  `;
-  document.getElementById("sf-nav").style.display = "none";
-  document.getElementById("sf-progress-wrap").style.display = "none";
-}
-
-function showAlreadySubmitted() {
-  document.getElementById("sf-content").innerHTML = `
-    <div class="sf-already">
-      <div class="sf-already__icon">✅</div>
-      <div class="sf-already__title">Already Submitted</div>
-      <div class="sf-already__sub">
-        Your ESG questionnaire for <strong style="color:var(--cyan)">${escHtml(formInfo?.company_name || "")}</strong>
-        has already been submitted. Thank you.
-      </div>
-    </div>
-  `;
-  document.getElementById("sf-nav").style.display = "none";
-  document.getElementById("sf-progress-wrap").style.display = "none";
-}
-
-function setInvitedBy(companyName) {
-  const el = document.getElementById("sf-invited-by");
-  if (el) el.innerHTML = `Invited by <span>${escHtml(companyName)}</span>`;
-}
-
-// ── Progress bar ──────────────────────────────────────────────────────────────
-
-function updateProgress(step) {
-  const pct = Math.round((step / STEPS.length) * 100);
-  document.getElementById("sf-progress-fill").style.width = pct + "%";
-
-  document.querySelectorAll(".sf-progress-label").forEach((el, i) => {
-    el.classList.remove("active", "done");
-    if (i === step)    el.classList.add("active");
-    if (i < step)      el.classList.add("done");
-  });
-
-  const counter = document.getElementById("sf-step-count");
-  if (counter) counter.textContent = `Step ${step + 1} of ${STEPS.length}`;
-}
-
-// ── Step renderer ─────────────────────────────────────────────────────────────
-
-function renderStep(step) {
-  currentStep = step;
-  updateProgress(step);
-
-  document.getElementById("sf-nav").style.display = "flex";
-  document.getElementById("sf-progress-wrap").style.display = "block";
-
-  // Back button
-  const backBtn = document.getElementById("sf-back-btn");
-  backBtn.style.display = step > 0 ? "inline-flex" : "none";
-
-  // Next / Submit button
-  const nextBtn = document.getElementById("sf-next-btn");
-  if (step === STEPS.length - 1) {
-    nextBtn.textContent = "Submit →";
-    nextBtn.onclick = handleSubmit;
-  } else {
-    nextBtn.textContent = "Next →";
-    nextBtn.onclick = handleNext;
   }
 
-  const builders = [buildStep0, buildStep1, buildStep2, buildStep3, buildStep4];
-  document.getElementById("sf-content").innerHTML = builders[step]();
-  bindRadioHighlight();
-}
-
-// ── Step 0: Identity ──────────────────────────────────────────────────────────
-
-function buildStep0() {
-  const sectorOpts = SECTORS.map(s => `<option value="${s}" ${(formData.supplier_sector||"")=== s ? "selected":""} >${escHtml(s)}</option>`).join("");
-  return `
-    <div class="sf-section-header">
-      <div class="sf-section-header__step">Step 1 of 5</div>
-      <div class="sf-section-header__title">Supplier Identity</div>
-      <div class="sf-section-header__desc">
-        Basic information about your organisation — required to attribute your ESG data to the correct entity.
-      </div>
-    </div>
-
-    <div class="sf-field">
-      <label>Your Company Name <span class="req">*</span></label>
-      <input type="text" id="f-supplier_company_name" value="${escVal(formData.supplier_company_name)}"
-             placeholder="ABC Components Pvt Ltd" />
-    </div>
-    <div class="sf-two-col">
-      <div class="sf-field">
-        <label>CIN <span class="opt">optional</span></label>
-        <input type="text" id="f-supplier_cin" value="${escVal(formData.supplier_cin)}"
-               placeholder="U12345MH2010PTC210000" />
-      </div>
-      <div class="sf-field">
-        <label>Annual Turnover Band</label>
-        <select id="f-annual_turnover_band">
-          <option value="">— Select —</option>
-          ${["< ₹10 Crore","₹10–100 Crore","₹100–500 Crore","> ₹500 Crore","Prefer not to disclose"].map(
-            o => `<option value="${o}" ${(formData.annual_turnover_band||"")=== o?"selected":""}>${o}</option>`
-          ).join("")}
-        </select>
-      </div>
-    </div>
-    <div class="sf-two-col">
-      <div class="sf-field">
-        <label>Industry / Sector</label>
-        <select id="f-supplier_sector">
-          <option value="">— Select —</option>
-          ${sectorOpts}
-        </select>
-      </div>
-      <div class="sf-field">
-        <label>Total Employees <span class="opt">optional</span></label>
-        <input type="number" id="f-total_employees" value="${formData.total_employees ?? ""}"
-               placeholder="250" min="0" />
-      </div>
-    </div>
-  `;
-}
-
-// ── Step 1: Environment ───────────────────────────────────────────────────────
-
-function buildStep1() {
-  return `
-    <div class="sf-section-header">
-      <div class="sf-section-header__step">Step 2 of 5</div>
-      <div class="sf-section-header__title">Environment</div>
-      <div class="sf-section-header__desc">
-        Greenhouse gas emissions, energy use, and resource consumption. Leave blank if not yet measured —
-        your buyer can see which fields were provided.
-      </div>
-    </div>
-
-    <div class="sf-two-col">
-      <div class="sf-field">
-        <label>Scope 1 Emissions <span class="opt">tCO₂e</span></label>
-        <input type="number" id="f-scope1_emissions" value="${formData.scope1_emissions ?? ""}"
-               placeholder="Not calculated" min="0" step="0.01" />
-        <div class="sf-field__hint">Direct emissions from owned sources</div>
-      </div>
-      <div class="sf-field">
-        <label>Scope 2 Emissions <span class="opt">tCO₂e</span></label>
-        <input type="number" id="f-scope2_emissions" value="${formData.scope2_emissions ?? ""}"
-               placeholder="Not calculated" min="0" step="0.01" />
-        <div class="sf-field__hint">From purchased electricity / heat</div>
-      </div>
-    </div>
-    <div class="sf-two-col">
-      <div class="sf-field">
-        <label>Total Energy Consumed <span class="opt">GJ</span></label>
-        <input type="number" id="f-energy_total_gj" value="${formData.energy_total_gj ?? ""}"
-               placeholder="Not measured" min="0" step="0.1" />
-      </div>
-      <div class="sf-field">
-        <label>% Renewable Energy <span class="opt">0–100</span></label>
-        <input type="number" id="f-renewable_energy_pct" value="${formData.renewable_energy_pct ?? ""}"
-               placeholder="0" min="0" max="100" step="0.1" />
-      </div>
-    </div>
-    <div class="sf-two-col">
-      <div class="sf-field">
-        <label>Water Consumption <span class="opt">KL</span></label>
-        <input type="number" id="f-water_consumption_kl" value="${formData.water_consumption_kl ?? ""}"
-               placeholder="Not measured" min="0" step="1" />
-      </div>
-      <div class="sf-field">
-        <label>Total Waste Generated <span class="opt">tonnes</span></label>
-        <input type="number" id="f-waste_total_tonnes" value="${formData.waste_total_tonnes ?? ""}"
-               placeholder="Not measured" min="0" step="0.1" />
-      </div>
-    </div>
-  `;
-}
-
-// ── Step 2: Social & Labour ───────────────────────────────────────────────────
-
-function buildStep2() {
-  const wageOpts = [
-    "All employees paid minimum wage or above",
-    "Majority paid minimum wage or above",
-    "Some employees paid below minimum wage",
-  ];
-  const clOpts = ["None", "Yes — incidents reported"];
-
-  return `
-    <div class="sf-section-header">
-      <div class="sf-section-header__step">Step 3 of 5</div>
-      <div class="sf-section-header__title">Social &amp; Labour</div>
-      <div class="sf-section-header__desc">
-        Workforce practices, occupational safety, and human rights compliance —
-        aligned to BRSR Principles 3 &amp; 5.
-      </div>
-    </div>
-
-    <div class="sf-field">
-      <label>Minimum Wage Compliance <span class="req">*</span></label>
-      <div class="sf-radios" id="rg-min_wage_compliance">
-        ${wageOpts.map(o => radioOpt("min_wage_compliance", o, formData.min_wage_compliance === o)).join("")}
-      </div>
-    </div>
-    <div class="sf-two-col">
-      <div class="sf-field">
-        <label>Work-related Fatalities (current year)</label>
-        <input type="number" id="f-fatalities_current_year" value="${formData.fatalities_current_year ?? 0}"
-               min="0" step="1" />
-        <div class="sf-field__hint">Employees + workers combined</div>
-      </div>
-      <div class="sf-field">
-        <label>Lost Time Injury Frequency Rate <span class="opt">optional</span></label>
-        <input type="number" id="f-ltifr" value="${formData.ltifr ?? ""}"
-               placeholder="e.g. 0.45" min="0" step="0.01" />
-        <div class="sf-field__hint">Per million hours worked</div>
-      </div>
-    </div>
-    <div class="sf-field">
-      <label>% Employees Trained on Safety / ESG (current year)</label>
-      <input type="number" id="f-safety_training_pct" value="${formData.safety_training_pct ?? ""}"
-             placeholder="0" min="0" max="100" step="1" />
-    </div>
-    <div class="sf-field">
-      <label>Child Labour / Forced Labour Incidents <span class="req">*</span></label>
-      <div class="sf-radios" id="rg-child_labour_incidents">
-        ${clOpts.map(o => radioOpt("child_labour_incidents", o, (formData.child_labour_incidents || "None") === o)).join("")}
-      </div>
-    </div>
-  `;
-}
-
-// ── Step 3: Governance ────────────────────────────────────────────────────────
-
-function buildStep3() {
-  const yesNo      = ["Yes", "No"];
-  const trainOpts  = ["Yes", "Planned", "No"];
-  const violOpts   = ["None", "Yes — details below"];
-
-  return `
-    <div class="sf-section-header">
-      <div class="sf-section-header__step">Step 4 of 5</div>
-      <div class="sf-section-header__title">Governance</div>
-      <div class="sf-section-header__desc">
-        Ethics, anti-corruption, and regulatory compliance — aligned to BRSR Principle 1.
-      </div>
-    </div>
-
-    <div class="sf-field">
-      <label>Anti-Corruption / Anti-Bribery Policy in place? <span class="req">*</span></label>
-      <div class="sf-radios" id="rg-anti_corruption_policy">
-        ${yesNo.map(o => radioOpt("anti_corruption_policy", o, formData.anti_corruption_policy === o)).join("")}
-      </div>
-    </div>
-    <div class="sf-field">
-      <label>Whistleblower / Vigil Mechanism in place? <span class="req">*</span></label>
-      <div class="sf-radios" id="rg-whistleblower_mechanism">
-        ${yesNo.map(o => radioOpt("whistleblower_mechanism", o, formData.whistleblower_mechanism === o)).join("")}
-      </div>
-    </div>
-    <div class="sf-field">
-      <label>ESG / Ethics Training conducted for employees?</label>
-      <div class="sf-radios" id="rg-ethics_training">
-        ${trainOpts.map(o => radioOpt("ethics_training", o, formData.ethics_training === o)).join("")}
-      </div>
-    </div>
-    <div class="sf-field">
-      <label>Regulatory Notices / Violations in last 2 years?</label>
-      <div class="sf-radios" id="rg-regulatory_violations">
-        ${violOpts.map(o => radioOpt("regulatory_violations", o, (formData.regulatory_violations || "None") === o)).join("")}
-      </div>
-    </div>
-    <div class="sf-field" id="viol-detail-wrap" style="${formData.regulatory_violations === 'Yes — details below' ? '' : 'display:none'}">
-      <label>Violation Details</label>
-      <textarea id="f-regulatory_violations_detail" rows="3"
-                placeholder="Briefly describe the nature and current status of any regulatory notices">${escHtml(formData.regulatory_violations_detail || "")}</textarea>
-    </div>
-  `;
-}
-
-// ── Step 4: Products & Compliance ─────────────────────────────────────────────
-
-function buildStep4() {
-  const eprOpts = [
-    "No — not applicable",
-    "Yes — EPR return filed",
-    "Yes — EPR return NOT yet filed",
-    "Not sure",
-  ];
-
-  return `
-    <div class="sf-section-header">
-      <div class="sf-section-header__step">Step 5 of 5</div>
-      <div class="sf-section-header__title">Products &amp; Compliance</div>
-      <div class="sf-section-header__desc">
-        Extended Producer Responsibility, recycled inputs, and certifications —
-        aligned to BRSR Principles 2 &amp; 8.
-      </div>
-    </div>
-
-    <div class="sf-field">
-      <label>EPR (Extended Producer Responsibility) Status</label>
-      <div class="sf-radios" id="rg-epr_applicable">
-        ${eprOpts.map(o => radioOpt("epr_applicable", o, formData.epr_applicable === o)).join("")}
-      </div>
-      <div class="sf-field__hint">Plastic, e-waste, or battery EPR under CPCB rules</div>
-    </div>
-    <div class="sf-field">
-      <label>% Input Material from Recycled / Reused Sources <span class="opt">optional</span></label>
-      <input type="number" id="f-recycled_input_pct" value="${formData.recycled_input_pct ?? ""}"
-             placeholder="0" min="0" max="100" step="0.1" />
-    </div>
-    <div class="sf-field">
-      <label>Relevant Certifications <span class="opt">optional</span></label>
-      <input type="text" id="f-certifications" value="${escVal(formData.certifications)}"
-             placeholder="ISO 14001, SA8000, GreenPro, BIS, etc." />
-    </div>
-
-    <div class="sf-field" style="margin-top:28px">
-      <div class="sf-checkbox-wrap">
-        <input type="checkbox" id="f-declaration" ${formData.declaration ? "checked" : ""} />
-        <span>I confirm that the information provided in this questionnaire is accurate to the best of my knowledge and belief, and represents the activities of my organisation for the current financial year.</span>
-      </div>
-    </div>
-  `;
-}
-
-// ── Radio helper ──────────────────────────────────────────────────────────────
-
-function radioOpt(name, value, checked) {
-  return `
-    <label class="sf-radio-opt ${checked ? "selected" : ""}">
-      <input type="radio" name="${escAttr(name)}" value="${escAttr(value)}" ${checked ? "checked" : ""} />
-      <span>${escHtml(value)}</span>
-    </label>
-  `;
-}
-
-function bindRadioHighlight() {
-  document.querySelectorAll(".sf-radio-opt input[type=radio]").forEach(radio => {
-    radio.addEventListener("change", () => {
-      const group = radio.closest(".sf-radios");
-      if (group) group.querySelectorAll(".sf-radio-opt").forEach(opt => opt.classList.remove("selected"));
-      radio.closest(".sf-radio-opt")?.classList.add("selected");
-
-      // Special: show/hide violation detail textarea
-      if (radio.name === "regulatory_violations") {
-        const wrap = document.getElementById("viol-detail-wrap");
-        if (wrap) wrap.style.display = radio.value === "Yes — details below" ? "" : "none";
-      }
-    });
-  });
-}
-
-// ── Navigation ────────────────────────────────────────────────────────────────
-
-function handleNext() {
-  if (!collectStep(currentStep)) return;
-  renderStep(currentStep + 1);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Wire back button after DOM ready
-  const backBtn = document.getElementById("sf-back-btn");
-  if (backBtn) backBtn.onclick = () => { collectStep(currentStep, true); renderStep(currentStep - 1); };
-});
-
-// ── Collect step data ─────────────────────────────────────────────────────────
-
-function collectStep(step, silent = false) {
-  const errEl = document.getElementById("sf-step-error");
-  if (errEl) errEl.remove();
-
-  if (step === 0) {
-    const name = val("f-supplier_company_name");
-    if (!name && !silent) { showStepError("Company name is required."); return false; }
-    formData.supplier_company_name = name;
-    formData.supplier_cin          = val("f-supplier_cin");
-    formData.supplier_sector       = val("f-supplier_sector");
-    formData.annual_turnover_band  = val("f-annual_turnover_band");
-    formData.total_employees       = numVal("f-total_employees");
+  function fallbackDownload(data) {
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    var slug = (data.supplier_name || 'supplier')
+      .replace(/\s+/g, '-').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    a.href     = url;
+    a.download = 'supplier-esg-' + slug + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showThankYou(data, true);
   }
 
-  if (step === 1) {
-    formData.scope1_emissions     = numVal("f-scope1_emissions");
-    formData.scope2_emissions     = numVal("f-scope2_emissions");
-    formData.energy_total_gj      = numVal("f-energy_total_gj");
-    formData.renewable_energy_pct = numVal("f-renewable_energy_pct");
-    formData.water_consumption_kl = numVal("f-water_consumption_kl");
-    formData.waste_total_tonnes   = numVal("f-waste_total_tonnes");
-  }
+  function showThankYou(data, downloaded) {
+    var wrap = document.getElementById('sf-form-wrap');
+    var ty   = document.getElementById('sf-thankyou');
+    if (wrap) wrap.style.display = 'none';
+    if (!ty)  return;
+    ty.style.display = 'block';
 
-  if (step === 2) {
-    const wage = radioVal("min_wage_compliance");
-    const cl   = radioVal("child_labour_incidents");
-    if (!wage && !silent) { showStepError("Minimum wage compliance is required."); return false; }
-    if (!cl   && !silent) { showStepError("Child labour field is required."); return false; }
-    formData.min_wage_compliance    = wage;
-    formData.fatalities_current_year = parseInt(val("f-fatalities_current_year") || "0", 10);
-    formData.ltifr                  = numVal("f-ltifr");
-    formData.safety_training_pct    = numVal("f-safety_training_pct");
-    formData.child_labour_incidents = cl || "None";
-  }
+    var score = data.esg_risk_score;
+    var tier  = score >= 6.5 ? 'High Risk' : score >= 3.5 ? 'Medium Risk' : 'Low Risk';
+    var color = score >= 6.5 ? '#f87171'   : score >= 3.5 ? '#fbbf24'      : '#34d399';
 
-  if (step === 3) {
-    const acp = radioVal("anti_corruption_policy");
-    const wb  = radioVal("whistleblower_mechanism");
-    if (!acp && !silent) { showStepError("Anti-corruption policy field is required."); return false; }
-    if (!wb  && !silent) { showStepError("Whistleblower mechanism field is required."); return false; }
-    formData.anti_corruption_policy        = acp;
-    formData.whistleblower_mechanism       = wb;
-    formData.ethics_training               = radioVal("ethics_training") || "";
-    formData.regulatory_violations         = radioVal("regulatory_violations") || "None";
-    formData.regulatory_violations_detail  = val("f-regulatory_violations_detail");
-  }
-
-  if (step === 4) {
-    const decl = document.getElementById("f-declaration")?.checked;
-    if (!decl && !silent) { showStepError("Please confirm the declaration before submitting."); return false; }
-    formData.epr_applicable      = radioVal("epr_applicable") || "";
-    formData.recycled_input_pct  = numVal("f-recycled_input_pct");
-    formData.certifications      = val("f-certifications");
-    formData.declaration         = decl;
-  }
-
-  return true;
-}
-
-function showStepError(msg) {
-  const content = document.getElementById("sf-content");
-  const div = document.createElement("div");
-  div.id = "sf-step-error";
-  div.className = "vc-notice vc-notice--error";
-  div.style.marginTop = "16px";
-  div.textContent = msg;
-  content.appendChild(div);
-  div.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-// ── Submit ────────────────────────────────────────────────────────────────────
-
-async function handleSubmit() {
-  if (!collectStep(4)) return;
-
-  const nextBtn = document.getElementById("sf-next-btn");
-  nextBtn.disabled = true;
-  nextBtn.textContent = "Submitting…";
-
-  try {
-    const res = await fetch(`${API_BASE}/api/value-chain/submit`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({
-        supplier_token: supplierToken,
-        form_data:      formData,
-      }),
-    });
-    if (res.status === 409) {
-      showAlreadySubmitted();
-      return;
+    var elCo    = document.getElementById('ty-company');
+    var elScore = document.getElementById('ty-score');
+    var elTier  = document.getElementById('ty-tier');
+    var elNote  = document.getElementById('ty-download-note');
+    if (elCo)    elCo.textContent    = data.supplier_name || 'Your company';
+    if (elScore) { elScore.textContent = score.toFixed(1); elScore.style.color = color; }
+    if (elTier)  { elTier.textContent  = tier;             elTier.style.color  = color; }
+    if (elNote && downloaded) {
+      elNote.style.display = 'block';
+      elNote.textContent   = 'Your response has been downloaded as a JSON file. Please email it to ' +
+        (data.mandating_company_name || 'the requesting company') + ' to complete submission.';
     }
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `Server error ${res.status}`);
-    }
-    const result = await res.json();
-    showResult(result);
-  } catch (err) {
-    showStepError(`Submission failed: ${err.message}`);
-    nextBtn.disabled = false;
-    nextBtn.textContent = "Submit →";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-}
 
-// ── Result screen ─────────────────────────────────────────────────────────────
+  window.submitSupplierForm = submitSupplierForm;
 
-function showResult(result) {
-  document.getElementById("sf-nav").style.display = "none";
-  document.getElementById("sf-progress-wrap").style.display = "none";
-
-  const { score, risk_tier, breakdown } = result;
-  const tierLabel = { Green: "Low Risk", Amber: "Medium Risk", Red: "High Risk" }[risk_tier] || risk_tier;
-  const maxPts = { environment: 30, social: 30, governance: 25, products: 15 };
-
-  const brows = ["environment", "social", "governance", "products"].map(k => {
-    const pts  = breakdown?.[k] ?? 0;
-    const max  = maxPts[k];
-    const pct  = Math.round((pts / max) * 100);
-    return `
-      <div class="sf-brow">
-        <span class="sf-brow__label">${k.charAt(0).toUpperCase() + k.slice(1)}</span>
-        <div class="sf-brow__bar-wrap">
-          <div class="sf-brow__bar" style="width:${pct}%"></div>
-        </div>
-        <span class="sf-brow__pts">${pts}/${max}</span>
-      </div>
-    `;
-  }).join("");
-
-  document.getElementById("sf-content").innerHTML = `
-    <div class="sf-result">
-      <div class="sf-result__title">Thank you!</div>
-      <div class="sf-result__sub">
-        Your ESG questionnaire for <strong style="color:var(--cyan)">${escHtml(formInfo?.company_name || "")}</strong>
-        has been submitted.
-      </div>
-
-      <div class="sf-score-circle sf-score-circle--${risk_tier}">
-        <span class="sf-score-num">${score}</span>
-        <span class="sf-score-label sf-score-label--${risk_tier}">${tierLabel}</span>
-      </div>
-
-      <div class="sf-breakdown">
-        <div class="sf-breakdown__title">Score Breakdown</div>
-        ${brows}
-      </div>
-
-      <div class="sf-result__note">
-        This ESG Value-Chain Score (0–100) is based on your BRSR-aligned disclosures across
-        Environment, Social, Governance, and Products dimensions.
-        It will be shared with <strong>${escHtml(formInfo?.company_name || "your buyer")}</strong>
-        as part of their SEBI BRSR value-chain disclosure.
-      </div>
-    </div>
-  `;
-}
-
-// ── Utility ───────────────────────────────────────────────────────────────────
-
-function val(id) {
-  return (document.getElementById(id)?.value || "").trim();
-}
-function numVal(id) {
-  const v = val(id);
-  return v === "" ? null : parseFloat(v);
-}
-function radioVal(name) {
-  const checked = document.querySelector(`input[name="${name}"]:checked`);
-  return checked ? checked.value : null;
-}
-function escHtml(str) {
-  return String(str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-function escVal(str)  { return escHtml(str || ""); }
-function escAttr(str) { return escHtml(str || ""); }
+})();

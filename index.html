@@ -117,6 +117,13 @@
 <!-- Scroll progress bar -->
 <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
 
+<!-- Announcement banner -->
+<div class="gc-announce-bar" id="gcAnnounce" role="alert">
+  <span>🚀 <strong>Value-Chain ESG</strong> is now live &mdash; map your Scope 3 supplier risk today</span>
+  <a href="value-chain.html" class="gc-announce-cta">Try it free &rarr;</a>
+  <button class="gc-announce-close" id="gcAnnounceClose" aria-label="Dismiss announcement">&times;</button>
+</div>
+
 <!-- NAV -->
 <header class="site-header" id="site-header">
   <nav class="nav container">
@@ -599,36 +606,103 @@
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="container footer__inner">
-    <div class="footer__left">
-      <a href="/" class="footer__logo">
-        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
-        </svg>
-        Green Curve
-      </a>
-      <p>Climate transition intelligence for Indian businesses.</p>
-    </div>
-    <div class="footer__right">
-      <form class="footer__nl-form" onsubmit="subscribeNewsletter(event)">
-        <input class="footer__nl-input" type="email" placeholder="Get daily ESG insights →" required autocomplete="email"/>
-        <button class="footer__nl-btn" type="submit">Subscribe</button>
-      </form>
-      <p style="font-size:.7rem;color:#334155;margin:6px 0 12px;line-height:1.5">By subscribing you agree to our <a href="privacy-policy.html" style="color:#64748b">Privacy Policy</a>.</p>
-      <div class="footer__links">
-        <a href="https://www.linkedin.com/in/neha-kumari-701872a4/" target="_blank" rel="noopener" class="footer__social-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          Green Curve on LinkedIn
+<!-- FOOTER — rich multi-column (imagine.art pattern) -->
+<footer class="footer-rich">
+  <div class="container">
+    <div class="footer-rich-grid">
+
+      <!-- Brand column -->
+      <div class="footer-rich-col footer-rich-col__brand">
+        <a href="/" class="footer__logo">
+          <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+          </svg>
+          Green Curve
         </a>
-        <a href="methodology.html" class="footer__social-link">Methodology</a>
-        <a href="company/index.html" class="footer__social-link">All Companies</a>
-        <a href="privacy-policy.html" class="footer__social-link">Privacy Policy</a>
-        <a href="terms-of-use.html" class="footer__social-link">Terms of Use</a>
+        <p>Daily ESG and climate compliance intelligence for Indian businesses — SEBI BRSR, CPCB EPR, MoEFCC, BEE and 9+ global frameworks.</p>
+        <div class="footer-trust-badges">
+          <span class="footer-trust-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            SEBI BRSR public filings only
+          </span>
+          <span class="footer-trust-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            Not investment advice
+          </span>
+        </div>
+        <form class="footer-nl-mini" onsubmit="subscribeNewsletter(event)" style="margin-top:20px">
+          <input class="footer-nl-mini__input" type="email" placeholder="Daily ESG in your inbox" required autocomplete="email" aria-label="Email for newsletter"/>
+          <button class="footer-nl-mini__btn" type="submit">Subscribe</button>
+        </form>
+        <p style="font-size:.68rem;color:#334155;margin-top:6px">By subscribing you agree to our <a href="privacy-policy.html" style="color:#475569">Privacy Policy</a>.</p>
       </div>
-      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+
+      <!-- Tools column -->
+      <div class="footer-rich-col">
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="esg-intelligence.html">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17h7M17.5 14v7"/></svg>
+            ESG Quotient
+          </a></li>
+          <li><a href="calculator.html">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h18v4H3z"/><path d="M3 10h18v11H3z"/></svg>
+            GHG Calculator
+          </a></li>
+          <li><a href="brsr-simple.html">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            BRSR Generator
+          </a></li>
+          <li><a href="value-chain.html">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4M10.5 16.5 7 17M13.5 16.5 17 17"/></svg>
+            Value-Chain ESG
+          </a></li>
+          <li><a href="learn.html">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Carbon Literacy
+          </a></li>
+        </ul>
+      </div>
+
+      <!-- Resources column -->
+      <div class="footer-rich-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="methodology.html">How scores work</a></li>
+          <li><a href="company/index.html">All 1,227 companies</a></li>
+          <li><a href="tcfd.html">TCFD Framework</a></li>
+          <li><a href="ccts.html">Carbon Credit Trading</a></li>
+          <li><a href="assurance.html">BRSR Assurance</a></li>
+          <li><a href="ghg-profile.html">GHG Profiles</a></li>
+        </ul>
+      </div>
+
+      <!-- Regulatory coverage column -->
+      <div class="footer-rich-col">
+        <h4>Coverage</h4>
+        <ul>
+          <li><a href="#topics">CPCB / EPR</a></li>
+          <li><a href="#topics">SEBI BRSR</a></li>
+          <li><a href="#topics">MoEFCC</a></li>
+          <li><a href="#topics">BEE &amp; Energy</a></li>
+          <li><a href="#topics">ISSB / IFRS S1+S2</a></li>
+          <li><a href="#topics">EU CSRD / EFRAG</a></li>
+          <li><a href="#topics">GHG Protocol &middot; GRI &middot; SBTi</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Footer bottom bar -->
+    <div class="footer-rich-bottom">
+      <p class="footer-rich-bottom__copy">&copy; <span id="year"></span> Green Curve Research. All rights reserved.</p>
+      <div class="footer-rich-bottom__links">
+        <a href="https://www.linkedin.com/in/neha-kumari-701872a4/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-of-use.html">Terms of Use</a>
+        <a href="methodology.html">Methodology</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -649,6 +723,19 @@
 </button>
 
 <script src="assets/js/app.js"></script>
+<script>
+// Announcement bar dismiss
+(function() {
+  const bar   = document.getElementById('gcAnnounce');
+  const close = document.getElementById('gcAnnounceClose');
+  if (!bar) return;
+  if (localStorage.getItem('gc_announce_vc_dismissed')) bar.style.display = 'none';
+  if (close) close.addEventListener('click', () => {
+    bar.style.display = 'none';
+    localStorage.setItem('gc_announce_vc_dismissed', '1');
+  });
+})();
+</script>
 <script>
 // ── Newsletter subscription → Google Sheets ───────────────────────────────
 // After deploying your Apps Script (see setup instructions), paste the URL below.
