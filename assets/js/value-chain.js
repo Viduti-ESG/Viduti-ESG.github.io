@@ -3,7 +3,7 @@
  * Handles: registration, invite creation, dashboard rendering.
  */
 
-const API_BASE        = "https://7334807f62be7d.lhr.life";
+const API_BASE        = "";
 const TOKEN_STORE_KEY = "gc_vc_company_token";
 
 const SECTORS = [
