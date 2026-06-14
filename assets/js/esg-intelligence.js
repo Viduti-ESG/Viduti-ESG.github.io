@@ -75,6 +75,13 @@ function _cleanSector(s) {
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function initDashboard() {
   const statusEl = document.getElementById('heroMeta');
+  // ── Diagnostic overlay (remove once fixed) ───────────────────────────────────
+  const _diag = document.createElement('div');
+  _diag.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#0f172a;color:#4ade80;font-size:13px;padding:10px 14px;border-radius:8px;z-index:99999;font-family:monospace;max-width:340px;word-break:break-word;border:1px solid #334155;pointer-events:none';
+  _diag.id = '_gc_diag';
+  document.body.appendChild(_diag);
+  const _log = (msg) => { _diag.textContent = '[GC] ' + msg; };
+  _log('JS loaded ✓ — fetching data…');
   try {
     // Fetch ESG data + filing tracker in parallel
     const [res, ftRes, srRes, ghgRes, evRes] = await Promise.all([
@@ -85,8 +92,10 @@ async function initDashboard() {
       fetch('assets/data/esg_events.json?v='          + Date.now()).catch(() => null),
     ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    _log('parsing 4MB JSON…');
     INTEL = await res.json();
     allCompanies = INTEL.companies || [];
+    _log(`data OK — ${allCompanies.length} companies. Rendering…`);
 
     // Load filing tracker (non-fatal if missing)
     if (ftRes && ftRes.ok) {
@@ -145,7 +154,9 @@ async function initDashboard() {
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
 
     // Eagerly render all tab panels so they're ready regardless of click timing
+    _log('rendering heatmap…');
     _s(renderHeatMap,                 'heatmap');
+    _log('heatmap done ✓');
     if (typeof renderWatchlist      === 'function') _s(renderWatchlist,      'watchlist');
     if (typeof renderControversy    === 'function') _s(renderControversy,    'controversy');
     if (typeof renderBadge          === 'function') _s(renderBadge,          'badge');
@@ -163,7 +174,9 @@ async function initDashboard() {
     if (typeof renderCAP            === 'function') _s(renderCAP,            'cap');
     if (typeof initAIQuery          === 'function') _s(initAIQuery,          'aiquery');
     if (typeof initDigestTab        === 'function') _s(initDigestTab,        'digest');
+    _log('ALL DONE ✓ — ' + allCompanies.length + ' companies loaded');
   } catch (e) {
+    _log('ERROR: ' + e.message);
     statusEl.textContent = 'Init error: ' + e.message.slice(0, 100);
     console.error('[GC] initDashboard FAILED:', e);
     renderPlaceholder();
