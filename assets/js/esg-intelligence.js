@@ -144,32 +144,28 @@ async function initDashboard() {
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
 
-    // If user clicked a lazy tab before JS loaded, trigger its render now
-    const _activeTab = document.querySelector('.intel-tab--active');
-    if (_activeTab) {
-      const _t = _activeTab.dataset.tab;
-      const _lazyRender = {
-        heatmap:     () => renderHeatMap(),
-        screener:    () => renderScreener(),
-        sectordist:  () => typeof renderSectorDistTab === 'function' && renderSectorDistTab(),
-        brsrheatmap: () => typeof renderBRSRHeatmap   === 'function' && renderBRSRHeatmap(),
-        filing:      () => { typeof _renderFilingDeadline === 'function' && _renderFilingDeadline(); typeof renderFilingTracker === 'function' && renderFilingTracker(); },
-        watchlist:   () => typeof renderWatchlist     === 'function' && renderWatchlist(),
-        cap:         () => { typeof populateCAPDropdown === 'function' && populateCAPDropdown(); typeof renderCAP === 'function' && renderCAP(); },
-        controversy: () => typeof renderControversy   === 'function' && renderControversy(),
-        badge:       () => typeof renderBadge         === 'function' && renderBadge(),
-        marketmap:   () => typeof renderMarketMap     === 'function' && renderMarketMap(),
-        supplier:    () => typeof renderSupplierTab   === 'function' && renderSupplierTab(),
-        aiquery:     () => typeof initAIQuery         === 'function' && initAIQuery(),
-        climaterisk: () => typeof renderClimateRisk   === 'function' && renderClimateRisk(),
-        esgEvents:   () => typeof renderESGEvents     === 'function' && renderESGEvents(),
-        digest:      () => typeof initDigestTab       === 'function' && initDigestTab(),
-      };
-      try { if (_lazyRender[_t]) _lazyRender[_t](); } catch(e) { console.warn('Lazy tab render error:', _t, e); }
+    // Eagerly render all tab panels so they're ready regardless of click timing
+    _s(renderHeatMap,                 'heatmap');
+    if (typeof renderWatchlist      === 'function') _s(renderWatchlist,      'watchlist');
+    if (typeof renderControversy    === 'function') _s(renderControversy,    'controversy');
+    if (typeof renderBadge          === 'function') _s(renderBadge,          'badge');
+    if (typeof renderMarketMap      === 'function') _s(renderMarketMap,      'marketmap');
+    if (typeof renderSupplierTab    === 'function') _s(renderSupplierTab,    'supplier');
+    if (typeof renderSectorDistTab  === 'function') _s(renderSectorDistTab,  'sectordist');
+    if (typeof renderBRSRHeatmap    === 'function') _s(renderBRSRHeatmap,    'brsrheatmap');
+    if (typeof renderClimateRisk    === 'function') _s(renderClimateRisk,    'climaterisk');
+    if (typeof renderESGEvents      === 'function') _s(renderESGEvents,      'esgEvents');
+    if (typeof renderFilingTracker  === 'function') {
+      if (typeof _renderFilingDeadline === 'function') _s(_renderFilingDeadline, 'filingDeadline');
+      _s(renderFilingTracker, 'filing');
     }
+    if (typeof populateCAPDropdown  === 'function') _s(populateCAPDropdown,  'capDropdown');
+    if (typeof renderCAP            === 'function') _s(renderCAP,            'cap');
+    if (typeof initAIQuery          === 'function') _s(initAIQuery,          'aiquery');
+    if (typeof initDigestTab        === 'function') _s(initDigestTab,        'digest');
   } catch (e) {
-    statusEl.textContent = 'Quotient data not yet available — runs daily after 2 AM.';
-    console.warn('ESG Intel load failed:', e);
+    statusEl.textContent = 'Init error: ' + e.message.slice(0, 100);
+    console.error('[GC] initDashboard FAILED:', e);
     renderPlaceholder();
   }
 }
