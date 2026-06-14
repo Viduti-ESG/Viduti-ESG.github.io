@@ -123,24 +123,24 @@ async function initDashboard() {
     const hrEl = document.getElementById('heroHighRisk');
     if (hrEl) hrEl.textContent = (s.high_risk_count || s.risk_distribution?.High || '—');
 
-    renderKPIs(s);
-    addAssuranceKPIStat();
-    renderCharts();
-    renderScreener();
-    populateSectorDropdown();
-    // Wire column sort headers
+    const _s = (fn, label) => { try { fn(); } catch(e) { console.warn('[GC]', label, 'failed:', e.message); } };
+    _s(() => renderKPIs(s),           'renderKPIs');
+    _s(addAssuranceKPIStat,           'assuranceKPI');
+    _s(renderCharts,                  'renderCharts');
+    _s(renderScreener,                'renderScreener');
+    _s(populateSectorDropdown,        'sectorDropdown');
     document.querySelectorAll('.th-sort').forEach(th => {
       th.addEventListener('click', () => setColSort(th.dataset.col));
     });
-    renderDoubleMateriality();
-    renderRegulations();
-    renderTargets();
-    renderSupplyChain();
-    renderMaterials();
-    renderCalendar();
-    renderAnomalies();
-    checkAlerts();
-    renderSpotlight();
+    _s(renderDoubleMateriality,       'doubleMateriality');
+    _s(renderRegulations,             'regulations');
+    _s(renderTargets,                 'targets');
+    _s(renderSupplyChain,             'supplyChain');
+    _s(renderMaterials,               'materials');
+    _s(renderCalendar,                'calendar');
+    _s(renderAnomalies,               'anomalies');
+    _s(checkAlerts,                   'checkAlerts');
+    _s(renderSpotlight,               'spotlight');
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
 
@@ -252,6 +252,7 @@ function addAssuranceKPIStat() {
 
 // ── Charts ─────────────────────────────────────────────────────────────────────
 function renderCharts() {
+  if (typeof Plotly === 'undefined') { console.warn('[GC] Plotly not loaded — charts skipped'); return; }
   renderSectorRiskChart();
   renderFactorsChart();
   renderRegImpactChart();
@@ -806,6 +807,7 @@ function renderMaterials() {
 let _dmClickAttached = false;
 
 function renderDoubleMateriality(sectorFilter = '') {
+  if (typeof Plotly === 'undefined') return;
   const data = sectorFilter
     ? allCompanies.filter(c => {
         const raw = (c.sector||'').replace('Manufacturing — ','').trim();
