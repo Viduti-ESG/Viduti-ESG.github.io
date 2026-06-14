@@ -1225,15 +1225,15 @@ let _SECTOR_PCT_CACHE = null;
 function _getSectorPercentiles() {
   if (_SECTOR_PCT_CACHE) return _SECTOR_PCT_CACHE;
   _SECTOR_PCT_CACHE = {};
-  if (!_DATA) return _SECTOR_PCT_CACHE;
+  if (!allCompanies.length) return _SECTOR_PCT_CACHE;
   const bySecor = {};
-  _DATA.forEach(c => {
+  allCompanies.forEach(c => {
     const sec = (c.sector || '').trim();
     if (!bySecor[sec]) bySecor[sec] = [];
     bySecor[sec].push(c);
   });
   Object.entries(bySecor).forEach(([sec, companies]) => {
-    const sorted = [...companies].sort((a, b) => (a.esg_risk_score||a.esg_quotient||0) - (b.esg_risk_score||b.esg_quotient||0));
+    const sorted = [...companies].sort((a, b) => (a.esg_risk_score||a.esg_risk_score||0) - (b.esg_risk_score||b.esg_risk_score||0));
     sorted.forEach((c, i) => {
       _SECTOR_PCT_CACHE[c.company_name] = Math.round((i / Math.max(sorted.length - 1, 1)) * 100);
     });
@@ -2033,14 +2033,14 @@ const WF_DIMS = [
 
 function renderDDWaterfall(profile) {
   const rb  = profile.risk_breakdown || {};
-  const tot = profile.esg_quotient   || 0;
+  const tot = profile.esg_risk_score  || 0;
   const dims = WF_DIMS.map(d => ({ ...d, val: rb[d.key] ?? null }));
   const known = dims.filter(d => d.val != null);
   const missing = dims.filter(d => d.val == null);
 
   const sectorAvgs = _getSectorAverages();
   const secKey = (profile.sector || '').trim();
-  const secAvg = sectorAvgs[secKey] ? sectorAvgs[secKey].avg : null;
+  const secAvg = sectorAvgs[secKey] ? sectorAvgs[secKey].esg_risk_score : null;
   const secLabel = secKey || 'Sector';
 
   const riskLabel = tot <= 3 ? 'Low' : tot <= 6 ? 'Medium' : 'High';
@@ -2096,7 +2096,7 @@ function _plotWaterfallChart(profile) {
   if (!el || typeof Plotly === 'undefined') return;
 
   const rb  = profile.risk_breakdown || {};
-  const tot = profile.esg_quotient   || 0;
+  const tot = profile.esg_risk_score  || 0;
 
   const dims   = WF_DIMS.filter(d => rb[d.key] != null);
   if (!dims.length) { el.innerHTML = '<div style="color:#475569;text-align:center;padding:60px 0;font-size:.85rem">No risk breakdown data available.</div>'; return; }
@@ -2111,7 +2111,7 @@ function _plotWaterfallChart(profile) {
 
   const sectorAvgs = _getSectorAverages();
   const secKey = (profile.sector || '').trim();
-  const secAvg = sectorAvgs[secKey] ? sectorAvgs[secKey].avg : null;
+  const secAvg = sectorAvgs[secKey] ? sectorAvgs[secKey].esg_risk_score : null;
 
   const traces = [
     {
@@ -2177,7 +2177,7 @@ function _plotWaterfallChart(profile) {
 function _wwStats(company, field) {
   const sec  = (company.sector || '').trim();
   const self = company.risk_breakdown?.[field];
-  const peers = (_DATA || [])
+  const peers = allCompanies
     .filter(c => (c.sector||'').trim() === sec && c.risk_breakdown?.[field] != null);
   if (!peers.length) return { self, mean: null, std: null, z: null, pct: null, n: 0 };
   const vals = peers.map(c => c.risk_breakdown[field]);
@@ -2235,7 +2235,7 @@ function _plotWWScatter(profile) {
   const el = document.getElementById('ww-chart');
   if (!el || typeof Plotly === 'undefined') return;
   const sec = (profile.sector || '').trim();
-  const peers = (_DATA || []).filter(c => (c.sector||'').trim() === sec && c.risk_breakdown?.water_intensity != null && c.risk_breakdown?.waste_intensity != null);
+  const peers = allCompanies.filter(c => (c.sector||'').trim() === sec && c.risk_breakdown?.water_intensity != null && c.risk_breakdown?.waste_intensity != null);
   if (peers.length < 2) { el.innerHTML = '<div style="color:#475569;text-align:center;padding:60px 0;font-size:.85rem">Not enough sector peers with both water and waste data.</div>'; return; }
 
   const isSelf = c => c.company_name === profile.company_name;
@@ -4569,8 +4569,8 @@ let _SD_INIT = false;
 
 function _sdPopulateSectors() {
   const sel = document.getElementById('sd-sector-select');
-  if (!sel || !_DATA) return;
-  const sectors = [...new Set(_DATA.map(c => (c.sector||'').trim()).filter(Boolean))].sort();
+  if (!sel || !allCompanies.length) return;
+  const sectors = [...new Set(allCompanies.map(c => (c.sector||'').trim()).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">— Select a Sector —</option>' +
     sectors.map(s => `<option value="${s}">${s}</option>`).join('');
 }
@@ -4602,9 +4602,9 @@ function renderSectorDistTab() {
   emptyEl && (emptyEl.style.display = 'none');
   chartEl.style.display = '';
 
-  const companies = (_DATA || []).filter(c => (c.sector||'').trim() === sec);
+  const companies = allCompanies.filter(c => (c.sector||'').trim() === sec);
   const vals = companies.map(c => {
-    if (dim === 'esg_quotient') return c.esg_quotient;
+    if (dim === 'esg_quotient') return c.esg_risk_score;
     return c.risk_breakdown ? c.risk_breakdown[dim] : null;
   }).filter(v => v != null);
 
@@ -4641,11 +4641,11 @@ function renderSectorDistTab() {
   const iqr   = q3 - q1;
   const fence = 1.5 * iqr;
   const outliers = companies.filter(c => {
-    const v = dim === 'esg_quotient' ? c.esg_quotient : (c.risk_breakdown?.[dim]);
+    const v = dim === 'esg_quotient' ? c.esg_risk_score : (c.risk_breakdown?.[dim]);
     return v != null && (v < q1 - fence || v > q3 + fence);
   }).sort((a, b) => {
-    const va = dim === 'esg_quotient' ? b.esg_quotient : (b.risk_breakdown?.[dim]||0);
-    const vb = dim === 'esg_quotient' ? a.esg_quotient : (a.risk_breakdown?.[dim]||0);
+    const va = dim === 'esg_quotient' ? b.esg_risk_score : (b.risk_breakdown?.[dim]||0);
+    const vb = dim === 'esg_quotient' ? a.esg_risk_score : (a.risk_breakdown?.[dim]||0);
     return va - vb;
   }).slice(0, 6);
 
@@ -4653,7 +4653,7 @@ function renderSectorDistTab() {
     if (outliers.length) {
       outEl.innerHTML = `<div class="sd-outlier-title">Outliers (beyond 1.5×IQR)</div>` +
         outliers.map(c => {
-          const v = dim === 'esg_quotient' ? c.esg_quotient : (c.risk_breakdown?.[dim]);
+          const v = dim === 'esg_quotient' ? c.esg_risk_score : (c.risk_breakdown?.[dim]);
           const col = v > q3 + fence ? '#f87171' : '#34d399';
           return `<span class="sd-outlier-chip" style="border-color:${col}33;color:${col}">${c.company_name} <b>${v.toFixed(1)}</b></span>`;
         }).join('');
@@ -4666,16 +4666,16 @@ function renderSectorDistTab() {
   if (typeof Plotly === 'undefined') return;
 
   const companiesSorted = companies.filter(c => {
-    const v = dim === 'esg_quotient' ? c.esg_quotient : (c.risk_breakdown?.[dim]);
+    const v = dim === 'esg_quotient' ? c.esg_risk_score : (c.risk_breakdown?.[dim]);
     return v != null;
   }).sort((a, b) => {
-    const va = dim === 'esg_quotient' ? a.esg_quotient : (a.risk_breakdown?.[a.dim]||0);
-    const vb = dim === 'esg_quotient' ? b.esg_quotient : (b.risk_breakdown?.[b.dim]||0);
+    const va = dim === 'esg_quotient' ? a.esg_risk_score : (a.risk_breakdown?.[dim]||0);
+    const vb = dim === 'esg_quotient' ? b.esg_risk_score : (b.risk_breakdown?.[dim]||0);
     return va - vb;
   });
 
   const xNames = companiesSorted.map(c => c.company_name.length > 22 ? c.company_name.slice(0,20)+'…' : c.company_name);
-  const yVals  = companiesSorted.map(c => dim === 'esg_quotient' ? c.esg_quotient : (c.risk_breakdown?.[dim]));
+  const yVals  = companiesSorted.map(c => dim === 'esg_quotient' ? c.esg_risk_score : (c.risk_breakdown?.[dim]));
   const barColors = yVals.map(v => {
     if (v == null) return '#475569';
     if (v <= 3)  return '#34d399';
@@ -4745,8 +4745,8 @@ let _BH_INIT = false;
 
 function _bhPopulateSectors() {
   const sel = document.getElementById('bh-sector-select');
-  if (!sel || !_DATA) return;
-  const sectors = [...new Set(_DATA.map(c => (c.sector||'').trim()).filter(Boolean))].sort();
+  if (!sel || !allCompanies.length) return;
+  const sectors = [...new Set(allCompanies.map(c => (c.sector||'').trim()).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">— Select a Sector —</option>' +
     sectors.map(s => `<option value="${s}">${s}</option>`).join('');
 }
@@ -4781,9 +4781,9 @@ function renderBRSRHeatmap() {
     return;
   }
 
-  let companies = (_DATA || []).filter(c => (c.sector||'').trim() === sec);
+  let companies = allCompanies.filter(c => (c.sector||'').trim() === sec);
   if (query) companies = companies.filter(c => (c.company_name||'').toLowerCase().includes(query));
-  companies = [...companies].sort((a, b) => (b.esg_quotient||0) - (a.esg_quotient||0));
+  companies = [...companies].sort((a, b) => (b.esg_risk_score||0) - (a.esg_risk_score||0));
 
   if (countEl) countEl.textContent = `${companies.length} companies`;
 
@@ -4796,8 +4796,8 @@ function renderBRSRHeatmap() {
   const rows = shown.map(c => {
     const rb = c.risk_breakdown || {};
     const nameFmt = c.company_name.length > 28 ? c.company_name.slice(0,26)+'…' : c.company_name;
-    const tot = c.esg_quotient != null ? c.esg_quotient.toFixed(1) : '—';
-    const totColor = c.esg_quotient == null ? '#475569' : c.esg_quotient <= 3 ? '#34d399' : c.esg_quotient <= 6 ? '#fbbf24' : '#f87171';
+    const tot = c.esg_risk_score != null ? c.esg_risk_score.toFixed(1) : '—';
+    const totColor = c.esg_risk_score == null ? '#475569' : c.esg_risk_score <= 3 ? '#34d399' : c.esg_risk_score <= 6 ? '#fbbf24' : '#f87171';
     const cells = BH_DIMS.map(d => {
       const { bg, text, label } = _bhColor(rb[d.key]);
       return `<td class="bh-cell" style="background:${bg};color:${text}" title="${d.label}: ${label}">${label}</td>`;
@@ -4888,10 +4888,10 @@ async function runAIQuery() {
 
     let rows;
     if (filters) {
-      rows = _aiqApplyFilters(_DATA || [], filters);
+      rows = _aiqApplyFilters(allCompanies, filters);
     } else {
       // Keyword fallback — extract numbers and keywords from query text
-      rows = _aiqKeywordFallback(_DATA || [], q);
+      rows = _aiqKeywordFallback(allCompanies, q);
       explain = explain || 'Backend offline — using keyword search.';
     }
 

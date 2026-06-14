@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-04T20:30:19.851377+00:00",
+  "generated_at": "2026-06-12T06:35:32.853270+00:00",
   "content": {
-    "blog_drafts_14d": 36,
-    "news_published_14d": 30,
+    "blog_drafts_14d": 46,
+    "news_published_14d": 40,
     "social_posts_total": 0,
     "social_queued": 0
   },
@@ -11,9 +11,9 @@
     "high_risk": 36,
     "medium_risk": 1190,
     "regulations": 6,
-    "anomalies_flagged": 24,
+    "anomalies_flagged": 0,
     "avg_risk_score": 5.4,
-    "data_as_of": "03 Jun 2026"
+    "data_as_of": "12 Jun 2026"
   },
   "agent_runs": [
     {
@@ -90,6 +90,12 @@
     },
     {
       "date": "2026-06-03",
+      "blogs": 10,
+      "news": 10,
+      "status": "partial"
+    },
+    {
+      "date": "2026-06-12",
       "blogs": 10,
       "news": 10,
       "status": "partial"
