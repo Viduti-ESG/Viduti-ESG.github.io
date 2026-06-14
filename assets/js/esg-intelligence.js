@@ -3389,11 +3389,16 @@ window.downloadBoardBriefing = downloadBoardBriefing;
 let _hmClickAttached = false;
 
 function renderHeatMap() {
+  // Diagnostic: mark function as running
+  const _dbgEl = document.getElementById('hm-total');
+  if (_dbgEl) _dbgEl.textContent = '…';
+
+  try {
   const sectorFilter = document.getElementById('hm-sector-filter')?.value || '';
   const sizeBy       = document.getElementById('hm-size-by')?.value || 'uniform';
   const countEl      = document.getElementById('hm-count');
   const div          = document.getElementById('heatmapChart');
-  if (!div) return;
+  if (!div) { if (_dbgEl) _dbgEl.textContent = 'no-div'; return; }
 
   // Populate sector dropdown once
   const sel = document.getElementById('hm-sector-filter');
@@ -3478,6 +3483,10 @@ function renderHeatMap() {
         openDeepDive(pt.id);
       }
     });
+  }
+  } catch(e) {
+    if (_dbgEl) _dbgEl.textContent = 'ERR:' + e.message;
+    console.error('[GC] renderHeatMap error:', e);
   }
 }
 window.renderHeatMap = renderHeatMap;
