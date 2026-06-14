@@ -141,9 +141,32 @@ async function initDashboard() {
     renderAnomalies();
     checkAlerts();
     renderSpotlight();
-    // Heat map renders lazily when the tab is clicked (Plotly needs a visible container)
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
+
+    // If user clicked a lazy tab before JS loaded, trigger its render now
+    const _activeTab = document.querySelector('.intel-tab--active');
+    if (_activeTab) {
+      const _t = _activeTab.dataset.tab;
+      const _lazyRender = {
+        heatmap:     () => renderHeatMap(),
+        screener:    () => renderScreener(),
+        sectordist:  () => typeof renderSectorDistTab === 'function' && renderSectorDistTab(),
+        brsrheatmap: () => typeof renderBRSRHeatmap   === 'function' && renderBRSRHeatmap(),
+        filing:      () => { typeof _renderFilingDeadline === 'function' && _renderFilingDeadline(); typeof renderFilingTracker === 'function' && renderFilingTracker(); },
+        watchlist:   () => typeof renderWatchlist     === 'function' && renderWatchlist(),
+        cap:         () => { typeof populateCAPDropdown === 'function' && populateCAPDropdown(); typeof renderCAP === 'function' && renderCAP(); },
+        controversy: () => typeof renderControversy   === 'function' && renderControversy(),
+        badge:       () => typeof renderBadge         === 'function' && renderBadge(),
+        marketmap:   () => typeof renderMarketMap     === 'function' && renderMarketMap(),
+        supplier:    () => typeof renderSupplierTab   === 'function' && renderSupplierTab(),
+        aiquery:     () => typeof initAIQuery         === 'function' && initAIQuery(),
+        climaterisk: () => typeof renderClimateRisk   === 'function' && renderClimateRisk(),
+        esgEvents:   () => typeof renderESGEvents     === 'function' && renderESGEvents(),
+        digest:      () => typeof initDigestTab       === 'function' && initDigestTab(),
+      };
+      try { if (_lazyRender[_t]) _lazyRender[_t](); } catch(e) { console.warn('Lazy tab render error:', _t, e); }
+    }
   } catch (e) {
     statusEl.textContent = 'Quotient data not yet available — runs daily after 2 AM.';
     console.warn('ESG Intel load failed:', e);
