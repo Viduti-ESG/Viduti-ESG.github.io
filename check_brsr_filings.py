@@ -15,6 +15,7 @@ Recommended: schedule weekly via Task Scheduler or cron.
 import json
 import re
 import sys
+import time
 import argparse
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -112,27 +113,32 @@ def match_company(bse_name: str, idx: dict):
 
 # ── BSE fetcher ────────────────────────────────────────────────────────────────
 
-def fetch_bse(from_date: datetime, to_date: datetime, session: requests.Session) -> list:
+def fetch_bse(from_date: datetime, to_date: datetime, session: requests.Session,
+              retries: int = 3, backoff: int = 5) -> list:
+    """Fetch BSE announcements with up to `retries` attempts and linear backoff.
+    Returns empty list only after all attempts fail, so the tracker is not
+    falsely zeroed on a transient BSE outage."""
     url = BSE_URL.format(
         from_d=from_date.strftime("%Y%m%d"),
         to_d=to_date.strftime("%Y%m%d"),
     )
-    try:
-        r = session.get(url, timeout=25)
-        r.raise_for_status()
-        payload = r.json()
-        # BSE returns {"Table": [...]} or {"Table1": [...]}
-        rows = payload.get("Table") or payload.get("Table1") or []
-        return rows
-    except requests.Timeout:
-        print("  [BSE] Request timed out after 25 s", file=sys.stderr)
-        return []
-    except requests.HTTPError as e:
-        print(f"  [BSE] HTTP error: {e}", file=sys.stderr)
-        return []
-    except Exception as e:
-        print(f"  [BSE] Unexpected error: {e}", file=sys.stderr)
-        return []
+    for attempt in range(1, retries + 1):
+        try:
+            r = session.get(url, timeout=25)
+            r.raise_for_status()
+            payload = r.json()
+            # BSE returns {"Table": [...]} or {"Table1": [...]}
+            return payload.get("Table") or payload.get("Table1") or []
+        except requests.Timeout:
+            print(f"  [BSE] Timeout after 25 s (attempt {attempt}/{retries})", file=sys.stderr)
+        except requests.HTTPError as e:
+            print(f"  [BSE] HTTP error: {e} (attempt {attempt}/{retries})", file=sys.stderr)
+        except Exception as e:
+            print(f"  [BSE] Unexpected error: {e} (attempt {attempt}/{retries})", file=sys.stderr)
+        if attempt < retries:
+            time.sleep(backoff * attempt)
+    print("  [BSE] All attempts exhausted — returning empty list", file=sys.stderr)
+    return []
 
 
 def is_brsr_filing(row: dict) -> bool:

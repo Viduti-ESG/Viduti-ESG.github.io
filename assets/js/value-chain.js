@@ -134,7 +134,7 @@ async function submitRegistration() {
     window.history.replaceState({}, "", `?company=${companyToken}`);
     showDashboard();
   } catch (err) {
-    errEl.innerHTML = `<div class="vc-notice vc-notice--error">Failed to register: ${err.message}. Check backend is running.</div>`;
+    errEl.innerHTML = `<div class="vc-notice vc-notice--error">Failed to register: ${escHtml(err.message)}. Check backend is running.</div>`;
     btn.disabled = false;
     loading.style.display = "none";
   }
@@ -167,7 +167,7 @@ async function showDashboard() {
   } catch (err) {
     app.innerHTML = `
       <div class="vc-notice vc-notice--error" style="max-width:640px;margin:0 auto">
-        Could not load dashboard: ${err.message}.<br>
+        Could not load dashboard: ${escHtml(err.message)}.<br>
         <small style="opacity:.6">Ensure the backend is running at ${API_BASE}</small>
       </div>
       <div style="text-align:center;margin-top:24px">
@@ -463,7 +463,7 @@ async function inviteSupplier() {
     // Refresh dashboard data
     await refreshSupplierList();
   } catch (err) {
-    errEl.innerHTML = `<div class="vc-notice vc-notice--error">Invite failed: ${err.message}</div>`;
+    errEl.innerHTML = `<div class="vc-notice vc-notice--error">Invite failed: ${escHtml(err.message)}</div>`;
   } finally {
     btn.disabled = false;
     btn.textContent = "Send Invite →";

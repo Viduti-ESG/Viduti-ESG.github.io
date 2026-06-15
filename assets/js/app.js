@@ -2,6 +2,7 @@
 
 const PER_PAGE   = 9;
 const PRIORITY_DOMAINS = ['climateactiontracker.org', 'carbontracker.org'];
+let _modalScrollCtrl = null; // tracks the active modal scroll listener so it can be cancelled on re-open
 let allPosts     = [];
 let filtered     = [];
 let page         = 1;
@@ -418,11 +419,13 @@ function openModal(post) {
     </div>
   `;
 
+  if (_modalScrollCtrl) _modalScrollCtrl.abort();
+  _modalScrollCtrl = new AbortController();
   box.addEventListener('scroll', () => {
     const pct = box.scrollTop / (box.scrollHeight - box.clientHeight) * 100;
     const bar = document.getElementById('modal-read-bar');
     if (bar) bar.style.width = pct.toFixed(1) + '%';
-  }, { passive: true });
+  }, { passive: true, signal: _modalScrollCtrl.signal });
 
   document.getElementById('modal-copy-btn').addEventListener('click', function () {
     const url = post.link || location.href;

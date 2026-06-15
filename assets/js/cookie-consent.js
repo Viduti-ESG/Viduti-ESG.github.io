@@ -5,7 +5,16 @@
  */
 (function () {
   const KEY = 'gc_cookie_consent';
-  const stored = localStorage.getItem(KEY);
+
+  // Guard every localStorage call — throws SecurityError in Safari private mode
+  function _lsGet(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  }
+  function _lsSet(key, val) {
+    try { localStorage.setItem(key, val); } catch {}
+  }
+
+  const stored = _lsGet(KEY);
 
   if (stored === 'granted') {
     _gcGrant();
@@ -42,8 +51,8 @@
           '<a href="privacy-policy.html">Privacy Policy</a>' +
         '</div>' +
         '<div class="gc-cb-btns">' +
-          '<button class="gc-cb-btn gc-cb-btn--accept" onclick="window.gcCookieAccept()">Accept Analytics</button>' +
-          '<button class="gc-cb-btn gc-cb-btn--decline" onclick="window.gcCookieDecline()">Decline</button>' +
+          '<button class="gc-cb-btn gc-cb-btn--accept" id="gc-cb-accept">Accept Analytics</button>' +
+          '<button class="gc-cb-btn gc-cb-btn--decline" id="gc-cb-decline">Decline</button>' +
         '</div>' +
       '</div>';
 
@@ -69,18 +78,18 @@
 
     document.head.appendChild(style);
     document.body.appendChild(banner);
+
+    // Wire buttons via addEventListener — avoids inline onclick which breaks CSP
+    document.getElementById('gc-cb-accept').addEventListener('click', function () {
+      _lsSet(KEY, 'granted');
+      _gcGrant();
+      _gcRemoveBanner();
+    });
+    document.getElementById('gc-cb-decline').addEventListener('click', function () {
+      _lsSet(KEY, 'denied');
+      _gcRemoveBanner();
+    });
   }
-
-  window.gcCookieAccept = function () {
-    localStorage.setItem(KEY, 'granted');
-    _gcGrant();
-    _gcRemoveBanner();
-  };
-
-  window.gcCookieDecline = function () {
-    localStorage.setItem(KEY, 'denied');
-    _gcRemoveBanner();
-  };
 
   function _gcRemoveBanner() {
     const b = document.getElementById('gc-cookie-banner');

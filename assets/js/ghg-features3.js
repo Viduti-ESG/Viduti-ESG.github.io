@@ -65,7 +65,9 @@ function addWaterWasteEntry() {
 
   // Store in a separate localStorage key (not in GHG inventory — different units)
   const fy = document.getElementById('yoy-fy')?.value || 'FY2025-26';
-  const existing = JSON.parse(localStorage.getItem('gc_water_waste') || '{}');
+  let existing;
+  try { existing = JSON.parse(localStorage.getItem('gc_water_waste') || '{}'); }
+  catch { existing = {}; }
   existing[fy] = { water: waterData, waste: wasteData, saved_at: new Date().toISOString() };
   localStorage.setItem('gc_water_waste', JSON.stringify(existing));
 

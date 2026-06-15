@@ -76,13 +76,15 @@ function _cleanSector(s) {
 async function initDashboard() {
   const statusEl = document.getElementById('heroMeta');
   try {
-    // Fetch ESG data + filing tracker in parallel
+    // Fetch ESG data + filing tracker in parallel.
+    // Cache-bust by day only — avoids re-downloading 260 KB on every page load.
+    const _cv = new Date().toISOString().slice(0, 10);
     const [res, ftRes, srRes, ghgRes, evRes] = await Promise.all([
-      fetch('assets/data/esg_quotient.json?v='        + Date.now()),
-      fetch('assets/data/filing_tracker.json?v='      + Date.now()).catch(() => null),
-      fetch('assets/data/supplier_responses.json?v='  + Date.now()).catch(() => null),
-      fetch('assets/data/ghg_estimates.json?v='       + Date.now()).catch(() => null),
-      fetch('assets/data/esg_events.json?v='          + Date.now()).catch(() => null),
+      fetch('assets/data/esg_quotient.json?v='        + _cv),
+      fetch('assets/data/filing_tracker.json?v='      + _cv).catch(() => null),
+      fetch('assets/data/supplier_responses.json?v='  + _cv).catch(() => null),
+      fetch('assets/data/ghg_estimates.json?v='       + _cv).catch(() => null),
+      fetch('assets/data/esg_events.json?v='          + _cv).catch(() => null),
     ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     INTEL = await res.json();
