@@ -1,22 +1,6 @@
 // ESG Financial Quotient Dashboard
 // Reads assets/data/esg_quotient.json and renders all 4 panels
 
-// ── Module-level diagnostic (remove once JS confirmed working) ──────────────
-(function() {
-  function _showBanner(msg, color) {
-    var b = document.createElement('div');
-    b.id = '_gc_banner';
-    b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:' + color + ';color:#fff;font-size:14px;font-weight:bold;padding:8px 16px;z-index:999999;font-family:monospace;text-align:center;letter-spacing:.5px';
-    b.textContent = msg;
-    document.body ? document.body.appendChild(b) : document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(b); });
-  }
-  var t = document.getElementById('_gctest');
-  if (t) t.textContent = 'JS MODULE LOADED — waiting for data fetch';
-  if (t) t.style.background = '#1d4ed8';
-  _showBanner('JS MODULE LOADED — waiting for data…', '#1d4ed8');
-  window._gcBanner = _showBanner;
-})();
-
 let INTEL = null;
 let allCompanies = [];
 let API_BASE = '';   // set dynamically from brsr-generator.js if available
@@ -91,18 +75,6 @@ function _cleanSector(s) {
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function initDashboard() {
   const statusEl = document.getElementById('heroMeta');
-  // ── Diagnostic overlay (remove once fixed) ───────────────────────────────────
-  const _diag = document.createElement('div');
-  _diag.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#0f172a;color:#4ade80;font-size:13px;padding:10px 14px;border-radius:8px;z-index:99999;font-family:monospace;max-width:340px;word-break:break-word;border:1px solid #334155;pointer-events:none';
-  _diag.id = '_gc_diag';
-  document.body.appendChild(_diag);
-  const _log = (msg) => {
-    _diag.textContent = '[GC] ' + msg;
-    var t = document.getElementById('_gctest');
-    if (t) { t.textContent = msg; t.style.background = '#0d9488'; }
-    if (window._gcBanner) window._gcBanner(msg, '#1d4ed8');
-  };
-  _log('initDashboard started — fetching data…');
   try {
     // Fetch ESG data + filing tracker in parallel
     const [res, ftRes, srRes, ghgRes, evRes] = await Promise.all([
@@ -113,10 +85,8 @@ async function initDashboard() {
       fetch('assets/data/esg_events.json?v='          + Date.now()).catch(() => null),
     ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    _log('parsing 4MB JSON…');
     INTEL = await res.json();
     allCompanies = INTEL.companies || [];
-    _log(`data OK — ${allCompanies.length} companies. Rendering…`);
 
     // Load filing tracker (non-fatal if missing)
     if (ftRes && ftRes.ok) {
@@ -175,9 +145,7 @@ async function initDashboard() {
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
 
     // Eagerly render all tab panels so they're ready regardless of click timing
-    _log('rendering heatmap…');
     _s(renderHeatMap,                 'heatmap');
-    _log('heatmap done ✓');
     if (typeof renderWatchlist      === 'function') _s(renderWatchlist,      'watchlist');
     if (typeof renderControversy    === 'function') _s(renderControversy,    'controversy');
     if (typeof renderBadge          === 'function') _s(renderBadge,          'badge');
@@ -195,10 +163,8 @@ async function initDashboard() {
     if (typeof renderCAP            === 'function') _s(renderCAP,            'cap');
     if (typeof initAIQuery          === 'function') _s(initAIQuery,          'aiquery');
     if (typeof initDigestTab        === 'function') _s(initDigestTab,        'digest');
-    _log('ALL DONE ✓ — ' + allCompanies.length + ' companies loaded');
   } catch (e) {
-    _log('ERROR: ' + e.message);
-    statusEl.textContent = 'Init error: ' + e.message.slice(0, 100);
+    statusEl.textContent = 'Load error: ' + e.message.slice(0, 80);
     console.error('[GC] initDashboard FAILED:', e);
     renderPlaceholder();
   }
