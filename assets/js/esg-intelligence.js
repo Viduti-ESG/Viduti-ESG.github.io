@@ -1,6 +1,19 @@
 // ESG Financial Quotient Dashboard
 // Reads assets/data/esg_quotient.json and renders all 4 panels
 
+// ── Module-level diagnostic (remove once JS confirmed working) ──────────────
+(function() {
+  function _showBanner(msg, color) {
+    var b = document.createElement('div');
+    b.id = '_gc_banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:' + color + ';color:#fff;font-size:14px;font-weight:bold;padding:8px 16px;z-index:999999;font-family:monospace;text-align:center;letter-spacing:.5px';
+    b.textContent = msg;
+    document.body ? document.body.appendChild(b) : document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(b); });
+  }
+  _showBanner('JS MODULE LOADED — waiting for data…', '#1d4ed8');
+  window._gcBanner = _showBanner;
+})();
+
 let INTEL = null;
 let allCompanies = [];
 let API_BASE = '';   // set dynamically from brsr-generator.js if available
@@ -80,8 +93,8 @@ async function initDashboard() {
   _diag.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#0f172a;color:#4ade80;font-size:13px;padding:10px 14px;border-radius:8px;z-index:99999;font-family:monospace;max-width:340px;word-break:break-word;border:1px solid #334155;pointer-events:none';
   _diag.id = '_gc_diag';
   document.body.appendChild(_diag);
-  const _log = (msg) => { _diag.textContent = '[GC] ' + msg; };
-  _log('JS loaded ✓ — fetching data…');
+  const _log = (msg) => { _diag.textContent = '[GC] ' + msg; if (window._gcBanner) window._gcBanner(msg, '#1d4ed8'); };
+  _log('initDashboard started — fetching data…');
   try {
     // Fetch ESG data + filing tracker in parallel
     const [res, ftRes, srRes, ghgRes, evRes] = await Promise.all([
@@ -130,7 +143,7 @@ async function initDashboard() {
 
     // populate hero stat badges
     const hrEl = document.getElementById('heroHighRisk');
-    if (hrEl) hrEl.textContent = (s.high_risk_count || s.risk_distribution?.High || '—');
+    if (hrEl) hrEl.textContent = (s.high_risk_companies || s.high_risk_count || s.risk_distribution?.High || '—');
 
     const _s = (fn, label) => { try { fn(); } catch(e) { console.warn('[GC]', label, 'failed:', e.message); } };
     _s(() => renderKPIs(s),           'renderKPIs');
