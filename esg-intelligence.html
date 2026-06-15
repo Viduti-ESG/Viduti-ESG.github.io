@@ -1011,7 +1011,14 @@
   </div>
 </div>
 
-<script src="assets/js/esg-intelligence.js?v=20260615f" defer></script>
+<script>
+  window.onerror = function(msg, src, line, col, err) {
+    var el = document.getElementById('heroMeta');
+    if (el) el.textContent = 'JS ERR L' + line + ': ' + msg.slice(0,60);
+    return false;
+  };
+</script>
+<script src="assets/js/esg-intelligence.js?v=20260615f"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
   const header   = document.getElementById('site-header');
