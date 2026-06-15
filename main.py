@@ -17,6 +17,7 @@ BASE_DIR = Path(__file__).parent
 from ai_api import router as ai_router
 from supplier_api import router as supplier_router
 from auth_api import router as auth_router
+from esg_api  import router as esg_router
 
 app = FastAPI(
     title="Green Curve API",
@@ -40,6 +41,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(esg_router)
 app.include_router(ai_router)
 app.include_router(supplier_router)
 
@@ -47,7 +49,7 @@ app.include_router(supplier_router)
 app.mount("/assets", StaticFiles(directory=str(BASE_DIR / "assets")), name="assets")
 
 HTML_FILES = [
-    "calculator", "assurance", "brsr-generator", "brsr-simple",
+    "admin", "calculator", "assurance", "brsr-generator", "brsr-simple",
     "analytics", "ccts", "esg-intelligence", "ghg-profile",
     "learn", "login", "methodology", "privacy-policy", "supplier-form",
     "tcfd-checker", "tcfd", "terms-of-use", "value-chain",

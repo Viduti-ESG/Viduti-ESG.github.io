@@ -76,11 +76,11 @@ function _cleanSector(s) {
 async function initDashboard() {
   const statusEl = document.getElementById('heroMeta');
   try {
-    // Fetch ESG data + filing tracker in parallel.
-    // Cache-bust by day only — avoids re-downloading 260 KB on every page load.
+    // Fetch ESG data from DB API; fall back to static JSON if API returns empty.
+    // Other files still served statically (small, rarely change).
     const _cv = new Date().toISOString().slice(0, 10);
     const [res, ftRes, srRes, ghgRes, evRes] = await Promise.all([
-      fetch('assets/data/esg_quotient.json?v='        + _cv),
+      fetch('/api/esg/data'),
       fetch('assets/data/filing_tracker.json?v='      + _cv).catch(() => null),
       fetch('assets/data/supplier_responses.json?v='  + _cv).catch(() => null),
       fetch('assets/data/ghg_estimates.json?v='       + _cv).catch(() => null),

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/style.css"/>
+  <link rel="stylesheet" href="/assets/css/admin.css"/>
+  <link rel="icon" href="/assets/img/logo.png" type="image/png"/>
+</head>
+<body>
+
+<!-- ── Auth gate ──────────────────────────────────────────────────────────── -->
+<div id="admin-auth">
+  <div class="admin-auth-card">
+    <h2>Green Curve Admin</h2>
+    <p>Enter your admin key to continue</p>
+    <label class="auth-label" for="admin-key-input">Admin Key</label>
+    <input class="auth-input" id="admin-key-input" type="password" placeholder="••••••••••••••••" autocomplete="off"/>
+    <button class="auth-submit" onclick="doAdminLogin()">Unlock Panel</button>
+    <div id="admin-auth-err" style="margin-top:12px;font-size:.82rem;color:var(--rose);display:none"></div>
+  </div>
+</div>
+
+<!-- ── Main App ────────────────────────────────────────────────────────────── -->
+<div id="admin-app">
+
+  <div class="admin-topbar">
+    <div class="admin-topbar__brand">Green Curve · Admin</div>
+    <div class="admin-topbar__right">
+      <span id="topbar-count">— companies</span>
+      <button class="admin-btn admin-btn--ghost" onclick="triggerReimport()">↻ Re-import JSON</button>
+      <button class="admin-btn admin-btn--primary" onclick="openAddModal()">+ Add Company</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="admin-stat">
+        <div class="admin-stat__val" id="stat-total">—</div>
+        <div class="admin-stat__lbl">Total Companies</div>
+      </div>
+      <div class="admin-stat admin-stat--high">
+        <div class="admin-stat__val" id="stat-high">—</div>
+        <div class="admin-stat__lbl">High Risk</div>
+      </div>
+      <div class="admin-stat admin-stat--medium">
+        <div class="admin-stat__val" id="stat-medium">—</div>
+        <div class="admin-stat__lbl">Medium Risk</div>
+      </div>
+      <div class="admin-stat admin-stat--low">
+        <div class="admin-stat__val" id="stat-low">—</div>
+        <div class="admin-stat__lbl">Low Risk</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="admin-toolbar">
+      <input class="admin-search" id="search-input" type="search" placeholder="Search company, CIN, NSE symbol…" oninput="onSearch()"/>
+      <select class="admin-select" id="filter-sector" onchange="loadPage(1)">
+        <option value="">All Sectors</option>
+      </select>
+      <select class="admin-select" id="filter-tier" onchange="loadPage(1)">
+        <option value="">All Risk Tiers</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>CIN</th>
+            <th>Sector</th>
+            <th>ESG Score</th>
+            <th>Risk Tier</th>
+            <th>Updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="company-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="admin-pagination">
+      <span id="page-info">—</span>
+      <div class="admin-pagination__btns">
+        <button id="btn-prev" onclick="loadPage(currentPage-1)">← Prev</button>
+        <button id="btn-next" onclick="loadPage(currentPage+1)">Next →</button>
+      </div>
+    </div>
+
+  </div><!-- /.admin-body -->
+</div><!-- /#admin-app -->
+
+<!-- ── Edit / Add Modal ────────────────────────────────────────────────────── -->
+<div class="admin-modal-overlay" id="edit-modal" onclick="if(event.target===this)closeModal()">
+  <div class="admin-modal">
+    <h3 id="modal-title">Edit Company</h3>
+    <div class="admin-form-grid">
+      <div class="admin-form-field admin-form-field--full">
+        <label class="admin-form-label">Company Name *</label>
+        <input class="admin-form-input" id="f-company_name" type="text" placeholder="Tata Steel Limited"/>
+      </div>
+      <div class="admin-form-field">
+        <label class="admin-form-label">CIN</label>
+        <input class="admin-form-input" id="f-cin" type="text" placeholder="L27100MH1907PTC000000"/>
+      </div>
+      <div class="admin-form-field">
+        <label class="admin-form-label">NSE Symbol</label>
+        <input class="admin-form-input" id="f-nse_symbol" type="text" placeholder="TATASTEEL"/>
+      </div>
+      <div class="admin-form-field admin-form-field--full">
+        <label class="admin-form-label">Sector</label>
+        <input class="admin-form-input" id="f-sector" type="text" placeholder="Iron and Steel"/>
+      </div>
+      <div class="admin-form-field">
+        <label class="admin-form-label">Revenue (₹ Crore)</label>
+        <input class="admin-form-input" id="f-revenue_crore" type="number" step="0.01" placeholder="0"/>
+      </div>
+      <div class="admin-form-field">
+        <label class="admin-form-label">Financial Year</label>
+        <input class="admin-form-input" id="f-financial_year" type="text" placeholder="FY2024"/>
+      </div>
+      <div class="admin-form-field">
+        <label class="admin-form-label">ESG Risk Score (0–10)</label>
+        <input class="admin-form-input" id="f-esg_risk_score" type="number" step="0.1" min="0" max="10" placeholder="5.0"/>
+      </div>
+      <div class="admin-form-field">
+        <label class="admin-form-label">Risk Tier</label>
+        <select class="admin-form-select" id="f-risk_tier">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <!-- JSON fields -->
+      <div class="admin-form-field admin-form-field--full">
+        <label class="admin-form-label">Risk Breakdown <span class="admin-form-hint">(JSON object)</span></label>
+        <textarea class="admin-form-textarea" id="f-risk_breakdown" rows="4" placeholder='{"ghg_intensity":5,"water_intensity":5,"waste_intensity":5,"epr_exposure":5,"compliance_risk":5,"hr_risk":3,"governance_risk":4}'></textarea>
+      </div>
+      <div class="admin-form-field admin-form-field--full">
+        <label class="admin-form-label">Top Risk Factors <span class="admin-form-hint">(JSON array)</span></label>
+        <input class="admin-form-input" id="f-top_risk_factors" type="text" placeholder='["GHG Intensity","Compliance Risk"]'/>
+      </div>
+      <div class="admin-form-field admin-form-field--full">
+        <label class="admin-form-label">Governance <span class="admin-form-hint">(JSON object)</span></label>
+        <input class="admin-form-input" id="f-governance" type="text" placeholder='{"brsr_assurance":"None","anti_corruption_policy":"Yes"}'/>
+      </div>
+      <div class="admin-form-field admin-form-field--full">
+        <label class="admin-form-label">AI Summary</label>
+        <textarea class="admin-form-textarea" id="f-ai_summary" rows="4" placeholder="Brief ESG risk summary…"></textarea>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="admin-btn admin-btn--ghost" onclick="closeModal()">Cancel</button>
+      <button class="admin-btn admin-btn--danger" id="btn-delete" onclick="deleteCompany()" style="display:none">Delete</button>
+      <button class="admin-btn admin-btn--primary" onclick="saveCompany()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ───────────────────────────────────────────────────────────────── -->
+<div class="admin-toast" id="admin-toast"></div>
+
+<script src="/assets/js/admin.js"></script>
+</body>
+</html>

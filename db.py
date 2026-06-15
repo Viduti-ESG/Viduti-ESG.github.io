@@ -66,4 +66,39 @@ def init_db() -> None:
                 PRIMARY KEY (user_id, company_name, rec_id),
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
+
+            -- ── ESG Company Data ───────────────────────────────────────────
+            CREATE TABLE IF NOT EXISTS companies (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                company_name        TEXT    UNIQUE NOT NULL,
+                cin                 TEXT    DEFAULT '',
+                nse_symbol          TEXT    DEFAULT '',
+                sector              TEXT    DEFAULT '',
+                products            TEXT    DEFAULT '',
+                revenue_crore       REAL    DEFAULT 0,
+                financial_year      TEXT    DEFAULT '',
+                esg_risk_score      REAL    DEFAULT 0,
+                risk_tier           TEXT    DEFAULT 'Medium',
+                risk_breakdown      TEXT    DEFAULT '{}',
+                top_risk_factors    TEXT    DEFAULT '[]',
+                financial_exposure  TEXT    DEFAULT '{}',
+                supply_chain        TEXT    DEFAULT '{}',
+                governance          TEXT    DEFAULT '{}',
+                double_materiality  TEXT    DEFAULT '{}',
+                esg_targets         TEXT    DEFAULT '[]',
+                materials_exposed   TEXT    DEFAULT '[]',
+                ai_summary          TEXT    DEFAULT '',
+                updated_at          DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_companies_sector     ON companies(sector);
+            CREATE INDEX IF NOT EXISTS idx_companies_risk_tier  ON companies(risk_tier);
+            CREATE INDEX IF NOT EXISTS idx_companies_esg_score  ON companies(esg_risk_score);
+
+            -- Stores summary, regulations, factor_matrix, supply_chain_global, etc.
+            CREATE TABLE IF NOT EXISTS esg_meta (
+                key        TEXT    PRIMARY KEY,
+                value      TEXT    NOT NULL,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
         """)
