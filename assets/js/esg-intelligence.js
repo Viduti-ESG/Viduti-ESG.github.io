@@ -10,6 +10,9 @@
     b.textContent = msg;
     document.body ? document.body.appendChild(b) : document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(b); });
   }
+  var t = document.getElementById('_gctest');
+  if (t) t.textContent = 'JS MODULE LOADED — waiting for data fetch';
+  if (t) t.style.background = '#1d4ed8';
   _showBanner('JS MODULE LOADED — waiting for data…', '#1d4ed8');
   window._gcBanner = _showBanner;
 })();
@@ -93,7 +96,12 @@ async function initDashboard() {
   _diag.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#0f172a;color:#4ade80;font-size:13px;padding:10px 14px;border-radius:8px;z-index:99999;font-family:monospace;max-width:340px;word-break:break-word;border:1px solid #334155;pointer-events:none';
   _diag.id = '_gc_diag';
   document.body.appendChild(_diag);
-  const _log = (msg) => { _diag.textContent = '[GC] ' + msg; if (window._gcBanner) window._gcBanner(msg, '#1d4ed8'); };
+  const _log = (msg) => {
+    _diag.textContent = '[GC] ' + msg;
+    var t = document.getElementById('_gctest');
+    if (t) { t.textContent = msg; t.style.background = '#0d9488'; }
+    if (window._gcBanner) window._gcBanner(msg, '#1d4ed8');
+  };
   _log('initDashboard started — fetching data…');
   try {
     // Fetch ESG data + filing tracker in parallel
