@@ -15,13 +15,18 @@ Responses are stored in: assets/data/supplier_responses.json
 """
 
 import json
+import logging
+import os
+import threading
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+logger = logging.getLogger(__name__)
+
 try:
-    from fastapi import APIRouter, HTTPException
+    from fastapi import APIRouter, Depends, Header, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:
@@ -35,6 +40,19 @@ RESP_FILE = DATA_DIR / "supplier_responses.json"
 
 # ── Router ─────────────────────────────────────────────────────────────────────
 router = APIRouter(prefix="/api", tags=["supplier"])
+
+# ── File lock — prevents concurrent read-modify-write data loss ────────────────
+_file_lock = threading.Lock()
+
+# ── Admin auth ─────────────────────────────────────────────────────────────────
+
+def _require_admin(x_api_key: str = Header(default="")) -> None:
+    """Dependency: require GC_ADMIN_KEY header for admin-only endpoints."""
+    admin_key = os.environ.get("GC_ADMIN_KEY", "")
+    if not admin_key:
+        raise HTTPException(status_code=503, detail="Admin key not configured on server.")
+    if x_api_key != admin_key:
+        raise HTTPException(status_code=401, detail="Invalid or missing X-Api-Key header.")
 
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
@@ -88,20 +106,26 @@ class SupplierResponseOut(BaseModel):
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def _load() -> dict:
+    """Load supplier responses. Raises RuntimeError if the file exists but is corrupted
+    so that a subsequent _save() cannot silently overwrite valid data with an empty store."""
     if RESP_FILE.exists():
+        raw = RESP_FILE.read_text(encoding="utf-8")
         try:
-            return json.loads(RESP_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            pass
+            return json.loads(raw)
+        except Exception as e:
+            logger.error("supplier_responses.json is corrupted — manual recovery needed: %s", e)
+            raise RuntimeError(
+                f"supplier_responses.json is corrupted and cannot be read safely: {e}"
+            ) from e
     return {"last_updated": None, "total_responses": 0, "responses": []}
 
 
 def _save(data: dict) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    RESP_FILE.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    # Write to a temp file first, then atomically rename to avoid partial writes
+    tmp = RESP_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(RESP_FILE)
 
 
 def _compute_risk(d: SupplierResponseIn) -> float:
@@ -127,20 +151,21 @@ def _compute_risk(d: SupplierResponseIn) -> float:
 @router.post("/supplier-response", response_model=SupplierResponseOut)
 async def submit_supplier_response(payload: SupplierResponseIn):
     """Receive a supplier ESG form submission and persist it."""
-    db     = _load()
     record = payload.dict()
 
-    # Server-side risk score (authoritative)
+    # Server-side risk score is authoritative; ignore any client-supplied value
     record["esg_risk_score"] = _compute_risk(payload)
     record["id"]             = f"resp_{uuid.uuid4().hex[:8]}"
 
     if not record.get("submitted_at"):
         record["submitted_at"] = datetime.now(timezone.utc).isoformat()
 
-    db["responses"].append(record)
-    db["total_responses"] = len(db["responses"])
-    db["last_updated"]    = datetime.now(timezone.utc).isoformat()
-    _save(db)
+    with _file_lock:
+        db = _load()
+        db["responses"].append(record)
+        db["total_responses"] = len(db["responses"])
+        db["last_updated"]    = datetime.now(timezone.utc).isoformat()
+        _save(db)
 
     return SupplierResponseOut(
         status="ok",
@@ -156,19 +181,28 @@ async def get_supplier_responses(
     limit:        int = 200,
 ):
     """
-    Return all supplier responses, optionally filtered by mandating company.
+    Return supplier responses filtered by mandating company.
+    Either company_cin or company_name is required to prevent full-dataset dumps.
 
     Params:
-        company_cin   — filter by exact mandating_company_cin
+        company_cin   — filter by exact mandating_company_cin (preferred)
         company_name  — filter by partial mandating_company_name (case-insensitive)
-        limit         — max records to return (default 200)
+        limit         — max records to return (default 200, max 500)
     """
+    if not company_cin and not company_name:
+        raise HTTPException(
+            status_code=400,
+            detail="Provide company_cin or company_name to filter results.",
+        )
+
+    limit = min(limit, 500)
+
     db        = _load()
     responses = db.get("responses", [])
 
     if company_cin:
         responses = [r for r in responses if r.get("mandating_company_cin") == company_cin]
-    elif company_name:
+    else:
         name_lc = company_name.lower()
         responses = [
             r for r in responses
@@ -178,23 +212,24 @@ async def get_supplier_responses(
     responses = sorted(responses, key=lambda r: r.get("submitted_at", ""), reverse=True)
 
     return {
-        "total":       len(responses),
-        "responses":   responses[:limit],
+        "total":        len(responses),
+        "responses":    responses[:limit],
         "last_updated": db.get("last_updated"),
     }
 
 
-@router.delete("/supplier-response/{response_id}")
+@router.delete("/supplier-response/{response_id}", dependencies=[Depends(_require_admin)])
 async def delete_supplier_response(response_id: str):
-    """Delete a specific supplier response by ID (admin use)."""
-    db        = _load()
-    before    = len(db["responses"])
-    db["responses"] = [r for r in db["responses"] if r.get("id") != response_id]
-    if len(db["responses"]) == before:
-        raise HTTPException(status_code=404, detail="Response not found")
-    db["total_responses"] = len(db["responses"])
-    db["last_updated"]    = datetime.now(timezone.utc).isoformat()
-    _save(db)
+    """Delete a specific supplier response by ID. Requires X-Api-Key: <GC_ADMIN_KEY>."""
+    with _file_lock:
+        db     = _load()
+        before = len(db["responses"])
+        db["responses"] = [r for r in db["responses"] if r.get("id") != response_id]
+        if len(db["responses"]) == before:
+            raise HTTPException(status_code=404, detail="Response not found")
+        db["total_responses"] = len(db["responses"])
+        db["last_updated"]    = datetime.now(timezone.utc).isoformat()
+        _save(db)
     return {"status": "deleted", "id": response_id}
 
 
@@ -211,10 +246,10 @@ try:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=["http://localhost:3000", "http://localhost:8000"],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "DELETE"],
+        allow_headers=["Content-Type", "X-Api-Key"],
     )
     app.include_router(router)
 

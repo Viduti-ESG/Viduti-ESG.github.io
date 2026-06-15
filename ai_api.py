@@ -25,12 +25,15 @@ Costs (Haiku ~₹0.43/1k tokens; Sonnet ~₹4.8/1k tokens):
 import base64
 import json
 import os
+import time
+import threading
+from collections import defaultdict
 from typing import Any, Optional
 
 try:
-    from fastapi import APIRouter, HTTPException
+    from fastapi import APIRouter, HTTPException, Request
     from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
+    from pydantic import BaseModel, Field
 except ImportError:
     print("ERROR: pip install fastapi uvicorn pydantic")
     raise
@@ -44,18 +47,40 @@ except ImportError:
 # ── Router ─────────────────────────────────────────────────────────────────────
 router = APIRouter(prefix="/api", tags=["ai"])
 
-# ── Claude client (lazy) ───────────────────────────────────────────────────────
-_client = None
+# ── Per-IP rate limiter ────────────────────────────────────────────────────────
+# Haiku endpoints: 30 req/min per IP. Sonnet endpoint (tcfd-pdf): 5 req/min per IP.
+_rl_lock   = threading.Lock()
+_rl_counts: dict[str, list[float]] = defaultdict(list)
+
+def _rate_limit(request: Request, limit: int, window: int = 60) -> None:
+    ip  = request.client.host if request.client else "unknown"
+    key = f"{ip}:{request.url.path}"
+    now = time.monotonic()
+    with _rl_lock:
+        timestamps = _rl_counts[key]
+        _rl_counts[key] = [t for t in timestamps if now - t < window]
+        if len(_rl_counts[key]) >= limit:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Rate limit exceeded: max {limit} requests per {window}s from this IP.",
+            )
+        _rl_counts[key].append(now)
+
+# ── Claude client (lazy, initialised once at first request) ───────────────────
+_client      = None
+_client_lock = threading.Lock()
 
 def _claude():
     global _client
     if _client is None:
-        if not _ANTHROPIC_AVAILABLE:
-            raise RuntimeError("anthropic package not installed. pip install anthropic")
-        key = os.environ.get("ANTHROPIC_API_KEY", "")
-        if not key:
-            raise RuntimeError("ANTHROPIC_API_KEY environment variable not set.")
-        _client = anthropic.Anthropic(api_key=key)
+        with _client_lock:
+            if _client is None:  # double-checked locking
+                if not _ANTHROPIC_AVAILABLE:
+                    raise RuntimeError("anthropic package not installed. pip install anthropic")
+                key = os.environ.get("ANTHROPIC_API_KEY", "")
+                if not key:
+                    raise RuntimeError("ANTHROPIC_API_KEY environment variable not set.")
+                _client = anthropic.Anthropic(api_key=key)
     return _client
 
 
@@ -98,7 +123,7 @@ class TCFDRequest(BaseModel):
 
 
 class NLQueryRequest(BaseModel):
-    query: str
+    query: str = Field(..., max_length=500)
 
 
 # ── CCTS Scorecard ─────────────────────────────────────────────────────────────
@@ -135,7 +160,8 @@ Non-Phase-I sectors: mark all CCTS obligations as 'na'. BRSR Core obligations st
 Use 'na' status only for CCTS obligations when company is outside Phase I."""
 
 @router.post("/ccts-scorecard")
-async def ccts_scorecard(payload: CCTSRequest):
+async def ccts_scorecard(request: Request, payload: CCTSRequest):
+    _rate_limit(request, limit=30)
     data_summary = f"""Company: {payload.company_name}
 Sector: {payload.sector}
 Products: {payload.products}
@@ -195,7 +221,8 @@ Metrics & Targets: scope1 (Scope 1 GHG disclosed), scope2 (Scope 2 GHG disclosed
 Mark 'disclosed' only when there is strong evidence. Mark 'partial' when signal exists but incomplete. Mark 'gap' when absent."""
 
 @router.post("/tcfd-gap")
-async def tcfd_gap(payload: TCFDRequest):
+async def tcfd_gap(request: Request, payload: TCFDRequest):
+    _rate_limit(request, limit=30)
     targets_str = ", ".join([t.get("metric", "") for t in payload.esg_targets[:5]]) or "None"
     data_summary = f"""Company: {payload.company_name}
 Sector: {payload.sector}
@@ -259,7 +286,8 @@ Available filter fields:
 Only include fields the user asked about. If the query is vague, return reasonable defaults."""
 
 @router.post("/nl-query")
-async def nl_query(payload: NLQueryRequest):
+async def nl_query(request: Request, payload: NLQueryRequest):
+    _rate_limit(request, limit=30)
     if not payload.query.strip():
         raise HTTPException(status_code=400, detail="Query is empty")
     try:
@@ -316,8 +344,8 @@ TCFD elements to assess:
 
 
 class TCFDPDFRequest(BaseModel):
-    text: str        # Extracted text from PDF (max ~15000 chars)
-    filename: str = ""
+    text:     str = Field(..., max_length=20000)  # enforced before body hits the handler
+    filename: str = Field(default="", max_length=255)
 
 
 def _ask_sonnet(system: str, user: str, max_tokens: int = 2000) -> str:
@@ -331,7 +359,8 @@ def _ask_sonnet(system: str, user: str, max_tokens: int = 2000) -> str:
 
 
 @router.post("/tcfd-pdf")
-async def tcfd_pdf(payload: TCFDPDFRequest):
+async def tcfd_pdf(request: Request, payload: TCFDPDFRequest):
+    _rate_limit(request, limit=5)  # Sonnet is ~10× more expensive
     if not payload.text or len(payload.text.strip()) < 200:
         raise HTTPException(status_code=400, detail="Document text too short. Please upload a valid sustainability or annual report.")
     text_excerpt = payload.text[:15000]  # Cap at ~15k chars
@@ -388,7 +417,8 @@ class DigestRequest(BaseModel):
 
 
 @router.post("/generate-digest")
-async def generate_digest(payload: DigestRequest):
+async def generate_digest(request: Request, payload: DigestRequest):
+    _rate_limit(request, limit=10)  # digest is per-subscriber, lower limit
     context = f"""Subscriber: {payload.email}
 Company: {payload.company_name or 'Not specified'}
 Sector: {payload.sector or 'Not specified'}
@@ -423,10 +453,10 @@ try:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=["http://localhost:3000", "http://localhost:8000"],
+        allow_credentials=False,
+        allow_methods=["GET", "POST"],
+        allow_headers=["Content-Type"],
     )
     app.include_router(router)
 

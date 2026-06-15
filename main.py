@@ -6,10 +6,13 @@ Run: uvicorn main:app --host 127.0.0.1 --port 8000
 """
 
 import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+
+BASE_DIR = Path(__file__).parent
 
 from ai_api import router as ai_router
 from supplier_api import router as supplier_router
@@ -32,14 +35,14 @@ app.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["Content-Type", "Authorization", "X-Api-Key"],
 )
 
 app.include_router(ai_router)
 app.include_router(supplier_router)
 
 # Serve static HTML/CSS/JS — must come AFTER API routes
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+app.mount("/assets", StaticFiles(directory=str(BASE_DIR / "assets")), name="assets")
 
 HTML_FILES = [
     "calculator", "assurance", "brsr-generator", "brsr-simple",
@@ -50,11 +53,11 @@ HTML_FILES = [
 
 @app.get("/")
 async def serve_index():
-    return FileResponse("index.html")
+    return FileResponse(str(BASE_DIR / "index.html"))
 
 for _page in HTML_FILES:
     _path = f"/{_page}"
-    _file = f"{_page}.html"
+    _file = str(BASE_DIR / f"{_page}.html")
 
     def _make_handler(f):
         async def _handler():
