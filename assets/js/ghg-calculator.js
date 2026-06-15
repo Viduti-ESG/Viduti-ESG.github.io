@@ -801,7 +801,7 @@ function exportBRSR() {
   ];
 
   const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
-  triggerDownload(new Blob(['﻿' + csv, { type: 'text/csv;charset=utf-8;' }]), `BRSR-GHG-${fy}-${Date.now()}.csv`);
+  triggerDownload(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }), `BRSR-GHG-${fy}-${Date.now()}.csv`);
 }
 
 // ── Feature 7: Year-on-Year Comparison ────────────────────────────────────────
