@@ -118,6 +118,26 @@ async function initDashboard() {
       try { _ESG_EVENTS = await evRes.json(); } catch { _ESG_EVENTS = null; }
     }
 
+    // Auth: pre-load watchlist, snapshots, prefs, CAP from server (non-fatal)
+    if (typeof gcAuth !== 'undefined' && gcAuth.isLoggedIn()) {
+      try {
+        const [wlData, snapData, prefsData, capData] = await Promise.all([
+          gcAuth.getWatchlist().catch(() => []),
+          gcAuth.getSnapshots().catch(() => ({})),
+          gcAuth.getPrefs().catch(() => ({ tier_change: true, high_risk: true })),
+          gcAuth.getCAP().catch(() => ({})),
+        ]);
+        _WL._names = wlData || [];
+        _WL._snaps = snapData || {};
+        _WL._prefs = prefsData || { tier_change: true, high_risk: true };
+        // CAP cache: server returns { companyName: { recId: {...} } }
+        // Flatten each company's map into _CAP_CACHE
+        _CAP_CACHE = capData || {};
+      } catch (e) {
+        console.warn('[GC] user data pre-load failed:', e.message);
+      }
+    }
+
     const s = INTEL.summary || {};
     statusEl.textContent = INTEL.data_as_of || '—';
 
@@ -1100,6 +1120,7 @@ async function openDeepDive(companyName) {
   _track('esg_company_viewed', { company: companyName, sector: profile.sector, risk_tier: profile.risk_tier });
 
   _currentDDCompany = profile;
+  window._currentDeepDiveCompany = companyName;
   _currentDDData    = null;
   const briefBtn = document.getElementById('ddBriefingBtn');
   if (briefBtn) {
@@ -1937,7 +1958,7 @@ function renderDDNetZero(profile) {
       <div id="nz-chart" style="height:340px;width:100%;margin:16px 0 8px"></div>
       <div class="nz-legend-row">
         <span class="nz-leg nz-leg--bau">BAU (no reduction)</span>
-        <span class="nz-leg nz-leg--1p5">1.5°C SBTi path (7%/yr)</span>
+        <span class="nz-leg nz-leg--1p5">1.5°C Science-Based Target path (7%/yr)</span>
         <span class="nz-leg nz-leg--2deg">Well-below 2°C path (2.5%/yr)</span>
         ${targetYr ? `<span class="nz-leg nz-leg--target">Company target: Net Zero ${targetYr}</span>` : ''}
       </div>
@@ -1950,7 +1971,7 @@ function renderDDNetZero(profile) {
         <div class="nz-insight-card">
           <div class="nz-insight-card__label">Cumulative reduction 2025-2050</div>
           <div class="nz-insight-card__val" style="color:#34d399">${baseline!=null ? Math.round(baseline * (1 - Math.pow(0.93, 25))).toLocaleString('en-IN') + ' tCO₂e' : '—'}</div>
-          <div class="nz-insight-card__sub">Required to hit 1.5°C SBTi path</div>
+          <div class="nz-insight-card__sub">Required for 1.5°C Science-Based Target path</div>
         </div>
         <div class="nz-insight-card">
           <div class="nz-insight-card__label">Year emissions reach net zero</div>
@@ -1989,7 +2010,7 @@ function _plotNetZeroChart(profile) {
     },
     {
       x: NZ_YEARS, y: p15,
-      name: '1.5°C SBTi path (7%/yr)',
+      name: '1.5°C Science-Based Target path (7%/yr)',
       mode: 'lines',
       line: { color: '#34d399', width: 2.5, dash: 'dash' },
     },
@@ -2910,7 +2931,7 @@ function renderESGEvents() {
 }
 
 function _applyEventsRender(el) {
-  const watchlist = JSON.parse(localStorage.getItem('gc_watchlist') || '[]');
+  const watchlist = _WL.list();
   let events = (_ESG_EVENTS.events || []).slice().sort((a, b) => b.date.localeCompare(a.date));
 
   // Apply filters
@@ -3670,19 +3691,38 @@ function applyFTFilters() {
 window.applyFTFilters = applyFTFilters;
 
 // ── Watchlist + Alerts ─────────────────────────────────────────────────────────
+// In-memory cache — loaded from API at init, written back on change.
 const _WL = {
-  _K:  'gc_watchlist',
-  _SK: 'gc_wl_snapshots',
-  _PK: 'gc_wl_alert_prefs',
-  list()  { try { return JSON.parse(localStorage.getItem(this._K)  || '[]');  } catch { return []; } },
-  save(a) { localStorage.setItem(this._K, JSON.stringify(a)); },
-  add(n)  { const l = this.list(); if (!l.includes(n)) { l.push(n); this.save(l); } },
-  remove(n){ this.save(this.list().filter(x => x !== n)); },
-  has(n)  { return this.list().includes(n); },
-  getSnaps()   { try { return JSON.parse(localStorage.getItem(this._SK) || '{}'); } catch { return {}; } },
-  saveSnaps(o) { localStorage.setItem(this._SK, JSON.stringify(o)); },
-  getPrefs()   { try { return JSON.parse(localStorage.getItem(this._PK) || '{"tier_change":true,"high_risk":true}'); } catch { return {tier_change:true,high_risk:true}; } },
-  savePrefs(o) { localStorage.setItem(this._PK, JSON.stringify(o)); },
+  _names: [],
+  _snaps: {},
+  _prefs: { tier_change: true, high_risk: true },
+
+  list()   { return this._names.slice(); },
+  has(n)   { return this._names.includes(n); },
+
+  add(n) {
+    if (!this._names.includes(n)) {
+      this._names.push(n);
+      gcAuth.addToWatchlist(n).catch(() => {});
+    }
+  },
+  remove(n) {
+    this._names = this._names.filter(x => x !== n);
+    gcAuth.removeFromWatchlist(n).catch(() => {});
+  },
+
+  getSnaps()    { return this._snaps; },
+  saveSnaps(o)  {
+    this._snaps = o;
+    // persist each changed snapshot
+    Object.entries(o).forEach(([co, data]) => gcAuth.saveSnapshot(co, data).catch(() => {}));
+  },
+
+  getPrefs()   { return this._prefs; },
+  savePrefs(o) {
+    this._prefs = o;
+    gcAuth.savePrefs(o).catch(() => {});
+  },
 };
 
 function toggleWatchlist(name, event) {
@@ -3787,7 +3827,7 @@ function renderWatchlist() {
 window.renderWatchlist = renderWatchlist;
 
 function _wlSavePref(key, val) {
-  const p = _WL.getPrefs(); p[key] = val; _WL.savePrefs(p);
+  const p = Object.assign({}, _WL.getPrefs()); p[key] = val; _WL.savePrefs(p);
 }
 window._wlSavePref = _wlSavePref;
 
@@ -3859,7 +3899,8 @@ function _renderFilingDeadline() {
 window._renderFilingDeadline = _renderFilingDeadline;
 
 // ── Feature #1: BRSR Improvement Plan (CAP) ───────────────────────────────────
-const _CAP_KEY = 'gc_cap_progress';
+// In-memory cache keyed { companyName: { recId: {status,assignee,due_date,notes} } }
+let _CAP_CACHE = {};
 
 function _capActions(c) {
   if (!c) return [];
@@ -3935,10 +3976,17 @@ function _capActions(c) {
   return actions;
 }
 
+// Returns flat { rec_id: {status,assignee,due_date,notes} } for the current deep-dive company
 function _capGetProgress() {
-  try { return JSON.parse(localStorage.getItem(_CAP_KEY) || '{}'); } catch { return {}; }
+  const company = window._currentDeepDiveCompany || '';
+  return _CAP_CACHE[company] || {};
 }
-function _capSaveProgress(p) { localStorage.setItem(_CAP_KEY, JSON.stringify(p)); }
+
+// Persist one rec_id update to in-memory cache + API
+function _capSaveProgress(p) {
+  const company = window._currentDeepDiveCompany || '';
+  _CAP_CACHE[company] = p;
+}
 
 // Returns normalized object {status, assignee, due_date, notes} with backward-compat migration
 function _capGetObj(progress, id) {
@@ -3957,6 +4005,8 @@ function _capSaveField(id, field, value) {
   obj[field] = value;
   p[id] = obj;
   _capSaveProgress(p);
+  const company = window._currentDeepDiveCompany || '';
+  if (company) gcAuth.updateCAP(company, id, { [field]: value }).catch(() => {});
 }
 
 function populateCAPDropdown() {

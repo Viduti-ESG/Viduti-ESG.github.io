@@ -1,5 +1,33 @@
 /* ── ESG Intelligence Dashboard ─────────────────────────────────────────── */
 
+/* ── Auth nav strip ─────────────────────────────────────────────────────── */
+.nav__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 8px;
+}
+.nav__user-name {
+  font-size: .8rem;
+  color: var(--text-70);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav__user-logout {
+  font-size: .78rem;
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-sm);
+  color: var(--text-40);
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: color .2s, border-color .2s;
+}
+.nav__user-logout:hover { color: var(--rose); border-color: var(--rose); }
+
 /* Legal Disclaimer Strip */
 .legal-disclaimer-strip {
   display: flex;

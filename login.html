@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://greencurve.solutions/login" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link rel="stylesheet" href="/assets/css/auth.css" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <div class="auth-brand">
+      <img src="/assets/img/logo.png" alt="Green Curve" class="auth-brand__logo" />
+      <div class="auth-brand__name">Green Curve</div>
+      <div class="auth-brand__tagline">ESG &amp; Climate Intelligence · India</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login"    onclick="showTab('login')">Sign In</button>
+      <button class="auth-tab"        id="tab-register" onclick="showTab('register')">Create Account</button>
+    </div>
+
+    <!-- Message banner -->
+    <div class="auth-msg" id="auth-msg"></div>
+
+    <!-- ── Login form ── -->
+    <form class="auth-form" id="form-login" onsubmit="submitLogin(event)">
+      <div class="auth-field">
+        <label class="auth-label" for="login-email">Email</label>
+        <input class="auth-input" id="login-email" type="email" placeholder="you@company.com" required autocomplete="email" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="login-password">Password</label>
+        <input class="auth-input" id="login-password" type="password" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <button class="auth-submit" type="submit" id="login-btn">Sign In</button>
+    </form>
+
+    <!-- ── Register form ── -->
+    <form class="auth-form" id="form-register" onsubmit="submitRegister(event)" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label" for="reg-name">Full Name</label>
+        <input class="auth-input" id="reg-name" type="text" placeholder="Ravi Sharma" required autocomplete="name" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="reg-email">Work Email</label>
+        <input class="auth-input" id="reg-email" type="email" placeholder="you@company.com" required autocomplete="email" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="reg-org">Organisation <span style="color:var(--text-20)">(optional)</span></label>
+        <input class="auth-input" id="reg-org" type="text" placeholder="Consultivo ESG" autocomplete="organization" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="reg-password">Password <span style="color:var(--text-20)">(min 8 chars)</span></label>
+        <input class="auth-input" id="reg-password" type="password" placeholder="••••••••" required autocomplete="new-password" minlength="8" />
+      </div>
+      <button class="auth-submit" type="submit" id="register-btn">Create Account</button>
+    </form>
+
+    <div class="auth-footer">
+      By continuing you agree to our
+      <a href="/terms-of-use" target="_blank">Terms</a> and
+      <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+    </div>
+
+  </div><!-- /.auth-card -->
+
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    // If already logged in, go straight to dashboard
+    if (localStorage.getItem('gc_auth_token')) {
+      const redirect = new URLSearchParams(location.search).get('next') || '/esg-intelligence';
+      location.replace(redirect);
+    }
+
+    function showTab(tab) {
+      document.getElementById('form-login').style.display    = tab === 'login'    ? 'flex' : 'none';
+      document.getElementById('form-register').style.display = tab === 'register' ? 'flex' : 'none';
+      document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      clearMsg();
+    }
+
+    function showMsg(text, type) {
+      const el = document.getElementById('auth-msg');
+      el.textContent = text;
+      el.className = 'auth-msg ' + type;
+    }
+    function clearMsg() {
+      const el = document.getElementById('auth-msg');
+      el.className = 'auth-msg';
+      el.textContent = '';
+    }
+
+    async function submitLogin(e) {
+      e.preventDefault();
+      clearMsg();
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+      try {
+        const res = await gcAuth.login(
+          document.getElementById('login-email').value.trim(),
+          document.getElementById('login-password').value
+        );
+        const redirect = new URLSearchParams(location.search).get('next') || '/esg-intelligence';
+        location.replace(redirect);
+      } catch (err) {
+        showMsg(err.message || 'Sign in failed. Check your email and password.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    }
+
+    async function submitRegister(e) {
+      e.preventDefault();
+      clearMsg();
+      const btn = document.getElementById('register-btn');
+      btn.disabled = true;
+      btn.textContent = 'Creating account…';
+      try {
+        await gcAuth.register(
+          document.getElementById('reg-email').value.trim(),
+          document.getElementById('reg-name').value.trim(),
+          document.getElementById('reg-org').value.trim(),
+          document.getElementById('reg-password').value
+        );
+        showMsg('Account created! Taking you to the dashboard…', 'success');
+        setTimeout(() => {
+          const redirect = new URLSearchParams(location.search).get('next') || '/esg-intelligence';
+          location.replace(redirect);
+        }, 800);
+      } catch (err) {
+        showMsg(err.message || 'Registration failed. Email may already be registered.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+/* ── Green Curve Auth Page ────────────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--void);
+  padding: 24px 16px;
+}
+
+/* subtle grid overlay */
+.auth-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,200,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-xl);
+  padding: 40px 36px;
+  box-shadow: var(--shadow-xl);
+}
+
+/* ── Brand ──────────────────────────────────────────────────────────────────── */
+.auth-brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.auth-brand__logo {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  display: block;
+}
+.auth-brand__name {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.auth-brand__tagline {
+  font-size: .78rem;
+  color: var(--text-40);
+  margin-top: 4px;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────────── */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--deep);
+  border-radius: var(--r-sm);
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--text-40);
+  border-radius: var(--r-xs);
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+  background: transparent;
+}
+.auth-tab.active {
+  background: var(--surface-2);
+  color: var(--cyan);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Form ──────────────────────────────────────────────────────────────────── */
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.auth-field { display: flex; flex-direction: column; gap: 6px; }
+
+.auth-label {
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--text-70);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--deep);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-size: .9rem;
+  font-family: var(--sans);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  box-sizing: border-box;
+}
+.auth-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,200,255,.12);
+}
+.auth-input::placeholder { color: var(--text-20); }
+
+/* ── Submit button ──────────────────────────────────────────────────────────── */
+.auth-submit {
+  width: 100%;
+  padding: 11px;
+  margin-top: 4px;
+  background: var(--cyan);
+  color: #03060d;
+  font-weight: 700;
+  font-size: .9rem;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+  font-family: var(--sans);
+}
+.auth-submit:hover  { opacity: .88; }
+.auth-submit:active { transform: scale(.98); }
+.auth-submit:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── Error / success ────────────────────────────────────────────────────────── */
+.auth-msg {
+  font-size: .82rem;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  display: none;
+  line-height: 1.5;
+}
+.auth-msg.error {
+  display: block;
+  background: rgba(251,113,133,.1);
+  border: 1px solid rgba(251,113,133,.25);
+  color: var(--rose);
+}
+.auth-msg.success {
+  display: block;
+  background: rgba(52,211,153,.1);
+  border: 1px solid rgba(52,211,153,.25);
+  color: var(--emerald);
+}
+
+/* ── Footer note ─────────────────────────────────────────────────────────────*/
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: .75rem;
+  color: var(--text-40);
+}
+.auth-footer a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+.auth-footer a:hover { text-decoration: underline; }
