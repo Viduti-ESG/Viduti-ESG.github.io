@@ -70,7 +70,7 @@ function renderNav() {
     btn.dataset.step = i;
     btn.innerHTML = `
       <div class="wizard-nav__dot">${i + 1}</div>
-      <span class="wizard-nav__label">${section.title}</span>
+      <span class="wizard-nav__label">${esc(section.title)}</span>
     `;
     btn.addEventListener("click", () => {
       // Only allow navigating to completed steps
@@ -104,8 +104,8 @@ function renderStep(stepIdx) {
   const content = document.getElementById("wizardContent");
   content.innerHTML = `
     <div class="step-header">
-      <div class="step-header__badge">${section.subtitle || "Step " + (stepIdx + 1)}</div>
-      <h2 class="step-header__title">${section.title}</h2>
+      <div class="step-header__badge">${section.subtitle ? esc(section.subtitle) : "Step " + (stepIdx + 1)}</div>
+      <h2 class="step-header__title">${esc(section.title)}</h2>
     </div>
     <div class="form-grid" id="formGrid">
       ${section.fields.map(field => renderField(field)).join("")}
@@ -121,8 +121,8 @@ function renderStep(stepIdx) {
 
 function renderField(field) {
   const required = field.required ? '<span class="required-star">*</span>' : "";
-  const label    = `<label class="field-label" for="${field.id}">${field.label} ${required}</label>`;
-  const hint     = field.placeholder ? `<span class="field-hint">${field.placeholder}</span>` : "";
+  const label    = `<label class="field-label" for="${esc(field.id)}">${esc(field.label)} ${required}</label>`;
+  const hint     = field.placeholder ? `<span class="field-hint">${esc(field.placeholder)}</span>` : "";
 
   let input = "";
   switch (field.type) {
@@ -130,24 +130,24 @@ function renderField(field) {
     case "url":
     case "email":
     case "number":
-      input = `<input class="field-input" type="${field.type}" id="${field.id}"
-        name="${field.id}" placeholder="${field.placeholder || ""}"
+      input = `<input class="field-input" type="${esc(field.type)}" id="${esc(field.id)}"
+        name="${esc(field.id)}" placeholder="${esc(field.placeholder || "")}"
         ${field.required ? "required" : ""}
-        ${field.default !== undefined ? `value="${field.default}"` : ""}
+        ${field.default !== undefined ? `value="${esc(String(field.default))}"` : ""}
       >`;
       break;
 
     case "textarea":
-      input = `<textarea class="field-textarea" id="${field.id}" name="${field.id}"
-        placeholder="${field.placeholder || ""}"
+      input = `<textarea class="field-textarea" id="${esc(field.id)}" name="${esc(field.id)}"
+        placeholder="${esc(field.placeholder || "")}"
         ${field.required ? "required" : ""}></textarea>`;
       break;
 
     case "select":
       const opts = (field.options || []).map(o =>
-        `<option value="${o}">${o}</option>`
+        `<option value="${esc(o)}">${esc(o)}</option>`
       ).join("");
-      input = `<select class="field-select" id="${field.id}" name="${field.id}"
+      input = `<select class="field-select" id="${esc(field.id)}" name="${esc(field.id)}"
         ${field.required ? "required" : ""}>
         <option value="">— Select —</option>
         ${opts}
@@ -157,28 +157,27 @@ function renderField(field) {
     case "radio":
       const radios = (field.options || []).map(o => `
         <label class="radio-option">
-          <input type="radio" name="${field.id}" value="${o}">
-          ${o}
+          <input type="radio" name="${esc(field.id)}" value="${esc(o)}">
+          ${esc(o)}
         </label>`).join("");
-      input = `<div class="radio-group" id="${field.id}">${radios}</div>`;
+      input = `<div class="radio-group" id="${esc(field.id)}">${radios}</div>`;
       break;
 
     case "multiselect":
       const checks = (field.options || []).map(o => `
         <label class="check-option">
-          <input type="checkbox" name="${field.id}" value="${o}">
-          ${o}
+          <input type="checkbox" name="${esc(field.id)}" value="${esc(o)}">
+          ${esc(o)}
         </label>`).join("");
-      input = `<div class="check-group" id="${field.id}">${checks}</div>`;
+      input = `<div class="check-group" id="${esc(field.id)}">${checks}</div>`;
       break;
 
     default:
-      input = `<input class="field-input" type="text" id="${field.id}" name="${field.id}">`;
+      input = `<input class="field-input" type="text" id="${esc(field.id)}" name="${esc(field.id)}">`;
   }
 
   const isWide = ["textarea", "radio", "multiselect"].includes(field.type) || field.id.includes("description") || field.id.includes("initiatives");
   const colSpan = isWide ? ' style="grid-column: 1/-1"' : "";
-  const isGrid2 = document.querySelector(".form-grid--2");
 
   return `
     <div class="field-group" ${colSpan}>
