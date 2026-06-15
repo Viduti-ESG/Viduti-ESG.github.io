@@ -1964,7 +1964,7 @@ function renderDDNetZero(profile) {
         <div class="nz-no-data__title">GHG Data Not Disclosed</div>
         <div class="nz-no-data__sub">This company has not disclosed Scope 1 or Scope 2 emissions in its BRSR filing. Net Zero trajectory cannot be calculated without a verified GHG baseline.</div>
       </div>` : `
-      ${isEstimated ? (() => { const est = (_GHG_ESTIMATES||{})[profile.company_name]||{}; return `<div class="nz-proxy-note nz-proxy-note--est"><span class="est-badge">Est.</span> GHG not disclosed — trajectory uses ML sector-intensity estimate (${(est.sector_matched||'general industry')}, ${est.intensity_factor_used||'?'} tCO₂e/₹Cr). Confidence: ±40%. <a href="#" onclick="document.querySelector('[data-tab=aiquery]')?.click();return false">Run AI Query for peers</a></div>` : ''; })() : ''}
+      ${isEstimated ? (() => { const est = (_GHG_ESTIMATES||{})[profile.company_name]||{}; return `<div class="nz-proxy-note nz-proxy-note--est"><span class="est-badge">Est.</span> GHG not disclosed — trajectory uses ML sector-intensity estimate (${(est.sector_matched||'general industry')}, ${est.intensity_factor_used||'?'} tCO₂e/₹Cr). Confidence: ±40%. <a href="#" onclick="document.querySelector('[data-tab=aiquery]')?.click();return false">Run AI Query for peers</a></div>`; })() : ''}
       ${isProxy ? `<div class="nz-proxy-note">⚠ Exact Scope 1/2 not separately disclosed — trajectory estimated from GHG intensity × revenue. Refer to the company's BRSR filing for verified data.</div>` : ''}
       <div id="nz-chart" style="height:340px;width:100%;margin:16px 0 8px"></div>
       <div class="nz-legend-row">
