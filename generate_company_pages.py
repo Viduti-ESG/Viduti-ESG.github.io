@@ -50,6 +50,44 @@ def risk_bar(val, label):
         <span class="rb-val" style="color:{col}">{v:.1f}</span>
       </div>"""
 
+# ── Sector normalisation ──────────────────────────────────────────────────────
+# BRSR "sector" is free-text (1,000+ unique variants). We bucket it into ~21
+# canonical sectors so we can build sector roll-up pages that rank for category
+# queries like "ESG scores of Indian banks / IT / pharma companies". First
+# matching rule wins; order matters (specific before generic).
+SECTOR_RULES = [
+    ("Banking & Financial Services", ["bank","nbfc","financial","finance","credit","leasing","brokerage","capital market","lending","loans","housing finance","microfinance","asset reconstruction"]),
+    ("Insurance",                     ["insurance"]),
+    ("Asset & Fund Management",       ["fund management","asset management","mutual fund","wealth","investment manage"]),
+    ("IT, Software & Services",       ["computer programming","software","information technology","it services","consultancy and related","data processing","internet"]),
+    ("Pharmaceuticals & Healthcare",  ["pharma","medicinal","drug","healthcare","hospital","medical","biotech","diagnostic","life science"]),
+    ("Chemicals",                     ["chemical","fertilis","fertiliz","agrochem","petrochem","dyes","paint"]),
+    ("Metals & Mining",               ["metal","steel","iron","mining","aluminium","aluminum","zinc","copper","ore","ferro"]),
+    ("Cement & Construction Materials",["cement","clinker","concrete","construction material","ceramic","tiles"]),
+    ("Automobiles & Components",      ["auto","vehicle","motor","tyre","tire","automobile","two wheeler","bearings"]),
+    ("Power & Utilities",             ["power generation","electric power","electricity","utilit","renewable","solar","wind power","transmission and distribution"]),
+    ("Oil, Gas & Fuels",             ["oil","gas","petroleum","refiner","lng","city gas","fuel","coal"]),
+    ("FMCG, Food & Beverages",        ["fmcg","fast moving","food","beverage","tobacco","dairy","agro product","consumer goods","sugar","tea","coffee"]),
+    ("Textiles & Apparel",            ["textile","apparel","garment","yarn","fabric","cotton","leather","footwear"]),
+    ("Real Estate & Infrastructure",  ["real estate","realty","property","infrastructure","construction","roads","highway"]),
+    ("Telecom & Media",               ["telecom","communication","media","broadcasting","entertainment","publishing"]),
+    ("Retail & Trading",              ["retail","wholesale","trading","e-commerce","distribution"]),
+    ("Capital Goods & Machinery",     ["machinery","electrical equipment","engineering","capital goods","industrial equipment","general purpose","special purpose","electronic"]),
+    ("Logistics & Transport",         ["transport","logistics","shipping","port","airline","aviation","courier","tour operator","travel agency"]),
+    ("Hospitality & Tourism",         ["hotel","hospitality","resort","tourism","restaurant"]),
+    ("Plastics, Rubber & Packaging",  ["plastic","rubber","packaging","polymer"]),
+    ("Paper & Forest Products",       ["paper","pulp","forest","wood"]),
+]
+SECTOR_MIN_COMPANIES = 5  # don't build a thin page for tiny buckets
+
+def classify_sector(sector_text):
+    """Map a raw BRSR sector string to a canonical sector, or None if unclassifiable."""
+    t = (sector_text or "").lower()
+    for name, kws in SECTOR_RULES:
+        if any(k in t for k in kws):
+            return name
+    return None
+
 # ── Load data ─────────────────────────────────────────────────────────────────
 with open(DATA_FILE, encoding='utf-8') as f:
     intel = json.load(f)
@@ -117,6 +155,8 @@ def make_page(c):
     score     = c.get('esg_risk_score', 0)
     tier      = c.get('risk_tier', 'Medium')
     sector    = c.get('sector', '').replace('\n', ' ').replace('\r', '').strip()
+    sec_name  = classify_sector(sector)
+    sec_slug  = slugify(sec_name) if sec_name else None
     products  = c.get('products', '')
     fy        = c.get('financial_year', '')
     cin       = c.get('cin', '')
@@ -240,6 +280,7 @@ def make_page(c):
 <div class="breadcrumb container">
   <a href="../index.html">Home</a> &rsaquo;
   <a href="../esg-intelligence.html">ESG Quotient</a> &rsaquo;
+  {f'<a href="sector/{sec_slug}.html">{esc(sec_name)}</a> &rsaquo;' if sec_slug else ''}
   <span>{esc(name)}</span>
 </div>
 
@@ -378,7 +419,9 @@ for c in companies:
     out_path = os.path.join(OUT_DIR, f"{slug}.html")
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write(page_html)
-    generated.append((c['company_name'], slug, c.get('esg_risk_score',0), c.get('risk_tier','Medium'), c.get('sector','')))
+    _sec_raw = (c.get('sector','') or '').replace('\n',' ').replace('\r','').strip()
+    generated.append((c['company_name'], slug, c.get('esg_risk_score',0),
+                      c.get('risk_tier','Medium'), _sec_raw, classify_sector(_sec_raw)))
 
 print(f"  Written {len(generated)} company pages to ./{OUT_DIR}/")
 
@@ -389,7 +432,7 @@ rows_html = '\n'.join(f"""
     <td style="font-size:.8rem;color:#94a3b8">{esc(sector[:50])}</td>
     <td><span style="color:{tier_color(tier)};font-weight:700">{score}</span></td>
     <td><span style="color:{tier_color(tier)}">{tier}</span></td>
-  </tr>""" for name, slug, score, tier, sector in sorted(generated, key=lambda x: -x[2]))
+  </tr>""" for name, slug, score, tier, sector, _secn in sorted(generated, key=lambda x: -x[2]))
 
 index_html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -415,7 +458,8 @@ index_html = f"""<!DOCTYPE html>
 </div>
 <div class="container" style="padding:40px 0 80px">
   <h1 style="font-size:2rem;margin-bottom:8px">ESG Risk Scores — Indian Listed Companies</h1>
-  <p style="color:#94a3b8;margin-bottom:32px">{len(generated)} companies analysed · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
+  <p style="color:#94a3b8;margin-bottom:16px">{len(generated)} companies analysed · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
+  <p style="margin-bottom:28px"><a href="sectors.html" style="color:var(--emerald,#10b981);font-weight:600">Browse ESG scores by sector &rarr;</a></p>
   <div class="table-wrap">
     <table class="screener-table">
       <thead><tr><th>Company</th><th>Sector</th><th>ESG Risk Score</th><th>Risk Tier</th></tr></thead>
@@ -435,6 +479,182 @@ index_html = f"""<!DOCTYPE html>
 with open(os.path.join(OUT_DIR, 'index.html'), 'w', encoding='utf-8') as f:
     f.write(index_html)
 print(f"  Written company/index.html")
+
+# ── Sector roll-up pages ──────────────────────────────────────────────────────
+# One page per canonical sector listing every company in it, sorted by ESG risk
+# (lower = lower risk). These rank for category queries ("ESG scores of Indian
+# <sector> companies") and pour internal-link equity into the company pages.
+SECTOR_DIR = os.path.join(OUT_DIR, "sector")
+os.makedirs(SECTOR_DIR, exist_ok=True)
+
+# group: sector_name -> list of (name, slug, score, tier)
+sector_groups = {}
+for name, slug, score, tier, sraw, sname in generated:
+    if not sname:
+        continue
+    sector_groups.setdefault(sname, []).append((name, slug, score, tier))
+
+# Deeper nav/footer (two levels up from company/sector/)
+NAV2   = NAV.replace('../', '../../')
+FOOTER2 = FOOTER.replace('../', '../../')
+
+def sector_page(sname, members):
+    sslug   = slugify(sname)
+    members = sorted(members, key=lambda x: (x[2] if x[2] is not None else 99))
+    n       = len(members)
+    scores  = [m[2] for m in members if isinstance(m[2], (int, float))]
+    avg     = sum(scores) / len(scores) if scores else 0
+    low     = sum(1 for m in members if m[3] == 'Low')
+    med     = sum(1 for m in members if m[3] == 'Medium')
+    high    = sum(1 for m in members if m[3] == 'High')
+    leaders = ', '.join(m[0] for m in members[:3])
+
+    meta_desc = (f"ESG risk scores for {n} Indian listed {sname} companies, based on SEBI "
+                 f"BRSR filings. Average ESG risk {avg:.1f}/10. Compare {leaders} and more on Green Curve.")
+
+    rows = '\n'.join(f"""
+      <tr>
+        <td><a href="../{slug}.html">{esc(cname)}</a></td>
+        <td><span style="color:{tier_color(tier)};font-weight:700">{score}</span></td>
+        <td><span style="color:{tier_color(tier)}">{tier}</span></td>
+      </tr>""" for cname, slug, score, tier in members)
+
+    item_list = ",\n".join(
+        f'      {{"@type":"ListItem","position":{i+1},'
+        f'"url":"{BASE_URL}/company/{slug}.html","name":{json.dumps(cname)}}}'
+        for i, (cname, slug, *_ ) in enumerate(members))
+
+    return sslug, f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ESG Scores of Indian {esc(sname)} Companies (2026) | Green Curve</title>
+  <meta name="description" content="{esc(meta_desc)}"/>
+  <meta name="robots" content="index,follow"/>
+  <link rel="canonical" href="{BASE_URL}/company/sector/{sslug}.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="{BASE_URL}/company/sector/{sslug}.html"/>
+  <meta property="og:site_name" content="Green Curve"/>
+  <meta property="og:title" content="ESG Scores of Indian {esc(sname)} Companies"/>
+  <meta property="og:description" content="{esc(meta_desc)}"/>
+  <meta property="og:image" content="{BASE_URL}/assets/img/logo.png"/>
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="ESG Scores of Indian {esc(sname)} Companies"/>
+  <meta name="twitter:description" content="{esc(meta_desc)}"/>
+  <script type="application/ld+json">{{
+    "@context":"https://schema.org","@type":"CollectionPage",
+    "name":"ESG Scores of Indian {esc(sname)} Companies",
+    "description":{json.dumps(meta_desc)},
+    "url":"{BASE_URL}/company/sector/{sslug}.html",
+    "publisher":{{"@type":"Organization","name":"Green Curve","url":"{BASE_URL}/"}},
+    "mainEntity":{{"@type":"ItemList","numberOfItems":{n},"itemListElement":[
+{item_list}
+    ]}}
+  }}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../../assets/css/style.css"/>
+  <link rel="stylesheet" href="../../assets/css/company-page.css"/>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg"/>
+</head>
+<body>
+{NAV2}
+<div class="breadcrumb container">
+  <a href="../../index.html">Home</a> &rsaquo;
+  <a href="../../esg-intelligence.html">ESG Quotient</a> &rsaquo;
+  <a href="../index.html">Companies</a> &rsaquo;
+  <span>{esc(sname)}</span>
+</div>
+<div class="container" style="padding:40px 0 80px">
+  <h1 style="font-size:2rem;margin-bottom:8px">ESG Scores of Indian {esc(sname)} Companies</h1>
+  <p style="color:#94a3b8;margin-bottom:18px">{n} {esc(sname)} companies analysed · Average ESG risk score
+     <strong style="color:{score_color(avg)}">{avg:.1f}/10</strong> · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-size:.85rem">
+    <span style="color:#34d399">● {low} Low risk</span>
+    <span style="color:#fbbf24">● {med} Medium risk</span>
+    <span style="color:#f87171">● {high} High risk</span>
+  </div>
+  <div class="table-wrap">
+    <table class="screener-table">
+      <thead><tr><th>Company</th><th>ESG Risk Score (lower = better)</th><th>Risk Tier</th></tr></thead>
+      <tbody>{rows}</tbody>
+    </table>
+  </div>
+  <p style="margin-top:24px"><a href="../sectors.html" style="color:var(--emerald,#10b981)">&larr; Browse all sectors</a></p>
+  <p style="margin-top:10px;font-size:.78rem;color:#475569">Scores derived from companies' own SEBI BRSR filings. Lower score = lower assessed ESG risk. Not investment advice. Not a SEBI-registered ESG Rating Provider output.</p>
+</div>
+{FOOTER2}
+<script>
+  const h = document.getElementById('site-header');
+  window.addEventListener('scroll', () => h.classList.toggle('scrolled', scrollY > 20), {{passive:true}});
+</script>
+</body>
+</html>"""
+
+sector_slugs = []
+for sname, members in sorted(sector_groups.items(), key=lambda kv: -len(kv[1])):
+    if len(members) < SECTOR_MIN_COMPANIES:
+        continue
+    sslug, html_out = sector_page(sname, members)
+    with open(os.path.join(SECTOR_DIR, f"{sslug}.html"), 'w', encoding='utf-8') as f:
+        f.write(html_out)
+    sector_slugs.append((sslug, sname, len(members)))
+
+# ── Sector hub: company/sectors.html ──────────────────────────────────────────
+cards = '\n'.join(f"""
+    <a class="sector-card" href="sector/{sslug}.html"
+       style="display:block;background:#111827;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;transition:border-color .2s">
+      <span style="font-size:1.05rem;font-weight:600;color:#f1f5f9">{esc(sname)}</span>
+      <span style="display:block;font-size:.8rem;color:#94a3b8;margin-top:4px">{cnt} companies</span>
+    </a>""" for sslug, sname, cnt in sorted(sector_slugs, key=lambda x: -x[2]))
+
+sectors_hub = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ESG Scores by Sector — Indian Listed Companies | Green Curve</title>
+  <meta name="description" content="Browse ESG risk scores for Indian listed companies across {len(sector_slugs)} sectors — banking, IT, pharma, metals, chemicals, auto and more. Based on SEBI BRSR filings."/>
+  <meta name="robots" content="index,follow"/>
+  <link rel="canonical" href="{BASE_URL}/company/sectors.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="{BASE_URL}/company/sectors.html"/>
+  <meta property="og:title" content="ESG Scores by Sector — Indian Listed Companies"/>
+  <meta property="og:description" content="ESG risk scores across {len(sector_slugs)} Indian industry sectors, based on SEBI BRSR filings."/>
+  <meta property="og:image" content="{BASE_URL}/assets/img/logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
+</head>
+<body>
+{NAV}
+<div class="breadcrumb container">
+  <a href="../index.html">Home</a> &rsaquo;
+  <a href="../esg-intelligence.html">ESG Quotient</a> &rsaquo;
+  <span>By Sector</span>
+</div>
+<div class="container" style="padding:40px 0 80px">
+  <h1 style="font-size:2rem;margin-bottom:8px">ESG Scores by Sector</h1>
+  <p style="color:#94a3b8;margin-bottom:32px">Indian listed companies grouped into {len(sector_slugs)} sectors · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+{cards}
+  </div>
+  <p style="margin-top:28px"><a href="index.html" style="color:var(--emerald,#10b981)">Browse all companies &rarr;</a></p>
+</div>
+{FOOTER}
+<script>
+  const h = document.getElementById('site-header');
+  window.addEventListener('scroll', () => h.classList.toggle('scrolled', scrollY > 20), {{passive:true}});
+</script>
+</body>
+</html>"""
+
+with open(os.path.join(OUT_DIR, 'sectors.html'), 'w', encoding='utf-8') as f:
+    f.write(sectors_hub)
+print(f"  Written {len(sector_slugs)} sector pages + company/sectors.html")
 
 # ── Rebuild sitemap.xml from scratch ─────────────────────────────────────────────
 # The sitemap is fully regenerated each run from three sources:
@@ -483,8 +703,11 @@ if os.path.exists(os.path.join("posts", "index.html")):
 for pf in post_files:
     entries.append(url_entry(f"{BASE_URL}/posts/{pf}", TODAY, "monthly", "0.6"))
 
-# 3. Company index + company pages
+# 3. Company index + sector hub + sector pages + company pages
 entries.append(url_entry(f"{BASE_URL}/company/", TODAY, "weekly", "0.8"))
+entries.append(url_entry(f"{BASE_URL}/company/sectors.html", TODAY, "weekly", "0.8"))
+for sslug, _sname, _cnt in sector_slugs:
+    entries.append(url_entry(f"{BASE_URL}/company/sector/{sslug}.html", TODAY, "weekly", "0.7"))
 for _, slug, *_ in generated:
     entries.append(url_entry(f"{BASE_URL}/company/{slug}.html", TODAY, "weekly", "0.7"))
 
@@ -496,6 +719,6 @@ sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
 with open('sitemap.xml', 'w', encoding='utf-8') as f:
     f.write(sitemap)
 print(f"  Rebuilt sitemap.xml: {len(STATIC_PAGES)} static + {len(post_files)} posts "
-      f"+ {len(generated) + 1} company URLs = {len(entries)} total")
+      f"+ {len(sector_slugs)} sectors + {len(generated) + 2} company URLs = {len(entries)} total")
 
-print(f"\nDone. {len(generated)} company pages + index + sitemap rebuilt.")
+print(f"\nDone. {len(generated)} company pages + {len(sector_slugs)} sector pages + index + sitemap rebuilt.")
