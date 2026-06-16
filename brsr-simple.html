@@ -3,7 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BRSR Report Generator — Green Curve</title>
+  <title>Free BRSR Report Generator — SEBI Format for Indian Companies | Green Curve</title>
+  <meta name="description" content="Generate a SEBI-format Business Responsibility & Sustainability Report (BRSR) free. Fill in your ESG data and export a structured BRSR report — built for India's top-1000 listed companies and their value-chain suppliers. Runs entirely in your browser." />
+  <meta name="keywords" content="BRSR report generator, SEBI BRSR format, BRSR Core, business responsibility sustainability report India, free BRSR template, ESG report India" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://greencurve.solutions/brsr-simple.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://greencurve.solutions/brsr-simple.html" />
+  <meta property="og:site_name" content="Green Curve" />
+  <meta property="og:title" content="Free BRSR Report Generator — SEBI Format for Indian Companies" />
+  <meta property="og:description" content="Generate a SEBI-format BRSR report free. Enter your ESG data and export a structured report — built for India's listed companies and value-chain suppliers." />
+  <meta property="og:image" content="https://greencurve.solutions/assets/img/logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Free BRSR Report Generator — Green Curve" />
+  <meta name="twitter:description" content="Generate a SEBI-format BRSR report free, right in your browser." />
+  <meta name="twitter:image" content="https://greencurve.solutions/assets/img/logo.png" />
   <link rel="icon" href="assets/img/favicon.svg">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -843,5 +857,16 @@ showStep(0);
   </p>
   <script>document.getElementById('year2').textContent = new Date().getFullYear();</script>
 </footer>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/gc-email-capture.js"></script>
+<script>
+  // Show email capture after 6 seconds on this tool page
+  GcEmailCapture.show({
+    title: 'Get weekly BRSR filing alerts for your sector.',
+    body: 'Know when listed peers file — and what they disclosed.',
+    source: 'BRSR Generator',
+    delay: 6000,
+  });
+</script>
 </body>
 </html>

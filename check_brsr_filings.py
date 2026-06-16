@@ -26,12 +26,15 @@ except ImportError:
     print("ERROR: requests not installed. Run:  pip install requests", file=sys.stderr)
     sys.exit(1)
 
+from db import get_conn, init_db
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
 BASE_DIR    = Path(__file__).parent
 DATA_DIR    = BASE_DIR / "assets" / "data"
-ESG_JSON    = DATA_DIR / "esg_quotient.json"
 TRACKER_OUT = DATA_DIR / "filing_tracker.json"
+
+init_db()
 
 # ── BSE API ───────────────────────────────────────────────────────────────────
 # BSE corporate announcements endpoint (public, no auth required).
@@ -186,16 +189,14 @@ def main() -> int:
     print(f"  Period : {from_date.strftime('%Y-%m-%d')} → {now.strftime('%Y-%m-%d')}")
     print("=" * 60)
 
-    # ── Load company database ──────────────────────────────────────────────────
-    if not ESG_JSON.exists():
-        print(f"ERROR: {ESG_JSON} not found. Run from the esg-site directory.", file=sys.stderr)
-        return 1
-
-    with open(ESG_JSON, encoding="utf-8") as f:
-        db = json.load(f)
-    companies = db.get("companies", [])
+    # ── Load company database from SQLite ─────────────────────────────────────
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT company_name, cin, sector, esg_risk_score, risk_tier FROM companies"
+        ).fetchall()
+    companies = [dict(r) for r in rows]
     idx = build_index(companies)
-    print(f"  DB: {len(companies)} companies indexed")
+    print(f"  DB: {len(companies)} companies indexed from greencurve.db")
 
     # ── Fetch from BSE ─────────────────────────────────────────────────────────
     session = requests.Session()

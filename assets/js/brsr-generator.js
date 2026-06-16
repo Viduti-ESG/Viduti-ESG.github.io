@@ -51,6 +51,23 @@ async function openWizard() {
 
   currentStep = 0;
   formData = {};
+
+  // Pre-fill from saved user profile (non-fatal if not logged in or no profile)
+  try {
+    const token = window.gcAuth?.getToken?.();
+    if (token) {
+      const pr = await fetch(`${API_BASE}/api/user/profile`, {
+        headers: { Authorization: 'Bearer ' + token },
+      });
+      if (pr.ok) {
+        const pd = await pr.json();
+        if (pd.profile && Object.keys(pd.profile).length) {
+          formData = { ...pd.profile };
+        }
+      }
+    }
+  } catch { /* non-fatal */ }
+
   renderNav();
   renderStep(0);
 }
@@ -274,6 +291,24 @@ async function generateReport() {
 
     const result = await response.json();
     generatedReport = result.report;
+
+    // Save company profile to user account (non-fatal)
+    try {
+      const token = window.gcAuth?.getToken?.();
+      if (token && formData.company_name) {
+        fetch(`${API_BASE}/api/user/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+          body: JSON.stringify({
+            company_name: formData.company_name || '',
+            cin:          formData.cin || '',
+            nse_symbol:   formData.nse_symbol || '',
+            sector:       formData.sector || '',
+            profile_json: {},
+          }),
+        }).catch(() => {});
+      }
+    } catch { /* non-fatal */ }
 
     hide("loadingOverlay");
     renderReport(generatedReport);

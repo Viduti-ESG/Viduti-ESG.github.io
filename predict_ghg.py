@@ -34,10 +34,13 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from db import get_conn, init_db
+
 BASE_DIR  = Path(__file__).parent
 DATA_DIR  = BASE_DIR / "assets" / "data"
-INPUT     = DATA_DIR / "esg_quotient.json"
 OUTPUT    = DATA_DIR / "ghg_estimates.json"
+
+init_db()
 
 # ── India-calibrated sector GHG intensities ───────────────────────────────────
 # Source: BEE PAT Cycle I/II, CEEW India GHG Platform, MoEFCC 2024
@@ -202,15 +205,31 @@ def predict_ghg(company: dict) -> dict | None:
     }
 
 
-def main():
-    if not INPUT.exists():
-        print(f"ERROR: {INPUT} not found")
-        return
+def _load_companies_from_db() -> list:
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT company_name, sector, products, revenue_crore, financial_exposure FROM companies"
+        ).fetchall()
+    result = []
+    for r in rows:
+        fe = {}
+        try:
+            fe = json.loads(r["financial_exposure"] or "{}")
+        except Exception:
+            pass
+        result.append({
+            "company_name":     r["company_name"],
+            "sector":           r["sector"] or "",
+            "products":         r["products"] or "",
+            "revenue_crore":    r["revenue_crore"] or 0,
+            "financial_exposure": fe,
+        })
+    return result
 
-    raw   = json.loads(INPUT.read_text(encoding="utf-8"))
-    companies = raw.get("data", raw) if isinstance(raw, dict) else raw
-    if isinstance(raw, dict) and "companies" in raw:
-        companies = raw["companies"]
+
+def main():
+    companies = _load_companies_from_db()
+    print(f"Loaded {len(companies)} companies from greencurve.db")
 
     estimates  = {}
     skipped    = 0
@@ -227,8 +246,11 @@ def main():
             estimates[name] = result
             estimated += 1
 
+    now_utc = datetime.now(timezone.utc)
     output = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at":      now_utc.isoformat(),
+        "data_last_updated": now_utc.strftime("%d %b %Y"),
+        "stale_after_days":  7,
         "methodology": (
             "India-calibrated sector GHG intensity factors (tCO2e/₹Cr revenue). "
             "Sources: BEE PAT Cycle I/II data, CEEW India GHG Platform, MoEFCC National GHG Inventory 2024. "

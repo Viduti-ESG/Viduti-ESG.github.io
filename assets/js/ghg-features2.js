@@ -31,7 +31,7 @@ function renderNetZeroPathway() {
     { x:years, y:bau,   name:'BAU (no action)',              line:{color:'#f87171',dash:'dot',width:2},              mode:'lines', visible: showAll ? true : 'legendonly' },
     { x:years, y:b2deg, name:'Well-below 2°C (−2.5%/yr)',   line:{color:'#fbbf24',width:2},                         mode:'lines', visible: showAll ? true : 'legendonly' },
     { x:years, y:p15,   name:'1.5°C Paris (−4.2%/yr)',      line:{color:'#10b981',width:2.5}, fill:'tozeroy', fillcolor:'rgba(16,185,129,.07)', mode:'lines', visible: (showAll || highlight==='paris') ? true : 'legendonly' },
-    { x:years, y:nzs,   name:'SBTi Net-Zero (−90% by 2050)',line:{color:'#6366f1',dash:'dash',width:2},              mode:'lines', visible: (showAll || highlight==='nzs') ? true : 'legendonly' },
+    { x:years, y:nzs,   name:'Science-Based Net-Zero (−90% by 2050)',line:{color:'#6366f1',dash:'dash',width:2},              mode:'lines', visible: (showAll || highlight==='nzs') ? true : 'legendonly' },
   ];
 
   const layout = {
@@ -191,7 +191,7 @@ function generateShareableProfile() {
   };
   const encoded = btoa(JSON.stringify(payload));
   // Build base URL — works for file://, localhost, and GitHub Pages
-  const origin  = (location.origin && location.origin !== 'null') ? location.origin : 'https://viduti-esg.github.io';
+  const origin  = (location.origin && location.origin !== 'null') ? location.origin : 'https://greencurve.solutions';
   const base    = origin + location.pathname.replace(/[^/]*$/, '');
   const url     = base + 'ghg-profile.html?d=' + encoded;
 

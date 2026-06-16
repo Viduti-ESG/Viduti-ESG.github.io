@@ -1035,6 +1035,7 @@
   </div>
 </div>
 
+<script src="assets/js/gc-config.js?v=20260616"></script>
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/esg-intelligence.js?v=20260616a" defer></script>
 <script src="assets/js/gc-supplier-tab.js?v=20260616a" defer></script>
@@ -1323,7 +1324,7 @@
   }
 
   async function previewDigest() {
-    const apiBase = localStorage.getItem('gc_api_base') || '';
+    const apiBase = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
     const statusEl = document.getElementById('digestPreviewStatus');
     const contentEl = document.getElementById('digestPreviewContent');
     const btn = document.getElementById('digestPreviewBtn');

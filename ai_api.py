@@ -49,16 +49,28 @@ router = APIRouter(prefix="/api", tags=["ai"])
 
 # ── Per-IP rate limiter ────────────────────────────────────────────────────────
 # Haiku endpoints: 30 req/min per IP. Sonnet endpoint (tcfd-pdf): 5 req/min per IP.
-_rl_lock   = threading.Lock()
-_rl_counts: dict[str, list[float]] = defaultdict(list)
+_rl_lock        = threading.Lock()
+_rl_counts: dict = defaultdict(list)
+_rl_last_prune  = time.monotonic()
+_RL_PRUNE_EVERY = 300  # prune stale keys every 5 minutes
+
+def _prune_rl_cache(now: float, window: int) -> None:
+    """Evict IP keys whose most-recent timestamp is older than 2× the window."""
+    global _rl_last_prune
+    if now - _rl_last_prune < _RL_PRUNE_EVERY:
+        return
+    _rl_last_prune = now
+    stale = [k for k, ts in _rl_counts.items() if not ts or now - max(ts) > window * 2]
+    for k in stale:
+        del _rl_counts[k]
 
 def _rate_limit(request: Request, limit: int, window: int = 60) -> None:
     ip  = request.client.host if request.client else "unknown"
     key = f"{ip}:{request.url.path}"
     now = time.monotonic()
     with _rl_lock:
-        timestamps = _rl_counts[key]
-        _rl_counts[key] = [t for t in timestamps if now - t < window]
+        _prune_rl_cache(now, window)
+        _rl_counts[key] = [t for t in _rl_counts[key] if now - t < window]
         if len(_rl_counts[key]) >= limit:
             raise HTTPException(
                 status_code=429,
@@ -84,14 +96,53 @@ def _claude():
     return _client
 
 
-def _ask_haiku(system: str, user: str, max_tokens: int = 600) -> str:
+HAIKU  = "claude-haiku-4-5-20251001"
+SONNET = "claude-sonnet-4-6"
+
+
+def _parse_json(text: str) -> Any:
+    """Parse model output into JSON, tolerating ``` fences and trailing prose."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # Salvage the outermost {...} object if the model added stray text.
+        start, end = text.find("{"), text.rfind("}")
+        if start != -1 and end > start:
+            return json.loads(text[start:end + 1])
+        raise
+
+
+def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
+    """Call Claude and return parsed JSON.
+
+    The assistant turn is prefilled with ``{`` so the model continues a JSON
+    object directly — it cannot wrap the reply in a markdown code fence, which
+    removes the most common cause of parse failures. _parse_json still strips
+    fences/prose defensively in case a model ignores the prefill.
+
+    Prompt caching note: caching the system prompt was evaluated and is NOT
+    worth enabling — every system prompt here is ~270–440 tokens, below the
+    Anthropic cache minimums (1024 for Sonnet, 2048 for Haiku), so cache_control
+    would be silently ignored. If a system prompt ever grows past those limits,
+    pass system as a block list with cache_control to enable it, e.g.:
+        system=[{"type":"text","text":system,"cache_control":{"type":"ephemeral"}}]
+    """
     msg = _claude().messages.create(
-        model="claude-haiku-4-5-20251001",
+        model=model,
         max_tokens=max_tokens,
         system=system,
-        messages=[{"role": "user", "content": user}],
+        messages=[
+            {"role": "user", "content": user},
+            {"role": "assistant", "content": "{"},
+        ],
     )
-    return msg.content[0].text
+    return _parse_json("{" + msg.content[0].text)
 
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
@@ -174,15 +225,7 @@ Revenue: {payload.revenue_crore or 'N/A'} crore INR
 ESG targets: {json.dumps([t.get('metric','') for t in payload.esg_targets[:5]])}"""
 
     try:
-        raw = _ask_haiku(CCTS_SYSTEM, data_summary, max_tokens=700)
-        # Strip markdown code fences if present
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw)
-        return result
+        return _ask_json(HAIKU, CCTS_SYSTEM, data_summary, max_tokens=700)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
@@ -236,14 +279,7 @@ Governance risk score: {payload.governance_risk or 'N/A'} / 10
 ESG targets stated: {targets_str}"""
 
     try:
-        raw = _ask_haiku(TCFD_SYSTEM, data_summary, max_tokens=800)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw)
-        return result
+        return _ask_json(HAIKU, TCFD_SYSTEM, data_summary, max_tokens=800)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
@@ -291,14 +327,7 @@ async def nl_query(request: Request, payload: NLQueryRequest):
     if not payload.query.strip():
         raise HTTPException(status_code=400, detail="Query is empty")
     try:
-        raw = _ask_haiku(NL_SYSTEM, payload.query, max_tokens=300)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw)
-        return result
+        return _ask_json(HAIKU, NL_SYSTEM, payload.query, max_tokens=300)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI parsing failed: {e}")
 
@@ -348,16 +377,6 @@ class TCFDPDFRequest(BaseModel):
     filename: str = Field(default="", max_length=255)
 
 
-def _ask_sonnet(system: str, user: str, max_tokens: int = 2000) -> str:
-    msg = _claude().messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
-    return msg.content[0].text
-
-
 @router.post("/tcfd-pdf")
 async def tcfd_pdf(request: Request, payload: TCFDPDFRequest):
     _rate_limit(request, limit=5)  # Sonnet is ~10× more expensive
@@ -366,14 +385,7 @@ async def tcfd_pdf(request: Request, payload: TCFDPDFRequest):
     text_excerpt = payload.text[:15000]  # Cap at ~15k chars
     user_msg = f"File: {payload.filename or 'uploaded document'}\n\n--- DOCUMENT TEXT ---\n{text_excerpt}\n--- END ---\n\nAssess this document for TCFD alignment."
     try:
-        raw = _ask_sonnet(TCFD_PDF_SYSTEM, user_msg, max_tokens=2000)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw)
-        return result
+        return _ask_json(SONNET, TCFD_PDF_SYSTEM, user_msg, max_tokens=2000)
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"AI returned invalid JSON: {e}")
     except Exception as e:
@@ -427,14 +439,7 @@ Watchlist companies: {', '.join(payload.watchlist[:10]) or 'None set'}
 Week of: {payload.week_of or 'Current week'}"""
 
     try:
-        raw = _ask_haiku(DIGEST_SYSTEM, context, max_tokens=800)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw)
-        return result
+        return _ask_json(HAIKU, DIGEST_SYSTEM, context, max_tokens=800)
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"AI returned invalid JSON: {e}")
     except Exception as e:

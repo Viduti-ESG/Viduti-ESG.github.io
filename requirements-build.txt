@@ -1,0 +1,4 @@
+# Build-time only (asset minification). Not needed at runtime on the server.
+# Pure-Python, no Node.js required.
+rjsmin==1.2.2
+rcssmin==1.1.2

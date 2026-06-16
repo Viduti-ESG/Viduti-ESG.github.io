@@ -797,7 +797,7 @@ function exportBRSR() {
     ['Data Sources', '', '', ''],
     ['Emission Factors', 'DEFRA 2024 / CEA CO₂ Baseline Database V21.0 (Nov 2025)', '', ''],
     ['Standard', 'GHG Protocol Corporate Standard / SEBI BRSR Framework', '', ''],
-    ['Calculator', 'Green Curve GHG Calculator (viduti-esg.github.io/calculator.html)', '', ''],
+    ['Calculator', 'Green Curve GHG Calculator (greencurve.solutions/calculator.html)', '', ''],
   ];
 
   const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
@@ -875,7 +875,9 @@ async function initBenchmarking() {
   const sel = document.getElementById('bench-sector');
   if (!sel) return;
   try {
-    const res = await fetch('assets/data/esg_quotient.json?v=' + Date.now());
+    const apiBase = localStorage.getItem('gc_api_base') || window._gcApiBase || '';
+    const url = apiBase ? apiBase + '/api/esg/data' : 'assets/data/esg_quotient.json?v=' + Date.now();
+    const res = await fetch(url);
     if (!res.ok) return;
     const data = await res.json();
     const companies = data.companies || [];

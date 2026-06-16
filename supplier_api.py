@@ -17,9 +17,11 @@ Responses are stored in: assets/data/supplier_responses.json
 import json
 import logging
 import os
+import smtplib
 import threading
 import uuid
 from datetime import datetime, timezone
+from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Optional
 
@@ -103,6 +105,55 @@ class SupplierResponseOut(BaseModel):
     esg_risk_score: float
 
 
+# ── Email notification helper ──────────────────────────────────────────────────
+
+def _send_supplier_notification(record: dict) -> None:
+    """Send a new-supplier-response email to the notification address.
+    Requires GC_SMTP_HOST, GC_SMTP_USER, GC_SMTP_PASS, GC_SMTP_PORT (default 587).
+    GC_NOTIFY_EMAIL defaults to kneha2381@gmail.com.
+    If SMTP is not configured, logs a warning and returns silently.
+    """
+    smtp_host = os.environ.get("GC_SMTP_HOST", "")
+    smtp_user = os.environ.get("GC_SMTP_USER", "")
+    smtp_pass = os.environ.get("GC_SMTP_PASS", "")
+    notify_to = os.environ.get("GC_NOTIFY_EMAIL", "kneha2381@gmail.com")
+    smtp_port = int(os.environ.get("GC_SMTP_PORT", "587"))
+
+    if not (smtp_host and smtp_user and smtp_pass):
+        logger.info(
+            "New supplier response [%s] from %s for %s — SMTP not configured, skipping email",
+            record.get("id"), record.get("supplier_name"), record.get("mandating_company_name"),
+        )
+        return
+
+    score = record.get("esg_risk_score", "—")
+    tier  = "High" if (score or 0) >= 6.5 else "Medium" if (score or 0) >= 3.5 else "Low"
+    body  = (
+        f"A new supplier has submitted their ESG profile on Green Curve.\n\n"
+        f"Supplier    : {record.get('supplier_name', '—')}\n"
+        f"For Company : {record.get('mandating_company_name', '—')}\n"
+        f"ESG Score   : {score} ({tier} Risk)\n"
+        f"MSME        : {'Yes' if record.get('is_msme') else 'No'}\n"
+        f"Submitted   : {record.get('submitted_at', '—')}\n"
+        f"Response ID : {record.get('id', '—')}\n\n"
+        f"Log in to the Green Curve dashboard to view the full response.\n"
+        f"https://greencurve.solutions/esg-intelligence\n"
+    )
+    msg = MIMEText(body)
+    msg["Subject"] = f"[Green Curve] New Supplier Response — {record.get('supplier_name', 'Unknown')}"
+    msg["From"]    = smtp_user
+    msg["To"]      = notify_to
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
+            s.starttls()
+            s.login(smtp_user, smtp_pass)
+            s.send_message(msg)
+        logger.info("Supplier notification email sent to %s for response %s", notify_to, record.get("id"))
+    except Exception as exc:
+        logger.warning("Failed to send supplier notification email: %s", exc)
+
+
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def _load() -> dict:
@@ -167,6 +218,9 @@ async def submit_supplier_response(payload: SupplierResponseIn):
         db["last_updated"]    = datetime.now(timezone.utc).isoformat()
         _save(db)
 
+    # Non-blocking: notify buyer in a background thread (non-fatal if it fails)
+    threading.Thread(target=_send_supplier_notification, args=(record,), daemon=True).start()
+
     return SupplierResponseOut(
         status="ok",
         id=record["id"],
@@ -174,7 +228,7 @@ async def submit_supplier_response(payload: SupplierResponseIn):
     )
 
 
-@router.get("/supplier-responses")
+@router.get("/supplier-responses", dependencies=[Depends(_require_admin)])
 async def get_supplier_responses(
     company_cin:  str = "",
     company_name: str = "",

@@ -356,9 +356,9 @@ function _injectArticleSchema(post) {
     "publisher": {
       "@type": "Organization",
       "name": "Green Curve",
-      "logo": { "@type": "ImageObject", "url": "https://viduti-esg.github.io/assets/img/logo.png" }
+      "logo": { "@type": "ImageObject", "url": "https://greencurve.solutions/assets/img/logo.png" }
     },
-    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://viduti-esg.github.io/" },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://greencurve.solutions/" },
     "keywords": post.category + ", ESG India, climate compliance",
     "articleSection": post.category
   };

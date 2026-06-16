@@ -7,20 +7,42 @@ Install deps (add to requirements.txt):
 """
 
 import json
+import logging
 import os
+import secrets
+import sys
+import threading
+import time
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import bcrypt
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel, EmailStr
 
 from db import get_conn, init_db
 
+logger = logging.getLogger(__name__)
+
 # ── Config ────────────────────────────────────────────────────────────────────
-SECRET_KEY = os.environ.get("JWT_SECRET", "gc-dev-secret-change-in-production")
+_jwt_secret_env = os.environ.get("JWT_SECRET", "")
+_is_production  = os.environ.get("GC_ENV", "").lower() == "production"
+
+if not _jwt_secret_env:
+    if _is_production:
+        logger.critical("FATAL: JWT_SECRET environment variable is not set. Refusing to start in production.")
+        sys.exit(1)
+    else:
+        _jwt_secret_env = "gc-dev-secret-change-in-production"
+        logger.warning(
+            "WARNING: JWT_SECRET is not set. Using insecure dev default. "
+            "Set JWT_SECRET in your .env file before deploying to production."
+        )
+
+SECRET_KEY = _jwt_secret_env
 ALGORITHM  = "HS256"
 TOKEN_DAYS = 7
 
@@ -29,6 +51,24 @@ bearer  = HTTPBearer(auto_error=False)
 
 # ── DB init on import ─────────────────────────────────────────────────────────
 init_db()
+
+# ── Login brute-force rate limiter (5 attempts / 60 s per IP) ─────────────────
+_login_rl_lock   = threading.Lock()
+_login_rl_counts: dict = defaultdict(list)
+_LOGIN_MAX       = 5
+_LOGIN_WINDOW    = 60  # seconds
+
+def _check_login_rate(request: Request) -> None:
+    ip  = request.client.host if request.client else "unknown"
+    now = time.monotonic()
+    with _login_rl_lock:
+        _login_rl_counts[ip] = [t for t in _login_rl_counts[ip] if now - t < _LOGIN_WINDOW]
+        if len(_login_rl_counts[ip]) >= _LOGIN_MAX:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Too many login attempts. Try again in {_LOGIN_WINDOW} seconds.",
+            )
+        _login_rl_counts[ip].append(now)
 
 
 # ── Pydantic models ───────────────────────────────────────────────────────────
@@ -58,6 +98,13 @@ class SnapshotIn(BaseModel):
     company_name:  str
     snapshot_data: dict
 
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
+
+class ResetPasswordIn(BaseModel):
+    token:        str
+    new_password: str
+
 
 # ── Token helpers ─────────────────────────────────────────────────────────────
 def _make_token(user_id: int, email: str) -> str:
@@ -75,11 +122,19 @@ def get_current_user(creds: Optional[HTTPAuthorizationCredentials] = Depends(bea
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = _decode_token(creds.credentials)
     user_id = int(payload["sub"])
-    with get_conn() as conn:
-        row = conn.execute("SELECT id, email, name, org FROM users WHERE id=? AND is_active=1", (user_id,)).fetchone()
+    conn = get_conn()
+    row = conn.execute(
+        "SELECT id, email, name, org, role FROM users WHERE id=? AND is_active=1", (user_id,)
+    ).fetchone()
     if not row:
         raise HTTPException(status_code=401, detail="User not found")
     return dict(row)
+
+
+def require_admin(user=Depends(get_current_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
 
 
 # ── Auth endpoints ─────────────────────────────────────────────────────────────
@@ -98,11 +153,12 @@ def register(body: RegisterIn):
     except Exception:
         raise HTTPException(409, "Email already registered")
     token = _make_token(user_id, body.email.lower())
-    return {"token": token, "user": {"id": user_id, "email": body.email.lower(), "name": body.name, "org": body.org}}
+    return {"token": token, "user": {"id": user_id, "email": body.email.lower(), "name": body.name, "org": body.org, "role": "user"}}
 
 
 @router.post("/api/auth/login")
-def login(body: LoginIn):
+def login(request: Request, body: LoginIn):
+    _check_login_rate(request)
     with get_conn() as conn:
         row = conn.execute(
             "SELECT id, email, name, org, password_hash FROM users WHERE email=? AND is_active=1",
@@ -111,12 +167,110 @@ def login(body: LoginIn):
     if not row or not bcrypt.checkpw(body.password.encode(), row["password_hash"].encode()):
         raise HTTPException(401, "Invalid email or password")
     token = _make_token(row["id"], row["email"])
-    return {"token": token, "user": {"id": row["id"], "email": row["email"], "name": row["name"], "org": row["org"]}}
+    return {"token": token, "user": {"id": row["id"], "email": row["email"], "name": row["name"], "org": row["org"], "role": row.get("role", "user")}}
 
 
 @router.get("/api/auth/me")
 def me(user=Depends(get_current_user)):
     return {"user": user}
+
+
+@router.post("/api/auth/forgot-password")
+def forgot_password(body: ForgotPasswordIn):
+    """Generate a password-reset token valid for 1 hour.
+    When email delivery is configured, send the link via email.
+    Currently logs the token to server logs for manual relay.
+    """
+    conn = get_conn()
+    row = conn.execute("SELECT id, email FROM users WHERE email=? AND is_active=1", (body.email.lower(),)).fetchone()
+    # Always return success to avoid email enumeration
+    if not row:
+        return {"message": "If that email is registered, a reset link has been sent."}
+
+    token = secrets.token_urlsafe(32)
+    expires = (datetime.now(timezone.utc) + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
+    with conn:
+        conn.execute("DELETE FROM password_resets WHERE user_id=? AND used=0", (row["id"],))
+        conn.execute(
+            "INSERT INTO password_resets (user_id, token, expires_at) VALUES (?,?,?)",
+            (row["id"], token, expires)
+        )
+
+    reset_url = f"https://greencurve.solutions/reset-password?token={token}"
+    logger.warning("PASSWORD RESET requested for %s — URL: %s", row["email"], reset_url)
+    return {"message": "If that email is registered, a reset link has been sent."}
+
+
+@router.post("/api/auth/reset-password")
+def reset_password(body: ResetPasswordIn):
+    if len(body.new_password) < 8:
+        raise HTTPException(400, "Password must be at least 8 characters")
+
+    conn = get_conn()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    row = conn.execute(
+        "SELECT user_id FROM password_resets WHERE token=? AND used=0 AND expires_at > ?",
+        (body.token, now)
+    ).fetchone()
+    if not row:
+        raise HTTPException(400, "Reset token is invalid or has expired")
+
+    pw_hash = bcrypt.hashpw(body.new_password.encode(), bcrypt.gensalt()).decode()
+    with conn:
+        conn.execute("UPDATE users SET password_hash=? WHERE id=?", (pw_hash, row["user_id"]))
+        conn.execute("UPDATE password_resets SET used=1 WHERE token=?", (body.token,))
+
+    logger.info("Password reset completed for user_id=%s", row["user_id"])
+    return {"message": "Password updated. You can now log in."}
+
+
+# ── User company profile ──────────────────────────────────────────────────────
+class ProfileIn(BaseModel):
+    company_name: str = ""
+    cin:          str = ""
+    nse_symbol:   str = ""
+    sector:       str = ""
+    profile_json: dict = {}
+
+@router.get("/api/user/profile")
+def get_profile(user=Depends(get_current_user)):
+    conn = get_conn()
+    row = conn.execute(
+        "SELECT company_name, cin, nse_symbol, sector, profile_json FROM user_profiles WHERE user_id=?",
+        (user["id"],)
+    ).fetchone()
+    if not row:
+        return {"profile": {}}
+    try:
+        extra = json.loads(row["profile_json"] or "{}")
+    except Exception:
+        extra = {}
+    return {"profile": {
+        "company_name": row["company_name"],
+        "cin":          row["cin"],
+        "nse_symbol":   row["nse_symbol"],
+        "sector":       row["sector"],
+        **extra,
+    }}
+
+@router.put("/api/user/profile")
+def save_profile(body: ProfileIn, user=Depends(get_current_user)):
+    conn = get_conn()
+    profile_json = json.dumps(body.profile_json)
+    with conn:
+        conn.execute(
+            """INSERT INTO user_profiles (user_id, company_name, cin, nse_symbol, sector, profile_json, updated_at)
+               VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 company_name=excluded.company_name,
+                 cin=excluded.cin,
+                 nse_symbol=excluded.nse_symbol,
+                 sector=excluded.sector,
+                 profile_json=excluded.profile_json,
+                 updated_at=CURRENT_TIMESTAMP""",
+            (user["id"], body.company_name, body.cin, body.nse_symbol, body.sector, profile_json)
+        )
+    return {"ok": True}
 
 
 # ── Watchlist endpoints ────────────────────────────────────────────────────────

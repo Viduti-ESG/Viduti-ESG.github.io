@@ -3,6 +3,7 @@
 
 let INTEL = null;
 let allCompanies = [];
+const _tabRendered = new Set(); // tracks which tabs have been initialised at least once
 let API_BASE = '';   // set dynamically from brsr-generator.js if available
 let _SECTOR_AVG_CACHE = null;  // F-C: sector averages, computed once after data loads
 let _FILING_TRACKER   = null;  // F-D: recent BSE BRSR filings
@@ -12,16 +13,44 @@ let _SUPPLIER_RESPONSES = null;    // F-A: value-chain supplier form responses
 let _GHG_ESTIMATES     = null;    // P4-A: ML-predicted GHG for non-disclosers
 let _ESG_EVENTS        = null;    // P4-D: SEBI/BSE/NGT ESG event feed
 let _capFilter         = 'all';   // P4-B: CAP active status filter
+let _screenerData      = [];      // filtered+sorted screener rows (all pages)
+let _screenerPage      = 0;       // current 0-based page index
+const _SCREENER_PAGE_SIZE = 50;   // rows per page
 
 // Try to read API_BASE from brsr-generator config (set by start_brsr.py)
 try {
-  const scripts = document.querySelectorAll('script[src]');
-  // API_BASE is set in brsr-generator.js — read from localStorage if previously set
-  API_BASE = localStorage.getItem('gc_api_base') || '';
+  // Resolved by gc-config.js: localStorage override else same-origin '/gcai'.
+  API_BASE = window._gcApiBase || localStorage.getItem('gc_api_base') || '';
 } catch(e) {}
 
 // Allow brsr-generator.js to share its API_BASE
 window.setIntelApiBase = (url) => { API_BASE = url; localStorage.setItem('gc_api_base', url); };
+
+// ── AI feedback widget (thumbs up/down) ─────────────────────────────────────
+function _gcAiFeedback(container, aiType, companyName) {
+  if (!container) return;
+  if (container.querySelector('.gc-ai-feedback')) return;
+  const widget = document.createElement('div');
+  widget.className = 'gc-ai-feedback';
+  widget.style.cssText = 'margin-top:14px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:rgba(226,232,240,.5);border-top:1px solid rgba(255,255,255,.06);padding-top:12px';
+  widget.innerHTML = `
+    <span>Was this analysis helpful?</span>
+    <button class="gc-fb-btn" data-v="1" title="Yes, helpful" style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:#34d399;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.8rem">👍</button>
+    <button class="gc-fb-btn" data-v="0" title="Needs improvement" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(226,232,240,.5);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.8rem">👎</button>
+  `;
+  widget.querySelectorAll('.gc-fb-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const v = parseInt(this.dataset.v);
+      fetch((API_BASE || '') + '/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ai_type: aiType, company: companyName, helpful: v }),
+      }).catch(() => {});
+      widget.innerHTML = '<span style="color:#34d399">Thanks for the feedback!</span>';
+    }, { once: true });
+  });
+  container.appendChild(widget);
+}
 
 const MATERIAL_ICONS = {
   plastic: '🧴', 'e-waste': '💻', battery: '🔋',
@@ -110,6 +139,12 @@ async function initDashboard() {
       try {
         const ghgJson = await ghgRes.json();
         _GHG_ESTIMATES = ghgJson.estimates || {};
+        // Staleness warning: flag if data is older than stale_after_days
+        const genAt  = ghgJson.generated_at ? new Date(ghgJson.generated_at) : null;
+        const staleDays = ghgJson.stale_after_days || 7;
+        if (genAt && (Date.now() - genAt.getTime()) > staleDays * 86400_000) {
+          console.warn('[GreenCurve] ghg_estimates.json is stale (generated', ghgJson.data_last_updated || 'unknown', '). Re-run predict_ghg.py.');
+        }
       } catch { _GHG_ESTIMATES = null; }
     }
 
@@ -136,6 +171,23 @@ async function initDashboard() {
       } catch (e) {
         console.warn('[GC] user data pre-load failed:', e.message);
       }
+
+      // Admin banner: check if ANTHROPIC_API_KEY is missing on server
+      try {
+        const user = gcAuth.getUser();
+        if (user && user.role === 'admin') {
+          const healthRes = await fetch((API_BASE || '') + '/health').catch(() => null);
+          if (healthRes && healthRes.ok) {
+            const health = await healthRes.json();
+            if (!health.anthropic_configured) {
+              const banner = document.createElement('div');
+              banner.style.cssText = 'position:sticky;top:0;z-index:8000;background:#7c1d1d;color:#fca5a5;padding:10px 20px;font-size:.82rem;font-family:"DM Sans",sans-serif;display:flex;align-items:center;gap:12px';
+              banner.innerHTML = '<strong>⚠ Admin:</strong> <span>ANTHROPIC_API_KEY is not set on the server — AI features (CCTS, TCFD, digest) will fail. Add it to <code style="font-size:.78rem">/opt/greencurve/.env</code> and restart the service.</span><button onclick="this.parentNode.remove()" style="margin-left:auto;background:none;border:none;color:#fca5a5;font-size:1rem;cursor:pointer">✕</button>';
+              document.body.prepend(banner);
+            }
+          }
+        }
+      } catch { /* non-fatal */ }
     }
 
     const s = INTEL.summary || {};
@@ -166,25 +218,8 @@ async function initDashboard() {
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
 
-    // Eagerly render all tab panels so they're ready regardless of click timing
-    _s(renderHeatMap,                 'heatmap');
-    if (typeof renderWatchlist      === 'function') _s(renderWatchlist,      'watchlist');
-    if (typeof renderControversy    === 'function') _s(renderControversy,    'controversy');
-    if (typeof renderBadge          === 'function') _s(renderBadge,          'badge');
-    if (typeof renderMarketMap      === 'function') _s(renderMarketMap,      'marketmap');
-    if (typeof renderSupplierTab    === 'function') _s(renderSupplierTab,    'supplier');
-    if (typeof renderSectorDistTab  === 'function') _s(renderSectorDistTab,  'sectordist');
-    if (typeof renderBRSRHeatmap    === 'function') _s(renderBRSRHeatmap,    'brsrheatmap');
-    if (typeof renderClimateRisk    === 'function') _s(renderClimateRisk,    'climaterisk');
-    if (typeof renderESGEvents      === 'function') _s(renderESGEvents,      'esgEvents');
-    if (typeof renderFilingTracker  === 'function') {
-      if (typeof _renderFilingDeadline === 'function') _s(_renderFilingDeadline, 'filingDeadline');
-      _s(renderFilingTracker, 'filing');
-    }
-    if (typeof populateCAPDropdown  === 'function') _s(populateCAPDropdown,  'capDropdown');
-    if (typeof renderCAP            === 'function') _s(renderCAP,            'cap');
-    if (typeof initAIQuery          === 'function') _s(initAIQuery,          'aiquery');
-    if (typeof initDigestTab        === 'function') _s(initDigestTab,        'digest');
+    // Tabs render lazily on first click — nothing eagerly rendered here.
+    // _tabRendered tracks which tabs have been initialised; see tab click handler in HTML.
   } catch (e) {
     statusEl.textContent = 'Load error: ' + e.message.slice(0, 80);
     console.error('[GC] initDashboard FAILED:', e);
@@ -515,6 +550,41 @@ window.applyColFilters  = applyColFilters;
 window.resetColFilters  = resetColFilters;
 window.setColSort       = setColSort;
 
+function exportScreenerCSV() {
+  if (!_screenerData.length) return;
+  const cols = [
+    ['Company',        c => c.company_name || ''],
+    ['CIN',            c => c.cin || ''],
+    ['Sector',         c => (c.sector||'').replace('Manufacturing — ','')],
+    ['ESG Risk Score', c => c.esg_risk_score ?? ''],
+    ['Risk Tier',      c => c.risk_tier || ''],
+    ['GHG Intensity',  c => c.risk_breakdown?.ghg_intensity ?? ''],
+    ['Water Intensity',c => c.risk_breakdown?.water_intensity ?? ''],
+    ['EPR Exposure',   c => c.risk_breakdown?.epr_exposure ?? ''],
+    ['Compliance Risk',c => c.risk_breakdown?.compliance_risk ?? ''],
+    ['Revenue (₹Cr)',  c => c.revenue_crore ?? ''],
+    ['Market Cap (₹Cr)',c=> c.market_data?.market_cap_crore ?? ''],
+    ['1Y Return %',    c => c.market_data?.return_1y_pct ?? ''],
+    ['BRSR Assurance', c => c.governance?.brsr_assurance || 'None'],
+  ];
+  const header = cols.map(([h]) => `"${h}"`).join(',');
+  const rows   = _screenerData.map(c =>
+    cols.map(([, fn]) => {
+      const v = fn(c);
+      return typeof v === 'string' ? `"${v.replace(/"/g, '""')}"` : v;
+    }).join(',')
+  );
+  const csv  = [header, ...rows].join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `GreenCurve_Screener_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 1000);
+}
+window.exportScreenerCSV = exportScreenerCSV;
+
 function toggleScoreTrack() {
   _scoreTrack = _scoreTrack === 'standard' ? 'conservative' : 'standard';
   const btn = document.getElementById('scoreTrackBtn');
@@ -582,10 +652,28 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
     return (vb - va) * sortDir;
   });
 
+  _screenerData = data;
+  _screenerPage = 0;
   document.getElementById('screenerCount').textContent = `${data.length} companies`;
+  _renderScreenerPage(0);
+}
+
+function _renderScreenerPage(page) {
+  _screenerPage = page;
+  const isLoggedIn = typeof gcAuth !== 'undefined' && gcAuth.isLoggedIn();
+  const _GUEST_LIMIT = 10;
+
+  // Gate: guest users see first 10 rows only
+  const start = page * _SCREENER_PAGE_SIZE;
+  let slice = _screenerData.slice(start, start + _SCREENER_PAGE_SIZE);
+  let gated  = false;
+  if (!isLoggedIn && start === 0 && _screenerData.length > _GUEST_LIMIT) {
+    slice  = slice.slice(0, _GUEST_LIMIT);
+    gated  = true;
+  }
 
   const tbody = document.getElementById('screenerBody');
-  tbody.innerHTML = data.map(c => {
+  tbody.innerHTML = slice.map(c => {
     const rb = c.risk_breakdown || {};
     const md = c.market_data || {};
     const ret = md.return_1y_pct;
@@ -631,7 +719,59 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
         <td style="font-size:.78rem;color:#94a3b8">${esc((c.top_risk_factors||[])[0]||'—')}</td>
       </tr>`;
   }).join('');
+
+  if (gated) {
+    const remaining = _screenerData.length - _GUEST_LIMIT;
+    tbody.innerHTML += `
+      <tr class="screener-gate-row">
+        <td colspan="13">
+          <div class="screener-gate">
+            <div class="screener-gate__icon">🔒</div>
+            <div class="screener-gate__title">See all ${_screenerData.length.toLocaleString('en-IN')} companies</div>
+            <div class="screener-gate__sub">${remaining.toLocaleString('en-IN')} more results hidden · Free account required</div>
+            <div class="screener-gate__btns">
+              <a href="/login#register" class="screener-gate__btn screener-gate__btn--primary">Create Free Account</a>
+              <a href="/login" class="screener-gate__btn">Log In</a>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+  }
+
+  _renderScreenerPagination(!gated);
 }
+
+function _renderScreenerPagination(showPagination = true) {
+  const pg = document.getElementById('screener-pagination');
+  if (!pg) return;
+  if (!showPagination) { pg.innerHTML = ''; return; }
+  const total = _screenerData.length;
+  const pages = Math.ceil(total / _SCREENER_PAGE_SIZE);
+  if (pages <= 1) { pg.innerHTML = ''; return; }
+
+  const cur = _screenerPage;
+  let html = '';
+
+  html += `<button class="pg-btn" ${cur === 0 ? 'disabled' : ''} onclick="_renderScreenerPage(${cur - 1})">&#8592; Prev</button>`;
+
+  // Window of page pills: show first, last, and up to 5 around current
+  const pills = new Set([0, pages - 1]);
+  for (let i = Math.max(0, cur - 2); i <= Math.min(pages - 1, cur + 2); i++) pills.add(i);
+  const sorted = [...pills].sort((a, b) => a - b);
+
+  let prev = -1;
+  for (const p of sorted) {
+    if (prev >= 0 && p - prev > 1) html += `<span class="pg-info">…</span>`;
+    html += `<button class="pg-btn${p === cur ? ' pg-btn--active' : ''}" onclick="_renderScreenerPage(${p})">${p + 1}</button>`;
+    prev = p;
+  }
+
+  html += `<button class="pg-btn" ${cur === pages - 1 ? 'disabled' : ''} onclick="_renderScreenerPage(${cur + 1})">Next &#8594;</button>`;
+  html += `<span class="pg-info">${cur * _SCREENER_PAGE_SIZE + 1}–${Math.min((cur + 1) * _SCREENER_PAGE_SIZE, total)} of ${total}</span>`;
+
+  pg.innerHTML = html;
+}
+window._renderScreenerPage = _renderScreenerPage;
 
 function _pctileBadge(pct) {
   if (pct == null) return '<span class="pct-badge pct-badge--na">—</span>';
@@ -1139,6 +1279,16 @@ async function openDeepDive(companyName) {
 
   overlay.classList.add('is-open');
 
+  // The bulk /api/esg/data payload omits ai_summary (≈49% of its size) to keep
+  // it light. Lazy-fetch the full same-origin record once per company and merge.
+  if (profile.ai_summary === undefined) {
+    try {
+      const full = await fetch('/api/esg/company/' + encodeURIComponent(companyName),
+                               { signal: AbortSignal.timeout(8000) });
+      if (full.ok) Object.assign(profile, await full.json());
+    } catch { /* render with what we have if the detail fetch fails */ }
+  }
+
   // Show client-side overview immediately
   body.innerHTML = renderDDOverviewLocal(profile);
 
@@ -1183,6 +1333,7 @@ function renderDDTab(tab) {
         </div>
         ${data.investment_signal ? `<div class="dd-insight-box">💡 <strong>Investor Signal:</strong> ${esc(data.investment_signal)}</div>` : ''}
         <p class="dd-disclaimer">AI analysis based on publicly filed BRSR data. Not investment advice. Not a SEBI-registered Research Analyst or ESG Rating Provider output.</p>`;
+      setTimeout(() => _gcAiFeedback(body, 'deepdive', profile.company_name), 100);
     }
   }
   else if (tab === 'risks') {
@@ -2513,9 +2664,11 @@ async function loadCCTSScorecard(profile) {
       }),
       signal: AbortSignal.timeout(30000),
     });
+    if (res.status === 429) { el.innerHTML = '<p style="color:#fbbf24;padding:20px">Rate limit reached — please wait 60 seconds and try again.</p>'; return; }
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
     el.innerHTML = _renderCCTSResult(data, profile);
+    _gcAiFeedback(el, 'ccts', profile.company_name);
   } catch {
     el.innerHTML = _renderCCTSFallback(profile);
   }
@@ -2669,9 +2822,11 @@ async function loadTCFDGap(profile) {
       }),
       signal: AbortSignal.timeout(30000),
     });
+    if (res.status === 429) { el.innerHTML = '<p style="color:#fbbf24;padding:20px">Rate limit reached — please wait 60 seconds and try again.</p>'; return; }
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
     el.innerHTML = _renderTCFDResult(data);
+    _gcAiFeedback(el, 'tcfd', profile.company_name);
   } catch {
     el.innerHTML = _renderTCFDFallback(profile);
   }
@@ -3405,6 +3560,23 @@ async function downloadBoardBriefing() {
   }
 }
 window.downloadBoardBriefing = downloadBoardBriefing;
+
+function printDeepDive() {
+  const modal = document.getElementById('deepDiveOverlay');
+  if (!modal) return;
+  // Clone the modal content into a print-only container
+  const clone = modal.querySelector('.deepdive-modal')?.cloneNode(true);
+  if (!clone) { window.print(); return; }
+  // Remove buttons from the clone
+  clone.querySelectorAll('button, .deepdive-close, #ddBriefingBtn').forEach(el => el.remove());
+  const wrap = document.createElement('div');
+  wrap.id = 'gc-print-frame';
+  wrap.appendChild(clone);
+  document.body.appendChild(wrap);
+  window.print();
+  document.body.removeChild(wrap);
+}
+window.printDeepDive = printDeepDive;
 
 // ── Sector ESG Heat Map (Feature 11) ─────────────────────────────────────────
 let _hmClickAttached = false;
@@ -4316,7 +4488,7 @@ function _buildBadgeSVG(name, tier) {
   <text x="14" y="26" font-family="DM Sans,sans-serif" font-size="8.5" fill="${tier.color}" font-weight="700" letter-spacing="1.5">GREEN CURVE · ESG ANALYTICS</text>
   <text x="14" y="48" font-family="DM Sans,sans-serif" font-size="13.5" fill="#f1f5f9" font-weight="600">${esc(tier.name)} 2025-26</text>
   <text x="14" y="64" font-family="DM Sans,sans-serif" font-size="9" fill="#94a3b8">${esc(nm)}</text>
-  <text x="14" y="78" font-family="DM Sans,sans-serif" font-size="7.5" fill="#475569">Not a SEBI-registered Rating · viduti-esg.github.io</text>
+  <text x="14" y="78" font-family="DM Sans,sans-serif" font-size="7.5" fill="#475569">Not a SEBI-registered Rating · greencurve.solutions</text>
   <circle cx="196" cy="44" r="18" fill="rgba(${rgb},.1)" stroke="${tier.color}" stroke-width="1.5"/>
   <text x="196" y="50" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="18" fill="${tier.color}">✓</text>
 </svg>`;
@@ -4380,7 +4552,7 @@ window.showBadgeEmbed = function(name) {
   const t   = _badgeTier(c);
   const svg = _buildBadgeSVG(name, t);
   const b64 = btoa(unescape(encodeURIComponent(svg)));
-  const verifyUrl = 'https://viduti-esg.github.io/esg-intelligence.html';
+  const verifyUrl = 'https://greencurve.solutions/esg-intelligence.html';
   const embedCode = `<a href="${verifyUrl}" target="_blank" rel="noopener">\n  <img src="data:image/svg+xml;base64,${b64}"\n       alt="${name} — ${t.name} 2025-26 — Green Curve ESG Analytics"\n       width="220" height="88"/>\n</a>`;
   embedPanel.hidden = false;
   embedPanel.innerHTML = `
@@ -4480,8 +4652,7 @@ function renderMarketMap() {
 window.renderMarketMap = renderMarketMap;
 
 // ── F-A: BRSR Value-Chain Supplier Tracker ─────────────────────────────────────
-
-let _supplierFiltered = [];   // current filtered supplier response list
+// TODO: migrated to assets/js/gc-supplier-tab.js — remove these originals once confirmed stable
 
 function _suppRiskColor(score) {
   if (score >= 6.5) return '#f87171';
@@ -4919,7 +5090,8 @@ function renderBRSRHeatmap() {
 
 window.renderBRSRHeatmap = renderBRSRHeatmap;
 
-// ── P3-D: AI ESG Query Assistant ──────────────────────────────────────────────
+// ── P3-D: AI ESG Query Assistant — extracted to gc-ai-query.js ────────────────
+// TODO: migrated to assets/js/gc-ai-query.js — remove these originals once confirmed stable
 
 function initAIQuery() {
   // nothing to pre-load; ready on open

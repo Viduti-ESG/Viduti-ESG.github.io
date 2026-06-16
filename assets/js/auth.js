@@ -53,7 +53,25 @@
       try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); }
       catch { return null; }
     },
-    isLoggedIn() { return !!this.getToken(); },
+    isLoggedIn() {
+      const token = this.getToken();
+      if (!token) return false;
+      // Decode JWT payload (no signature check — just expiry validation)
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return false;
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.exp && Date.now() / 1000 > payload.exp) {
+          // Token has expired — clean up silently
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+          return false;
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    },
 
     logout() {
       localStorage.removeItem(TOKEN_KEY);
@@ -71,6 +89,7 @@
     async register(email, name, org, password) {
       const data = await _post('/api/auth/register', { email, name, org, password });
       _saveSession(data.token, data.user);
+      localStorage.setItem('gc_just_registered', '1');
       return data.user;
     },
 

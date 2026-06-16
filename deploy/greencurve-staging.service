@@ -1,0 +1,25 @@
+[Unit]
+Description=Green Curve ESG Intelligence — STAGING (port 8001)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/greencurve
+EnvironmentFile=/opt/greencurve/.env.staging
+Environment=GC_ENV=staging
+ExecStart=/opt/greencurve/venv/bin/uvicorn main:app \
+    --host 127.0.0.1 \
+    --port 8001 \
+    --workers 1 \
+    --log-level debug \
+    --reload
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=greencurve-staging
+
+[Install]
+WantedBy=multi-user.target

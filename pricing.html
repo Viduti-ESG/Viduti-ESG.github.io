@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricing — Green Curve ESG Intelligence</title>
+  <meta name="description" content="Affordable ESG intelligence for Indian listed companies. Full BRSR compliance dashboard, AI analysis, and peer benchmarking — starting free. Cheaper than CRISIL, D&B, or EcoVadis."/>
+  <meta name="keywords" content="ESG software pricing India, BRSR dashboard cost, ESG intelligence SaaS India, affordable ESG compliance India"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://greencurve.solutions/pricing.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Pricing — Green Curve ESG Intelligence"/>
+  <meta property="og:description" content="Affordable BRSR-native ESG intelligence for Indian companies. Free forever, Pro from ₹2,999/month."/>
+  <meta property="og:image" content="https://greencurve.solutions/assets/img/logo.png"/>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-VS37JR0KK7');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=2"/>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+
+  <style>
+    :root { --serif: 'DM Serif Display', serif; --void: #070c14; --surface: #0e1420; --border: rgba(255,255,255,.07); --border-hi: rgba(255,255,255,.12); --text-70: rgba(226,232,240,.7); --text-40: rgba(226,232,240,.4); --green: #34d399; --violet: #818cf8; --cyan: #22d3ee; --amber: #fbbf24; }
+    body { background: var(--void); color: #e2e8f0; font-family: 'DM Sans', sans-serif; margin: 0; min-height: 100vh; }
+
+    /* NAV */
+    .pricing-nav { display: flex; align-items: center; gap: 16px; padding: 16px 32px; border-bottom: 1px solid var(--border); }
+    .pricing-nav__logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; color: #e2e8f0; }
+    .pricing-nav__logo img { width: 28px; height: 28px; }
+    .pricing-nav__links { display: flex; gap: 20px; margin-left: 32px; }
+    .pricing-nav__link { color: var(--text-70); text-decoration: none; font-size: .85rem; }
+    .pricing-nav__link:hover { color: #e2e8f0; }
+    .pricing-nav__cta { margin-left: auto; }
+    .btn-primary { background: var(--green); color: #000; border: none; padding: 9px 22px; border-radius: 8px; font-size: .85rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-outline  { background: transparent; color: #e2e8f0; border: 1px solid var(--border-hi); padding: 9px 22px; border-radius: 8px; font-size: .85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+
+    /* HERO */
+    .pricing-hero { text-align: center; padding: 72px 20px 48px; position: relative; overflow: hidden; }
+    .pricing-hero::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(52,211,153,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.03) 1px,transparent 1px); background-size: 56px 56px; pointer-events: none; }
+    .pricing-hero__eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: 16px; padding: 5px 14px; background: rgba(52,211,153,.07); border: 1px solid rgba(52,211,153,.2); border-radius: 100px; }
+    .pricing-hero__title { font-family: var(--serif); font-size: clamp(2.2rem,5vw,3.6rem); color: #fff; letter-spacing: -.03em; line-height: 1.1; margin: 0 0 14px; }
+    .pricing-hero__title em { font-style: italic; background: linear-gradient(95deg,var(--green),var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .pricing-hero__sub { color: var(--text-70); font-size: 1rem; line-height: 1.7; max-width: 560px; margin: 0 auto 32px; }
+
+    /* TOGGLE */
+    .pricing-toggle { display: inline-flex; background: rgba(255,255,255,.06); border-radius: 10px; padding: 4px; gap: 2px; margin-bottom: 56px; }
+    .pricing-toggle__btn { padding: 8px 24px; border-radius: 7px; font-size: .82rem; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--text-70); transition: all .15s; }
+    .pricing-toggle__btn.active { background: rgba(52,211,153,.16); color: var(--green); }
+    .pricing-toggle__save { font-size: .7rem; background: rgba(251,191,36,.12); color: var(--amber); border-radius: 4px; padding: 1px 7px; margin-left: 4px; }
+
+    /* CARDS */
+    .pricing-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1080px; margin: 0 auto; padding: 0 24px 80px; }
+    .price-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px 28px; display: flex; flex-direction: column; position: relative; transition: border-color .2s; }
+    .price-card:hover { border-color: var(--border-hi); }
+    .price-card--pro { border-color: rgba(52,211,153,.3); background: linear-gradient(145deg, rgba(52,211,153,.05) 0%, var(--surface) 60%); }
+    .price-card__badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
+    .price-card__tier { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-40); margin-bottom: 10px; }
+    .price-card__price { font-family: var(--serif); font-size: 2.8rem; color: #fff; line-height: 1; margin-bottom: 4px; }
+    .price-card__price span { font-size: 1.1rem; color: var(--text-40); vertical-align: super; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+    .price-card__cadence { font-size: .8rem; color: var(--text-40); margin-bottom: 6px; }
+    .price-card__annual { font-size: .75rem; color: var(--amber); margin-bottom: 20px; min-height: 18px; }
+    .price-card__desc { font-size: .85rem; color: var(--text-70); line-height: 1.6; margin-bottom: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
+    .price-card__cta { display: block; text-align: center; padding: 11px 0; border-radius: 10px; font-weight: 700; font-size: .88rem; text-decoration: none; margin-bottom: 24px; transition: opacity .15s; }
+    .price-card__cta:hover { opacity: .85; }
+    .price-card__cta--free  { background: rgba(255,255,255,.07); color: #e2e8f0; border: 1px solid var(--border-hi); }
+    .price-card__cta--pro   { background: var(--green); color: #000; }
+    .price-card__cta--ent   { background: rgba(129,140,248,.14); color: var(--violet); border: 1px solid rgba(129,140,248,.3); }
+    .price-card__features { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .price-card__feature { display: flex; align-items: flex-start; gap: 10px; font-size: .84rem; color: var(--text-70); }
+    .price-card__feature .chk { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 700; margin-top: 1px; }
+    .chk--yes { background: rgba(52,211,153,.15); color: var(--green); }
+    .chk--no  { background: rgba(255,255,255,.04); color: var(--text-40); }
+
+    /* COMPARE TABLE */
+    .pricing-compare { max-width: 1080px; margin: 0 auto 80px; padding: 0 24px; }
+    .pricing-compare__title { font-family: var(--serif); font-size: 1.6rem; color: #fff; margin-bottom: 24px; }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .compare-table th { text-align: left; padding: 10px 14px; color: var(--text-40); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border); }
+    .compare-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-70); vertical-align: middle; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table td:first-child { color: #e2e8f0; font-weight: 500; }
+    .compare-table .gc { color: var(--green); font-weight: 700; }
+    .compare-table .other { color: var(--text-40); }
+    .compare-highlight { background: rgba(52,211,153,.04); }
+
+    /* FAQ */
+    .pricing-faq { max-width: 720px; margin: 0 auto 80px; padding: 0 24px; }
+    .pricing-faq__title { font-family: var(--serif); font-size: 1.6rem; color: #fff; margin-bottom: 24px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 18px 0; }
+    .faq-item__q { font-size: .9rem; font-weight: 600; color: #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; }
+    .faq-item__a { font-size: .84rem; color: var(--text-70); line-height: 1.7; margin-top: 10px; display: none; }
+    .faq-item__a.open { display: block; }
+
+    /* REQUEST FORM */
+    .pricing-request { max-width: 780px; margin: 0 auto 80px; padding: 0 24px; }
+    .pricing-request__card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 24px; padding: 48px 44px; }
+    .pricing-request__eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--violet); margin-bottom: 14px; padding: 5px 14px; background: rgba(129,140,248,.08); border: 1px solid rgba(129,140,248,.2); border-radius: 100px; }
+    .pricing-request__title { font-family: var(--serif); font-size: 1.9rem; color: #fff; margin: 0 0 8px; letter-spacing: -.02em; }
+    .pricing-request__sub { color: var(--text-70); font-size: .875rem; margin-bottom: 36px; line-height: 1.6; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row--full { grid-template-columns: 1fr; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } .pricing-request__card { padding: 32px 20px; } }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: .75rem; font-weight: 600; color: var(--text-70); letter-spacing: .04em; text-transform: uppercase; }
+    .form-group input, .form-group select, .form-group textarea {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: .875rem;
+      color: #e2e8f0;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: rgba(129,140,248,.5); }
+    .form-group select option { background: #0e1420; }
+    .form-group textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+    .form-use-case { margin-bottom: 16px; }
+    .form-use-case__label { font-size: .75rem; font-weight: 600; color: var(--text-70); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
+    .form-use-case__options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .form-use-case__chip { display: flex; align-items: center; gap: 7px; padding: 7px 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; font-size: .8rem; color: var(--text-70); cursor: pointer; transition: all .12s; user-select: none; }
+    .form-use-case__chip input { display: none; }
+    .form-use-case__chip:has(input:checked) { background: rgba(129,140,248,.12); border-color: rgba(129,140,248,.4); color: var(--violet); }
+    .form-submit-row { display: flex; align-items: center; gap: 16px; margin-top: 28px; flex-wrap: wrap; }
+    .form-submit-btn { background: var(--violet); color: #fff; border: none; padding: 13px 32px; border-radius: 10px; font-size: .9rem; font-weight: 700; cursor: pointer; transition: opacity .15s; font-family: 'DM Sans', sans-serif; }
+    .form-submit-btn:hover { opacity: .88; }
+    .form-submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .form-note { font-size: .75rem; color: var(--text-40); line-height: 1.5; }
+    .form-success { display: none; text-align: center; padding: 40px 0; }
+    .form-success__icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .form-success__title { font-family: var(--serif); font-size: 1.6rem; color: #fff; margin-bottom: 8px; }
+    .form-success__sub { color: var(--text-70); font-size: .875rem; line-height: 1.6; }
+    .form-error-msg { color: #f87171; font-size: .8rem; margin-top: 4px; display: none; }
+
+    /* FOOTER CTA */
+    .pricing-footer-cta { text-align: center; padding: 60px 20px 80px; border-top: 1px solid var(--border); }
+    .pricing-footer-cta h2 { font-family: var(--serif); font-size: 2rem; color: #fff; margin-bottom: 12px; }
+    .pricing-footer-cta p { color: var(--text-70); font-size: .9rem; margin-bottom: 28px; }
+    .pricing-footer-cta .btn-primary { font-size: .9rem; padding: 12px 32px; }
+  </style>
+</head>
+<body>
+
+<nav class="pricing-nav">
+  <a class="pricing-nav__logo" href="/">
+    <img src="assets/img/logo.png" alt="Green Curve"/>
+    Green Curve
+  </a>
+  <div class="pricing-nav__links">
+    <a class="pricing-nav__link" href="/esg-intelligence">Dashboard</a>
+    <a class="pricing-nav__link" href="/methodology">Methodology</a>
+    <a class="pricing-nav__link" href="/learn">Resources</a>
+  </div>
+  <div class="pricing-nav__cta">
+    <a href="/login" class="btn-outline" style="margin-right:10px">Log In</a>
+    <a href="/login#register" class="btn-primary">Start Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pricing-hero">
+  <div class="pricing-hero__eyebrow">Simple, Honest Pricing</div>
+  <h1 class="pricing-hero__title">ESG Intelligence at a <em>fraction</em><br/>of enterprise cost</h1>
+  <p class="pricing-hero__sub">CRISIL charges ₹3–8L/year. Bloomberg ESG charges even more. Green Curve gives you the same intelligence — BRSR-native, India-first — for a fraction of the price.</p>
+
+  <div class="pricing-toggle">
+    <button class="pricing-toggle__btn active" id="toggleMonthly" onclick="setPricingCycle('monthly')">Monthly</button>
+    <button class="pricing-toggle__btn" id="toggleAnnual" onclick="setPricingCycle('annual')">Annual <span class="pricing-toggle__save">Save 30%</span></button>
+  </div>
+</section>
+
+<!-- CARDS -->
+<div class="pricing-cards">
+
+  <!-- Free -->
+  <div class="price-card">
+    <div class="price-card__tier">Free</div>
+    <div class="price-card__price">₹<span></span>0</div>
+    <div class="price-card__cadence">forever</div>
+    <div class="price-card__annual">&nbsp;</div>
+    <div class="price-card__desc">For individuals and teams exploring Green Curve's capabilities. No credit card required.</div>
+    <a href="/login#register" class="price-card__cta price-card__cta--free">Create Free Account</a>
+    <ul class="price-card__features">
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> ESG Screener — preview 10 companies</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> BRSR Generator (1 report/month)</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> TCFD Gap Checker (manual mode)</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> GHG Calculator</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> ESG Learning Centre</li>
+      <li class="price-card__feature"><span class="chk chk--no">—</span> Full 1,227-company screener</li>
+      <li class="price-card__feature"><span class="chk chk--no">—</span> AI-powered analysis</li>
+      <li class="price-card__feature"><span class="chk chk--no">—</span> Watchlist & alerts</li>
+      <li class="price-card__feature"><span class="chk chk--no">—</span> Value-chain supplier tools</li>
+    </ul>
+  </div>
+
+  <!-- Pro -->
+  <div class="price-card price-card--pro">
+    <div class="price-card__badge">Most Popular</div>
+    <div class="price-card__tier">Pro</div>
+    <div class="price-card__price" id="proPrice">₹<span>2,999</span></div>
+    <div class="price-card__cadence">/month</div>
+    <div class="price-card__annual" id="proAnnualNote">&nbsp;</div>
+    <div class="price-card__desc">For ESG analysts, sustainability consultants, and compliance teams at listed companies.</div>
+    <a href="https://wa.me/91XXXXXXXXXX?text=I%27m+interested+in+Green+Curve+Pro" target="_blank" class="price-card__cta price-card__cta--pro" id="proCta">Start Pro Trial</a>
+    <ul class="price-card__features">
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Full screener — all 1,227 NSE/BSE companies</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> AI CCTS Scorecard & TCFD Gap (Claude AI)</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Unlimited BRSR Generator reports</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Watchlist with risk-tier change alerts</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Corrective Action Plan (CAP) tracker</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Value-chain supplier ESG forms</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> ESG Events feed (SEBI, NGT, MoEFCC)</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Peer benchmarking & heat maps</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> CSV export & print-friendly reports</li>
+      <li class="price-card__feature"><span class="chk chk--no">—</span> Multi-user / team seats</li>
+    </ul>
+  </div>
+
+  <!-- Enterprise -->
+  <div class="price-card">
+    <div class="price-card__tier">Enterprise</div>
+    <div class="price-card__price">Custom</div>
+    <div class="price-card__cadence">annual contract</div>
+    <div class="price-card__annual">&nbsp;</div>
+    <div class="price-card__desc">For consultancies, AMCs, and large listed companies managing multiple subsidiaries or client portfolios.</div>
+    <a href="https://www.linkedin.com/in/neha-kumari-701872a4/" target="_blank" class="price-card__cta price-card__cta--ent">Talk to Sales</a>
+    <ul class="price-card__features">
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Everything in Pro</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Multi-user team seats (up to 10)</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Dedicated onboarding & training</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Custom sector benchmarking reports</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Priority email support (24h SLA)</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Private data: import your own ESG data</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> White-label PDF reports</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> API access (rate limits on request)</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- COMPARE TABLE -->
+<section class="pricing-compare">
+  <h2 class="pricing-compare__title">How Green Curve compares</h2>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th class="gc">Green Curve Pro</th>
+        <th>CRISIL ESG</th>
+        <th>D&amp;B ESG</th>
+        <th>EcoVadis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="compare-highlight">
+        <td>Annual price (single user)</td>
+        <td class="gc">₹36,000</td>
+        <td class="other">₹3–8 Lakh</td>
+        <td class="other">₹5–12 Lakh</td>
+        <td class="other">₹2–4 Lakh</td>
+      </tr>
+      <tr>
+        <td>BRSR-native scoring</td>
+        <td class="gc">✓ Built-in</td>
+        <td class="other">Partial</td>
+        <td class="other">Partial</td>
+        <td class="other">✕</td>
+      </tr>
+      <tr class="compare-highlight">
+        <td>India NSE/BSE coverage</td>
+        <td class="gc">1,227 companies</td>
+        <td class="other">~500</td>
+        <td class="other">Global focus</td>
+        <td class="other">Survey only</td>
+      </tr>
+      <tr>
+        <td>AI-powered analysis</td>
+        <td class="gc">✓ Claude AI</td>
+        <td class="other">Limited</td>
+        <td class="other">Limited</td>
+        <td class="other">✕</td>
+      </tr>
+      <tr class="compare-highlight">
+        <td>Self-service (no sales call)</td>
+        <td class="gc">✓</td>
+        <td class="other">✕</td>
+        <td class="other">✕</td>
+        <td class="other">✕</td>
+      </tr>
+      <tr>
+        <td>Free tier available</td>
+        <td class="gc">✓</td>
+        <td class="other">✕</td>
+        <td class="other">✕</td>
+        <td class="other">✕</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- FAQ -->
+<section class="pricing-faq">
+  <h2 class="pricing-faq__title">Frequently asked questions</h2>
+  <div class="faq-item">
+    <div class="faq-item__q" onclick="toggleFAQ(this)">Can I try Pro before paying? <span>+</span></div>
+    <div class="faq-item__a">Yes. Contact us on LinkedIn or WhatsApp and we'll give you a 14-day Pro trial with no payment required. We want you to see the value before committing.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-item__q" onclick="toggleFAQ(this)">What payment methods are accepted? <span>+</span></div>
+    <div class="faq-item__a">Currently we accept UPI, NEFT/RTGS, and bank transfer (invoice-based). Razorpay card payments are coming soon. Enterprise clients get 30-day payment terms.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-item__q" onclick="toggleFAQ(this)">Is the data SEBI-compliant? <span>+</span></div>
+    <div class="faq-item__a">Our data is sourced from public BRSR filings, BSE/NSE corporate disclosures, and MoEFCC/CPCB records. Green Curve is not a SEBI-registered ESG Rating Provider — we are an analytics and workflow platform. AI-generated assessments are indicative, not formal ratings.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-item__q" onclick="toggleFAQ(this)">How often is the data updated? <span>+</span></div>
+    <div class="faq-item__a">Company ESG scores are updated quarterly based on BRSR filing cycles. BRSR filing status is checked weekly. GHG estimates refresh weekly. The ESG event feed refreshes daily from SEBI, NGT, and MoEFCC.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-item__q" onclick="toggleFAQ(this)">Can I cancel anytime? <span>+</span></div>
+    <div class="faq-item__a">Yes. Monthly plans can be cancelled at any time with no penalty. Annual plans are non-refundable after the first 30 days, but you keep access until the end of your billing period.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-item__q" onclick="toggleFAQ(this)">Do you offer discounts for NGOs or academic institutions? <span>+</span></div>
+    <div class="faq-item__a">Yes — we offer 50% discounts for registered NGOs, universities, and SEBI-accredited research institutions. Contact us with proof of status.</div>
+  </div>
+</section>
+
+<!-- REQUEST PRICING FORM -->
+<section class="pricing-request" id="request-pricing">
+  <div class="pricing-request__card">
+    <div id="formBody">
+      <div class="pricing-request__eyebrow">Enterprise &amp; Consultancy</div>
+      <h2 class="pricing-request__title">Request a custom quote</h2>
+      <p class="pricing-request__sub">For consultancies, AMCs, and enterprise teams. Tell us about your use case and we'll respond within one business day with a tailored proposal.</p>
+
+      <form id="pricingForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pr-name">Your Name *</label>
+            <input type="text" id="pr-name" name="name" placeholder="Priya Sharma" required/>
+          </div>
+          <div class="form-group">
+            <label for="pr-company">Company / Organisation *</label>
+            <input type="text" id="pr-company" name="company" placeholder="Envint Consulting" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pr-email">Work Email *</label>
+            <input type="email" id="pr-email" name="email" placeholder="priya@yourfirm.com" required/>
+          </div>
+          <div class="form-group">
+            <label for="pr-phone">Phone (optional)</label>
+            <input type="tel" id="pr-phone" name="phone" placeholder="+91 98765 43210"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pr-role">Your Role</label>
+            <select id="pr-role" name="role">
+              <option value="">Select role…</option>
+              <option>Sustainability Manager</option>
+              <option>ESG Analyst</option>
+              <option>Consultant / Advisory</option>
+              <option>CFO / Finance Lead</option>
+              <option>Fund Manager / AMC</option>
+              <option>Compliance Officer</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="pr-size">Company Size</label>
+            <select id="pr-size" name="company_size">
+              <option value="">Select size…</option>
+              <option>1 – 50 employees</option>
+              <option>51 – 200 employees</option>
+              <option>201 – 1,000 employees</option>
+              <option>1,000+ employees</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-use-case">
+          <div class="form-use-case__label">Primary Use Case (select all that apply)</div>
+          <div class="form-use-case__options">
+            <label class="form-use-case__chip"><input type="checkbox" value="BRSR Compliance"/> BRSR Compliance</label>
+            <label class="form-use-case__chip"><input type="checkbox" value="ESG Screening &amp; Analytics"/> ESG Screening &amp; Analytics</label>
+            <label class="form-use-case__chip"><input type="checkbox" value="Client Portfolio Reporting"/> Client Portfolio Reporting</label>
+            <label class="form-use-case__chip"><input type="checkbox" value="Supplier Assessment"/> Supplier Assessment</label>
+            <label class="form-use-case__chip"><input type="checkbox" value="Regulatory Due Diligence"/> Regulatory Due Diligence</label>
+            <label class="form-use-case__chip"><input type="checkbox" value="Fund / ESG Screening"/> Fund / ESG Screening</label>
+          </div>
+        </div>
+
+        <div class="form-row form-row--full">
+          <div class="form-group">
+            <label for="pr-message">Anything specific? (optional)</label>
+            <textarea id="pr-message" name="message" placeholder="e.g. number of companies to monitor, specific frameworks needed, team size, timeline…"></textarea>
+          </div>
+        </div>
+
+        <div id="formErrorMsg" class="form-error-msg">Something went wrong. Please try again or email us directly.</div>
+
+        <div class="form-submit-row">
+          <button type="submit" class="form-submit-btn" id="submitBtn">Request Custom Quote →</button>
+          <p class="form-note">No spam. Your information is only used to prepare your proposal.<br/>We typically respond within 1 business day.</p>
+        </div>
+      </form>
+    </div>
+
+    <div class="form-success" id="formSuccess">
+      <div class="form-success__icon">✅</div>
+      <h3 class="form-success__title">Request received!</h3>
+      <p class="form-success__sub">Thanks — we'll be in touch within one business day<br/>with a proposal tailored to your use case.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="pricing-footer-cta">
+  <h2>Start free, upgrade when you need more</h2>
+  <p>No credit card required. Set up in under 2 minutes.</p>
+  <a href="/login#register" class="btn-primary">Create Your Free Account →</a>
+</section>
+
+<script>
+  let _cycle = 'monthly';
+
+  function setPricingCycle(cycle) {
+    _cycle = cycle;
+    document.getElementById('toggleMonthly').classList.toggle('active', cycle === 'monthly');
+    document.getElementById('toggleAnnual').classList.toggle('active', cycle === 'annual');
+    const priceEl = document.getElementById('proPrice');
+    const noteEl  = document.getElementById('proAnnualNote');
+    const ctaEl   = document.getElementById('proCta');
+    if (cycle === 'annual') {
+      priceEl.innerHTML = '₹<span>2,083</span>';
+      noteEl.textContent  = '₹24,999/year — save ₹10,989 vs monthly';
+    } else {
+      priceEl.innerHTML = '₹<span>2,999</span>';
+      noteEl.textContent = '';
+    }
+  }
+
+  function toggleFAQ(el) {
+    const ans = el.nextElementSibling;
+    const icon = el.querySelector('span');
+    const open = ans.classList.toggle('open');
+    icon.textContent = open ? '−' : '+';
+  }
+
+  document.getElementById('pricingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errMsg = document.getElementById('formErrorMsg');
+    errMsg.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const useCases = [...document.querySelectorAll('.form-use-case__chip input:checked')].map(c => c.value).join(', ');
+    const payload = {
+      name:         document.getElementById('pr-name').value.trim(),
+      company:      document.getElementById('pr-company').value.trim(),
+      email:        document.getElementById('pr-email').value.trim(),
+      phone:        document.getElementById('pr-phone').value.trim(),
+      role:         document.getElementById('pr-role').value,
+      company_size: document.getElementById('pr-size').value,
+      use_case:     useCases,
+      message:      document.getElementById('pr-message').value.trim(),
+    };
+
+    if (!payload.name || !payload.company || !payload.email) {
+      errMsg.textContent = 'Please fill in Name, Company, and Email.';
+      errMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Request Custom Quote →';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/pricing-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Server error');
+      document.getElementById('formBody').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    } catch {
+      errMsg.textContent = 'Something went wrong. Please try again or email us directly.';
+      errMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Request Custom Quote →';
+    }
+  });
+</script>
+</body>
+</html>

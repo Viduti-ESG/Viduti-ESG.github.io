@@ -7,15 +7,23 @@ needs only one line changed (URL → /api/esg/data).
 Admin endpoints are protected by GC_ADMIN_KEY header.
 """
 
+import hashlib
 import json
 import os
+import statistics
+from collections import defaultdict
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Header, Query
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException, Header, Query, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from db import get_conn, init_db
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 BASE_DIR = Path(__file__).parent
@@ -41,8 +49,18 @@ def _loads_list(s):
     except Exception:
         return []
 
-def _row_to_company(row) -> dict:
-    return {
+def _row_to_company(row, lite: bool = False) -> dict:
+    """Map a DB row to the company dict the frontend expects.
+
+    When ``lite=True`` the single heaviest field — ``ai_summary`` (≈49% of the
+    bulk payload, 1.27 MB across 1,227 companies) — is omitted. It is only ever
+    consumed in on-demand contexts (the deep-dive overview and as searchable text
+    in global search), never in the screener, charts, or aggregate tabs. The
+    frontend lazy-fetches the full record via /api/esg/company/{name} when a
+    deep-dive is opened. NOTE: financial_exposure is deliberately *kept* — it
+    feeds _dcCoverage()/getConservativeScore() which run over all companies in
+    the main view."""
+    out = {
         "company_name":       row["company_name"],
         "cin":                row["cin"] or "",
         "nse_symbol":         row["nse_symbol"] or "",
@@ -60,8 +78,11 @@ def _row_to_company(row) -> dict:
         "double_materiality": _loads(row["double_materiality"]),
         "esg_targets":        _loads_list(row["esg_targets"]),
         "materials_exposed":  _loads_list(row["materials_exposed"]),
-        "ai_summary":         row["ai_summary"] or "",
+        "anomaly_flags":      _loads_list(row["anomaly_flags"]) if "anomaly_flags" in row.keys() else [],
     }
+    if not lite:
+        out["ai_summary"] = row["ai_summary"] or ""
+    return out
 
 def _get_meta(key: str, default=None):
     with get_conn() as conn:
@@ -74,64 +95,134 @@ def _get_meta(key: str, default=None):
         return default
 
 
+def _compute_sector_averages(companies: list) -> dict:
+    """Pre-compute E/S/G and ESG risk averages per sector for client-side blending."""
+    sector_data: dict = defaultdict(lambda: {"esg": [], "e": [], "s": [], "g": []})
+    for c in companies:
+        sec = (c.get("sector") or "").strip()
+        if not sec:
+            continue
+        rb = c.get("risk_breakdown") or {}
+        sector_data[sec]["esg"].append(c.get("esg_risk_score") or 0)
+        if rb.get("environmental") is not None:
+            sector_data[sec]["e"].append(rb["environmental"])
+        if rb.get("social") is not None:
+            sector_data[sec]["s"].append(rb["social"])
+        if rb.get("governance") is not None:
+            sector_data[sec]["g"].append(rb["governance"])
+
+    averages = {}
+    for sec, vals in sector_data.items():
+        averages[sec] = {
+            "esg_avg": round(statistics.mean(vals["esg"]), 2) if vals["esg"] else None,
+            "esg_stdev": round(statistics.stdev(vals["esg"]), 2) if len(vals["esg"]) >= 2 else 0,
+            "e_avg": round(statistics.mean(vals["e"]), 2) if vals["e"] else None,
+            "s_avg": round(statistics.mean(vals["s"]), 2) if vals["s"] else None,
+            "g_avg": round(statistics.mean(vals["g"]), 2) if vals["g"] else None,
+            "count": len(vals["esg"]),
+        }
+    return averages
+
+
+# ── Response cache (in-memory, invalidated when DB changes) ───────────────────
+_esg_data_cache: dict = {"etag": None, "body": None}
+
+def _invalidate_esg_cache():
+    _esg_data_cache["etag"] = None
+    _esg_data_cache["body"] = None
+
+
 # ── Public read endpoints ─────────────────────────────────────────────────────
 
 @router.get("/api/esg/data")
-def get_full_data():
+def get_full_data(request: Request):
     """Returns the same JSON shape as the original esg_quotient.json.
-    esg-intelligence.js calls this URL instead of the static file."""
+    esg-intelligence.js calls this URL instead of the static file.
+    Includes ETag-based caching: unchanged data returns 304 Not Modified."""
+
+    # Serve from in-memory cache if ETag matches
+    client_etag = request.headers.get("if-none-match", "")
+    if _esg_data_cache["etag"] and _esg_data_cache["etag"] == client_etag:
+        return JSONResponse(status_code=304, content=None)
+
+    if _esg_data_cache["body"] and _esg_data_cache["etag"]:
+        # Cache is warm but client doesn't have it — serve cached body
+        return JSONResponse(
+            content=_esg_data_cache["body"],
+            headers={
+                "Cache-Control": "public, max-age=3600",
+                "ETag": _esg_data_cache["etag"],
+            },
+        )
+
     with get_conn() as conn:
         rows = conn.execute(
             "SELECT * FROM companies ORDER BY esg_risk_score DESC"
         ).fetchall()
 
-    companies = [_row_to_company(r) for r in rows]
+    companies = [_row_to_company(r, lite=True) for r in rows]
 
-    # Rebuild summary from live DB counts
-    total = len(companies)
+    total  = len(companies)
     high   = sum(1 for c in companies if c["risk_tier"] == "High")
     medium = sum(1 for c in companies if c["risk_tier"] == "Medium")
     low    = sum(1 for c in companies if c["risk_tier"] == "Low")
     avg    = round(sum(c["esg_risk_score"] for c in companies) / total, 2) if total else 0
 
-    # Pull stored meta blobs; fall back to empty defaults
-    stored_summary    = _get_meta("summary", {})
-    regulations       = _get_meta("regulations", [])
-    factor_matrix     = _get_meta("factor_matrix", [])
-    supply_chain      = _get_meta("supply_chain_global", {})
-    market_summary    = _get_meta("market_summary", {})
-    knowledge_base    = _get_meta("knowledge_base", {})
-    generated_at      = _get_meta("generated_at", "")
-    data_as_of        = _get_meta("data_as_of", "")
-
+    stored_summary = _get_meta("summary", {})
     summary = {
         **stored_summary,
-        "total_companies":    total,
-        "high_risk_companies": high,
+        "total_companies":       total,
+        "high_risk_companies":   high,
         "medium_risk_companies": medium,
-        "low_risk_companies": low,
-        "avg_esg_risk_score": avg,
+        "low_risk_companies":    low,
+        "avg_esg_risk_score":    avg,
     }
 
-    return {
-        "generated_at":  generated_at,
-        "data_as_of":    data_as_of,
-        "summary":       summary,
-        "companies":     companies,
-        "regulations":   regulations,
-        "factor_matrix": factor_matrix,
-        "supply_chain":  supply_chain,
-        "market_summary": market_summary,
-        "knowledge_base": knowledge_base,
+    payload = {
+        "generated_at":   _get_meta("generated_at", ""),
+        "data_as_of":     _get_meta("data_as_of", ""),
+        "summary":        summary,
+        "companies":      companies,
+        "regulations":    _get_meta("regulations", []),
+        "factor_matrix":  _get_meta("factor_matrix", []),
+        "supply_chain":   _get_meta("supply_chain_global", {}),
+        "market_summary": _get_meta("market_summary", {}),
+        "knowledge_base": _get_meta("knowledge_base", {}),
+        "sector_averages": _compute_sector_averages(companies),
     }
+
+    body_str = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    etag     = '"' + hashlib.md5(body_str.encode()).hexdigest() + '"'
+
+    _esg_data_cache["etag"] = etag
+    _esg_data_cache["body"] = payload
+
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Cache-Control": "public, max-age=3600",
+            "ETag": etag,
+        },
+    )
 
 
 @router.get("/api/esg/company/{company_name}")
 def get_company(company_name: str):
-    with get_conn() as conn:
-        row = conn.execute(
-            "SELECT * FROM companies WHERE company_name=?", (company_name,)
-        ).fetchone()
+    """Look up by CIN first, then fall back to company_name for backwards compatibility."""
+    conn = get_conn()
+    row = conn.execute("SELECT * FROM companies WHERE cin=?", (company_name,)).fetchone()
+    if not row:
+        row = conn.execute("SELECT * FROM companies WHERE company_name=?", (company_name,)).fetchone()
+    if not row:
+        raise HTTPException(404, "Company not found")
+    return _row_to_company(row)
+
+
+@router.get("/api/esg/by-cin/{cin}")
+def get_company_by_cin(cin: str):
+    """Look up a company by its CIN (Company Identification Number)."""
+    conn = get_conn()
+    row = conn.execute("SELECT * FROM companies WHERE cin=?", (cin.upper(),)).fetchone()
     if not row:
         raise HTTPException(404, "Company not found")
     return _row_to_company(row)
@@ -239,6 +330,7 @@ def admin_create_company(body: CompanyIn, _=Depends(require_admin)):
             ))
     except Exception as e:
         raise HTTPException(409, f"Company already exists or DB error: {e}")
+    _invalidate_esg_cache()
     return {"ok": True}
 
 
@@ -265,6 +357,7 @@ def admin_update_company(company_name: str, body: CompanyIn, _=Depends(require_a
         ))
         if cur.rowcount == 0:
             raise HTTPException(404, "Company not found")
+    _invalidate_esg_cache()
     return {"ok": True}
 
 
@@ -274,6 +367,7 @@ def admin_delete_company(company_name: str, _=Depends(require_admin)):
         cur = conn.execute("DELETE FROM companies WHERE company_name=?", (company_name,))
         if cur.rowcount == 0:
             raise HTTPException(404, "Company not found")
+    _invalidate_esg_cache()
     return {"ok": True}
 
 
@@ -349,4 +443,35 @@ def admin_reimport(_=Depends(require_admin)):
                     (meta_key, json.dumps(val))
                 )
 
+    _invalidate_esg_cache()
     return {"ok": True, "inserted": inserted, "updated": updated, "total": inserted + updated}
+
+
+# ── AI Feedback ───────────────────────────────────────────────────────────────
+class FeedbackIn(BaseModel):
+    ai_type: str = ""
+    company: str = ""
+    helpful: int = -1
+
+
+@router.post("/api/feedback")
+def submit_feedback(body: FeedbackIn, request: Request):
+    ip = request.client.host if request.client else "unknown"
+    logger.info(
+        "AI_FEEDBACK ai_type=%s company=%r helpful=%s ip=%s",
+        body.ai_type, body.company, body.helpful, ip
+    )
+    return {"ok": True}
+
+
+# ── Email waitlist ─────────────────────────────────────────────────────────────
+class WaitlistIn(BaseModel):
+    email: str = ""
+    source: str = ""
+
+
+@router.post("/api/auth/waitlist")
+def join_waitlist(body: WaitlistIn, request: Request):
+    ip = request.client.host if request.client else "unknown"
+    logger.info("WAITLIST email=%r source=%r ip=%s", body.email, body.source, ip)
+    return {"ok": True}

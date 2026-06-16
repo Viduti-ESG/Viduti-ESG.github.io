@@ -8,7 +8,11 @@ import json, os, re, html
 from datetime import date
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-BASE_URL   = "https://viduti-esg.github.io"
+# Canonical site domain for <link rel=canonical>, OG/Twitter tags, JSON-LD and the
+# sitemap. This MUST match the domain the pages are actually served from for SEO,
+# otherwise Google attributes ranking signal to the wrong host. Override per deploy:
+#     GC_SITE_URL=https://greencurve.solutions python generate_company_pages.py
+BASE_URL   = os.environ.get("GC_SITE_URL", "https://greencurve.solutions").rstrip("/")
 DATA_FILE  = "assets/data/esg_quotient.json"
 OUT_DIR    = "company"
 TODAY      = date.today().isoformat()
@@ -271,6 +275,16 @@ def make_page(c):
     {''.join(f'<span class="top-risk-pill">{esc(r)}</span>' for r in top_risks)}
   </div>
 
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>{esc(name)}</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
+  </div>
+
   <div class="cp-grid">
 
     <!-- Risk Breakdown -->
@@ -422,38 +436,66 @@ with open(os.path.join(OUT_DIR, 'index.html'), 'w', encoding='utf-8') as f:
     f.write(index_html)
 print(f"  Written company/index.html")
 
-# ── Update sitemap.xml ─────────────────────────────────────────────────────────
-with open('sitemap.xml', encoding='utf-8') as f:
-    sitemap = f.read()
+# ── Rebuild sitemap.xml from scratch ─────────────────────────────────────────────
+# The sitemap is fully regenerated each run from three sources:
+#   1. a curated list of indexable static pages,
+#   2. every standalone article in posts/,
+#   3. the company pages generated above.
+# Private/app pages (admin, analytics, login, supplier-form, ghg-profile,
+# brsr-generator) and hash-fragment anchors are deliberately excluded — Google
+# ignores #fragments and indexing app pages only wastes crawl budget.
 
-# Remove old company entries (both the block and any stale index entries)
-sitemap = re.sub(r'\s*<!-- COMPANY PAGES -->.*?<!-- /COMPANY PAGES -->', '',
-                 sitemap, flags=re.DOTALL)
-sitemap = re.sub(r'\s*<url>\s*<loc>[^<]*/company/[^<]*</loc>.*?</url>', '',
-                 sitemap, flags=re.DOTALL)
+def url_entry(loc, lastmod, changefreq, priority):
+    return (f"  <url>\n"
+            f"    <loc>{loc}</loc>\n"
+            f"    <lastmod>{lastmod}</lastmod>\n"
+            f"    <changefreq>{changefreq}</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            f"  </url>")
 
-company_urls = '\n'.join(f"""  <url>
-    <loc>{BASE_URL}/company/{slug}.html</loc>
-    <lastmod>{TODAY}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>""" for _, slug, *_ in generated)
+# 1. Core static pages — (path, changefreq, priority)
+STATIC_PAGES = [
+    ("",                       "daily",   "1.0"),  # homepage
+    ("esg-intelligence.html",  "daily",   "0.9"),
+    ("pricing.html",           "monthly", "0.9"),
+    ("calculator.html",        "monthly", "0.8"),
+    ("brsr-simple.html",       "monthly", "0.8"),
+    ("ccts.html",              "weekly",  "0.8"),
+    ("compare.html",           "monthly", "0.8"),
+    ("methodology.html",       "monthly", "0.7"),
+    ("learn.html",             "weekly",  "0.7"),
+    ("tcfd.html",              "weekly",  "0.7"),
+    ("tcfd-checker.html",      "monthly", "0.7"),
+    ("assurance.html",         "monthly", "0.7"),
+    ("value-chain.html",       "monthly", "0.6"),
+    ("privacy-policy.html",    "yearly",  "0.3"),
+    ("terms-of-use.html",      "yearly",  "0.3"),
+]
 
-company_urls = f"\n  <!-- COMPANY PAGES -->\n{company_urls}\n  <!-- /COMPANY PAGES -->"
+entries = [url_entry(f"{BASE_URL}/{path}", TODAY, cf, pr)
+           for path, cf, pr in STATIC_PAGES]
 
-# Also add company index
-company_urls = f"""
-  <url>
-    <loc>{BASE_URL}/company/</loc>
-    <lastmod>{TODAY}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>{company_urls}"""
+# 2. Article pages in posts/
+post_files = sorted(f for f in os.listdir("posts")
+                    if f.endswith(".html") and f != "index.html")
+if os.path.exists(os.path.join("posts", "index.html")):
+    entries.append(url_entry(f"{BASE_URL}/posts/", TODAY, "weekly", "0.7"))
+for pf in post_files:
+    entries.append(url_entry(f"{BASE_URL}/posts/{pf}", TODAY, "monthly", "0.6"))
 
-sitemap = sitemap.replace('</urlset>', company_urls + '\n</urlset>')
+# 3. Company index + company pages
+entries.append(url_entry(f"{BASE_URL}/company/", TODAY, "weekly", "0.8"))
+for _, slug, *_ in generated:
+    entries.append(url_entry(f"{BASE_URL}/company/{slug}.html", TODAY, "weekly", "0.7"))
+
+sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n'
+           + "\n\n".join(entries)
+           + "\n\n</urlset>\n")
 
 with open('sitemap.xml', 'w', encoding='utf-8') as f:
     f.write(sitemap)
-print(f"  Updated sitemap.xml with {len(generated) + 1} new URLs")
+print(f"  Rebuilt sitemap.xml: {len(STATIC_PAGES)} static + {len(post_files)} posts "
+      f"+ {len(generated) + 1} company URLs = {len(entries)} total")
 
-print(f"\nDone. {len(generated)} company pages + index + sitemap updated.")
+print(f"\nDone. {len(generated)} company pages + index + sitemap rebuilt.")
