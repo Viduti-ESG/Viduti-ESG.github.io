@@ -681,6 +681,12 @@ STATIC_PAGES = [
     ("calculator.html",        "monthly", "0.8"),
     ("brsr-simple.html",       "monthly", "0.8"),
     ("ccts.html",              "weekly",  "0.8"),
+    # Evergreen pillar guides (generate_guides.py)
+    ("brsr-reporting.html",               "monthly", "0.9"),
+    ("epr-registration.html",             "monthly", "0.9"),
+    ("scope-3-emissions.html",            "monthly", "0.8"),
+    ("issb-ifrs-india.html",              "monthly", "0.8"),
+    ("carbon-credit-trading-scheme.html", "monthly", "0.8"),
     ("compare.html",           "monthly", "0.8"),
     ("methodology.html",       "monthly", "0.7"),
     ("learn.html",             "weekly",  "0.7"),
