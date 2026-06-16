@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="Panama Petrochem Limited ESG Score | Green Curve"/>
   <meta name="twitter:description" content="ESG risk score 5.3/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Coke &amp; Refined Petroleum Products. Based on SEBI BRSR FY 2024-25."/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Panama Petrochem Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.3/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Coke & Refined Petroleum Products. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-04", "mainEntityOfPage": "https://viduti-esg.github.io/company/panama-petrochem-limited.html"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Panama Petrochem Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.3/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Coke & Refined Petroleum Products. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-15", "mainEntityOfPage": "https://viduti-esg.github.io/company/panama-petrochem-limited.html"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -31,12 +31,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -78,6 +93,16 @@
   <!-- Top Risk Factors -->
   <div class="cp-top-risks">
     <span class="top-risk-pill">Compliance Risk</span><span class="top-risk-pill">Epr Exposure</span><span class="top-risk-pill">Ghg Intensity</span>
+  </div>
+
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>Panama Petrochem Limited</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
   </div>
 
   <div class="cp-grid">
@@ -184,7 +209,9 @@
   
         <div class="cp-card">
           <h2 class="cp-section-title">AI Risk Summary</h2>
-          <p class="cp-ai-text">Panama Petrochem faces critical compliance exposure as its maximum compliance cost estimate of ₹11 crore (0.62% of revenue) substantially undervalues regulatory liability under India&#x27;s Carbon Credit Trading Scheme, where missing GHG targets triggers penalties of ₹1,200–1,800/tonne—double the current market rate of ₹600–900/tonne. The company&#x27;s perfect 10/10 compliance risk score and unknown EPR applicability status indicate material gaps in environmental regulatory mapping; failure to clarify EPR obligations or establish emissions baseline reporting could trigger SEBI BRSR enforcement action and potential delisting risk if classified as top-tier. With GHG and water intensity both rated 5.0/10 (moderate-to-high sector risk) and Scope 1/2 emissions reported as &quot;None&quot;—inconsistent for a coke and refined petroleum operator—the company must immediately quantify actual emissions inventory and CCTS liability exposure to avoid compounding penalties beyond current ₹3–11 crore estimates.</p>
+          <p class="cp-ai-text">**Financial Risk Summary: Panama Petrochem Limited**
+
+Panama Petrochem faces critical compliance exposure with a 10.0/10 compliance risk score and estimated remediation costs of ₹3–11 crore, primarily driven by unknown EPR (Extended Producer Responsibility) applicability and potential SEBI BRSR Core Expansion non-compliance risks including delisting. The company&#x27;s missing Scope 1 and Scope 2 emissions data creates dual exposure: failure to report under India&#x27;s Carbon Credit Trading Scheme could trigger penalties of ₹1,200–1,800/tonne CO2e (2× market rate), while EPR non-compliance in its petroleum products sector could compound liabilities. With ₹1,775.7 crore revenue and medium ESG risk profile, the 6.5/10 EPR exposure coupled with regulatory uncertainty represents the highest financial threat—immediate clarification of EPR applicability and emissions quantification is essential to avoid material penalties and enforcement action.</p>
           <p class="cp-disclaimer">Source: Panama Petrochem Limited BRSR Filing, FY -. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>
 

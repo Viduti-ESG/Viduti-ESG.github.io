@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="Popular Vehicles and Services Limited ESG Score | Green Curve"/>
   <meta name="twitter:description" content="ESG risk score 5.6/10 (Medium Risk). Key risks: Compliance Risk, Governance Risk, Epr Exposure. Sector: Retail Trading. Based on SEBI BRSR FY 2024-25."/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Popular Vehicles and Services Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.6/10 (Medium Risk). Key risks: Compliance Risk, Governance Risk, Epr Exposure. Sector: Retail Trading. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-04", "mainEntityOfPage": "https://viduti-esg.github.io/company/popular-vehicles-and-services-limited.html"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Popular Vehicles and Services Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.6/10 (Medium Risk). Key risks: Compliance Risk, Governance Risk, Epr Exposure. Sector: Retail Trading. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-15", "mainEntityOfPage": "https://viduti-esg.github.io/company/popular-vehicles-and-services-limited.html"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -31,12 +31,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -78,6 +93,16 @@
   <!-- Top Risk Factors -->
   <div class="cp-top-risks">
     <span class="top-risk-pill">Compliance Risk</span><span class="top-risk-pill">Governance Risk</span><span class="top-risk-pill">Epr Exposure</span>
+  </div>
+
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>Popular Vehicles and Services Limited</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
   </div>
 
   <div class="cp-grid">
@@ -170,15 +195,6 @@
   </div><!-- /cp-grid -->
 
   
-        <div class="cp-card" style="border-color:rgba(251,191,36,.3)">
-          <h2 class="cp-section-title">⚠ Data Anomaly Flags</h2>
-          <p style="font-size:.78rem;color:#94a3b8;margin-bottom:8px">Automated sector-relative analysis of public BRSR data. Not a regulatory determination.</p>
-          
-          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
-            <span style="background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2444;border-radius:4px;padding:2px 8px;font-size:.72rem;font-weight:700;white-space:nowrap">Sector Risk Outlier</span>
-            <span style="font-size:.8rem;color:#94a3b8">ESG risk 5.6 is 1.7σ above sector mean (5.3)</span>
-          </div>
-        </div>
   <div class="cp-card"><h2 class="cp-section-title">Material Risks</h2><div class="pills"><span class="mat-pill">e-waste</span></div></div>
   
   
@@ -186,7 +202,7 @@
           <h2 class="cp-section-title">AI Risk Summary</h2>
           <p class="cp-ai-text">**Financial Risk Summary: Popular Vehicles and Services Limited**
 
-Popular Vehicles&#x27; primary financial exposure stems from severe compliance risk (10.0/10), with estimated remediation costs of ₹4–16 crore against a ₹2,576.9 crore revenue base—representing 0.16–0.62% of annual turnover. The company faces material SEBI BRSR Core Expansion non-compliance penalties and potential delisting risk if it operates within top-tier listing categories, compounded by unclear EPR (Extended Producer Responsibility) applicability that could trigger additional liability once clarified under applicable environmental regulations. Governance risk, combined with unknown EPR obligations, creates contingent liability exposure; if EPR applies and the company lacks compliance infrastructure, remediation costs could escalate significantly beyond current estimates. Immediate action required on SEBI BRSR disclosures and EPR clarification to mitigate enforcement action risk and protect market valuation.</p>
+Popular Vehicles faces critical compliance exposure under SEBI BRSR Core Expansion with a maximum compliance cost of ₹16 crore and potential delisting risk if disclosure obligations are not met—this represents 0.62% of annual revenue. The company&#x27;s &quot;Unknown&quot; EPR (Extended Producer Responsibility) applicability status creates material uncertainty; if EPR is triggered under applicable waste rules, additional operational and compliance costs could escalate significantly given the retail trading sector&#x27;s product handling exposure. Compliance risk scoring at 10.0/10 indicates governance and reporting gaps that could trigger SEBI enforcement action, though low Scope 1/2 emissions reporting (neither quantified) suggests either inadequate measurement systems or minimal direct operational footprint requiring urgent clarification. The company must immediately audit EPR applicability, establish emissions measurement protocols, and formalize BRSR disclosure governance to mitigate delisting and regulatory penalty risk.</p>
           <p class="cp-disclaimer">Source: Popular Vehicles and Services Limited BRSR Filing, FY -. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>
 

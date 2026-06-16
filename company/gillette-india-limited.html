@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="Gillette India Limited ESG Score | Green Curve"/>
   <meta name="twitter:description" content="ESG risk score 5.4/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Manufacture and sale of branded packaged fast moving consume. Based on SEBI BRSR FY 2024-25."/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Gillette India Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.4/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Manufacture and sale of branded packaged fast moving consume. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-04", "mainEntityOfPage": "https://viduti-esg.github.io/company/gillette-india-limited.html"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Gillette India Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.4/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Manufacture and sale of branded packaged fast moving consume. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-15", "mainEntityOfPage": "https://viduti-esg.github.io/company/gillette-india-limited.html"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -31,12 +31,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -78,6 +93,16 @@
   <!-- Top Risk Factors -->
   <div class="cp-top-risks">
     <span class="top-risk-pill">Compliance Risk</span><span class="top-risk-pill">Epr Exposure</span><span class="top-risk-pill">Ghg Intensity</span>
+  </div>
+
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>Gillette India Limited</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
   </div>
 
   <div class="cp-grid">
@@ -184,9 +209,9 @@
   
         <div class="cp-card">
           <h2 class="cp-section-title">AI Risk Summary</h2>
-          <p class="cp-ai-text">**Gillette India Limited – Financial Risk Summary**
+          <p class="cp-ai-text">**Financial Risk Summary: Gillette India Limited**
 
-Gillette India faces critical compliance exposure under SEBI BRSR Core Expansion requirements, with a maximum estimated remediation cost of ₹4–13 crore and potential delisting risk if disclosure obligations are not met timely. The company&#x27;s EPR (Extended Producer Responsibility) liability remains unquantified due to unclear regulatory applicability under plastic waste rules, creating contingent financial risk in the FMCG packaging segment where EPR producer fees typically range ₹50–200 per tonne. GHG and water intensity risks (both 5.0/10) present moderate exposure; though Scope 1–2 emissions are reported as zero, the absence of disclosed data suggests measurement gaps rather than true emissions elimination, risking future carbon credit obligations if India&#x27;s CCTS pricing (₹600–900/tonne) applies retroactively. Immediate action required: clarify EPR compliance status and submit comprehensive environmental baseline data to avoid SEBI enforcement action and regulatory penalties.</p>
+Gillette India faces its most acute financial exposure through **compliance risk (10.0/10 score) tied to SEBI BRSR Core Expansion requirements**, with estimated remediation costs of ₹4–13 crore; non-compliance could trigger SEBI enforcement action or delisting risk for this top-tier FMCG player. Extended Producer Responsibility (EPR) obligations present a secondary but material risk (6.5/10 exposure), as the company&#x27;s applicable EPR status remains undefined, creating contingent liability exposure on plastic packaging and waste management costs across its distribution network. The absence of reported Scope 1 and Scope 2 emissions data is itself a critical regulatory gap under BRSR P6 environmental disclosure mandates, likely indicating either non-measurement or non-disclosure—both violations that heighten compliance penalties. With ₹2234.8 crore in revenue, even mid-range compliance costs (₹8.5 crore) represent ~0.4% EBIT erosion, while EPR implementation could further burden working capital if supply-</p>
           <p class="cp-disclaimer">Source: Gillette India Limited BRSR Filing, FY -. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://viduti-esg.github.io/company/"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -22,12 +22,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -38,7 +53,7 @@
 </div>
 <div class="container" style="padding:40px 0 80px">
   <h1 style="font-size:2rem;margin-bottom:8px">ESG Risk Scores — Indian Listed Companies</h1>
-  <p style="color:#94a3b8;margin-bottom:32px">1221 companies analysed · Based on SEBI BRSR public filings · Updated 03 Jun 2026</p>
+  <p style="color:#94a3b8;margin-bottom:32px">1221 companies analysed · Based on SEBI BRSR public filings · Updated 12 Jun 2026</p>
   <div class="table-wrap">
     <table class="screener-table">
       <thead><tr><th>Company</th><th>Sector</th><th>ESG Risk Score</th><th>Risk Tier</th></tr></thead>
@@ -2654,7 +2669,7 @@ compon</td>
   </tr>
 
   <tr>
-    <td><a href="sundram-fasteners-limited.html">SUNDRAM FASTENERS LIMITED</a></td>
+    <td><a href="sundram-fasteners-limited.html">Sundram Fasteners Limited</a></td>
     <td style="font-size:.8rem;color:#94a3b8">Metal and Metal Products</td>
     <td><span style="color:#fbbf24;font-weight:700">5.4</span></td>
     <td><span style="color:#fbbf24">Medium</span></td>
@@ -5177,7 +5192,7 @@ pharmaceutical and </td>
   </tr>
 
   <tr>
-    <td><a href="bank-of-baroda.html">BANK OF BARODA</a></td>
+    <td><a href="bank-of-baroda.html">Bank of Baroda</a></td>
     <td style="font-size:.8rem;color:#94a3b8">Bank of Baroda offers a comprehensive suite of cor</td>
     <td><span style="color:#fbbf24;font-weight:700">5.2</span></td>
     <td><span style="color:#fbbf24">Medium</span></td>

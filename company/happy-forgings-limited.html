@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="Happy Forgings Limited ESG Score | Green Curve"/>
   <meta name="twitter:description" content="ESG risk score 5.5/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Metal &amp; Metal Products. Based on SEBI BRSR FY 2024-25."/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Happy Forgings Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.5/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Metal & Metal Products. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-04", "mainEntityOfPage": "https://viduti-esg.github.io/company/happy-forgings-limited.html"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Happy Forgings Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.5/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Metal & Metal Products. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-15", "mainEntityOfPage": "https://viduti-esg.github.io/company/happy-forgings-limited.html"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -31,12 +31,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -78,6 +93,16 @@
   <!-- Top Risk Factors -->
   <div class="cp-top-risks">
     <span class="top-risk-pill">Compliance Risk</span><span class="top-risk-pill">Epr Exposure</span><span class="top-risk-pill">Ghg Intensity</span>
+  </div>
+
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>Happy Forgings Limited</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
   </div>
 
   <div class="cp-grid">
@@ -170,15 +195,6 @@
   </div><!-- /cp-grid -->
 
   
-        <div class="cp-card" style="border-color:rgba(251,191,36,.3)">
-          <h2 class="cp-section-title">⚠ Data Anomaly Flags</h2>
-          <p style="font-size:.78rem;color:#94a3b8;margin-bottom:8px">Automated sector-relative analysis of public BRSR data. Not a regulatory determination.</p>
-          
-          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
-            <span style="background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2444;border-radius:4px;padding:2px 8px;font-size:.72rem;font-weight:700;white-space:nowrap">Sector Risk Outlier</span>
-            <span style="font-size:.8rem;color:#94a3b8">ESG risk 5.5 is 1.4σ above sector mean (5.3)</span>
-          </div>
-        </div>
   <div class="cp-card"><h2 class="cp-section-title">Material Risks</h2><div class="pills"><span class="mat-pill">e-waste</span></div></div>
   
         <div class="cp-card">
@@ -193,9 +209,9 @@
   
         <div class="cp-card">
           <h2 class="cp-section-title">AI Risk Summary</h2>
-          <p class="cp-ai-text">**Financial Risk Summary – Happy Forgings Limited**
+          <p class="cp-ai-text">**Financial Risk Summary: Happy Forgings Limited**
 
-Happy Forgings faces critical compliance exposure under SEBI BRSR Core Expansion, with a maximum 10.0/10 compliance risk score and estimated remediation costs of ₹2–8 crore; non-compliance could trigger enforcement action and delisting risk for top-tier listed entities. The company&#x27;s 6.5/10 EPR exposure is unresolved—applicability of Extended Producer Responsibility obligations under Indian e-waste and plastic rules remains unclear, creating contingent liability risk that could add ₹1–3 crore annually if manufacturing triggers EPR thresholds. GHG and water intensity risks (both 5.0/10) are moderate but material given the metal sector&#x27;s emissions profile; at India&#x27;s carbon credit price of ₹600–900/tonne, unquantified Scope 1 and 2 emissions represent hidden cost exposure if carbon pricing mechanisms tighten. Immediate priority: formalize EPR applicability determination, complete BRSR P6 environmental disclosures, and baseline actual GHG/water data to prevent regulatory penalties</p>
+Happy Forgings faces critical compliance exposure with a 10.0/10 risk rating under SEBI BRSR Core Expansion, creating potential enforcement action and delisting risk if disclosure obligations are unmet—a material threat to market access and valuation. The company&#x27;s largest financial burden is estimated compliance remediation cost of ₹2–8 crore, compounded by unresolved EPR (Extended Producer Responsibility) applicability status (6.5/10 exposure risk), which could trigger additional statutory liabilities under waste management regulations if triggering thresholds are crossed. Despite missing Scope 1 and 2 emissions data reporting, GHG and water intensity risks of 5.0/10 each indicate operational carbon exposure worth ₹0.5–1.5 crore annually at India CCTS pricing (₹600–900/tonne), plus future regulatory carbon costs as transition frameworks tighten. Immediate priority: establish emissions baseline, clarify EPR legal status, and close BRSR disclosure gaps to mitigate regulatory penalties and reputational damage in the</p>
           <p class="cp-disclaimer">Source: Happy Forgings Limited BRSR Filing, FY -. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>
 

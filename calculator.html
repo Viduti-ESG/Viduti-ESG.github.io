@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/style.css?v=2" />
   <link rel="stylesheet" href="assets/css/ghg-calculator.css?v=20260603" />
   <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
@@ -148,16 +148,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="index.html#insights">Insights</a></li>
-      <li><a href="index.html#topics">Topics</a></li>
-      <li><a href="index.html#about">About</a></li>
-      <li><a href="learn.html">Carbon Literacy</a></li>
-      <li><a href="calculator.html" style="color:var(--emerald)">GHG Calculator</a></li>
-      <li><a href="assurance.html">BRSR Assurance</a></li>
-      <li><a href="ccts.html">CCTS</a></li>
-      <li><a href="tcfd.html">TCFD</a></li>
-      <li><a href="brsr-simple.html">BRSR Report</a></li>
+      <li><a href="index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="assurance.html">Core Assurance Checker</a></li>
+          <li><a href="ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="calculator.html">GHG Calculator</a></li>
+          <li><a href="value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
       <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
     </ul>
     <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
     <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
@@ -168,16 +179,23 @@
 
 <!-- Mobile nav overlay -->
 <div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
-  <a href="index.html#insights">Insights</a>
-  <a href="index.html#topics">Topics</a>
-  <a href="index.html#about">About</a>
-  <a href="learn.html">Carbon Literacy</a>
-  <a href="calculator.html">GHG Calculator</a>
-  <a href="assurance.html">BRSR Assurance</a>
-  <a href="ccts.html">CCTS</a>
-  <a href="tcfd.html">TCFD</a>
-  <a href="brsr-simple.html">BRSR Report</a>
+  <a href="index.html">Insights</a>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">BRSR</div>
+    <a href="brsr-generator.html">BRSR Report Builder</a>
+    <a href="brsr-simple.html">Quick BRSR</a>
+    <a href="assurance.html">Assurance Checker</a>
+    <a href="ccts.html">CCTS Tracker</a>
+    <a href="tcfd.html">TCFD Report</a>
+  </div>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">Carbon &amp; GHG</div>
+    <a href="calculator.html">GHG Calculator</a>
+    <a href="value-chain.html">Value Chain / Scope 3</a>
+    <a href="learn.html">Carbon Literacy</a>
+  </div>
   <a href="esg-intelligence.html">ESG Quotient</a>
+  <a href="pricing.html">Pricing</a>
 </div>
 
 <!-- CALCULATOR HERO -->
@@ -769,5 +787,15 @@
 <script src="assets/js/ghg-features3.js?v=20260606" defer></script>
 
 <script src="assets/js/cookie-consent.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/gc-email-capture.js"></script>
+<script>
+  GcEmailCapture.triggerOnEvent('gc:ghg-results-shown', {
+    title: 'Want a free BRSR Scope 1/2/3 report for your company?',
+    body: 'Sign up and we\'ll pre-fill it from your calculation.',
+    source: 'GHG Calculator',
+  });
+  GcEmailCapture.show({ delay: 8000, source: 'GHG Calculator' });
+</script>
 </body>
 </html>

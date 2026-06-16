@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="Star Cement Limited ESG Score | Green Curve"/>
   <meta name="twitter:description" content="ESG risk score 5.3/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Cement and Clinker manufacturing. Based on SEBI BRSR FY 2024-25."/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Star Cement Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.3/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Cement and Clinker manufacturing. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-04", "mainEntityOfPage": "https://viduti-esg.github.io/company/star-cement-limited.html"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Star Cement Limited ESG Score & Risk Analysis", "description": "ESG risk score 5.3/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Cement and Clinker manufacturing. Based on SEBI BRSR FY 2024-25.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-15", "mainEntityOfPage": "https://viduti-esg.github.io/company/star-cement-limited.html"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -31,12 +31,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -78,6 +93,16 @@
   <!-- Top Risk Factors -->
   <div class="cp-top-risks">
     <span class="top-risk-pill">Compliance Risk</span><span class="top-risk-pill">Epr Exposure</span><span class="top-risk-pill">Ghg Intensity</span>
+  </div>
+
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>Star Cement Limited</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
   </div>
 
   <div class="cp-grid">
@@ -184,9 +209,7 @@
   
         <div class="cp-card">
           <h2 class="cp-section-title">AI Risk Summary</h2>
-          <p class="cp-ai-text">**Financial Risk Summary: Star Cement Limited**
-
-Star Cement faces ₹5–19 crore in estimated compliance costs primarily from SEBI BRSR Core Expansion non-disclosure penalties and India&#x27;s Carbon Credit Trading Scheme (CCTS) exposure, with a critical compliance risk score of 10.0/10 indicating imminent regulatory enforcement action. The company&#x27;s unreported Scope 1 and 2 emissions data creates dual exposure: potential CCTS penalties of ₹1,200–1,800/tonne for missed carbon targets, and SEBI delisting/enforcement risk if BRSR disclosures remain non-compliant. If cement exports reach the EU, the company could face additional €3–4 million annual CBAM costs (assuming 50,000 tonnes), as India&#x27;s cement carbon intensity (~0.65 tCO2/tonne) is competitive but still subject to transition charges. Immediate priority: complete Scope 1/2 emissions quantification, publish verified BRSR disclosures, and model carbon budget scenarios under CCTS to avoid material financial penalties exceeding ₹19</p>
+          <p class="cp-ai-text">Star Cement faces critical compliance exposure of ₹5–19 crore annually due to a perfect 10.0/10 compliance risk score, primarily from India&#x27;s Carbon Credit Trading Scheme (CCTS) where missing emissions targets incurs ₹1,200–1,800/tonne penalties—double the current market rate of ₹600–900/tonne. The company&#x27;s cement operations carry inherent GHG and water intensity risks (both 5.0/10), compounded by unknown EPR (Extended Producer Responsibility) applicability and 6.5/10 EPR exposure, creating regulatory uncertainty that could trigger SEBI BRSR Core Expansion enforcement actions and potential delisting for a top-tier listed company. Without disclosed Scope 1/2 emissions data, Star Cement cannot demonstrate CCTS compliance readiness or validate carbon reduction pathways, increasing both financial penalty risk and market access constraints if EU CBAM-equivalent mechanisms expand to Indian cement exports. Immediate priority: quantify baseline emissions, establish carbon accounting systems, and model compliance costs under India&#x27;s CCTS framework to avoid cascading financial and reputational</p>
           <p class="cp-disclaimer">Source: Star Cement Limited BRSR Filing, FY -. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>
 

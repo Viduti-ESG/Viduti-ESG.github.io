@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="Azad Engineering Limited ESG Score | Green Curve"/>
   <meta name="twitter:description" content="ESG risk score 6.0/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Energy. Based on SEBI BRSR FY 2024-2025."/>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Azad Engineering Limited ESG Score & Risk Analysis", "description": "ESG risk score 6.0/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Energy. Based on SEBI BRSR FY 2024-2025.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-04", "mainEntityOfPage": "https://viduti-esg.github.io/company/azad-engineering-limited.html"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Azad Engineering Limited ESG Score & Risk Analysis", "description": "ESG risk score 6.0/10 (Medium Risk). Key risks: Compliance Risk, Epr Exposure, Ghg Intensity. Sector: Energy. Based on SEBI BRSR FY 2024-2025.", "publisher": {"@type": "Organization", "name": "Green Curve", "url": "https://viduti-esg.github.io", "logo": "https://viduti-esg.github.io/assets/img/logo.png"}, "dateModified": "2026-06-15", "mainEntityOfPage": "https://viduti-esg.github.io/company/azad-engineering-limited.html"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=2"/>
   <link rel="stylesheet" href="../assets/css/company-page.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
@@ -31,12 +31,27 @@
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="../index.html#insights">Insights</a></li>
-      <li><a href="../index.html#topics">Topics</a></li>
-      <li><a href="../calculator.html">GHG Calculator</a></li>
-      <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
-      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../index.html">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="../brsr-simple.html">Quick BRSR</a></li>
+          <li><a href="../assurance.html">Core Assurance Checker</a></li>
+          <li><a href="../ccts.html">CCTS Compliance Tracker</a></li>
+          <li><a href="../tcfd.html">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../calculator.html">GHG Calculator</a></li>
+          <li><a href="../value-chain.html">Value Chain / Scope 3</a></li>
+          <li><a href="../learn.html">Carbon Literacy</a></li>
+        </ul>
+      </li>
+      <li><a href="../esg-intelligence.html">ESG Quotient</a></li>
+      <li><a href="../pricing.html">Pricing</a></li>
     </ul>
   </nav>
 </header>
@@ -78,6 +93,16 @@
   <!-- Top Risk Factors -->
   <div class="cp-top-risks">
     <span class="top-risk-pill">Compliance Risk</span><span class="top-risk-pill">Epr Exposure</span><span class="top-risk-pill">Ghg Intensity</span>
+  </div>
+
+  <!-- Legal disclaimer banner -->
+  <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:12px 18px;margin:0 0 20px;font-size:.78rem;color:#94a3b8;line-height:1.65">
+    <strong style="color:#fbbf24">Analytical disclosure — not a regulatory rating.</strong>
+    This profile is derived solely from <strong>Azad Engineering Limited</strong>'s own publicly filed BRSR disclosure with SEBI/BSE.
+    It is not an audit, certification, or ESG Rating issued under SEBI (CRA) Regulations.
+    Green Curve is not a SEBI-registered ESG Rating Provider.
+    Estimated compliance cost figures are illustrative ranges based on published regulatory penalty structures — not audited or verified amounts.
+    If you are a representative of this company and wish to raise a correction, <a href="../index.html#contact" style="color:#fbbf24;text-decoration:none">contact us</a>.
   </div>
 
   <div class="cp-grid">
@@ -184,9 +209,9 @@
   
         <div class="cp-card">
           <h2 class="cp-section-title">AI Risk Summary</h2>
-          <p class="cp-ai-text">**Financial Risk Summary – Azad Engineering Limited**
+          <p class="cp-ai-text">**Financial Risk Summary: Azad Engineering Limited**
 
-Azad Engineering faces critical compliance exposure as its 10.0/10 compliance risk score indicates potential SEBI enforcement action and delisting risk under BRSR Core Expansion mandates, with estimated remediation costs of ₹1–3 crore. The company&#x27;s unknown EPR (Extended Producer Responsibility) applicability status compounds regulatory uncertainty; clarification is urgent as EPR non-compliance could trigger product recall costs and environmental penalties under applicable waste management rules. While GHG and water intensity risks are moderate (5.0/10 each), the absence of disclosed Scope 1 and Scope 2 emissions data suggests either missing measurement infrastructure or inadequate reporting—both violations of BRSR P6 environmental disclosure requirements. Immediate priority: resolve compliance gaps to avoid SEBI action; quantify and disclose emissions data; and confirm EPR obligations to prevent unquantified supply-chain liability.</p>
+Azad Engineering&#x27;s largest financial exposure stems from critical compliance gaps—a perfect 10.0/10 compliance risk score against SEBI BRSR Core Expansion mandates creates material delisting and enforcement action risk for this ₹452.9 crore revenue company. The undefined EPR (Extended Producer Responsibility) applicability, rated 6.5/10, represents unquantified liability exposure; if EPR obligations apply, the company faces undisclosed take-back and recycling costs that could range ₹1–3 crore annually depending on product scope and material recovery rates. Despite low absolute emissions reporting (Scope 1 &amp; 2 both zero), the medium ESG risk score (6.0/10) is driven primarily by non-disclosure and regulatory uncertainty rather than operational intensity, making immediate BRSR compliance remediation and sector-specific EPR clarification the top priority to avoid SEBI enforcement action and investor confidence erosion.</p>
           <p class="cp-disclaimer">Source: Azad Engineering Limited BRSR Filing, FY 2024-2025. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>
 
