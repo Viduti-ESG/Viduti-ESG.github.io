@@ -3,6 +3,7 @@
 Green Curve — AI API (P3 features)
 Endpoints:
   POST /api/ccts-scorecard  — CCTS Carbon Credit Trading Scheme scorecard (Claude Haiku)
+  POST /api/epr-scorecard   — EPR obligation remediation plan (Claude Haiku)
   POST /api/tcfd-gap        — TCFD disclosure gap analysis (Claude Haiku)
   POST /api/nl-query        — Natural language ESG query → filter params (Claude Haiku)
 
@@ -173,6 +174,18 @@ class TCFDRequest(BaseModel):
     esg_targets:           list[dict] = []
 
 
+class EPRRequest(BaseModel):
+    stream:        str            # plastic | ewaste | battery | tyre
+    category:      str = ""       # human-readable category label
+    qty_tonnes:    float          # quantity placed on market (t/yr)
+    target_pct:    float          # recycling/collection target (%)
+    done_tonnes:   float = 0.0    # already collected/recycled (t)
+    shortfall_t:   float = 0.0    # tonnes still to cover
+    cost_inr:      float = 0.0    # indicative procurement cost (₹)
+    ec_inr:        float = 0.0    # indicative environmental compensation if unaddressed (₹)
+    fy:            str = ""
+
+
 class NLQueryRequest(BaseModel):
     query: str = Field(..., max_length=500)
 
@@ -226,6 +239,48 @@ ESG targets: {json.dumps([t.get('metric','') for t in payload.esg_targets[:5]])}
 
     try:
         return _ask_json(HAIKU, CCTS_SYSTEM, data_summary, max_tokens=700)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
+
+
+# ── EPR Obligation Remediation Plan ──────────────────────────────────────────────
+
+EPR_SYSTEM = """You are an expert on India's Extended Producer Responsibility (EPR) regime administered by the CPCB, covering plastic packaging, e-waste, batteries and tyres.
+Given a company's EPR position for one waste stream, return a JSON remediation plan that helps them meet their obligation cost-effectively.
+
+Return ONLY valid JSON with this exact structure:
+{
+  "obligations": [
+    {
+      "name": "Short obligation name",
+      "detail": "1-sentence specific, quantified observation or action for THIS company's numbers",
+      "status": "met|attention|gap"
+    }
+  ],
+  "priority": "high|medium|low",
+  "actions": ["Prioritised, specific action 1", "action 2", "... up to 5"],
+  "disclaimer": "One-sentence reminder that figures are indicative and to verify against CPCB notifications."
+}
+
+Assess obligations relevant to the stream, e.g.: registration on the correct CPCB portal; meeting the recycling/collection target; procuring category-specific certificates for the shortfall; certificate traceability and GST-compliant invoicing (CPCB flagged fake certificates); annual return filing; for plastic, the 2026 mandatory recycled-content ramp (30%→60% rigid by FY2028-29) and the withdrawal of End-of-Life (EOL) certificates.
+Be specific and quantified: reference the company's shortfall in tonnes, the procurement cost vs the higher environmental-compensation cost, and the Jan–Mar price-spike (advise procuring early). If shortfall is zero, mark targets 'met' and focus actions on documentation and forward planning.
+Set priority 'high' when there is a material shortfall and the procurement cost is large, 'medium' for moderate gaps, 'low' when largely on track."""
+
+@router.post("/epr-scorecard")
+async def epr_scorecard(request: Request, payload: EPRRequest):
+    _rate_limit(request, limit=30)
+    data_summary = f"""Waste stream: {payload.stream}
+Category: {payload.category or 'Not specified'}
+Financial year: {payload.fy or 'Not specified'}
+Quantity placed on market: {payload.qty_tonnes} tonnes/year
+Recycling/collection target: {payload.target_pct}%
+Already collected/recycled: {payload.done_tonnes} tonnes
+Shortfall still to cover: {payload.shortfall_t} tonnes
+Indicative certificate procurement cost: ₹{payload.cost_inr:,.0f}
+Indicative Environmental Compensation if unaddressed: ₹{payload.ec_inr:,.0f}"""
+
+    try:
+        return _ask_json(HAIKU, EPR_SYSTEM, data_summary, max_tokens=700)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
@@ -471,6 +526,7 @@ try:
             "service": "Green Curve AI API",
             "endpoints": [
                 "POST /api/ccts-scorecard  (Haiku — CCTS compliance scorecard)",
+                "POST /api/epr-scorecard   (Haiku — EPR obligation remediation plan)",
                 "POST /api/tcfd-gap        (Haiku — TCFD gap analysis from BRSR data)",
                 "POST /api/nl-query        (Haiku — NL ESG query to filter params)",
                 "POST /api/tcfd-pdf        (Sonnet — PDF/TCFD gap checker, P4-E)",

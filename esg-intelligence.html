@@ -26,8 +26,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=2"/>
-  <link rel="stylesheet" href="assets/css/esg-intelligence.css?v=20260607"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=3"/>
+  <link rel="stylesheet" href="assets/css/esg-intelligence.css?v=20260617b"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
   <!-- Plotly is lazy-loaded on first chart tab click (see _ensurePlotly) -->
 </head>
@@ -36,7 +36,7 @@
 
 <!-- Announcement banner -->
 <div class="gc-announce-bar" id="gcAnnounce" role="alert">
-  <span>🚀 <strong>Controversy Feed</strong> &amp; <strong>Improvement Plan</strong> are now live in the ESG dashboard</span>
+  <span>🚀 <strong>11 new tools</strong> just landed — AI Query, Controversy Feed, Climate Risk, Supplier ESG &amp; more. <button type="button" class="gc-announce-link" id="gcAnnounceLink">See what's new →</button></span>
   <button class="gc-announce-close" id="gcAnnounceClose" aria-label="Dismiss announcement">&times;</button>
 </div>
 
@@ -66,7 +66,29 @@
           <li><a href="learn.html">Carbon Literacy</a></li>
         </ul>
       </li>
-      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="epr-market.html">EPR Market <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="epr-market.html">Overview</a></li>
+          <li><a href="epr-market.html#calculator">Obligation Calculator <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#prices">Live Price Tracker <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#dashboard">CPCB Dashboard <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#recycled">Recycled-Content Planner <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-registration.html">Registration Guide</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+          <li><a href="esg-intelligence.html#aiquery">AI Query <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#controversy">Controversy Feed <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#climaterisk">Climate Risk <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#cap">Improvement Plan <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#supplier">Supplier ESG <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#badge">BRSR Recognition <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
       <li><a href="pricing.html">Pricing</a></li>
     </ul>
     <div class="nav__search-compact" id="navCompactSearch" aria-label="Quick company search">
@@ -92,7 +114,24 @@
   <a href="index.html#about">About</a>
   <a href="calculator.html">GHG Calculator</a>
   <a href="brsr-simple.html">BRSR Report</a>
-  <a href="esg-intelligence.html">ESG Quotient</a>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">EPR Market</div>
+    <a href="epr-market.html">Overview</a>
+    <a href="epr-market.html#calculator">Obligation Calculator</a>
+    <a href="epr-market.html#prices">Live Price Tracker</a>
+    <a href="epr-market.html#dashboard">CPCB Dashboard</a>
+    <a href="epr-registration.html">Registration Guide</a>
+  </div>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">ESG Quotient</div>
+    <a href="esg-intelligence.html">Overview &amp; Screener</a>
+    <a href="esg-intelligence.html#aiquery">AI Query</a>
+    <a href="esg-intelligence.html#controversy">Controversy Feed</a>
+    <a href="esg-intelligence.html#climaterisk">Climate Risk</a>
+    <a href="esg-intelligence.html#cap">Improvement Plan</a>
+    <a href="esg-intelligence.html#supplier">Supplier ESG</a>
+    <a href="esg-intelligence.html#badge">BRSR Recognition</a>
+  </div>
   <a href="index.html#contact">Contact</a>
 </div>
 
@@ -248,29 +287,65 @@
 
 <!-- TABS -->
 <div class="intel-tabs container" role="tablist" aria-label="Intelligence sections">
-  <button class="intel-tab intel-tab--active" data-tab="overview"     role="tab" aria-selected="true">Overview</button>
-  <button class="intel-tab" data-tab="screener"    role="tab" aria-selected="false">Company Screener</button>
-  <button class="intel-tab" data-tab="heatmap"     role="tab" aria-selected="false">ESG Heat Map</button>
-  <button class="intel-tab" data-tab="materiality" role="tab" aria-selected="false">Double Materiality</button>
-  <button class="intel-tab" data-tab="regulations" role="tab" aria-selected="false">Regulatory Radar</button>
-  <button class="intel-tab" data-tab="targets"     role="tab" aria-selected="false">ESG Targets</button>
-  <button class="intel-tab" data-tab="supply"      role="tab" aria-selected="false">Supply Chain</button>
-  <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
-  <button class="intel-tab" data-tab="calendar"    role="tab" aria-selected="false">Reg Calendar</button>
-  <button class="intel-tab" data-tab="anomalies"  role="tab" aria-selected="false">Anomalies</button>
-  <button class="intel-tab" data-tab="filing"     role="tab" aria-selected="false">BRSR Filing</button>
-  <button class="intel-tab" data-tab="watchlist"  role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
-  <button class="intel-tab" data-tab="cap"         role="tab" aria-selected="false">Improvement Plan <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="controversy"  role="tab" aria-selected="false">Controversy Feed <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="badge"        role="tab" aria-selected="false">BRSR Recognition <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="marketmap"    role="tab" aria-selected="false">Market Map <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="supplier"     role="tab" aria-selected="false">Supplier ESG <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="sectordist"   role="tab" aria-selected="false">Sector Distribution <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="brsrheatmap"  role="tab" aria-selected="false">BRSR Heatmap <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="aiquery"      role="tab" aria-selected="false">AI Query <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="climaterisk"  role="tab" aria-selected="false">Climate Risk <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="esgEvents"    role="tab" aria-selected="false">ESG Events <span class="intel-tab-new">NEW</span></button>
-  <button class="intel-tab" data-tab="digest"       role="tab" aria-selected="false">ESG Digest <span class="intel-tab-new">NEW</span></button>
+  <button class="intel-tab intel-tab--active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+
+  <div class="intel-navgroup intel-navgroup--hasnew">
+    <button class="intel-navtrigger" type="button" aria-haspopup="true" aria-expanded="false">Screen &amp; Score<span class="intel-caret" aria-hidden="true">▾</span></button>
+    <div class="intel-dropdown" role="menu">
+      <button class="intel-tab" data-tab="screener"    role="tab" aria-selected="false">Company Screener</button>
+      <button class="intel-tab" data-tab="heatmap"     role="tab" aria-selected="false">ESG Heat Map</button>
+      <button class="intel-tab" data-tab="brsrheatmap" role="tab" aria-selected="false">BRSR Heatmap <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="sectordist"  role="tab" aria-selected="false">Sector Distribution <span class="intel-tab-new">NEW</span></button>
+    </div>
+  </div>
+
+  <div class="intel-navgroup intel-navgroup--hasnew">
+    <button class="intel-navtrigger" type="button" aria-haspopup="true" aria-expanded="false">Risk &amp; Controversy<span class="intel-caret" aria-hidden="true">▾</span></button>
+    <div class="intel-dropdown" role="menu">
+      <button class="intel-tab" data-tab="anomalies"   role="tab" aria-selected="false">Anomalies</button>
+      <button class="intel-tab" data-tab="controversy" role="tab" aria-selected="false">Controversy Feed <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="climaterisk" role="tab" aria-selected="false">Climate Risk <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="esgEvents"   role="tab" aria-selected="false">ESG Events <span class="intel-tab-new">NEW</span></button>
+    </div>
+  </div>
+
+  <div class="intel-navgroup intel-navgroup--hasnew">
+    <button class="intel-navtrigger" type="button" aria-haspopup="true" aria-expanded="false">BRSR &amp; Compliance<span class="intel-caret" aria-hidden="true">▾</span></button>
+    <div class="intel-dropdown" role="menu">
+      <button class="intel-tab" data-tab="filing"      role="tab" aria-selected="false">BRSR Filing</button>
+      <button class="intel-tab" data-tab="cap"         role="tab" aria-selected="false">Improvement Plan <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="badge"       role="tab" aria-selected="false">BRSR Recognition <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="regulations" role="tab" aria-selected="false">Regulatory Radar</button>
+      <button class="intel-tab" data-tab="calendar"    role="tab" aria-selected="false">Reg Calendar</button>
+    </div>
+  </div>
+
+  <div class="intel-navgroup">
+    <button class="intel-navtrigger" type="button" aria-haspopup="true" aria-expanded="false">Materiality &amp; Targets<span class="intel-caret" aria-hidden="true">▾</span></button>
+    <div class="intel-dropdown" role="menu">
+      <button class="intel-tab" data-tab="materiality" role="tab" aria-selected="false">Double Materiality</button>
+      <button class="intel-tab" data-tab="targets"     role="tab" aria-selected="false">ESG Targets</button>
+      <button class="intel-tab" data-tab="materials"   role="tab" aria-selected="false">Material Monitor</button>
+    </div>
+  </div>
+
+  <div class="intel-navgroup intel-navgroup--hasnew">
+    <button class="intel-navtrigger" type="button" aria-haspopup="true" aria-expanded="false">Supply Chain<span class="intel-caret" aria-hidden="true">▾</span></button>
+    <div class="intel-dropdown" role="menu">
+      <button class="intel-tab" data-tab="supply"   role="tab" aria-selected="false">Supply Chain</button>
+      <button class="intel-tab" data-tab="supplier" role="tab" aria-selected="false">Supplier ESG <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="marketmap" role="tab" aria-selected="false">Market Map <span class="intel-tab-new">NEW</span></button>
+    </div>
+  </div>
+
+  <div class="intel-navgroup intel-navgroup--hasnew">
+    <button class="intel-navtrigger" type="button" aria-haspopup="true" aria-expanded="false">Tools<span class="intel-caret" aria-hidden="true">▾</span></button>
+    <div class="intel-dropdown" role="menu">
+      <button class="intel-tab" data-tab="aiquery"   role="tab" aria-selected="false">AI Query <span class="intel-tab-new">NEW</span></button>
+      <button class="intel-tab" data-tab="watchlist" role="tab" aria-selected="false" id="wl-tab-btn">★ Watchlist</button>
+      <button class="intel-tab" data-tab="digest"    role="tab" aria-selected="false">ESG Digest <span class="intel-tab-new">NEW</span></button>
+    </div>
+  </div>
 </div>
 
 <main class="container intel-main">
@@ -279,6 +354,71 @@
   <section class="intel-panel active" id="tab-overview">
 
     <div class="kpi-grid" id="kpiGrid"></div>
+
+    <!-- ── What's New spotlight — surfaces newly shipped features ───────────── -->
+    <div class="whatsnew" id="whatsnew">
+      <div class="whatsnew__head">
+        <div class="whatsnew__title">✨ New in ESG Intelligence</div>
+        <div class="whatsnew__sub">Recently shipped — click any card to jump straight in</div>
+      </div>
+      <div class="whatsnew__grid">
+        <button class="wn-card" data-jump="aiquery">
+          <span class="wn-card__name">AI Query <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Ask plain-English questions across the entire ESG dataset.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="controversy">
+          <span class="wn-card__name">Controversy Feed <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Live ESG controversy &amp; news signals across tracked companies.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="cap">
+          <span class="wn-card__name">Improvement Plan <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Auto-generated BRSR gap analysis &amp; corrective action plan.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="climaterisk">
+          <span class="wn-card__name">Climate Risk <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Physical &amp; transition climate risk exposure by company.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="supplier">
+          <span class="wn-card__name">Supplier ESG <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Assess ESG risk across your supply chain &amp; vendors.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="marketmap">
+          <span class="wn-card__name">Market Map <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Visual landscape of companies by ESG positioning.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="brsrheatmap">
+          <span class="wn-card__name">BRSR Heatmap <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Disclosure heatmap across BRSR principles &amp; companies.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="badge">
+          <span class="wn-card__name">BRSR Recognition <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Shareable recognition mark for Low-Risk tier companies.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="sectordist">
+          <span class="wn-card__name">Sector Distribution <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">How ESG risk is distributed within each sector.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="esgEvents">
+          <span class="wn-card__name">ESG Events <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Calendar of material ESG events and disclosures.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+        <button class="wn-card" data-jump="digest">
+          <span class="wn-card__name">ESG Digest <span class="intel-tab-new">NEW</span></span>
+          <span class="wn-card__desc">Curated periodic summary of key ESG movements.</span>
+          <span class="wn-card__cta">Try it →</span>
+        </button>
+      </div>
+    </div>
 
     <!-- ESG Leaders Spotlight — populated by JS -->
     <div class="gc-spotlight" id="gcSpotlight">
@@ -1050,7 +1190,7 @@
 
 <script src="assets/js/gc-config.js?v=20260616"></script>
 <script src="assets/js/auth.js"></script>
-<script src="assets/js/esg-intelligence.js?v=20260616a" defer></script>
+<script src="assets/js/esg-intelligence.js?v=20260617b" defer></script>
 <script src="assets/js/gc-supplier-tab.js?v=20260616a" defer></script>
 <script src="assets/js/gc-ai-query.js?v=20260616a" defer></script>
 <script src="assets/js/gc-onboarding.js?v=20260616a" defer></script>
@@ -1078,7 +1218,7 @@
     s.onload = () => { _plotlyQueue.forEach(fn => fn()); _plotlyQueue.length = 0; };
     document.head.appendChild(s);
   }
-  const _CHART_TABS = new Set(['heatmap', 'marketmap', 'sectordist', 'brsrheatmap', 'climaterisk']);
+  const _CHART_TABS = new Set(['heatmap', 'materiality', 'marketmap', 'sectordist', 'brsrheatmap', 'climaterisk']);
 
   // Tab switching — lazy render: each tab is initialised only on first click
   document.querySelectorAll('.intel-tab').forEach(btn => {
@@ -1095,6 +1235,7 @@
 
       function _doRender() {
         if (tab === 'heatmap'     && typeof renderHeatMap === 'function') renderHeatMap();
+        if (tab === 'materiality' && typeof renderDoubleMateriality === 'function') renderDoubleMateriality();
         if (tab === 'filing'      && typeof renderFilingTracker === 'function') { if (typeof _renderFilingDeadline === 'function') _renderFilingDeadline(); renderFilingTracker(); }
         if (tab === 'watchlist'   && typeof renderWatchlist === 'function') renderWatchlist();
         if (tab === 'cap'         && typeof renderCAP === 'function') { if (typeof populateCAPDropdown === 'function') populateCAPDropdown(); renderCAP(); }
@@ -1123,6 +1264,136 @@
       if (already && tab === 'watchlist' && typeof renderWatchlist === 'function') renderWatchlist();
     });
   });
+
+  // ── Grouped nav: dropdown open/close + active-group sync ───────────────────
+  (function initGroupedNav() {
+    const groups = Array.from(document.querySelectorAll('.intel-navgroup'));
+    function closeAll(except) {
+      groups.forEach(g => {
+        if (g === except) return;
+        g.classList.remove('intel-navgroup--open');
+        const t = g.querySelector('.intel-navtrigger');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      });
+    }
+    groups.forEach(g => {
+      const trigger = g.querySelector('.intel-navtrigger');
+      if (!trigger) return;
+      trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        const isOpen = g.classList.contains('intel-navgroup--open');
+        closeAll(g);
+        g.classList.toggle('intel-navgroup--open', !isOpen);
+        trigger.setAttribute('aria-expanded', String(!isOpen));
+      });
+    });
+    // Close on outside click / Escape
+    document.addEventListener('click', () => closeAll(null));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(null); });
+
+    // After any tab is chosen, highlight its parent group and close menus
+    function syncActiveGroup() {
+      const active = document.querySelector('.intel-tab--active');
+      document.querySelectorAll('.intel-navtrigger--active').forEach(t => t.classList.remove('intel-navtrigger--active'));
+      if (active) {
+        const parent = active.closest('.intel-navgroup');
+        if (parent) {
+          const t = parent.querySelector('.intel-navtrigger');
+          if (t) t.classList.add('intel-navtrigger--active');
+        }
+      }
+      closeAll(null);
+    }
+    document.querySelectorAll('.intel-tab').forEach(btn => btn.addEventListener('click', syncActiveGroup));
+    syncActiveGroup();
+
+    // "Try it" jump buttons in the What's New spotlight
+    document.querySelectorAll('[data-jump]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.querySelector('.intel-tab[data-tab="' + btn.dataset.jump + '"]');
+        if (target) { target.click(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      });
+    });
+  })();
+
+  // ── Deep-linking: open a tool directly via URL hash (e.g. #aiquery) and
+  //    optionally pre-filter it to a company (?company=<slug>) ───────────────
+  (function initTabDeepLinks() {
+    // Same slug rule as generate_company_pages.py slugify()
+    function _slugify(n) {
+      return (n || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+    // Captured once at load — the tab click later rewrites the hash, not the query
+    const COMPANY_SLUG = new URLSearchParams(location.search).get('company');
+
+    function activateFromHash() {
+      let id = (location.hash || '').replace(/^#/, '');
+      if (!id) return false;
+      if (id.indexOf('tab-') === 0) id = id.slice(4);   // accept #tab-aiquery too
+      const target = document.querySelector('.intel-tab[data-tab="' + id + '"]');
+      if (target) {
+        target.click();
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        return true;
+      }
+      return false;
+    }
+
+    function resolveCompany(slug) {
+      if (!slug || typeof allCompanies === 'undefined' || !allCompanies.length) return null;
+      return allCompanies.find(c => _slugify(c.company_name) === slug) || null;
+    }
+
+    // Pre-filter the currently-active tool to a specific company.
+    function applyCompanyPrefill() {
+      if (!COMPANY_SLUG) return;
+      const c = resolveCompany(COMPANY_SLUG);
+      if (!c) return;
+      const name = c.company_name;
+      const tab  = (document.querySelector('.intel-tab--active') || {}).dataset
+                 ? document.querySelector('.intel-tab--active').dataset.tab : '';
+      if (tab === 'cap') {
+        const sel = document.getElementById('cap-company-select');
+        if (sel) {
+          if (typeof populateCAPDropdown === 'function') populateCAPDropdown();
+          sel.value = name;
+          if (typeof renderCAP === 'function') renderCAP();
+        }
+      } else if (tab === 'controversy') {
+        const s = document.getElementById('ctv-search');
+        if (s) { s.value = name; if (typeof applyCtv === 'function') applyCtv(); }
+      } else if (tab === 'screener') {
+        const s = document.getElementById('screenerSearch');
+        if (s) { s.value = name; s.dispatchEvent(new Event('input', { bubbles: true })); }
+      } else {
+        // climaterisk, badge, and any other tab → the per-company deep-dive modal
+        if (typeof openDeepDive === 'function') openDeepDive(name);
+      }
+    }
+
+    // Single entry point — called by initDashboard() once data has loaded, and
+    // on in-page hash changes after that.
+    window.__applyDeepLink = function () {
+      const matched = activateFromHash();
+      applyCompanyPrefill();
+      return matched;
+    };
+
+    // Reflect the active tab in the URL so links are shareable (bare "#tab"
+    // keeps any ?company= query intact; no scroll jump)
+    document.querySelectorAll('.intel-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tab;
+        if (t && t !== 'overview') history.replaceState(null, '', '#' + t);
+      });
+    });
+
+    window.addEventListener('hashchange', () => window.__applyDeepLink());
+    // Note: initial application is triggered by initDashboard() after data loads,
+    // because the tools need allCompanies to render/filter. If data is already
+    // present (e.g. fast cache), run now as well — guarded so it is idempotent.
+    if (typeof allCompanies !== 'undefined' && allCompanies.length) window.__applyDeepLink();
+  })();
   // ── Hero prompt bar wiring (imagine.art-style) ────────────────────────────
   const heroInput = document.getElementById('heroPromptInput');
   const heroBtn   = document.getElementById('heroPromptBtn');
@@ -1192,11 +1463,18 @@
   (function() {
     const bar   = document.getElementById('gcAnnounce');
     const close = document.getElementById('gcAnnounceClose');
+    const link  = document.getElementById('gcAnnounceLink');
     if (!bar) return;
-    if (localStorage.getItem('gc_announce_v2_dismissed')) bar.style.display = 'none';
+    if (localStorage.getItem('gc_announce_v3_dismissed')) bar.style.display = 'none';
     if (close) close.addEventListener('click', () => {
       bar.style.display = 'none';
-      localStorage.setItem('gc_announce_v2_dismissed', '1');
+      localStorage.setItem('gc_announce_v3_dismissed', '1');
+    });
+    if (link) link.addEventListener('click', () => {
+      const overviewBtn = document.querySelector('.intel-tab[data-tab="overview"]');
+      if (overviewBtn) overviewBtn.click();
+      const target = document.getElementById('whatsnew');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   })();
 

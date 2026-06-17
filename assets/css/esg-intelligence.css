@@ -215,6 +215,108 @@
   font-weight: 600;
 }
 
+/* ── Grouped nav (dropdown menus) ─────────────────────────────────────────── */
+.intel-tabs { overflow: visible; flex-wrap: wrap; gap: 4px; }
+.intel-navgroup { position: relative; flex-shrink: 0; }
+.intel-navtrigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 16px;
+  background: transparent; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-40);
+  font-size: .82rem; font-weight: 500; font-family: var(--sans);
+  letter-spacing: .01em; cursor: pointer; white-space: nowrap;
+  transition: color var(--t-base), border-color var(--t-base);
+}
+.intel-navtrigger:hover { color: var(--text-70); }
+.intel-navtrigger .intel-caret { font-size: .7rem; transition: transform var(--t-base); opacity: .7; }
+.intel-navtrigger[aria-expanded="true"] .intel-caret { transform: rotate(180deg); }
+.intel-navtrigger[aria-expanded="true"] { color: var(--text-70); }
+/* Trigger reflects an active tab inside its group */
+.intel-navtrigger--active {
+  color: var(--emerald);
+  border-bottom-color: var(--emerald);
+  font-weight: 600;
+}
+/* Dot on groups that contain NEW features */
+.intel-navgroup--hasnew > .intel-navtrigger::after {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  margin-left: 2px; flex-shrink: 0;
+  animation: newBadgePulse 2.4s ease-in-out infinite;
+}
+.intel-navgroup--hasnew > .intel-navtrigger--active::after { display: none; }
+
+.intel-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  min-width: 220px;
+  display: none; flex-direction: column;
+  padding: 6px;
+  background: rgba(8,12,22,.98);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px -12px rgba(0,0,0,.7);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  z-index: 200;
+}
+.intel-navgroup--open .intel-dropdown { display: flex; animation: fadeIn .16s ease; }
+/* Tabs look like menu rows inside the dropdown */
+.intel-dropdown .intel-tab {
+  width: 100%; text-align: left;
+  padding: 9px 12px; border-bottom: none; border-radius: 8px;
+}
+.intel-dropdown .intel-tab:hover { background: rgba(255,255,255,.05); color: var(--text-70); }
+.intel-dropdown .intel-tab--active {
+  background: rgba(52,211,153,.12); color: var(--emerald); border-bottom: none;
+}
+
+/* ── What's New spotlight ─────────────────────────────────────────────────── */
+.whatsnew {
+  margin: 8px 0 28px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(52,211,153,.08), transparent 55%),
+    rgba(8,12,22,.5);
+}
+.whatsnew__head { margin-bottom: 16px; }
+.whatsnew__title { font-size: 1.05rem; font-weight: 700; color: var(--text-90, #e2e8f0); }
+.whatsnew__sub { font-size: .82rem; color: var(--text-40); margin-top: 3px; }
+.whatsnew__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.wn-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 7px;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,.02);
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: border-color var(--t-base), transform var(--t-base), background var(--t-base);
+}
+.wn-card:hover {
+  border-color: var(--emerald);
+  background: rgba(52,211,153,.06);
+  transform: translateY(-2px);
+}
+.wn-card__name { font-size: .92rem; font-weight: 600; color: var(--text-90, #e2e8f0); display: inline-flex; align-items: center; }
+.wn-card__desc { font-size: .78rem; line-height: 1.45; color: var(--text-40); }
+.wn-card__cta { font-size: .78rem; font-weight: 600; color: var(--emerald); margin-top: auto; }
+
+/* Announcement-bar inline link → jumps to What's New spotlight */
+.gc-announce-link {
+  background: none; border: none; padding: 0; margin-left: 4px;
+  font: inherit; font-weight: 700; color: var(--emerald);
+  text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer;
+}
+.gc-announce-link:hover { opacity: .85; }
+
 /* Main layout */
 .intel-main { padding: 40px 0 80px; }
 .intel-panel { display: none; }

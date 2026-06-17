@@ -108,7 +108,7 @@
   <link rel="dns-prefetch" href="https://greencurve.solutions" />
 
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/style.css?v=2" />
+  <link rel="stylesheet" href="assets/css/style.css?v=3" />
   <link rel="stylesheet" href="assets/css/ghg-calculator.css" />
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
 </head>
@@ -151,10 +151,33 @@
           <li><a href="learn.html">Carbon Literacy</a></li>
         </ul>
       </li>
-      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="epr-market.html">EPR Market <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="epr-market.html">Overview</a></li>
+          <li><a href="epr-market.html#calculator">Obligation Calculator <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#prices">Live Price Tracker <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#dashboard">CPCB Dashboard <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#recycled">Recycled-Content Planner <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-registration.html">Registration Guide</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+          <li><a href="esg-intelligence.html#aiquery">AI Query <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#controversy">Controversy Feed <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#climaterisk">Climate Risk <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#cap">Improvement Plan <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#supplier">Supplier ESG <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#badge">BRSR Recognition <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
       <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="/login">Sign in</a></li>
     </ul>
-    <a href="#insights" class="nav__cta">Latest &rarr;</a>
+    <a href="/login#register" class="nav__cta">Start free &rarr;</a>
     <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -178,8 +201,27 @@
     <a href="value-chain.html">Value Chain / Scope 3</a>
     <a href="learn.html">Carbon Literacy</a>
   </div>
-  <a href="esg-intelligence.html">ESG Quotient</a>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">EPR Market</div>
+    <a href="epr-market.html">Overview</a>
+    <a href="epr-market.html#calculator">Obligation Calculator</a>
+    <a href="epr-market.html#prices">Live Price Tracker</a>
+    <a href="epr-market.html#dashboard">CPCB Dashboard</a>
+    <a href="epr-registration.html">Registration Guide</a>
+  </div>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">ESG Quotient</div>
+    <a href="esg-intelligence.html">Overview &amp; Screener</a>
+    <a href="esg-intelligence.html#aiquery">AI Query</a>
+    <a href="esg-intelligence.html#controversy">Controversy Feed</a>
+    <a href="esg-intelligence.html#climaterisk">Climate Risk</a>
+    <a href="esg-intelligence.html#cap">Improvement Plan</a>
+    <a href="esg-intelligence.html#supplier">Supplier ESG</a>
+    <a href="esg-intelligence.html#badge">BRSR Recognition</a>
+  </div>
   <a href="pricing.html">Pricing</a>
+  <a href="/login">Sign in</a>
+  <a href="/login#register" style="color:#34d399;font-weight:700">Start free &rarr;</a>
 </div>
 
 <!-- HERO -->
@@ -211,6 +253,11 @@
       </a>
       <a href="#tools" class="cta-ghost">See all tools &darr;</a>
     </div>
+    <a href="esg-intelligence.html#aiquery" class="hero__ai-prompt" aria-label="Ask Green Curve AI a question">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span class="hero__ai-prompt-text">Ask AI — &ldquo;Which cement companies face CCTS risk?&rdquo;</span>
+      <span class="hero__ai-prompt-badge">AI <span class="nav-new">NEW</span></span>
+    </a>
     <div class="hero__metrics">
       <div class="metric">
         <span class="metric__value" id="stat-posts">—</span>
@@ -353,6 +400,55 @@
         <span class="tool-card__cta">Start learning</span>
       </a>
 
+    </div>
+  </div>
+</section>
+
+<!-- WHAT'S NEW IN ESG QUOTIENT -->
+<section class="tools-section" id="whats-new" aria-label="New ESG Quotient tools" style="padding-top:0">
+  <div class="container">
+    <div class="tools-section__header">
+      <div class="tools-section__eyebrow">✨ Just shipped</div>
+      <h2 class="tools-section__title">New in <em>ESG Quotient</em></h2>
+      <p class="tools-section__sub">Eleven new tools just landed inside the ESG dashboard — jump straight in.</p>
+    </div>
+    <div class="tools-grid">
+      <a href="esg-intelligence.html#aiquery" class="tool-card tool-card--cyan">
+        <div class="tool-card__eyebrow">AI Query <span class="nav-new">NEW</span></div>
+        <h3 class="tool-card__title">Ask Anything</h3>
+        <p class="tool-card__desc">Ask plain-English questions across the entire ESG dataset — "Which cement companies face CCTS risk?"</p>
+        <span class="tool-card__cta">Try AI Query</span>
+      </a>
+      <a href="esg-intelligence.html#controversy" class="tool-card tool-card--rose">
+        <div class="tool-card__eyebrow">Controversy Feed <span class="nav-new">NEW</span></div>
+        <h3 class="tool-card__title">Live ESG Signals</h3>
+        <p class="tool-card__desc">Track ESG controversies and news signals across the companies you follow, as they surface.</p>
+        <span class="tool-card__cta">Open the feed</span>
+      </a>
+      <a href="esg-intelligence.html#climaterisk" class="tool-card tool-card--emerald">
+        <div class="tool-card__eyebrow">Climate Risk <span class="nav-new">NEW</span></div>
+        <h3 class="tool-card__title">Physical &amp; Transition Risk</h3>
+        <p class="tool-card__desc">See each company's physical and transition climate-risk exposure at a glance.</p>
+        <span class="tool-card__cta">View climate risk</span>
+      </a>
+      <a href="esg-intelligence.html#cap" class="tool-card tool-card--violet">
+        <div class="tool-card__eyebrow">Improvement Plan <span class="nav-new">NEW</span></div>
+        <h3 class="tool-card__title">BRSR Gap → Action Plan</h3>
+        <p class="tool-card__desc">Auto-generated BRSR gap analysis and a corrective action plan for any company.</p>
+        <span class="tool-card__cta">Build a plan</span>
+      </a>
+      <a href="esg-intelligence.html#supplier" class="tool-card tool-card--amber">
+        <div class="tool-card__eyebrow">Supplier ESG <span class="nav-new">NEW</span></div>
+        <h3 class="tool-card__title">Supply-Chain Risk</h3>
+        <p class="tool-card__desc">Assess ESG risk across your vendors and supply chain for BRSR Core reporting.</p>
+        <span class="tool-card__cta">Assess suppliers</span>
+      </a>
+      <a href="esg-intelligence.html#badge" class="tool-card tool-card--cyan">
+        <div class="tool-card__eyebrow">BRSR Recognition <span class="nav-new">NEW</span></div>
+        <h3 class="tool-card__title">Shareable Recognition Mark</h3>
+        <p class="tool-card__desc">A shareable recognition mark for Low-Risk tier companies — embed it in your report or site.</p>
+        <span class="tool-card__cta">Get the mark</span>
+      </a>
     </div>
   </div>
 </section>
@@ -571,6 +667,47 @@
   </div>
 </section>
 
+<!-- START FREE — product conversion band -->
+<section class="gc-start" id="start-free" aria-label="Start using Green Curve"
+  style="position:relative;padding:76px 20px;background:linear-gradient(180deg,#070d1a 0%,#0b1322 100%);border-top:1px solid rgba(52,211,153,.12);border-bottom:1px solid rgba(52,211,153,.12)">
+  <div class="container" style="max-width:880px;margin:0 auto;text-align:center">
+    <div style="display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#34d399;margin-bottom:18px;padding:5px 14px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:100px">
+      <span class="live-dot" aria-hidden="true"></span> Free to start
+    </div>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:clamp(1.9rem,4vw,2.8rem);color:#fff;letter-spacing:-.02em;line-height:1.12;margin:0 0 16px">
+      Put India's ESG intelligence<br/>to work &mdash;
+      <em style="font-style:italic;background:linear-gradient(95deg,#34d399,#22d3ee);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">free to start</em>.
+    </h2>
+    <p style="color:rgba(226,232,240,.7);font-size:1rem;line-height:1.7;max-width:560px;margin:0 auto 32px">
+      Create a free account to screen the full ESG Quotient dashboard, generate BRSR-ready disclosures,
+      and track filing deadlines for the companies you follow. No credit card. No sales call.
+    </p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:44px">
+      <a href="/login#register" class="cta-primary">Create your free account &rarr;</a>
+      <a href="pricing.html" class="cta-ghost">See plans &amp; pricing</a>
+    </div>
+    <!-- Credibility strip — verifiable facts only -->
+    <div style="display:flex;justify-content:center;align-items:stretch;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.07);padding-top:28px">
+      <div style="padding:6px 28px">
+        <div style="font-family:'DM Serif Display',serif;font-size:1.7rem;color:#fff;line-height:1">1,227</div>
+        <div style="font-size:.72rem;color:rgba(226,232,240,.45);letter-spacing:.03em;margin-top:5px">Companies tracked</div>
+      </div>
+      <div style="padding:6px 28px;border-left:1px solid rgba(255,255,255,.07)">
+        <div style="font-family:'DM Serif Display',serif;font-size:1.7rem;color:#fff;line-height:1">13+</div>
+        <div style="font-size:.72rem;color:rgba(226,232,240,.45);letter-spacing:.03em;margin-top:5px">Regulatory sources</div>
+      </div>
+      <div style="padding:6px 28px;border-left:1px solid rgba(255,255,255,.07)">
+        <div style="font-family:'DM Serif Display',serif;font-size:1.7rem;color:#fff;line-height:1">Daily</div>
+        <div style="font-size:.72rem;color:rgba(226,232,240,.45);letter-spacing:.03em;margin-top:5px">Intelligence updates</div>
+      </div>
+      <div style="padding:6px 28px;border-left:1px solid rgba(255,255,255,.07)">
+        <div style="font-family:'DM Serif Display',serif;font-size:1.7rem;color:#fff;line-height:1">Public</div>
+        <div style="font-size:.72rem;color:rgba(226,232,240,.45);letter-spacing:.03em;margin-top:5px">BRSR data, transparent method</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- NEWSLETTER -->
 <section class="newsletter" id="newsletter">
   <div class="container newsletter__inner">
@@ -687,6 +824,10 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             Carbon Literacy
           </a></li>
+          <li><a href="esg-intelligence.html#aiquery">AI Query <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#controversy">Controversy Feed <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#climaterisk">Climate Risk <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#supplier">Supplier ESG <span class="nav-new">NEW</span></a></li>
         </ul>
       </div>
 

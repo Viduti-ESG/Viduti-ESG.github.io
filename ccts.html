@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=2"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=3"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -118,7 +118,29 @@
           <li><a href="learn.html">Carbon Literacy</a></li>
         </ul>
       </li>
-      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="epr-market.html">EPR Market <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="epr-market.html">Overview</a></li>
+          <li><a href="epr-market.html#calculator">Obligation Calculator <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#prices">Live Price Tracker <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#dashboard">CPCB Dashboard <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#recycled">Recycled-Content Planner <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-registration.html">Registration Guide</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+          <li><a href="esg-intelligence.html#aiquery">AI Query <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#controversy">Controversy Feed <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#climaterisk">Climate Risk <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#cap">Improvement Plan <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#supplier">Supplier ESG <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#badge">BRSR Recognition <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
       <li><a href="pricing.html">Pricing</a></li>
     </ul>
     <a href="calculator.html" class="nav__cta">GHG Calculator &rarr;</a>
@@ -134,7 +156,24 @@
   <a href="ccts.html">CCTS Tracker</a>
   <a href="tcfd.html">TCFD</a>
   <a href="brsr-simple.html">BRSR Report</a>
-  <a href="esg-intelligence.html">ESG Quotient</a>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">EPR Market</div>
+    <a href="epr-market.html">Overview</a>
+    <a href="epr-market.html#calculator">Obligation Calculator</a>
+    <a href="epr-market.html#prices">Live Price Tracker</a>
+    <a href="epr-market.html#dashboard">CPCB Dashboard</a>
+    <a href="epr-registration.html">Registration Guide</a>
+  </div>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">ESG Quotient</div>
+    <a href="esg-intelligence.html">Overview &amp; Screener</a>
+    <a href="esg-intelligence.html#aiquery">AI Query</a>
+    <a href="esg-intelligence.html#controversy">Controversy Feed</a>
+    <a href="esg-intelligence.html#climaterisk">Climate Risk</a>
+    <a href="esg-intelligence.html#cap">Improvement Plan</a>
+    <a href="esg-intelligence.html#supplier">Supplier ESG</a>
+    <a href="esg-intelligence.html#badge">BRSR Recognition</a>
+  </div>
 </div>
 
 <section class="ct-hero">
@@ -294,6 +333,43 @@
     <strong>Disclaimer:</strong> This tool provides indicative estimates only. BEE targets, baselines, and CCC calculations are entity-specific and determined by BEE-accredited verifiers. Intensity targets vary by plant vintage, capacity, and product mix. Do not use these estimates for official BEE compliance submissions. Engage a BEE-designated energy auditor or accredited verifier for formal CCTS assessment. Data sources: BEE CCTS Detailed Procedure v1.0 (July 2024), Ministry of Power Government of India. Green Curve is not affiliated with BEE or the Ministry of Power.
   </p>
 </div>
+
+
+<!-- RELATED TOOLS -->
+<section class="related-tools" aria-label="More Green Curve tools">
+  <div class="related-tools__title">Explore more Green Curve tools</div>
+  <div class="related-tools__sub">One platform for ESG, BRSR, GHG and climate compliance in India.</div>
+  <div class="related-tools__grid">
+    <a href="esg-intelligence.html" class="related-tool">
+      <span class="related-tool__name">ESG Quotient <span class="nav-new">NEW</span></span>
+      <span class="related-tool__desc">Screen 1,227 companies + AI Query, Controversy Feed & more</span>
+    </a>
+    <a href="calculator.html" class="related-tool">
+      <span class="related-tool__name">GHG Calculator</span>
+      <span class="related-tool__desc">Scope 1, 2 & 3 emissions on GHG Protocol methodology</span>
+    </a>
+    <a href="brsr-simple.html" class="related-tool">
+      <span class="related-tool__name">BRSR Generator</span>
+      <span class="related-tool__desc">Guided, SEBI-ready BRSR report in minutes</span>
+    </a>
+    <a href="tcfd.html" class="related-tool">
+      <span class="related-tool__name">TCFD Report</span>
+      <span class="related-tool__desc">Climate disclosure aligned to the TCFD framework</span>
+    </a>
+    <a href="value-chain.html" class="related-tool">
+      <span class="related-tool__name">Value-Chain ESG</span>
+      <span class="related-tool__desc">Supplier questionnaire & Scope 3 risk scoring</span>
+    </a>
+    <a href="epr-registration.html" class="related-tool">
+      <span class="related-tool__name">EPR Registration</span>
+      <span class="related-tool__desc">CPCB EPR registration guidance for India</span>
+    </a>
+    <a href="scope-3-emissions.html" class="related-tool">
+      <span class="related-tool__name">Scope 3 Guide</span>
+      <span class="related-tool__desc">Understand and estimate value-chain emissions</span>
+    </a>
+  </div>
+</section>
 
 <footer class="site-footer">
   <div class="container footer__inner">
@@ -508,5 +584,15 @@ function calculate() {
 
 <script src="assets/js/gc-config.js?v=20260616"></script>
 <script src="assets/js/cookie-consent.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/gc-email-capture.js"></script>
+<script>
+  GcEmailCapture.show({
+    delay: 10000,
+    source: 'CCTS Compliance Tracker',
+    title: 'Track your CCTS compliance position',
+    body: 'Create a free account for CCTS target alerts and carbon-credit price updates.',
+  });
+</script>
 </body>
 </html>

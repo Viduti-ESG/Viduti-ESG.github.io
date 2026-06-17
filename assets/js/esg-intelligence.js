@@ -200,16 +200,13 @@ async function initDashboard() {
     const _s = (fn, label) => { try { fn(); } catch(e) { console.warn('[GC]', label, 'failed:', e.message); } };
     _s(() => renderKPIs(s),           'renderKPIs');
     _s(addAssuranceKPIStat,           'assuranceKPI');
-    _s(renderCharts,                  'renderCharts');
     _s(renderScreener,                'renderScreener');
     _s(populateSectorDropdown,        'sectorDropdown');
     document.querySelectorAll('.th-sort').forEach(th => {
       th.addEventListener('click', () => setColSort(th.dataset.col));
     });
-    _s(renderDoubleMateriality,       'doubleMateriality');
     _s(renderRegulations,             'regulations');
     _s(renderTargets,                 'targets');
-    _s(renderSupplyChain,             'supplyChain');
     _s(renderMaterials,               'materials');
     _s(renderCalendar,                'calendar');
     _s(renderAnomalies,               'anomalies');
@@ -218,8 +215,27 @@ async function initDashboard() {
     const dmTitle = document.getElementById('dmChartTitle');
     if (dmTitle) dmTitle.textContent = `Double Materiality Matrix — All ${allCompanies.length} Companies`;
 
-    // Tabs render lazily on first click — nothing eagerly rendered here.
+    // The Overview charts, Double Materiality matrix, and Supply Chain charts
+    // are all drawn with Plotly, which is lazy-loaded on the first chart-tab
+    // click. But these render eagerly here (Overview is the default tab; the
+    // others aren't wired into the lazy chart-tab path), so they were drawing
+    // blank. Trigger the Plotly load now and draw them once it is ready.
+    const _renderPlotlyTabs = () => {
+      _s(renderCharts,            'renderCharts');
+      _s(renderDoubleMateriality, 'doubleMateriality');
+      _s(renderSupplyChain,       'supplyChain');
+    };
+    if (typeof _ensurePlotly === 'function') _ensurePlotly(_renderPlotlyTabs);
+    else _renderPlotlyTabs();
+
+    // Remaining tabs render lazily on first click — nothing else eager here.
     // _tabRendered tracks which tabs have been initialised; see tab click handler in HTML.
+
+    // Honour deep-links (#tab + ?company=) now that data is loaded so the target
+    // tool can render and pre-filter to the requested company.
+    if (typeof window.__applyDeepLink === 'function') {
+      try { window.__applyDeepLink(); } catch (e) { console.warn('[GC] deep-link apply failed:', e.message); }
+    }
   } catch (e) {
     statusEl.textContent = 'Load error: ' + e.message.slice(0, 80);
     console.error('[GC] initDashboard FAILED:', e);

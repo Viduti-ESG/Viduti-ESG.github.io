@@ -316,6 +316,65 @@ img, svg { display: block; }
   background: rgba(255,255,255,.08);
   color: #dde4f0;
 }
+.nav-new {
+  display: inline-block; margin-left: 6px;
+  padding: 1px 5px; border-radius: 4px;
+  font-size: .58rem; font-weight: 800; letter-spacing: .06em;
+  vertical-align: middle; line-height: 1.4;
+  background: linear-gradient(135deg, var(--cyan, #22d3ee), var(--violet, #8b5cf6));
+  color: #fff;
+}
+/* "Tools" eyebrow row on the dropdown toggle keeps caret aligned */
+.nav__dropdown-toggle[href] { cursor: pointer; }
+
+/* Cross-tool "Related tools" strip (shown above footer on tool pages) */
+.related-tools {
+  max-width: 1100px; margin: 56px auto 0; padding: 0 24px;
+}
+.related-tools__title {
+  font-size: 1.05rem; font-weight: 700; color: var(--text, #dde4f0);
+  margin-bottom: 4px;
+}
+.related-tools__sub { font-size: .85rem; color: var(--text-40, #94a3b8); margin-bottom: 18px; }
+.related-tools__grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
+}
+.related-tool {
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 14px 16px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.related-tool:hover { border-color: var(--emerald, #34d399); background: rgba(52,211,153,.06); transform: translateY(-2px); }
+.related-tool__name { font-size: .92rem; font-weight: 600; color: var(--text, #dde4f0); display:inline-flex; align-items:center; }
+.related-tool__desc { font-size: .76rem; color: var(--text-40, #94a3b8); line-height: 1.4; }
+
+/* Hero AI Query prompt teaser */
+.hero__ai-prompt {
+  display: inline-flex; align-items: center; gap: 12px;
+  margin-top: 22px; max-width: 560px; width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+  color: rgba(221,228,240,.7);
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.hero__ai-prompt:hover {
+  border-color: var(--cyan, #22d3ee);
+  background: rgba(34,211,238,.06);
+  transform: translateY(-1px);
+}
+.hero__ai-prompt svg { color: var(--cyan, #22d3ee); flex-shrink: 0; }
+.hero__ai-prompt-text {
+  flex: 1; font-size: .9rem; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.hero__ai-prompt-badge {
+  flex-shrink: 0; font-size: .72rem; font-weight: 700;
+  color: var(--text, #dde4f0);
+}
 
 /* ── HERO ── */
 .hero {

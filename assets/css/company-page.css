@@ -269,3 +269,29 @@
   .cp-grid { display: block; }
   .cp-grid .cp-card { width: 100%; margin-bottom: 10pt; }
 }
+
+/* ── Tool deep-link chips (surface ESG Quotient tools from company pages) ──── */
+.cp-tools-strip {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin: 22px auto 0;
+}
+.cp-tools-strip__label {
+  font-size: .82rem; font-weight: 600; color: #94a3b8; margin-right: 2px;
+}
+.cp-tool-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 14px; border-radius: 999px;
+  font-size: .82rem; font-weight: 600; color: #cbd5e1;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.14);
+  transition: border-color .15s, background .15s, color .15s, transform .15s;
+}
+.cp-tool-chip:hover {
+  color: #fff; border-color: #34d399;
+  background: rgba(52,211,153,.10); transform: translateY(-1px);
+}
+.cp-tool-chip .nav-new {
+  margin-left: 2px; padding: 1px 4px; border-radius: 4px;
+  font-size: .54rem; font-weight: 800; letter-spacing: .05em; color: #fff;
+  background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+}

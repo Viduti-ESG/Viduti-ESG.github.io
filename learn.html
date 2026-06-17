@@ -42,7 +42,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=2"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=3"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
 
   <style>
@@ -366,7 +366,29 @@
           <li><a href="learn.html">Carbon Literacy</a></li>
         </ul>
       </li>
-      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="epr-market.html">EPR Market <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="epr-market.html">Overview</a></li>
+          <li><a href="epr-market.html#calculator">Obligation Calculator <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#prices">Live Price Tracker <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#dashboard">CPCB Dashboard <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-market.html#recycled">Recycled-Content Planner <span class="nav-new">NEW</span></a></li>
+          <li><a href="epr-registration.html">Registration Guide</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+          <li><a href="esg-intelligence.html#aiquery">AI Query <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#controversy">Controversy Feed <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#climaterisk">Climate Risk <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#cap">Improvement Plan <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#supplier">Supplier ESG <span class="nav-new">NEW</span></a></li>
+          <li><a href="esg-intelligence.html#badge">BRSR Recognition <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
       <li><a href="pricing.html">Pricing</a></li>
     </ul>
     <a href="calculator.html" class="nav__cta">Calculate &rarr;</a>
@@ -381,7 +403,24 @@
   <a href="learn.html">Carbon Literacy</a>
   <a href="calculator.html">GHG Calculator</a>
   <a href="brsr-simple.html">BRSR Report</a>
-  <a href="esg-intelligence.html">ESG Quotient</a>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">EPR Market</div>
+    <a href="epr-market.html">Overview</a>
+    <a href="epr-market.html#calculator">Obligation Calculator</a>
+    <a href="epr-market.html#prices">Live Price Tracker</a>
+    <a href="epr-market.html#dashboard">CPCB Dashboard</a>
+    <a href="epr-registration.html">Registration Guide</a>
+  </div>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">ESG Quotient</div>
+    <a href="esg-intelligence.html">Overview &amp; Screener</a>
+    <a href="esg-intelligence.html#aiquery">AI Query</a>
+    <a href="esg-intelligence.html#controversy">Controversy Feed</a>
+    <a href="esg-intelligence.html#climaterisk">Climate Risk</a>
+    <a href="esg-intelligence.html#cap">Improvement Plan</a>
+    <a href="esg-intelligence.html#supplier">Supplier ESG</a>
+    <a href="esg-intelligence.html#badge">BRSR Recognition</a>
+  </div>
   <a href="index.html#contact">Contact</a>
 </div>
 

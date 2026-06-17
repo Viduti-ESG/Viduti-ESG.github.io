@@ -128,7 +128,18 @@ NAV = """
       <li><a href="../index.html#topics">Topics</a></li>
       <li><a href="../calculator.html">GHG Calculator</a></li>
       <li><a href="../brsr-simple.html">BRSR Report</a></li>
-      <li><a href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="../esg-intelligence.html" style="color:var(--emerald)">ESG Quotient <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="../esg-intelligence.html">Overview &amp; Screener</a></li>
+          <li><a href="../esg-intelligence.html#aiquery">AI Query <span class="nav-new">NEW</span></a></li>
+          <li><a href="../esg-intelligence.html#controversy">Controversy Feed <span class="nav-new">NEW</span></a></li>
+          <li><a href="../esg-intelligence.html#climaterisk">Climate Risk <span class="nav-new">NEW</span></a></li>
+          <li><a href="../esg-intelligence.html#cap">Improvement Plan <span class="nav-new">NEW</span></a></li>
+          <li><a href="../esg-intelligence.html#supplier">Supplier ESG <span class="nav-new">NEW</span></a></li>
+          <li><a href="../esg-intelligence.html#badge">BRSR Recognition <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
       <li><a href="../index.html#contact">Contact</a></li>
     </ul>
   </nav>
@@ -268,8 +279,8 @@ def make_page(c):
   <script type="application/ld+json">{schema}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
-  <link rel="stylesheet" href="../assets/css/company-page.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=3"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css?v=3"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
 <body>
@@ -308,6 +319,16 @@ def make_page(c):
     </div>
   </div>
 </section>
+
+<!-- TOOL DEEP-LINKS (pre-filtered to this company via ?company=<slug>) -->
+<div class="container cp-tools-strip">
+  <span class="cp-tools-strip__label">Explore {esc(name)} across:</span>
+  <a href="../esg-intelligence.html?company={slug}#controversy" class="cp-tool-chip">Controversy Feed <span class="nav-new">NEW</span></a>
+  <a href="../esg-intelligence.html?company={slug}#cap" class="cp-tool-chip">Improvement Plan <span class="nav-new">NEW</span></a>
+  <a href="../esg-intelligence.html?company={slug}#climaterisk" class="cp-tool-chip">Climate Risk <span class="nav-new">NEW</span></a>
+  <a href="../esg-intelligence.html?company={slug}#badge" class="cp-tool-chip">BRSR Recognition <span class="nav-new">NEW</span></a>
+  <a href="../esg-intelligence.html?company={slug}#screener" class="cp-tool-chip">Company Screener</a>
+</div>
 
 <main class="container cp-main">
 
@@ -445,8 +466,8 @@ index_html = f"""<!DOCTYPE html>
   <link rel="canonical" href="{BASE_URL}/company/"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
-  <link rel="stylesheet" href="../assets/css/company-page.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=3"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css?v=3"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
 <body>
@@ -554,8 +575,8 @@ def sector_page(sname, members):
   }}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../../assets/css/style.css"/>
-  <link rel="stylesheet" href="../../assets/css/company-page.css"/>
+  <link rel="stylesheet" href="../../assets/css/style.css?v=3"/>
+  <link rel="stylesheet" href="../../assets/css/company-page.css?v=3"/>
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg"/>
 </head>
 <body>
@@ -625,8 +646,8 @@ sectors_hub = f"""<!DOCTYPE html>
   <meta property="og:image" content="{BASE_URL}/assets/img/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css"/>
-  <link rel="stylesheet" href="../assets/css/company-page.css"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=3"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css?v=3"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg"/>
 </head>
 <body>
@@ -681,6 +702,7 @@ STATIC_PAGES = [
     ("calculator.html",        "monthly", "0.8"),
     ("brsr-simple.html",       "monthly", "0.8"),
     ("ccts.html",              "weekly",  "0.8"),
+    ("epr-market.html",        "weekly",  "0.9"),
     # Evergreen pillar guides (generate_guides.py)
     ("brsr-reporting.html",               "monthly", "0.9"),
     ("epr-registration.html",             "monthly", "0.9"),
