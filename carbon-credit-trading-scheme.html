@@ -78,6 +78,17 @@ table.gc th{background:var(--surface);color:#f1f5f9}
 .site-footer a{color:var(--muted)}
 @media(max-width:860px){.layout{grid-template-columns:1fr}.toc{display:none}.hero h1{font-size:1.9rem}}
 </style>
+  <!-- Google Analytics (consent mode - analytics blocked until user accepts) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-VS37JR0KK7');
+  </script>
 </head>
 <body>
 
@@ -261,5 +272,6 @@ table.gc th{background:var(--surface);color:#f1f5f9}
   window.addEventListener('scroll',function(){var a='';secs.forEach(function(s){if(s.getBoundingClientRect().top<=110)a='#'+s.id});
     links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')===a)})},{passive:true});
 </script>
+<script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>

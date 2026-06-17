@@ -47,6 +47,17 @@
     .legal-table th { text-align: left; padding: 8px 12px; background: rgba(255,255,255,.04); color: #cbd5e1; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,.08); }
     .legal-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.05); vertical-align: top; }
   </style>
+  <!-- Google Analytics (consent mode - analytics blocked until user accepts) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-VS37JR0KK7');
+  </script>
 </head>
 <body>
 
@@ -217,5 +228,6 @@
   const hdr = document.getElementById('site-header');
   window.addEventListener('scroll', () => hdr.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
 </script>
+<script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>

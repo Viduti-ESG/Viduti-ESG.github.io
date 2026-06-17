@@ -59,6 +59,17 @@
     .alert { background: #1e3a3a; border-left: 4px solid #0d9488; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
     .alert strong { color: #0d9488; }
   </style>
+  <!-- Google Analytics (consent mode - analytics blocked until user accepts) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-VS37JR0KK7');
+  </script>
 </head>
 <body>
 
@@ -868,5 +879,6 @@ showStep(0);
     delay: 6000,
   });
 </script>
+<script src="assets/js/cookie-consent.js"></script>
 </body>
 </html>
