@@ -308,6 +308,14 @@
           <li><a href="esg-intelligence.html#badge">BRSR Recognition <span class="nav-new">NEW</span></a></li>
         </ul>
       </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="/data-room">Workspace <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="/data-room">ESG Data Room <span class="nav-new">NEW</span></a></li>
+          <li><a href="/brsr-workspace">BRSR Workspace <span class="nav-new">NEW</span></a></li>
+          <li><a href="/team">Team &amp; Collaboration <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
       <li><a href="pricing.html">Pricing</a></li>
     </ul>
     <a href="calculator.html" class="nav__cta">Calculate &rarr;</a>
@@ -452,7 +460,7 @@
   <div class="related-tools__grid">
     <a href="esg-intelligence.html" class="related-tool">
       <span class="related-tool__name">ESG Quotient <span class="nav-new">NEW</span></span>
-      <span class="related-tool__desc">Screen 1,227 companies + AI Query, Controversy Feed & more</span>
+      <span class="related-tool__desc">Screen 1,221 companies + AI Query, Controversy Feed & more</span>
     </a>
     <a href="calculator.html" class="related-tool">
       <span class="related-tool__name">GHG Calculator</span>
@@ -576,6 +584,22 @@ window.shareProfile = shareProfile;
 (function () {
   const params = new URLSearchParams(location.search);
   const d = params.get('d');
+
+  // C14: ?company=<slug> → load real disclosed Scope 1/2/3 from BRSR and render
+  const company = params.get('company');
+  if (!d && company) {
+    const slugify = s => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    fetch('/api/esg/data').then(r => r.json()).then(j => {
+      const c = (j.companies || []).find(x => slugify(x.company_name) === company);
+      const fe = (c && c.financial_exposure) || {};
+      const s1 = +(fe.scope1_emissions_tco2e || 0), s2 = +(fe.scope2_emissions_tco2e || 0), s3 = +(fe.scope3_emissions_tco2e || 0);
+      const tot = s1 + s2 + s3;
+      if (!c || tot <= 0) { document.getElementById('profile-error').hidden = false; return; }
+      const payload = { fy: c.financial_year || '', s1, s2, s3, tot };
+      location.replace('ghg-profile.html?d=' + btoa(JSON.stringify(payload)));
+    }).catch(() => { document.getElementById('profile-error').hidden = false; });
+    return;
+  }
 
   if (!d) {
     document.getElementById('profile-error').hidden = false;
