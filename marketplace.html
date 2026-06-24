@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Green Curve Marketplace — Verified Sustainable Products</title>
+  <meta name="description" content="A sustainable product marketplace. Browse organic, eco-friendly and ethically made products from verified sellers — every sustainability certificate is checked by Green Curve." />
+  <link rel="canonical" href="https://greencurve.solutions/marketplace" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=3" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-bg:#f7f9f7; --gc-line:#e3e8e3; }
+    .mkt-wrap { max-width:1200px; margin:0 auto; padding:0 20px; }
+    .mkt-hero { background:linear-gradient(135deg,#eaf5ee,#f7f9f7); padding:48px 0 28px; border-bottom:1px solid var(--gc-line); }
+    .mkt-hero h1 { font-family:'DM Serif Display',serif; font-size:2.4rem; margin:0 0 8px; color:#12331f; }
+    .mkt-hero p { color:#456; max-width:620px; margin:0; }
+    .mkt-hero .mkt-cta { margin-top:18px; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; text-decoration:none; cursor:pointer; border:none; font-size:.95rem; }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .btn-primary:hover { background:var(--gc-green-dark); }
+    .btn-ghost { background:#fff; color:var(--gc-green); border:1px solid var(--gc-green); }
+    .mkt-controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; padding:22px 0; }
+    .mkt-controls input[type=search] { flex:1; min-width:200px; padding:10px 14px; border:1px solid var(--gc-line); border-radius:8px; font-size:.95rem; }
+    .mkt-controls select { padding:10px 12px; border:1px solid var(--gc-line); border-radius:8px; background:#fff; }
+    .mkt-controls label { display:flex; align-items:center; gap:6px; font-size:.9rem; color:#456; }
+    .mkt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; padding-bottom:60px; }
+    .card { background:#fff; border:1px solid var(--gc-line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .15s; cursor:pointer; }
+    .card:hover { box-shadow:0 6px 22px rgba(20,60,40,.12); }
+    .card__img { aspect-ratio:4/3; background:#eef3ee center/cover no-repeat; display:flex; align-items:center; justify-content:center; color:#9bb; font-size:.8rem; }
+    .card__body { padding:14px; display:flex; flex-direction:column; gap:6px; flex:1; }
+    .card__name { font-weight:600; color:#12331f; }
+    .card__seller { font-size:.8rem; color:#789; }
+    .card__price { font-weight:700; color:var(--gc-green-dark); margin-top:auto; }
+    .badges { display:flex; gap:6px; flex-wrap:wrap; }
+    .badge { font-size:.7rem; padding:3px 8px; border-radius:20px; font-weight:600; display:inline-flex; align-items:center; gap:4px; }
+    .badge.verified { background:#e3f5e9; color:#1f7a4d; }
+    .badge.pending  { background:#fff3e0; color:#b06a00; }
+    .badge.expired  { background:#fde8e8; color:#b42318; }
+    .empty { text-align:center; color:#789; padding:60px 20px; }
+    .modal-bg { position:fixed; inset:0; background:rgba(10,25,15,.5); display:none; align-items:center; justify-content:center; padding:20px; z-index:50; }
+    .modal-bg.open { display:flex; }
+    .modal { background:#fff; border-radius:14px; max-width:560px; width:100%; max-height:90vh; overflow:auto; }
+    .modal__img { aspect-ratio:16/9; background:#eef3ee center/cover no-repeat; }
+    .modal__body { padding:24px; }
+    .modal__close { float:right; font-size:1.4rem; cursor:pointer; color:#789; border:none; background:none; }
+    .trust-note { background:#eaf5ee; border:1px solid #cfe7d8; border-radius:8px; padding:10px 14px; font-size:.82rem; color:#2c5a3e; margin-top:14px; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+
+  <div class="mkt-hero">
+    <div class="mkt-wrap">
+      <h1>Green Curve Marketplace</h1>
+      <p>A sustainable product marketplace — organic, eco-friendly and ethically made goods from verified sellers. Every sustainability certificate is reviewed by Green Curve before it earns a badge.</p>
+      <div class="mkt-cta">
+        <a href="/seller-dashboard" class="btn btn-primary">Sell on Green Curve</a>
+        <a href="#products" class="btn btn-ghost">Browse products</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mkt-wrap" id="products">
+    <div class="mkt-controls">
+      <input type="search" id="search" placeholder="Search sustainable products…" />
+      <select id="category"><option value="">All categories</option></select>
+      <label><input type="checkbox" id="verifiedOnly" /> Verified only</label>
+    </div>
+    <div class="mkt-grid" id="grid"><div class="empty">Loading products…</div></div>
+  </div>
+
+  <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <script src="/assets/js/marketplace.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

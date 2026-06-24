@@ -7,7 +7,7 @@
   <meta name="description" content="Affordable ESG intelligence for Indian listed companies. Full BRSR compliance dashboard, AI analysis, and peer benchmarking — starting free. Cheaper than CRISIL, D&B, or EcoVadis."/>
   <meta name="keywords" content="ESG software pricing India, BRSR dashboard cost, ESG intelligence SaaS India, affordable ESG compliance India"/>
   <meta name="robots" content="index, follow"/>
-  <link rel="canonical" href="https://greencurve.solutions/pricing.html"/>
+  <link rel="canonical" href="https://greencurve.solutions/pricing"/>
   <meta property="og:type" content="website"/>
   <meta property="og:title" content="Pricing — Green Curve ESG Intelligence"/>
   <meta property="og:description" content="Affordable BRSR-native ESG intelligence for Indian companies. Free forever, Pro from ₹2,999/month."/>
@@ -59,7 +59,7 @@
     .price-card__badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
     .price-card__tier { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-40); margin-bottom: 10px; }
     .price-card__price { font-family: var(--serif); font-size: 2.8rem; color: #fff; line-height: 1; margin-bottom: 4px; }
-    .price-card__price span { font-size: 1.1rem; color: var(--text-40); vertical-align: super; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+    .price-card__price span { font-size: 1.4rem; color: rgba(255,255,255,.55); vertical-align: super; font-family: 'DM Sans', sans-serif; font-weight: 500; margin-right: 2px; }
     .price-card__cadence { font-size: .8rem; color: var(--text-40); margin-bottom: 6px; }
     .price-card__annual { font-size: .75rem; color: var(--amber); margin-bottom: 20px; min-height: 18px; }
     .price-card__desc { font-size: .85rem; color: var(--text-70); line-height: 1.6; margin-bottom: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
@@ -149,7 +149,7 @@
 
 <nav class="pricing-nav">
   <a class="pricing-nav__logo" href="/">
-    <img src="assets/img/logo.png" alt="Green Curve"/>
+    <img src="assets/img/logo-nav.png" alt="Green Curve"/>
     Green Curve
   </a>
   <div class="pricing-nav__links">
@@ -181,7 +181,7 @@
   <!-- Free -->
   <div class="price-card">
     <div class="price-card__tier">Free</div>
-    <div class="price-card__price">₹<span></span>0</div>
+    <div class="price-card__price"><span>₹</span>0</div>
     <div class="price-card__cadence">forever</div>
     <div class="price-card__annual">&nbsp;</div>
     <div class="price-card__desc">For individuals and teams exploring Green Curve's capabilities. No credit card required.</div>
@@ -192,7 +192,7 @@
       <li class="price-card__feature"><span class="chk chk--yes">✓</span> TCFD Gap Checker (manual mode)</li>
       <li class="price-card__feature"><span class="chk chk--yes">✓</span> GHG Calculator</li>
       <li class="price-card__feature"><span class="chk chk--yes">✓</span> ESG Learning Centre</li>
-      <li class="price-card__feature"><span class="chk chk--no">—</span> Full 1,227-company screener</li>
+      <li class="price-card__feature"><span class="chk chk--no">—</span> Full 1,221-company screener</li>
       <li class="price-card__feature"><span class="chk chk--no">—</span> AI-powered analysis</li>
       <li class="price-card__feature"><span class="chk chk--no">—</span> Watchlist & alerts</li>
       <li class="price-card__feature"><span class="chk chk--no">—</span> Value-chain supplier tools</li>
@@ -203,13 +203,13 @@
   <div class="price-card price-card--pro">
     <div class="price-card__badge">Most Popular</div>
     <div class="price-card__tier">Pro</div>
-    <div class="price-card__price" id="proPrice">₹<span>2,999</span></div>
+    <div class="price-card__price" id="proPrice"><span>₹</span>2,999</div>
     <div class="price-card__cadence">/month</div>
     <div class="price-card__annual" id="proAnnualNote">&nbsp;</div>
     <div class="price-card__desc">For ESG analysts, sustainability consultants, and compliance teams at listed companies.</div>
     <a href="https://wa.me/91XXXXXXXXXX?text=I%27m+interested+in+Green+Curve+Pro" target="_blank" class="price-card__cta price-card__cta--pro" id="proCta">Start Pro Trial</a>
     <ul class="price-card__features">
-      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Full screener — all 1,227 NSE/BSE companies</li>
+      <li class="price-card__feature"><span class="chk chk--yes">✓</span> Full screener — all 1,221 NSE/BSE companies</li>
       <li class="price-card__feature"><span class="chk chk--yes">✓</span> AI CCTS Scorecard & TCFD Gap (Claude AI)</li>
       <li class="price-card__feature"><span class="chk chk--yes">✓</span> Unlimited BRSR Generator reports</li>
       <li class="price-card__feature"><span class="chk chk--yes">✓</span> Watchlist with risk-tier change alerts</li>
@@ -278,7 +278,7 @@
       </tr>
       <tr class="compare-highlight">
         <td>India NSE/BSE coverage</td>
-        <td class="gc">1,227 companies</td>
+        <td class="gc">1,221 companies</td>
         <td class="other">~500</td>
         <td class="other">Global focus</td>
         <td class="other">Survey only</td>
@@ -446,10 +446,10 @@
     const noteEl  = document.getElementById('proAnnualNote');
     const ctaEl   = document.getElementById('proCta');
     if (cycle === 'annual') {
-      priceEl.innerHTML = '₹<span>2,083</span>';
+      priceEl.innerHTML = '<span>₹</span>2,083';
       noteEl.textContent  = '₹24,999/year — save ₹10,989 vs monthly';
     } else {
-      priceEl.innerHTML = '₹<span>2,999</span>';
+      priceEl.innerHTML = '<span>₹</span>2,999';
       noteEl.textContent = '';
     }
   }

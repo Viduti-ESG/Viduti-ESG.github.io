@@ -247,19 +247,22 @@ function renderSpotlight() {
   const grid = document.getElementById('spotlightGrid');
   if (!grid || !allCompanies.length) return;
   const leaders = allCompanies
-    .filter(c => c.risk_tier === 'Low' && c.esg_risk_score != null)
+    .filter(c => c.esg_risk_score != null)
     .sort((a, b) => a.esg_risk_score - b.esg_risk_score)
     .slice(0, 6);
   if (!leaders.length) { document.getElementById('gcSpotlight').style.display = 'none'; return; }
-  grid.innerHTML = leaders.map(c => `
+  grid.innerHTML = leaders.map(c => {
+    const tier = c.risk_tier || 'Medium';
+    return `
     <div class="gc-spotlight__card" onclick="openDeepDive('${(c.company_name||'').replace(/'/g,"\\'")}')">
       <div class="gc-spotlight__company" title="${c.company_name||''}">${c.company_name||'—'}</div>
       <div class="gc-spotlight__sector" title="${_cleanSector(c.sector)||''}">${_cleanSector(c.sector)||'—'}</div>
       <div class="gc-spotlight__score-row">
         <div class="gc-spotlight__score">${c.esg_risk_score.toFixed(1)}</div>
-        <span class="gc-spotlight__badge">Low Risk</span>
+        <span class="gc-spotlight__badge gc-spotlight__badge--${tier}">${tier} Risk</span>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderPlaceholder() {
@@ -345,7 +348,7 @@ function renderSectorRiskChart() {
     type: 'bar', orientation: 'h',
     x: entries.map(e => +e.avg.toFixed(1)),
     y: entries.map(e => e.sector.replace('Manufacturing — ', '')),
-    marker: { color: entries.map(e => e.avg >= 6.5 ? 'rgba(248,113,113,.75)' : e.avg >= 4 ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)'), line: { width: 0 } },
+    marker: { color: entries.map(e => e.avg >= 5.0 ? 'rgba(248,113,113,.75)' : e.avg >= 3.5 ? 'rgba(251,191,36,.75)' : 'rgba(52,211,153,.75)'), line: { width: 0 } },
     hovertemplate: '<b>%{y}</b><br>Avg ESG Risk: %{x:.1f}/10<extra></extra>',
   }], {
     paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -641,10 +644,11 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
     if (colFilters.capMin)   data = data.filter(c => (c.market_data?.market_cap_crore||0)   >= colFilters.capMin);
     if (colFilters.retDir === 'pos') data = data.filter(c => (c.market_data?.return_1y_pct||0) >= 0);
     if (colFilters.retDir === 'neg') data = data.filter(c => (c.market_data?.return_1y_pct||0) < 0);
-    if (colFilters.confidence === 'assured')  data = data.filter(c => (c.governance?.brsr_assurance||'None') !== 'None');
-    if (colFilters.confidence === 'reported') data = data.filter(c => _dcCoverage(c).pct >= 57);   // 4+ of 7 fields
-    if (colFilters.confidence === 'partial')  data = data.filter(c => { const v = _dcCoverage(c).pct; return v > 0 && v < 57; });
-    if (colFilters.confidence === 'missing')  data = data.filter(c => _dcCoverage(c).pct === 0);
+    const _conf = c => (c.risk_breakdown?.disclosure_confidence ?? _dcCoverage(c).pct);
+    if (colFilters.confidence === 'assured')  data = data.filter(c => !!(c.risk_breakdown?.metrics?.assured) || (c.governance?.brsr_assurance||'None') !== 'None');
+    if (colFilters.confidence === 'reported') data = data.filter(c => _conf(c) >= 80);   // high disclosure confidence
+    if (colFilters.confidence === 'partial')  data = data.filter(c => { const v = _conf(c); return v >= 50 && v < 80; });
+    if (colFilters.confidence === 'missing')  data = data.filter(c => _conf(c) < 50);
   }
 
   // Sort — column header sort takes priority
@@ -703,7 +707,7 @@ function _renderScreenerPage(page) {
       ? (getConservativeScore(c).conservative ?? c.esg_risk_score)
       : c.esg_risk_score;
     const displayTier  = _scoreTrack === 'conservative'
-      ? (displayScore >= 6.5 ? 'High' : displayScore >= 3.5 ? 'Medium' : 'Low')
+      ? (displayScore >= 5.0 ? 'High' : displayScore >= 3.5 ? 'Medium' : 'Low')
       : c.risk_tier;
     return `
       <tr style="cursor:pointer" onclick="openDeepDive('${esc(c.company_name)}')">
@@ -1634,6 +1638,13 @@ function renderDDOverviewLocal(p) {
         const pctLbl = pct == null ? '—' : `${pct}<sup>th</sup>`;
         return `<div class="dd-kpi"><div class="dd-kpi-val" style="color:${pctCol}">${pctLbl}</div><div class="dd-kpi-lbl">Sector Percentile</div><div class="dd-kpi-sub">${pct == null ? 'N/A' : pct >= 75 ? 'High-risk vs peers' : pct >= 40 ? 'Mid-tier vs peers' : 'Better than most peers'}</div></div>`;
       })()}
+      ${(() => {
+        const conf = (p.risk_breakdown || {}).disclosure_confidence;
+        if (conf == null) return '';
+        const cCol = conf >= 80 ? '#34d399' : conf >= 50 ? '#fbbf24' : '#f87171';
+        const cLbl = conf >= 80 ? 'High data coverage' : conf >= 50 ? 'Partial coverage' : 'Thin disclosure';
+        return `<div class="dd-kpi"><div class="dd-kpi-val" style="color:${cCol}">${conf}%</div><div class="dd-kpi-lbl">Disclosure Confidence</div><div class="dd-kpi-sub">${cLbl}</div></div>`;
+      })()}
     </div>
     ${(() => {
       const bs = getBlendedScores(p);
@@ -1643,12 +1654,12 @@ function renderDDOverviewLocal(p) {
       <div class="esg-sub-score-card">
         <div class="esg-sub-score-val ${scoreClass(bs.e)}">${bs.e != null ? bs.e : '—'}</div>
         <div class="esg-sub-score-lbl">E Score</div>
-        <div class="esg-sub-score-note">GHG · Water · Waste · EPR<br>60% company + 40% sector</div>
+        <div class="esg-sub-score-note">Carbon · Water · Waste · Energy<br>60% company + 40% sector</div>
       </div>
       <div class="esg-sub-score-card">
         <div class="esg-sub-score-val ${scoreClass(bs.s)}">${bs.s != null ? bs.s : '—'}</div>
         <div class="esg-sub-score-lbl">S Score</div>
-        <div class="esg-sub-score-note">HR Risk<br>75% company + 25% sector</div>
+        <div class="esg-sub-score-note">Safety · Diversity<br>75% company + 25% sector</div>
       </div>
       <div class="esg-sub-score-card">
         <div class="esg-sub-score-val ${scoreClass(bs.g)}">${bs.g != null ? bs.g : '—'}</div>
@@ -1657,6 +1668,33 @@ function renderDDOverviewLocal(p) {
       </div>
       <div class="esg-sub-score-meta">
         Sector avg ESG: <strong>${bs.sectorAvg.esg_risk_score != null ? bs.sectorAvg.esg_risk_score.toFixed(1) : '—'}</strong> · ${bs.peerCount} companies · CRISIL-inspired blending
+      </div>
+    </div>`;
+    })()}
+    ${(() => {
+      const m = (p.risk_breakdown || {}).metrics || {};
+      const fe = p.financial_exposure || {};
+      const num = v => (v == null ? null : (typeof v === 'number' ? v.toLocaleString('en-IN') : v));
+      const items = [];
+      if (fe.scope1_emissions_tco2e != null) items.push(['Scope 1', num(fe.scope1_emissions_tco2e) + ' tCO₂e']);
+      if (fe.scope2_emissions_tco2e != null) items.push(['Scope 2', num(fe.scope2_emissions_tco2e) + ' tCO₂e']);
+      if (fe.scope3_emissions_tco2e != null) items.push(['Scope 3', num(fe.scope3_emissions_tco2e) + ' tCO₂e']);
+      if (m.renewable_pct != null)          items.push(['Renewable energy', m.renewable_pct + '%']);
+      if (fe.water_withdrawal_m3 != null)   items.push(['Water withdrawal', num(fe.water_withdrawal_m3) + ' m³' + (m.zld ? ' · ZLD' : '')]);
+      if (m.waste_recovery_pct != null)     items.push(['Waste recovered', m.waste_recovery_pct + '%']);
+      if (m.ltifr != null)                  items.push(['LTIFR (safety)', m.ltifr]);
+      if (m.fatalities != null)             items.push(['Fatalities', m.fatalities]);
+      if (m.female_board_pct != null)       items.push(['Women on board', m.female_board_pct + '%']);
+      if (m.pay_ratio != null)              items.push(['Board : worker pay', m.pay_ratio + '×']);
+      if (m.assured)                        items.push(['BRSR assurance', '✅ Independently assured']);
+      if (!items.length) return '';
+      return `
+    <div class="dd-section">
+      <div class="dd-section-title">Disclosed ESG Metrics <span style="font-weight:400;color:#64748b;font-size:.78rem">· from the company's BRSR filing</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+        ${items.map(([k, v]) => `<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:10px 12px">
+          <div style="font-size:.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.04em">${k}</div>
+          <div style="font-size:.92rem;font-weight:600;color:#e2e8f0;margin-top:3px">${v}</div></div>`).join('')}
       </div>
     </div>`;
     })()}
@@ -1865,7 +1903,7 @@ function renderDDBenchmark(p, data) {
           <span class="dd-peer-name">${i===0?'▶ ':''} ${esc(c.company_name)}</span>
           <div class="score-bar">
             <div class="score-bar__track" style="width:80px">
-              <div class="score-bar__fill score-bar__fill--${c.esg_risk_score>=6.5?'red':c.esg_risk_score>=4?'amber':''}"
+              <div class="score-bar__fill score-bar__fill--${c.esg_risk_score>=5.0?'red':c.esg_risk_score>=3.5?'amber':''}"
                 style="width:${c.esg_risk_score*10}%"></div>
             </div>
             <span style="font-size:.8rem;color:#94a3b8">${c.esg_risk_score}</span>
@@ -2233,13 +2271,13 @@ function _plotNetZeroChart(profile) {
 // ── P2-B: ESG Score Decomposition Waterfall ───────────────────────────────────
 
 const WF_DIMS = [
-  { key: 'ghg_intensity',    label: 'GHG Intensity',   color: '#f87171' },
-  { key: 'water_intensity',  label: 'Water Intensity',  color: '#60a5fa' },
-  { key: 'waste_intensity',  label: 'Waste Intensity',  color: '#a78bfa' },
-  { key: 'epr_exposure',     label: 'EPR Exposure',     color: '#fb923c' },
-  { key: 'compliance_risk',  label: 'Compliance Risk',  color: '#f472b6' },
-  { key: 'hr_risk',          label: 'HR Risk',          color: '#facc15' },
-  { key: 'governance_risk',  label: 'Governance Risk',  color: '#94a3b8' },
+  { key: 'ghg_intensity',    label: 'Carbon Intensity',    color: '#f87171' },
+  { key: 'water_intensity',  label: 'Water Intensity',     color: '#60a5fa' },
+  { key: 'waste_intensity',  label: 'Waste Intensity',     color: '#a78bfa' },
+  { key: 'energy_transition',label: 'Energy Transition',   color: '#fb923c' },
+  { key: 'hr_risk',          label: 'Workforce (Safety/Diversity)', color: '#facc15' },
+  { key: 'governance_risk',  label: 'Governance (Pay/Ethics)',      color: '#94a3b8' },
+  { key: 'compliance_risk',  label: 'Fines & Penalties',   color: '#f472b6' },
 ];
 
 function renderDDWaterfall(profile) {
@@ -3161,8 +3199,8 @@ function _applyEventsRender(el) {
 
   el.innerHTML = `
   <div class="dm-intro">
-    <h3 class="dm-intro__title">ESG Event Alert Feed</h3>
-    <p class="dm-intro__sub">Regulatory circulars, enforcement actions, and ESG-relevant market events from SEBI, BSE, NGT, and MoEFCC. Filter by category, severity, or watchlist companies.</p>
+    <h3 class="dm-intro__title">ESG Regulatory Awareness Feed</h3>
+    <p class="dm-intro__sub">Forward-looking regulatory-awareness items across SEBI, BSE, NGT, MoEFCC and BEE. Filter by category, severity, or watchlist. ${_ESG_EVENTS.disclaimer ? `<span style="display:block;margin-top:8px;font-size:.78rem;color:#94a3b8">${esc(_ESG_EVENTS.disclaimer)}</span>` : ''}</p>
   </div>
   ${filterBar}
   <div class="ev-cards-wrap">${rows}</div>`;
@@ -3629,9 +3667,9 @@ function renderHeatMap() {
   if (countEl) countEl.textContent = `${data.length} companies`;
 
   // Populate KPI strip
-  const high = data.filter(c => (c.esg_risk_score || 0) >= 6.5).length;
-  const med  = data.filter(c => (c.esg_risk_score || 0) >= 4.5 && (c.esg_risk_score || 0) < 6.5).length;
-  const low  = data.filter(c => (c.esg_risk_score || 0) < 4.5).length;
+  const high = data.filter(c => c.risk_tier === 'High').length;
+  const med  = data.filter(c => c.risk_tier === 'Medium').length;
+  const low  = data.filter(c => c.risk_tier === 'Low').length;
   const avg  = data.length ? data.reduce((s, c) => s + (c.esg_risk_score || 0), 0) / data.length : 0;
   const _set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
   _set('hm-total',     data.length);
@@ -3656,7 +3694,7 @@ function renderHeatMap() {
     const avg = cos.reduce((s, c) => s + (c.esg_risk_score || 0), 0) / cos.length;
     ids.push(secId); labels.push(sec.length > 28 ? sec.slice(0, 26) + '…' : sec);
     parents.push('__root__'); values.push(0);
-    colors.push(avg >= 6.5 ? 'rgba(248,113,113,.2)' : avg >= 4.5 ? 'rgba(251,191,36,.15)' : 'rgba(52,211,153,.12)');
+    colors.push(avg >= 5.0 ? 'rgba(248,113,113,.2)' : avg >= 3.5 ? 'rgba(251,191,36,.15)' : 'rgba(52,211,153,.12)');
     texts.push(`${sec}<br>${cos.length} companies · avg ${avg.toFixed(1)}`);
 
     cos.forEach(c => {
@@ -3665,7 +3703,7 @@ function renderHeatMap() {
       const score = c.esg_risk_score || 0;
       ids.push(c.company_name); labels.push((c.company_name || '').slice(0, 20));
       parents.push(secId); values.push(Math.max(v, 1));
-      colors.push(score >= 6.5 ? 'rgba(248,113,113,.85)' : score >= 4.5 ? 'rgba(251,191,36,.85)' : 'rgba(52,211,153,.85)');
+      colors.push(score >= 5.0 ? 'rgba(248,113,113,.85)' : score >= 3.5 ? 'rgba(251,191,36,.85)' : 'rgba(52,211,153,.85)');
       texts.push(`<b>${esc(c.company_name)}</b><br>ESG Risk: ${score} (${c.risk_tier})<br>${c.sector ? (c.sector).replace('Manufacturing — ','').slice(0,30) : ''}<br>${c.revenue_crore ? '₹' + c.revenue_crore.toFixed(0) + ' Cr revenue' : 'Revenue N/A'}`);
     });
   });

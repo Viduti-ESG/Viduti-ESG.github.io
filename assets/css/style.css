@@ -2857,6 +2857,8 @@ button:focus:not(:focus-visible) { outline: none; }
   border-radius: 100px; background: rgba(52,211,153,.12);
   border: 1px solid rgba(52,211,153,.25); color: var(--emerald);
 }
+.gc-spotlight__badge--Medium { background: rgba(251,191,36,.12); border-color: rgba(251,191,36,.25); color: #fbbf24; }
+.gc-spotlight__badge--High   { background: rgba(248,113,113,.12); border-color: rgba(248,113,113,.25); color: #f87171; }
 @media (max-width: 700px) {
   .gc-spotlight__grid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketplace Admin — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=3" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:1000px; margin:0 auto; padding:28px 20px 80px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; }
+    .tabs { display:flex; gap:8px; margin:18px 0; flex-wrap:wrap; }
+    .tab { padding:8px 16px; border:1px solid var(--gc-line); border-radius:20px; background:#fff; cursor:pointer; font-weight:600; font-size:.9rem; color:#456; }
+    .tab.active { background:var(--gc-green); color:#fff; border-color:var(--gc-green); }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .item { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:18px; margin-bottom:14px; }
+    .item h3 { margin:0 0 4px; font-size:1.05rem; }
+    .meta { font-size:.84rem; color:#789; margin:2px 0; }
+    .btn { padding:8px 14px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.88rem; }
+    .btn-ai { background:#eaf0ff; color:#2b4cc0; }
+    .btn-approve { background:var(--gc-green); color:#fff; }
+    .btn-reject { background:#fde8e8; color:#b42318; }
+    .btn-link { background:none; color:var(--gc-green); text-decoration:underline; padding:8px 4px; }
+    .actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+    .ai-box { background:#f5f8ff; border:1px solid #d6e0ff; border-radius:8px; padding:12px; margin-top:12px; font-size:.86rem; }
+    .ai-rec { font-weight:700; text-transform:uppercase; }
+    .ai-rec.approve { color:#1f7a4d; } .ai-rec.reject { color:#b42318; } .ai-rec.manual { color:#b06a00; }
+    .notes { width:100%; padding:8px; border:1px solid var(--gc-line); border-radius:8px; margin-top:8px; box-sizing:border-box; }
+    .empty { color:#789; padding:30px 0; }
+    .pill { font-size:.72rem; padding:3px 10px; border-radius:20px; font-weight:600; background:#eef1f4; color:#5a6b7b; }
+    .gate { color:#b42318; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <h1>Marketplace Admin</h1>
+    <p style="color:#456">Verify certificates, approve sellers (KYC), and moderate product listings. Use <strong>AI review</strong> to auto-extract a certificate's details and get a recommendation — you make the final call.</p>
+
+    <div id="gate" class="gate" style="display:none">Admin access required. <a href="/login?next=/marketplace-admin">Sign in as an admin →</a></div>
+
+    <div id="app" style="display:none">
+      <div class="tabs">
+        <div class="tab active" data-tab="certs" onclick="ADM.tab('certs')">Certificates</div>
+        <div class="tab" data-tab="kyc" onclick="ADM.tab('kyc')">Seller KYC</div>
+        <div class="tab" data-tab="products" onclick="ADM.tab('products')">Product listings</div>
+      </div>
+
+      <div class="panel active" id="panel-certs"><div class="empty">Loading…</div></div>
+      <div class="panel" id="panel-kyc"><div class="empty">Loading…</div></div>
+      <div class="panel" id="panel-products"><div class="empty">Loading…</div></div>
+    </div>
+  </div>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/marketplace-admin.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

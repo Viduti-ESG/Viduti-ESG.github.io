@@ -199,7 +199,7 @@ def make_page(c):
         "publisher": {"@type": "Organization", "name": "Green Curve",
                       "url": BASE_URL, "logo": f"{BASE_URL}/assets/img/logo.png"},
         "dateModified": TODAY,
-        "mainEntityOfPage": f"{BASE_URL}/company/{slug}.html"
+        "mainEntityOfPage": f"{BASE_URL}/company/{slug}"
     }, ensure_ascii=False)
 
     # Risk breakdown bars
@@ -268,11 +268,11 @@ def make_page(c):
   <title>{esc(name)} ESG Score &amp; Risk Analysis | Green Curve</title>
   <meta name="description" content="{esc(meta_desc)}"/>
   <meta name="robots" content="index,follow"/>
-  <link rel="canonical" href="{BASE_URL}/company/{slug}.html"/>
+  <link rel="canonical" href="{BASE_URL}/company/{slug}"/>
   <meta property="og:title" content="{esc(name)} ESG Score | Green Curve"/>
   <meta property="og:description" content="{esc(meta_desc)}"/>
   <meta property="og:image" content="{BASE_URL}/assets/img/logo.png"/>
-  <meta property="og:url" content="{BASE_URL}/company/{slug}.html"/>
+  <meta property="og:url" content="{BASE_URL}/company/{slug}"/>
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:title" content="{esc(name)} ESG Score | Green Curve"/>
   <meta name="twitter:description" content="{esc(meta_desc)}"/>
@@ -414,7 +414,7 @@ def make_page(c):
       Download PDF
     </button>
     <a class="cp-pdf-btn"
-       href="https://www.linkedin.com/sharing/share-offsite/?url={BASE_URL}/company/{slug}.html"
+       href="https://www.linkedin.com/sharing/share-offsite/?url={BASE_URL}/company/{slug}"
        target="_blank" rel="noopener">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
       Share on LinkedIn
@@ -449,7 +449,7 @@ print(f"  Written {len(generated)} company pages to ./{OUT_DIR}/")
 # ── company/index.html ─────────────────────────────────────────────────────────
 rows_html = '\n'.join(f"""
   <tr>
-    <td><a href="{slug}.html">{esc(name)}</a></td>
+    <td><a href="{slug}">{esc(name)}</a></td>
     <td style="font-size:.8rem;color:#94a3b8">{esc(sector[:50])}</td>
     <td><span style="color:{tier_color(tier)};font-weight:700">{score}</span></td>
     <td><span style="color:{tier_color(tier)}">{tier}</span></td>
@@ -535,14 +535,14 @@ def sector_page(sname, members):
 
     rows = '\n'.join(f"""
       <tr>
-        <td><a href="../{slug}.html">{esc(cname)}</a></td>
+        <td><a href="../{slug}">{esc(cname)}</a></td>
         <td><span style="color:{tier_color(tier)};font-weight:700">{score}</span></td>
         <td><span style="color:{tier_color(tier)}">{tier}</span></td>
       </tr>""" for cname, slug, score, tier in members)
 
     item_list = ",\n".join(
         f'      {{"@type":"ListItem","position":{i+1},'
-        f'"url":"{BASE_URL}/company/{slug}.html","name":{json.dumps(cname)}}}'
+        f'"url":"{BASE_URL}/company/{slug}","name":{json.dumps(cname)}}}'
         for i, (cname, slug, *_ ) in enumerate(members))
 
     return sslug, f"""<!DOCTYPE html>
@@ -553,9 +553,9 @@ def sector_page(sname, members):
   <title>ESG Scores of Indian {esc(sname)} Companies (2026) | Green Curve</title>
   <meta name="description" content="{esc(meta_desc)}"/>
   <meta name="robots" content="index,follow"/>
-  <link rel="canonical" href="{BASE_URL}/company/sector/{sslug}.html"/>
+  <link rel="canonical" href="{BASE_URL}/company/sector/{sslug}"/>
   <meta property="og:type" content="website"/>
-  <meta property="og:url" content="{BASE_URL}/company/sector/{sslug}.html"/>
+  <meta property="og:url" content="{BASE_URL}/company/sector/{sslug}"/>
   <meta property="og:site_name" content="Green Curve"/>
   <meta property="og:title" content="ESG Scores of Indian {esc(sname)} Companies"/>
   <meta property="og:description" content="{esc(meta_desc)}"/>
@@ -567,7 +567,7 @@ def sector_page(sname, members):
     "@context":"https://schema.org","@type":"CollectionPage",
     "name":"ESG Scores of Indian {esc(sname)} Companies",
     "description":{json.dumps(meta_desc)},
-    "url":"{BASE_URL}/company/sector/{sslug}.html",
+    "url":"{BASE_URL}/company/sector/{sslug}",
     "publisher":{{"@type":"Organization","name":"Green Curve","url":"{BASE_URL}/"}},
     "mainEntity":{{"@type":"ItemList","numberOfItems":{n},"itemListElement":[
 {item_list}
@@ -638,9 +638,9 @@ sectors_hub = f"""<!DOCTYPE html>
   <title>ESG Scores by Sector — Indian Listed Companies | Green Curve</title>
   <meta name="description" content="Browse ESG risk scores for Indian listed companies across {len(sector_slugs)} sectors — banking, IT, pharma, metals, chemicals, auto and more. Based on SEBI BRSR filings."/>
   <meta name="robots" content="index,follow"/>
-  <link rel="canonical" href="{BASE_URL}/company/sectors.html"/>
+  <link rel="canonical" href="{BASE_URL}/company/sectors"/>
   <meta property="og:type" content="website"/>
-  <meta property="og:url" content="{BASE_URL}/company/sectors.html"/>
+  <meta property="og:url" content="{BASE_URL}/company/sectors"/>
   <meta property="og:title" content="ESG Scores by Sector — Indian Listed Companies"/>
   <meta property="og:description" content="ESG risk scores across {len(sector_slugs)} Indian industry sectors, based on SEBI BRSR filings."/>
   <meta property="og:image" content="{BASE_URL}/assets/img/logo.png"/>
@@ -696,28 +696,28 @@ def url_entry(loc, lastmod, changefreq, priority):
 
 # 1. Core static pages — (path, changefreq, priority)
 STATIC_PAGES = [
-    ("",                       "daily",   "1.0"),  # homepage
-    ("esg-intelligence.html",  "daily",   "0.9"),
-    ("pricing.html",           "monthly", "0.9"),
-    ("calculator.html",        "monthly", "0.8"),
-    ("brsr-simple.html",       "monthly", "0.8"),
-    ("ccts.html",              "weekly",  "0.8"),
-    ("epr-market.html",        "weekly",  "0.9"),
+    ("",                      "daily",   "1.0"),  # homepage
+    ("esg-intelligence",      "daily",   "0.9"),
+    ("pricing",               "monthly", "0.9"),
+    ("calculator",            "monthly", "0.8"),
+    ("brsr-simple",           "monthly", "0.8"),
+    ("ccts",                  "weekly",  "0.8"),
+    ("epr-market",            "weekly",  "0.9"),
     # Evergreen pillar guides (generate_guides.py)
-    ("brsr-reporting.html",               "monthly", "0.9"),
-    ("epr-registration.html",             "monthly", "0.9"),
-    ("scope-3-emissions.html",            "monthly", "0.8"),
-    ("issb-ifrs-india.html",              "monthly", "0.8"),
-    ("carbon-credit-trading-scheme.html", "monthly", "0.8"),
-    ("compare.html",           "monthly", "0.8"),
-    ("methodology.html",       "monthly", "0.7"),
-    ("learn.html",             "weekly",  "0.7"),
-    ("tcfd.html",              "weekly",  "0.7"),
-    ("tcfd-checker.html",      "monthly", "0.7"),
-    ("assurance.html",         "monthly", "0.7"),
-    ("value-chain.html",       "monthly", "0.6"),
-    ("privacy-policy.html",    "yearly",  "0.3"),
-    ("terms-of-use.html",      "yearly",  "0.3"),
+    ("brsr-reporting",               "monthly", "0.9"),
+    ("epr-registration",             "monthly", "0.9"),
+    ("scope-3-emissions",            "monthly", "0.8"),
+    ("issb-ifrs-india",              "monthly", "0.8"),
+    ("carbon-credit-trading-scheme", "monthly", "0.8"),
+    ("compare",               "monthly", "0.8"),
+    ("methodology",           "monthly", "0.7"),
+    ("learn",                 "weekly",  "0.7"),
+    ("tcfd",                  "weekly",  "0.7"),
+    ("tcfd-checker",          "monthly", "0.7"),
+    ("assurance",             "monthly", "0.7"),
+    ("value-chain",           "monthly", "0.6"),
+    ("privacy-policy",        "yearly",  "0.3"),
+    ("terms-of-use",          "yearly",  "0.3"),
 ]
 
 entries = [url_entry(f"{BASE_URL}/{path}", TODAY, cf, pr)
@@ -729,15 +729,15 @@ post_files = sorted(f for f in os.listdir("posts")
 if os.path.exists(os.path.join("posts", "index.html")):
     entries.append(url_entry(f"{BASE_URL}/posts/", TODAY, "weekly", "0.7"))
 for pf in post_files:
-    entries.append(url_entry(f"{BASE_URL}/posts/{pf}", TODAY, "monthly", "0.6"))
+    entries.append(url_entry(f"{BASE_URL}/posts/{pf[:-5]}", TODAY, "monthly", "0.6"))
 
 # 3. Company index + sector hub + sector pages + company pages
 entries.append(url_entry(f"{BASE_URL}/company/", TODAY, "weekly", "0.8"))
-entries.append(url_entry(f"{BASE_URL}/company/sectors.html", TODAY, "weekly", "0.8"))
+entries.append(url_entry(f"{BASE_URL}/company/sectors", TODAY, "weekly", "0.8"))
 for sslug, _sname, _cnt in sector_slugs:
-    entries.append(url_entry(f"{BASE_URL}/company/sector/{sslug}.html", TODAY, "weekly", "0.7"))
+    entries.append(url_entry(f"{BASE_URL}/company/sector/{sslug}", TODAY, "weekly", "0.7"))
 for _, slug, *_ in generated:
-    entries.append(url_entry(f"{BASE_URL}/company/{slug}.html", TODAY, "weekly", "0.7"))
+    entries.append(url_entry(f"{BASE_URL}/company/{slug}", TODAY, "weekly", "0.7"))
 
 sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n'

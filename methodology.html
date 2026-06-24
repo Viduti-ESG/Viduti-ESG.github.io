@@ -6,7 +6,7 @@
   <title>ESG Scoring Methodology | Green Curve</title>
   <meta name="description" content="How Green Curve calculates ESG risk scores for Indian listed companies. Data sources, scoring dimensions, weights, risk tiers and limitations — full transparency."/>
   <meta name="robots" content="index,follow"/>
-  <link rel="canonical" href="https://greencurve.solutions/methodology.html"/>
+  <link rel="canonical" href="https://greencurve.solutions/methodology"/>
   <meta property="og:title" content="ESG Scoring Methodology | Green Curve"/>
   <meta property="og:description" content="Full transparency on how Green Curve calculates ESG Financial Quotient scores for Indian listed companies using SEBI BRSR public filings."/>
   <meta property="og:image" content="https://greencurve.solutions/assets/img/logo.png"/>
@@ -17,7 +17,7 @@
     "headline": "ESG Financial Quotient — Scoring Methodology",
     "description": "How Green Curve calculates ESG risk scores for Indian listed companies using SEBI BRSR public filings.",
     "publisher": { "@type": "Organization", "name": "Green Curve", "url": "https://greencurve.solutions" },
-    "dateModified": "2026-06-08",
+    "dateModified": "2026-06-19",
     "mainEntityOfPage": "https://greencurve.solutions/methodology.html"
   }
   </script>
@@ -45,7 +45,7 @@
 <header class="site-header" id="site-header">
   <nav class="nav container">
     <a href="index.html" class="nav__logo">
-      <img class="logo-mark" src="assets/img/logo.png" alt="Green Curve"/>
+      <img class="logo-mark" src="assets/img/logo-nav.png" alt="Green Curve"/>
       <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
@@ -120,7 +120,7 @@
     <p class="meth-hero__sub">Full transparency on our data sources, scoring dimensions, weighting approach, risk tier definitions, and limitations. If you have questions, <a href="index.html#contact">contact us</a>.</p>
     <div class="meth-hero__meta">
       <span>Last updated: June 2026</span>
-      <span>Covers: 1,227 Indian listed companies</span>
+      <span>Covers: 1,221 Indian listed companies</span>
       <span>Data source: SEBI BRSR public filings</span>
     </div>
   </div>
@@ -134,9 +134,9 @@
     <ol class="meth-toc__list">
       <li><a href="#data-sources">1. Data Sources</a></li>
       <li><a href="#scoring-overview">2. Scoring Overview</a></li>
-      <li><a href="#dimensions">3. The 7 Risk Dimensions</a></li>
-      <li><a href="#weights">4. Dimension Weights</a></li>
-      <li><a href="#sector-weights">5. Sector-Adjusted Weight Profiles</a></li>
+      <li><a href="#dimensions">3. The Three ESG Pillars</a></li>
+      <li><a href="#weights">4. Pillar Weights &amp; Normalisation</a></li>
+      <li><a href="#sector-weights">5. Sector-Relative Ranking &amp; Confidence</a></li>
       <li><a href="#risk-tiers">6. Risk Tier Thresholds</a></li>
       <li><a href="#financial-exposure">7. Financial Exposure Estimates</a></li>
       <li><a href="#double-materiality">8. Double Materiality</a></li>
@@ -200,7 +200,7 @@
       <div class="meth-flow-arrow">→</div>
       <div class="meth-flow-step">
         <div class="meth-flow-num">2</div>
-        <div class="meth-flow-text"><strong>Score</strong> each of 7 risk dimensions on a 0–10 scale</div>
+        <div class="meth-flow-text"><strong>Score</strong> each E / S / G dimension 0–10 by percentile rank vs the universe</div>
       </div>
       <div class="meth-flow-arrow">→</div>
       <div class="meth-flow-step">
@@ -220,110 +220,44 @@
     </div>
 
     <div class="meth-callout meth-callout--blue">
-      <strong>Score interpretation:</strong> A score of 0 means no identified ESG financial risk exposure based on disclosed data. A score of 10 means maximum identified risk exposure. Most Indian listed companies score between 4.0 and 7.0 due to widespread partial disclosures and EPR compliance gaps.
+      <strong>Score interpretation:</strong> A score of 0 means the lowest measured ESG financial risk in the listed universe; 10 means the highest. Scores span the full range, with the median company around 4.3. Read the score alongside its sector-relative percentile and Disclosure Confidence (Section 5).
     </div>
   </section>
 
   <!-- 3. Dimensions -->
   <section class="meth-section" id="dimensions">
-    <h2 class="meth-h2">3. The 7 Risk Dimensions</h2>
-    <p class="meth-p">Each dimension is scored independently on a 0–10 scale before being combined into the composite EFQ score.</p>
+    <h2 class="meth-h2">3. The Three ESG Pillars</h2>
+    <p class="meth-p">Every dimension is scored 0–10 by its <strong>percentile rank</strong> within the listed universe, then rolled up into three pillar scores — Environmental, Social and Governance — that combine into the composite EFQ. Dimensions are grouped by pillar below.</p>
 
     <div class="meth-dim-grid">
 
       <div class="meth-dim-card">
         <div class="meth-dim-header">
-          <span class="meth-dim-icon" style="background:rgba(248,113,113,.12);color:#f87171">🌫️</span>
+          <span class="meth-dim-icon" style="background:rgba(52,211,153,.12);color:#34d399">🌍</span>
           <div>
-            <div class="meth-dim-name">GHG Intensity</div>
-            <div class="meth-dim-weight">Weight: 20%</div>
+            <div class="meth-dim-name">Environmental</div>
+            <div class="meth-dim-weight">Pillar weight: 45%</div>
           </div>
         </div>
-        <p class="meth-dim-desc">Measures carbon emissions intensity relative to revenue. Derived from Scope 1 and Scope 2 absolute emissions disclosed in BRSR (Section C, Principle 6). Scored higher for heavy emitters and for companies with incomplete or nil emissions disclosures, which signals potential SEBI enforcement exposure.</p>
+        <p class="meth-dim-desc"><strong>Carbon intensity</strong> — real Scope 1+2 emissions per ₹ of revenue, re-extracted from BRSR XBRL (Principle 6). <strong>Energy transition</strong> — share of non-renewable energy in the mix. <strong>Water intensity</strong> — water use per ₹ of revenue, credited for Zero Liquid Discharge and treated discharge. <strong>Waste intensity</strong> — waste per ₹ of revenue, credited for documented recovery and recycling.</p>
         <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: Nil or missing Scope 1/2 data</span>
-          <span class="signal-pill signal-pill--amber">Medium: Partial disclosure</span>
-          <span class="signal-pill signal-pill--green">Low: Full, assured disclosure</span>
+          <span class="signal-pill signal-pill--red">High: carbon / resource intensive, low renewables</span>
+          <span class="signal-pill signal-pill--green">Low: efficient, high recovery &amp; renewables</span>
         </div>
       </div>
 
       <div class="meth-dim-card">
         <div class="meth-dim-header">
-          <span class="meth-dim-icon" style="background:rgba(56,189,248,.12);color:#38bdf8">💧</span>
+          <span class="meth-dim-icon" style="background:rgba(56,189,248,.12);color:#38bdf8">👷</span>
           <div>
-            <div class="meth-dim-name">Water Intensity</div>
-            <div class="meth-dim-weight">Weight: 10%</div>
+            <div class="meth-dim-name">Social</div>
+            <div class="meth-dim-weight">Pillar weight: 30%</div>
           </div>
         </div>
-        <p class="meth-dim-desc">Evaluates water withdrawal and consumption relative to sector benchmarks. Scored using absolute water withdrawal (m³) from BRSR, cross-referenced against sector water-stress classifications under CPCB norms. High scores indicate exposure to water-related regulatory tightening or operational disruption risk.</p>
+        <p class="meth-dim-desc"><strong>Workforce safety</strong> — Lost-Time Injury Frequency Rate, fatalities and total recordable injuries (Principle 3), with credit for an occupational health &amp; safety management system. <strong>Diversity</strong> — share of women on the board and in key management. Scored on disclosed figures, not policy yes/no answers.</p>
         <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: High withdrawal, water-stressed region</span>
-          <span class="signal-pill signal-pill--amber">Medium: Moderate disclosure</span>
-          <span class="signal-pill signal-pill--green">Low: Efficiency measures disclosed</span>
-        </div>
-      </div>
-
-      <div class="meth-dim-card">
-        <div class="meth-dim-header">
-          <span class="meth-dim-icon" style="background:rgba(251,191,36,.12);color:#fbbf24">🗑️</span>
-          <div>
-            <div class="meth-dim-name">Waste Intensity</div>
-            <div class="meth-dim-weight">Weight: 15%</div>
-          </div>
-        </div>
-        <p class="meth-dim-desc">Assesses total waste generation (hazardous + non-hazardous) relative to revenue. Scored using BRSR Principle 6 waste data. Companies with high waste generation and no disclosed reclamation or recycling protocols receive maximum scores. Linked directly to EPR obligations.</p>
-        <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: High waste, no reclaim process</span>
-          <span class="signal-pill signal-pill--amber">Medium: Partial waste management</span>
-          <span class="signal-pill signal-pill--green">Low: Circular practices disclosed</span>
-        </div>
-      </div>
-
-      <div class="meth-dim-card">
-        <div class="meth-dim-header">
-          <span class="meth-dim-icon" style="background:rgba(99,102,241,.12);color:#a5b4fc">♻️</span>
-          <div>
-            <div class="meth-dim-name">EPR Exposure</div>
-            <div class="meth-dim-weight">Weight: 20%</div>
-          </div>
-        </div>
-        <p class="meth-dim-desc">Quantifies financial risk from Extended Producer Responsibility obligations under Battery Waste Management Rules 2022, Plastic Waste Management Rules, E-Waste (Management) Rules 2022, and Waste Tyre notification. Scored based on product categories, sector classification, and disclosed EPR compliance status in BRSR Section C.</p>
-        <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: Multiple EPR categories, nil compliance</span>
-          <span class="signal-pill signal-pill--amber">Medium: Partial compliance or unknown</span>
-          <span class="signal-pill signal-pill--green">Low: Full EPR compliance documented</span>
-        </div>
-      </div>
-
-      <div class="meth-dim-card">
-        <div class="meth-dim-header">
-          <span class="meth-dim-icon" style="background:rgba(248,113,113,.12);color:#f87171">⚠️</span>
-          <div>
-            <div class="meth-dim-name">Compliance Risk</div>
-            <div class="meth-dim-weight">Weight: 20%</div>
-          </div>
-        </div>
-        <p class="meth-dim-desc">The highest-weight dimension. Evaluates the completeness and accuracy of BRSR disclosures against SEBI's mandatory framework. Missing mandatory indicators, nil responses for quantitative fields, inconsistencies between reported figures, and absence of third-party assurance all contribute to a higher compliance risk score. Directly linked to SEBI enforcement and potential delisting risk.</p>
-        <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: Multiple nil/missing mandatory fields</span>
-          <span class="signal-pill signal-pill--amber">Medium: Some gaps in disclosure</span>
-          <span class="signal-pill signal-pill--green">Low: Complete, assured disclosure</span>
-        </div>
-      </div>
-
-      <div class="meth-dim-card">
-        <div class="meth-dim-header">
-          <span class="meth-dim-icon" style="background:rgba(52,211,153,.12);color:#34d399">👥</span>
-          <div>
-            <div class="meth-dim-name">HR Risk</div>
-            <div class="meth-dim-weight">Weight: 10%</div>
-          </div>
-        </div>
-        <p class="meth-dim-desc">Assesses human rights and labour practice risks based on BRSR Principle 5 disclosures. Considers MSME sourcing percentage (supply chain inclusion), presence of human rights due diligence policies, contractor workforce treatment, and value chain disclosures. Low MSME sourcing (below 15%) increases this score due to preferential procurement policy risk.</p>
-        <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: No HR policy, &lt;5% MSME sourcing</span>
-          <span class="signal-pill signal-pill--amber">Medium: Partial HR disclosures</span>
-          <span class="signal-pill signal-pill--green">Low: Robust HR framework disclosed</span>
+          <span class="signal-pill signal-pill--red">High: injuries / fatalities, low diversity</span>
+          <span class="signal-pill signal-pill--green">Low: strong safety record, diverse leadership</span>
         </div>
       </div>
 
@@ -331,15 +265,14 @@
         <div class="meth-dim-header">
           <span class="meth-dim-icon" style="background:rgba(167,139,250,.12);color:#c4b5fd">🏛️</span>
           <div>
-            <div class="meth-dim-name">Governance Risk</div>
-            <div class="meth-dim-weight">Weight: 5%</div>
+            <div class="meth-dim-name">Governance</div>
+            <div class="meth-dim-weight">Pillar weight: 25%</div>
           </div>
         </div>
-        <p class="meth-dim-desc">Evaluates anti-corruption policies, conflict of interest frameworks, BRSR assurance level, and board-level ESG accountability from BRSR Principle 1 and Principle 7. Companies with no disclosed anti-corruption policy or no independent BRSR assurance receive higher governance risk scores. Lowest weight as Indian listed companies have relatively standardised governance frameworks under SEBI LODR.</p>
+        <p class="meth-dim-desc"><strong>Pay equity</strong> — ratio of median board remuneration to median worker remuneration (Principle 5). <strong>Assurance</strong> — whether BRSR / BRSR-Core disclosures are independently assured. <strong>Business ethics</strong> — anti-corruption framework. <strong>Fines &amp; penalties</strong> — monetary regulatory penalties relative to revenue.</p>
         <div class="meth-dim-signals">
-          <span class="signal-pill signal-pill--red">High: No anti-corruption policy, no assurance</span>
-          <span class="signal-pill signal-pill--amber">Medium: Partial governance disclosures</span>
-          <span class="signal-pill signal-pill--green">Low: Full governance framework + assurance</span>
+          <span class="signal-pill signal-pill--red">High: wide pay gap, fines, no assurance</span>
+          <span class="signal-pill signal-pill--green">Low: equitable pay, assured, clean record</span>
         </div>
       </div>
 
@@ -349,51 +282,31 @@
   <!-- 4. Weights -->
   <section class="meth-section" id="weights">
     <h2 class="meth-h2">4. Dimension Weights</h2>
-    <p class="meth-p">Weights reflect the relative financial materiality of each dimension to Indian regulatory risk and market exposure, not universal ESG importance. Compliance Risk and EPR Exposure carry the highest weight because they represent the most direct and quantifiable financial penalties under Indian law.</p>
+    <p class="meth-p">Each dimension is first normalised to a 0–10 risk score by its <strong>percentile rank</strong> within the full listed universe (so a company is scored relative to where it actually sits, robust to the extreme spread of raw intensity figures). Sub-scores roll up into three pillar scores, which combine into the composite EFQ. Weighting leans Environmental because carbon, water and waste carry the most direct quantifiable financial exposure under Indian regulation (CCTS, PAT, EPR, CPCB), while Social and Governance add the workforce-safety, diversity and accountability signals BRSR now mandates.</p>
 
     <table class="meth-table">
       <thead>
         <tr>
-          <th>Dimension</th>
+          <th>Pillar</th>
           <th>Weight</th>
-          <th>Primary Rationale</th>
+          <th>Dimensions within the pillar</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Compliance Risk</strong></td>
-          <td><span class="weight-badge weight-badge--high">20%</span></td>
-          <td>Direct SEBI enforcement exposure; mandatory BRSR Core from FY 2023-24</td>
+          <td><strong>Environmental (E)</strong></td>
+          <td><span class="weight-badge weight-badge--high">45%</span></td>
+          <td>Carbon intensity (Scope 1+2 ÷ revenue) · Energy transition (% renewable) · Water intensity · Waste intensity (credited for recovery/recycling &amp; ZLD)</td>
         </tr>
         <tr>
-          <td><strong>EPR Exposure</strong></td>
-          <td><span class="weight-badge weight-badge--high">20%</span></td>
-          <td>Quantifiable penalties under 4 EPR rules; growing CPCB enforcement</td>
+          <td><strong>Social (S)</strong></td>
+          <td><span class="weight-badge weight-badge--high">30%</span></td>
+          <td>Workforce safety (LTIFR, fatalities, recordable injuries, OH&amp;S system) · Board &amp; management diversity (% female directors / KMP)</td>
         </tr>
         <tr>
-          <td><strong>GHG Intensity</strong></td>
-          <td><span class="weight-badge weight-badge--med">20%</span></td>
-          <td>SEBI BRSR Core mandatory; Carbon Credit Trading Scheme (CCTS) exposure</td>
-        </tr>
-        <tr>
-          <td><strong>Waste Intensity</strong></td>
-          <td><span class="weight-badge weight-badge--med">15%</span></td>
-          <td>Linked to EPR obligations and Hazardous Waste Management Rules</td>
-        </tr>
-        <tr>
-          <td><strong>Water Intensity</strong></td>
-          <td><span class="weight-badge weight-badge--low">10%</span></td>
-          <td>Sector-specific; operational risk in water-stressed regions of India</td>
-        </tr>
-        <tr>
-          <td><strong>HR Risk</strong></td>
-          <td><span class="weight-badge weight-badge--low">10%</span></td>
-          <td>MSME sourcing policy risk; BRSR Principle 5 compliance</td>
-        </tr>
-        <tr>
-          <td><strong>Governance Risk</strong></td>
-          <td><span class="weight-badge weight-badge--min">5%</span></td>
-          <td>SEBI LODR baseline governance already mandated for listed entities</td>
+          <td><strong>Governance (G)</strong></td>
+          <td><span class="weight-badge weight-badge--med">25%</span></td>
+          <td>Pay equity (board-to-worker remuneration ratio) · Independent BRSR assurance · Business ethics (anti-corruption) · Fines &amp; penalties</td>
         </tr>
         <tr class="meth-table__total">
           <td><strong>Total</strong></td>
@@ -405,170 +318,71 @@
 
     <p class="meth-p" style="margin-top:20px">The composite EFQ score is calculated as:</p>
     <div class="meth-formula">
-      EFQ Score = (0.20 × Compliance) + (0.20 × EPR) + (0.20 × GHG) + (0.15 × Waste) + (0.10 × Water) + (0.10 × HR) + (0.05 × Governance)
+      EFQ Score = (0.45 × Environmental) + (0.30 × Social) + (0.25 × Governance)
+    </div>
+    <div class="meth-callout meth-callout--blue">
+      <strong>Missing data is never imputed to a midpoint.</strong> Each pillar is a weighted average over the dimensions a company actually discloses; weights re-normalise to the disclosed set. How much of the score rests on verified data is reported separately as <strong>Disclosure Confidence</strong> (Section 5) rather than silently inflating or deflating the risk score.
     </div>
   </section>
 
   <!-- 5. Sector-Adjusted Weight Profiles -->
   <section class="meth-section" id="sector-weights">
-    <h2 class="meth-h2">5. Sector-Adjusted Weight Profiles</h2>
-    <p class="meth-p">The base formula above applies equal 20% weight to GHG Intensity, EPR Exposure, and Compliance Risk across all companies. In practice, ESG financial materiality is highly sector-dependent — a steel plant's dominant exposure is carbon (CCTS, PAT Scheme), while a bank's is governance and HR. Green Curve applies the following sector-adjusted profiles so scores reflect where regulatory penalties are most likely to land for that specific business.</p>
+    <h2 class="meth-h2">5. Sector-Relative Ranking &amp; Disclosure Confidence</h2>
+    <p class="meth-p">Absolute ESG intensity varies by orders of magnitude across sectors — a steelmaker's carbon footprint is not comparable to a bank's. So alongside the absolute EFQ score, every company carries a <strong>sector-relative percentile</strong>: its rank against true peers, grouped by the official Indian <strong>NIC industrial classification</strong> (2-digit division) declared in its own BRSR filing. A company is judged against steelmakers, banks against banks. This is the headline figure on company cards; the absolute tier (Section 6) provides the cross-sector reference.</p>
 
     <div class="meth-callout meth-callout--blue">
-      <strong>Assignment:</strong> Each company is assigned to one of six sector groups based on its BRSR-declared NIC classification and primary business segment. The sector-adjusted formula replaces the universal formula for that company's scoring run. Where a company spans multiple segments, the primary revenue segment determines the profile applied.
+      <strong>How peers are formed:</strong> The 1,200+ companies resolve into ~20 NIC sector divisions. Where a division has at least 8 companies, the percentile is computed within that division; smaller divisions fall back to a whole-universe percentile so every company still gets a fair relative rank.
     </div>
 
-    <div style="overflow-x:auto;margin-top:28px">
-      <table class="meth-table">
-        <thead>
-          <tr>
-            <th style="min-width:130px">Dimension</th>
-            <th>Base</th>
-            <th>Heavy Industry<br/><small style="font-weight:400;opacity:.6">Steel · Metals · Mining<br/>Cement · Chemicals</small></th>
-            <th>Power &amp; Energy<br/><small style="font-weight:400;opacity:.6">Power Gen · Oil &amp; Gas<br/>Utilities</small></th>
-            <th>Financial Services<br/><small style="font-weight:400;opacity:.6">Banks · NBFC<br/>Insurance · AMC</small></th>
-            <th>IT &amp; Software<br/><small style="font-weight:400;opacity:.6">IT Services · SaaS<br/>Tech</small></th>
-            <th>Consumer &amp; FMCG<br/><small style="font-weight:400;opacity:.6">FMCG · Retail<br/>Food · Textiles</small></th>
-            <th>Real Estate &amp; Infra<br/><small style="font-weight:400;opacity:.6">Realty · Construction<br/>Infrastructure</small></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>GHG Intensity</strong></td>
-            <td><span class="weight-badge weight-badge--med">20%</span></td>
-            <td><span class="weight-badge weight-badge--high">30% ↑</span></td>
-            <td><span class="weight-badge weight-badge--high">35% ↑</span></td>
-            <td><span class="weight-badge weight-badge--low">10% ↓</span></td>
-            <td><span class="weight-badge weight-badge--med">15% ↓</span></td>
-            <td><span class="weight-badge weight-badge--low">10% ↓</span></td>
-            <td><span class="weight-badge weight-badge--med">20%</span></td>
-          </tr>
-          <tr>
-            <td><strong>EPR Exposure</strong></td>
-            <td><span class="weight-badge weight-badge--high">20%</span></td>
-            <td><span class="weight-badge weight-badge--med">15% ↓</span></td>
-            <td><span class="weight-badge weight-badge--low">8% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
-            <td><span class="weight-badge weight-badge--high">28% ↑</span></td>
-            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
-          </tr>
-          <tr>
-            <td><strong>Compliance Risk</strong></td>
-            <td><span class="weight-badge weight-badge--high">20%</span></td>
-            <td><span class="weight-badge weight-badge--med">18%</span></td>
-            <td><span class="weight-badge weight-badge--high">20%</span></td>
-            <td><span class="weight-badge weight-badge--high">30% ↑</span></td>
-            <td><span class="weight-badge weight-badge--high">30% ↑</span></td>
-            <td><span class="weight-badge weight-badge--high">22% ↑</span></td>
-            <td><span class="weight-badge weight-badge--high">25% ↑</span></td>
-          </tr>
-          <tr>
-            <td><strong>Waste Intensity</strong></td>
-            <td><span class="weight-badge weight-badge--med">15%</span></td>
-            <td><span class="weight-badge weight-badge--high">20% ↑</span></td>
-            <td><span class="weight-badge weight-badge--med">15%</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--med">15%</span></td>
-            <td><span class="weight-badge weight-badge--med">17% ↑</span></td>
-          </tr>
-          <tr>
-            <td><strong>Water Intensity</strong></td>
-            <td><span class="weight-badge weight-badge--low">10%</span></td>
-            <td><span class="weight-badge weight-badge--low">10%</span></td>
-            <td><span class="weight-badge weight-badge--med">15% ↑</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">8% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--med">18% ↑</span></td>
-          </tr>
-          <tr>
-            <td><strong>HR Risk</strong></td>
-            <td><span class="weight-badge weight-badge--low">10%</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">5% ↓</span></td>
-            <td><span class="weight-badge weight-badge--high">20% ↑</span></td>
-            <td><span class="weight-badge weight-badge--high">22% ↑</span></td>
-            <td><span class="weight-badge weight-badge--med">18% ↑</span></td>
-            <td><span class="weight-badge weight-badge--low">8% ↓</span></td>
-          </tr>
-          <tr>
-            <td><strong>Governance Risk</strong></td>
-            <td><span class="weight-badge weight-badge--min">5%</span></td>
-            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
-            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
-            <td><span class="weight-badge weight-badge--high">25% ↑</span></td>
-            <td><span class="weight-badge weight-badge--med">18% ↑</span></td>
-            <td><span class="weight-badge weight-badge--min">2% ↓</span></td>
-            <td><span class="weight-badge weight-badge--low">10% ↑</span></td>
-          </tr>
-          <tr class="meth-table__total">
-            <td><strong>Total</strong></td>
-            <td><strong>100%</strong></td>
-            <td><strong>100%</strong></td>
-            <td><strong>100%</strong></td>
-            <td><strong>100%</strong></td>
-            <td><strong>100%</strong></td>
-            <td><strong>100%</strong></td>
-            <td><strong>100%</strong></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <h3 class="meth-h3" style="margin-top:32px">Disclosure Confidence</h3>
+    <p class="meth-p">Because the score is built only from the dimensions a company actually discloses (never imputed to a midpoint), each company also carries a <strong>Disclosure Confidence</strong> figure (0–100%) — the share of scored dimensions backed by verified data, weighted toward independently-assured disclosures. A company can have a low risk score on thin data; Confidence tells you how much to trust it. This separates two things older single-number ratings conflate: <em>how risky a company is</em> and <em>how well we can actually see it</em>.</p>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px;margin-top:24px">
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">⚙️ Heavy Industry</div>
-        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Carbon pricing under the Carbon Credit Trading Scheme (₹600–900/tCO₂e) and PAT Scheme non-compliance are the largest quantifiable financial exposures. Hazardous waste from Schedule I industries amplifies Waste Intensity weight over EPR, which is narrower here than in consumer sectors.</p>
+    <div class="meth-source-grid">
+      <div class="meth-source-card">
+        <div class="meth-source-icon">🟢</div>
+        <div>
+          <div class="meth-source-title">High Confidence (≥ 80%)</div>
+          <div class="meth-source-desc">Most pillars backed by disclosed, often externally-assured BRSR data. The score is well-supported.</div>
+        </div>
       </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">⚡ Power &amp; Energy</div>
-        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Scope 1 emissions define the ESG risk profile — thermal plants account for the majority of India's industrial GHG. Water intensity raised because cooling water withdrawals at thermal stations create a direct operational and regulatory exposure under CPCB consent conditions.</p>
+      <div class="meth-source-card">
+        <div class="meth-source-icon">🟡</div>
+        <div>
+          <div class="meth-source-title">Partial Confidence (50–79%)</div>
+          <div class="meth-source-desc">Some pillars rest on limited disclosure. Read the score alongside the disclosed-data coverage.</div>
+        </div>
       </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">🏦 Financial Services</div>
-        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Negligible direct emissions but high governance exposure — RBI and SEBI dual regulation, board accountability under SEBI LODR, and climate risk embedded in loan books. HR Risk elevated for workforce-intensive operations and POSH compliance obligations.</p>
-      </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">💻 IT &amp; Software</div>
-        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Low physical footprint, but Compliance and Governance dominate — SEBI BRSR mandatory disclosures, upcoming DPDP Act obligations, and board-level ESG accountability. HR Risk elevated due to talent-intensive workforce, DEI scrutiny, and complex global supply chain labour standards.</p>
-      </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">🛒 Consumer &amp; FMCG</div>
-        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Highest EPR exposure of any sector group: multi-layer plastic packaging, PET bottles, and extended supply chains create layered obligations under the Plastic Waste Management Rules, Battery Rules, and upcoming packaging EPR targets. HR Risk elevated for supply chain labour conditions.</p>
-      </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:.88rem">🏗️ Real Estate &amp; Infra</div>
-        <p style="font-size:.78rem;color:var(--text-70);margin:0;line-height:1.65">Construction water consumption and solid waste (concrete, steel, cement) are disproportionately material. Governance weight raised due to elevated related-party transaction risk and project-level accountability gaps consistently observed in sector BRSR filings.</p>
+      <div class="meth-source-card">
+        <div class="meth-source-icon">🔴</div>
+        <div>
+          <div class="meth-source-title">Thin Disclosure (&lt; 50%)</div>
+          <div class="meth-source-desc">Material gaps in the underlying filing. The score is directional and should be treated with caution.</div>
+        </div>
       </div>
     </div>
 
-    <div class="meth-callout meth-callout--amber" style="margin-top:24px">
-      <strong>Methodology versioning:</strong> Sector weight profiles are versioned with each annual BRSR data update cycle. Any revision to a sector profile is logged in the methodology changelog and the effective date is shown on affected company score cards. Revisions are available on request.
-    </div>
   </section>
 
   <!-- 6. Risk Tiers -->
   <section class="meth-section" id="risk-tiers">
     <h2 class="meth-h2">6. Risk Tier Thresholds</h2>
-    <p class="meth-p">Companies are classified into three tiers based on their composite EFQ score. Thresholds are calibrated to the Indian listed company universe — most companies score in the Medium range due to widespread partial disclosures across BRSR mandatory fields.</p>
+    <p class="meth-p">Companies are classified into three tiers based on their composite EFQ score. Thresholds are calibrated to the actual distribution of the Indian listed universe (terciles), so each tier holds roughly a third of companies. The headline view on company cards is the <strong>sector-relative percentile</strong> (see Section 5); these absolute bands provide a cross-sector reference.</p>
 
     <div class="meth-tier-grid">
       <div class="meth-tier-card meth-tier-card--high">
-        <div class="meth-tier-score">≥ 6.5 / 10</div>
+        <div class="meth-tier-score">≥ 5.0 / 10</div>
         <div class="meth-tier-name">High Risk</div>
-        <div class="meth-tier-desc">Material financial exposure from ESG compliance gaps. Significant unreported emissions, major EPR obligations unaddressed, or critical BRSR disclosure failures. Warrants immediate attention from management and investors.</div>
+        <div class="meth-tier-desc">Top tier of measured ESG financial risk in the listed universe — typically high carbon/resource intensity, weak workforce-safety or governance metrics, or a combination across pillars. Warrants attention from management and investors.</div>
       </div>
       <div class="meth-tier-card meth-tier-card--medium">
-        <div class="meth-tier-score">4.0 – 6.4 / 10</div>
+        <div class="meth-tier-score">3.5 – 5.0 / 10</div>
         <div class="meth-tier-name">Medium Risk</div>
-        <div class="meth-tier-desc">Moderate financial exposure. Partial disclosures, some regulatory compliance gaps, or sector-specific exposure to evolving Indian ESG regulations. Requires monitoring and targeted disclosure improvements.</div>
+        <div class="meth-tier-desc">Mid tier of measured risk. Mixed performance across the Environmental, Social and Governance pillars. Read alongside the Disclosure Confidence indicator, which shows how much of the score rests on verified data.</div>
       </div>
       <div class="meth-tier-card meth-tier-card--low">
-        <div class="meth-tier-score">&lt; 4.0 / 10</div>
+        <div class="meth-tier-score">&lt; 3.5 / 10</div>
         <div class="meth-tier-name">Low Risk</div>
-        <div class="meth-tier-desc">Limited identified financial exposure from ESG compliance. Comprehensive BRSR disclosures, low environmental intensity, and documented regulatory compliance. Consistent with ESG leadership within the Indian listed universe.</div>
+        <div class="meth-tier-desc">Lowest tier of measured ESG financial risk — low resource intensity and/or strong safety, diversity and governance metrics relative to the universe. Consistent with ESG leadership among Indian listed companies.</div>
       </div>
     </div>
   </section>
@@ -643,7 +457,7 @@
         <div class="meth-limit-icon">⚠️</div>
         <div>
           <strong>Self-Reported Data</strong>
-          <p>All scores are based on data companies have chosen to disclose in their BRSR filings. Companies that disclose less may appear riskier than they are (due to penalising incomplete disclosures), and companies that over-report may appear less risky. We score what is disclosed — not what is true.</p>
+          <p>All scores are based on data companies disclose in their BRSR filings. We score only what is disclosed (never imputing missing data to a midpoint) and report coverage separately as Disclosure Confidence — so thin disclosure lowers confidence rather than silently distorting the score. We score what is disclosed — not what is true.</p>
         </div>
       </div>
       <div class="meth-limit-item">
@@ -671,7 +485,7 @@
         <div class="meth-limit-icon">⚠️</div>
         <div>
           <strong>Coverage Scope</strong>
-          <p>The current dataset covers 155 companies — a subset of India's listed universe. Absence from our database does not imply lower or higher ESG risk. We are working to expand coverage to NIFTY 500.</p>
+          <p>The current dataset covers over 1,200 listed companies — a large subset of India's listed universe. Absence from our database does not imply lower or higher ESG risk. We are working to expand coverage further.</p>
         </div>
       </div>
     </div>
@@ -688,8 +502,8 @@
       </details>
 
       <details class="meth-faq-item">
-        <summary>Why do some companies have identical scores across all dimensions?</summary>
-        <p>When a company's BRSR filing contains nil or missing data across multiple required fields, the scoring algorithm applies a disclosure-penalty score reflecting the regulatory risk of non-disclosure. This can result in identical dimension scores for companies with similar disclosure gaps, even if their actual environmental performance differs.</p>
+        <summary>What does Disclosure Confidence mean, and how is it different from the risk score?</summary>
+        <p>The risk score measures <em>how much ESG financial risk</em> a company carries; Disclosure Confidence (0–100%) measures <em>how much of that score rests on verified data</em>. Missing data is never imputed to a midpoint — each pillar is computed only over the dimensions a company actually discloses, and Confidence reports the coverage (weighted toward independently-assured figures). A low score on low confidence should be read with caution.</p>
       </details>
 
       <details class="meth-faq-item">
@@ -709,7 +523,7 @@
 
       <details class="meth-faq-item">
         <summary>Can I use this data in my research or reports?</summary>
-        <p>Yes, with attribution. You may cite Green Curve ESG Financial Quotient scores in research, journalism, or analysis with a reference to <strong>greencurve.github.io</strong> and the data date. You may not reproduce the dataset wholesale or use it for commercial redistribution without written permission.</p>
+        <p>Yes, with attribution. You may cite Green Curve ESG Financial Quotient scores in research, journalism, or analysis with a reference to <strong>greencurve.solutions</strong> and the data date. You may not reproduce the dataset wholesale or use it for commercial redistribution without written permission.</p>
       </details>
 
     </div>
@@ -718,7 +532,7 @@
   <!-- CTA -->
   <div class="meth-cta">
     <a href="esg-intelligence.html" class="meth-cta-btn">Explore ESG Quotient Dashboard &rarr;</a>
-    <a href="company/index.html" class="meth-cta-link">Browse all 155 companies</a>
+    <a href="company/index.html" class="meth-cta-link">Browse all companies</a>
   </div>
 
 </main>

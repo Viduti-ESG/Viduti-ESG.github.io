@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seller Dashboard — Green Curve Marketplace</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=3" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:920px; margin:0 auto; padding:28px 20px 80px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:22px; }
+    .panel h2 { margin-top:0; font-size:1.15rem; color:#12331f; }
+    label { display:block; font-size:.85rem; font-weight:600; color:#456; margin:12px 0 4px; }
+    input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--gc-line); border-radius:8px; font-size:.95rem; font-family:inherit; box-sizing:border-box; }
+    textarea { min-height:70px; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; }
+    .row > div { flex:1; min-width:160px; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.95rem; }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .btn-primary:hover { background:var(--gc-green-dark); }
+    .btn-sm { padding:6px 12px; font-size:.85rem; }
+    .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
+    .msg { padding:10px 14px; border-radius:8px; margin:10px 0; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.error { background:#fde8e8; color:#b42318; }
+    .msg.success { background:#e3f5e9; color:#1f7a4d; }
+    .pill { font-size:.72rem; padding:3px 10px; border-radius:20px; font-weight:600; }
+    .pill.pending { background:#fff3e0; color:#b06a00; }
+    .pill.approved,.pill.verified,.pill.listed { background:#e3f5e9; color:#1f7a4d; }
+    .pill.rejected { background:#fde8e8; color:#b42318; }
+    .pill.draft { background:#eef1f4; color:#5a6b7b; }
+    .item { border:1px solid var(--gc-line); border-radius:10px; padding:14px; margin-bottom:12px; }
+    .item h4 { margin:0 0 4px; }
+    .item .meta { font-size:.82rem; color:#789; }
+    .hidden { display:none; }
+    .kyc-banner { background:#fff8e6; border:1px solid #f0d98a; border-radius:8px; padding:10px 14px; font-size:.85rem; color:#7a5a00; margin-bottom:18px; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/marketplace">← Back to marketplace</a>
+    <h1>Seller Dashboard</h1>
+    <div class="msg" id="msg"></div>
+
+    <!-- Gate shown when not logged in -->
+    <div class="panel hidden" id="loginGate">
+      <h2>Sign in to sell</h2>
+      <p>You need a Green Curve account to list products. <a href="/login?next=/seller-dashboard">Sign in or create an account →</a></p>
+    </div>
+
+    <!-- Onboarding (no seller profile yet) -->
+    <div class="panel hidden" id="onboard">
+      <h2>Become a seller</h2>
+      <p style="color:#456">Tell us about your business. We verify every seller (KYC) before products go live.</p>
+      <label>Business name *</label>
+      <input id="biz_name" placeholder="e.g. Earthen Goods Pvt Ltd" />
+      <div class="row">
+        <div><label>GSTIN</label><input id="biz_gstin" placeholder="22AAAAA0000A1Z5" /></div>
+        <div><label>Contact phone</label><input id="biz_phone" placeholder="+91…" /></div>
+      </div>
+      <label>Address</label>
+      <input id="biz_address" placeholder="City, State" />
+      <label>About your business</label>
+      <textarea id="biz_desc" placeholder="What sustainable products do you make?"></textarea>
+      <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.createSeller()">Create seller profile</button></div>
+    </div>
+
+    <!-- Seller workspace -->
+    <div id="workspace" class="hidden">
+      <div class="kyc-banner hidden" id="kycBanner"></div>
+
+      <div class="panel">
+        <h2>Add a product</h2>
+        <label>Product name *</label>
+        <input id="p_name" placeholder="e.g. Cold-pressed Organic Soap" />
+        <div class="row">
+          <div><label>Price (₹)</label><input id="p_price" type="number" min="0" step="1" placeholder="0" /></div>
+          <div><label>Category</label><select id="p_category"></select></div>
+        </div>
+        <label>Description</label>
+        <textarea id="p_desc" placeholder="Materials, what makes it sustainable…"></textarea>
+        <label>Sustainability highlights (comma-separated)</label>
+        <input id="p_attrs" placeholder="Plastic-free packaging, Vegan, Locally sourced" />
+        <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.addProduct()">Add product</button></div>
+      </div>
+
+      <div class="panel">
+        <h2>Upload a certificate</h2>
+        <p style="color:#456;font-size:.88rem">Organic / sustainability certificates are reviewed by Green Curve. Verified certificates show a green ✓ badge on your products and unlock certificate-required categories.</p>
+        <div class="row">
+          <div><label>Certificate type *</label><select id="c_type"></select></div>
+          <div><label>Applies to</label><select id="c_product"><option value="">All my products (whole business)</option></select></div>
+        </div>
+        <div class="row">
+          <div><label>Certificate number</label><input id="c_number" placeholder="As printed on the certificate" /></div>
+          <div><label>Issuer</label><input id="c_issuer" placeholder="e.g. APEDA" /></div>
+        </div>
+        <div class="row">
+          <div><label>Issue date</label><input id="c_issue" type="date" /></div>
+          <div><label>Expiry date</label><input id="c_expiry" type="date" /></div>
+        </div>
+        <label>Certificate file (PDF / image, max 8 MB) *</label>
+        <input id="c_file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" />
+        <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.uploadCert()">Upload certificate</button></div>
+      </div>
+
+      <div class="panel">
+        <h2>My products</h2>
+        <div id="productList"><p style="color:#789">Loading…</p></div>
+      </div>
+
+      <div class="panel">
+        <h2>My certificates</h2>
+        <div id="certList"><p style="color:#789">Loading…</p></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/seller-dashboard.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

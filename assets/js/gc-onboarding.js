@@ -17,7 +17,7 @@
     {
       target: '[data-tab="screener"]',
       title: "ESG Screener",
-      body: "Search and filter all 1,227 NSE/BSE-listed companies by ESG score, sector, risk tier, or BRSR filing status.",
+      body: "Search and filter all 1,221 NSE/BSE-listed companies by ESG score, sector, risk tier, or BRSR filing status.",
       pos: 'bottom',
     },
     {
