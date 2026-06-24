@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team & Collaboration — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Work as a team in Green Curve — invite colleagues, manage roles, and access ESG documents and BRSR reports shared with you." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=3" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:980px; margin:0 auto; padding:28px 20px 90px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
+    .sub { color:#567; margin-top:0; font-size:.95rem; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:22px; }
+    .panel h2 { margin-top:0; font-size:1.12rem; color:#12331f; }
+    label { display:block; font-size:.82rem; font-weight:600; color:#456; margin:10px 0 4px; }
+    input, select { width:100%; padding:9px 11px; border:1px solid var(--gc-line); border-radius:8px; font-size:.92rem; font-family:inherit; box-sizing:border-box; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+    .row > div { flex:1; min-width:140px; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.94rem; }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .btn-primary:hover { background:var(--gc-green-dark); }
+    .btn-sm { padding:7px 12px; font-size:.84rem; }
+    .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
+    .msg { padding:10px 14px; border-radius:8px; margin:10px 0; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.error { background:#fde8e8; color:#b42318; }
+    .msg.success { background:#e3f5e9; color:#1f7a4d; }
+    .hidden { display:none; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+    .muted { color:#789; font-size:.82rem; font-weight:400; }
+    .pill { font-size:.7rem; padding:2px 9px; border-radius:20px; font-weight:600; }
+    .pill.invited { background:#fff3e0; color:#b06a00; }
+    .pill.role { background:#eef1f4; color:#5a6b7b; text-transform:capitalize; }
+    .team-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+    .team-tab { background:#f3f7f4; border:1px solid var(--gc-line); border-radius:20px; padding:7px 14px; cursor:pointer; font-size:.88rem; color:#345; }
+    .team-tab.active { background:var(--gc-green); color:#fff; border-color:var(--gc-green); }
+    table { width:100%; border-collapse:collapse; font-size:.9rem; }
+    th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gc-line); vertical-align:middle; }
+    td select { width:auto; padding:5px 8px; }
+    .link-del { background:none; border:none; color:#b42318; cursor:pointer; font-size:.82rem; }
+    .detail-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    ul.shared { list-style:none; padding:0; margin:0; }
+    ul.shared li { padding:8px 0; border-bottom:1px solid var(--gc-line); }
+    ul.shared a { color:var(--gc-green-dark); font-weight:600; text-decoration:none; }
+    ul.shared a:hover { text-decoration:underline; }
+    .task { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--gc-line); }
+    .task.done strong { text-decoration:line-through; color:#9aa; }
+    .task select { width:auto; padding:5px 8px; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/">← Back to Green Curve</a>
+    <h1>Team &amp; Collaboration</h1>
+    <p class="sub">Invite colleagues, manage roles, and access the ESG documents and BRSR reports your team shares with you.</p>
+    <div class="msg" id="msg"></div>
+
+    <div class="panel hidden" id="loginGate">
+      <h2>Sign in to collaborate</h2>
+      <p>Teams are tied to your Green Curve account. <a href="/login?next=/team">Sign in or create an account →</a></p>
+    </div>
+
+    <div id="workspace" class="hidden">
+      <div class="panel">
+        <h2>Your teams</h2>
+        <div class="team-tabs" id="teamTabs"></div>
+        <div class="row" style="margin-top:10px">
+          <div><label>New team name</label><input id="t_name" placeholder="e.g. Acme ESG Team" /></div>
+          <div style="flex:0"><button class="btn btn-primary btn-sm" onclick="GC.createTeam()">+ Create team</button></div>
+        </div>
+      </div>
+
+      <div class="panel hidden" id="teamDetail">
+        <div class="detail-head">
+          <h2 id="detailName" style="margin:0"></h2>
+          <span class="pill role" id="myRoleBadge"></span>
+        </div>
+
+        <div id="inviteBox" class="hidden" style="margin-top:14px">
+          <div class="row">
+            <div><label>Invite by email</label><input id="i_email" type="email" placeholder="colleague@company.com" /></div>
+            <div style="flex:0;min-width:130px"><label>Role</label>
+              <select id="i_role"><option value="editor">Editor</option><option value="viewer">Viewer</option><option value="admin">Admin</option></select>
+            </div>
+            <div style="flex:0"><button class="btn btn-ghost btn-sm" onclick="GC.invite()">Send invite</button></div>
+          </div>
+          <p class="muted" style="margin-top:6px">Editors can co-author shared reports & documents; viewers have read-only access; admins can also manage members.</p>
+        </div>
+
+        <table style="margin-top:14px">
+          <thead><tr><th>Member</th><th>Role</th><th></th></tr></thead>
+          <tbody id="memberList"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h2>Shared with me</h2>
+        <ul class="shared" id="sharedList"><li class="muted">Loading…</li></ul>
+      </div>
+
+      <div class="panel">
+        <h2>My tasks</h2>
+        <div id="taskList"><p class="muted">Loading…</p></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/team.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

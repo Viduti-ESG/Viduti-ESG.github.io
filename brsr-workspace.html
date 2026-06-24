@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRSR Workspace — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Draft, save, resume and track your annual BRSR filing — per financial year, with completion tracking, deadlines and linked ESG evidence." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=3" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:1080px; margin:0 auto; padding:28px 20px 90px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
+    .sub { color:#567; margin-top:0; font-size:.95rem; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:22px; }
+    .panel h2 { margin-top:0; font-size:1.12rem; color:#12331f; }
+    label { display:block; font-size:.82rem; font-weight:600; color:#456; margin:10px 0 4px; }
+    input, textarea, select { width:100%; padding:9px 11px; border:1px solid var(--gc-line); border-radius:8px; font-size:.92rem; font-family:inherit; box-sizing:border-box; }
+    textarea { min-height:60px; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; }
+    .row > div { flex:1; min-width:150px; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.94rem; }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .btn-primary:hover { background:var(--gc-green-dark); }
+    .btn-sm { padding:6px 12px; font-size:.82rem; }
+    .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
+    .msg { padding:10px 14px; border-radius:8px; margin:10px 0; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.error { background:#fde8e8; color:#b42318; }
+    .msg.success { background:#e3f5e9; color:#1f7a4d; }
+    .hidden { display:none; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+    .disclaimer { background:#fff8e6; border:1px solid #f0d98a; border-radius:8px; padding:10px 14px; font-size:.82rem; color:#7a5a00; margin-bottom:18px; }
+    .pill { font-size:.7rem; padding:3px 10px; border-radius:20px; font-weight:600; text-transform:capitalize; }
+    .pill.draft { background:#eef1f4; color:#5a6b7b; }
+    .pill.in_review { background:#fff3e0; color:#b06a00; }
+    .pill.final { background:#e3f5e9; color:#1f7a4d; }
+    /* report cards */
+    .rgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+    .rcard { border:1px solid var(--gc-line); border-radius:10px; padding:14px; cursor:pointer; position:relative; transition:box-shadow .15s; }
+    .rcard:hover { box-shadow:0 4px 14px rgba(0,0,0,.07); }
+    .rcard-top { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .rcard h4 { margin:0 0 4px; font-size:.98rem; }
+    .rmeta { font-size:.78rem; color:#789; margin-top:6px; }
+    .prog { height:7px; background:#eef1f4; border-radius:6px; overflow:hidden; margin-top:8px; }
+    .prog-fill { height:100%; background:var(--gc-green); }
+    .rdel { position:absolute; bottom:10px; right:12px; background:none; border:none; color:#b08; opacity:.55; cursor:pointer; font-size:.75rem; }
+    .rdel:hover { opacity:1; color:#b42318; }
+    .dl { font-weight:600; }
+    .dl.overdue { color:#b42318; } .dl.soon { color:#b06a00; } .dl.ok { color:#1f7a4d; }
+    /* editor */
+    .editor-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+    .progbar { height:10px; background:#eef1f4; border-radius:6px; overflow:hidden; margin:8px 0 4px; }
+    #progFill { height:100%; background:var(--gc-green); transition:width .3s; width:0; }
+    .sec { border-top:1px solid var(--gc-line); padding-top:14px; margin-top:18px; }
+    .sec h3 { font-size:1rem; color:#12331f; margin:0 0 10px; }
+    .sec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px 16px; }
+    .fld.wide { grid-column:1/-1; }
+    .req { color:#b42318; }
+    .chip { display:inline-flex; align-items:center; gap:6px; background:#eef5f0; border:1px solid #cfe6d7; border-radius:20px; padding:4px 10px; font-size:.8rem; color:#345; margin:4px 6px 0 0; }
+    .chip button { background:none; border:none; color:#789; cursor:pointer; font-size:.95rem; line-height:1; }
+    .savebar { font-size:.82rem; color:#567; }
+    .sticky-actions { position:sticky; top:0; background:#fff; z-index:5; padding:10px 0; border-bottom:1px solid var(--gc-line); display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/">← Back to Green Curve</a>
+    <h1>BRSR Workspace</h1>
+    <p class="sub">Draft, save and resume your BRSR filing — one report per financial year, with completion tracking, filing deadlines, and ESG evidence linked from your Data Room.</p>
+    <div class="msg" id="msg"></div>
+
+    <div class="panel hidden" id="loginGate">
+      <h2>Sign in to your BRSR Workspace</h2>
+      <p>Your saved BRSR reports are private to your Green Curve account. <a href="/login?next=/brsr-workspace">Sign in or create an account →</a></p>
+    </div>
+
+    <div id="workspace" class="hidden">
+      <div class="disclaimer">
+        This is a BRSR <strong>preparation aid</strong>, not an assurance or audit. The filing entity remains responsible for the accuracy and completeness of its BRSR submission to SEBI. BRSR is a public SEBI format; no third-party framework licence is implied.
+      </div>
+
+      <div class="panel">
+        <h2>New BRSR report</h2>
+        <div class="row">
+          <div><label>Title</label><input id="r_title" placeholder="e.g. BRSR FY2024-25" /></div>
+          <div><label>Financial year</label><input id="r_fy" placeholder="2024-25" /></div>
+          <div><label>Filing deadline</label><input id="r_deadline" type="date" /></div>
+        </div>
+        <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.createReport()">+ Create report</button></div>
+      </div>
+
+      <div class="panel">
+        <h2>My BRSR reports</h2>
+        <div class="rgrid" id="reportList"><p style="color:#789">Loading…</p></div>
+      </div>
+
+      <!-- Editor -->
+      <div class="panel hidden" id="editor">
+        <div class="sticky-actions">
+          <button class="btn btn-ghost btn-sm" onclick="GC.closeEditor()">← All reports</button>
+          <button class="btn btn-ghost btn-sm" onclick="GC.saveNow()">Save now</button>
+          <button class="btn btn-ghost btn-sm" onclick="GC.exportReport()">⬇ Export JSON</button>
+          <span class="savebar" id="saveState"></span>
+        </div>
+
+        <div class="editor-head" style="margin-top:14px">
+          <h2 style="margin:0">Edit report</h2>
+          <span id="progLabel" class="savebar">0% complete</span>
+        </div>
+        <div class="progbar"><div id="progFill"></div></div>
+
+        <div class="row" style="margin-top:8px">
+          <div><label>Title</label><input id="e_title" /></div>
+          <div><label>Financial year</label><input id="e_fy" /></div>
+          <div><label>Filing deadline</label><input id="e_deadline" type="date" /></div>
+          <div><label>Status</label><select id="e_status"><option value="draft">Draft</option><option value="in_review">In review</option><option value="final">Final</option></select></div>
+        </div>
+
+        <div class="sec" style="border:none">
+          <h3>Linked evidence (from Data Room)</h3>
+          <div id="evList"></div>
+          <div style="margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="GC.openEvidencePicker()">+ Link a Data Room document</button></div>
+          <div class="hidden" id="evPicker" style="margin-top:10px">
+            <div class="row" style="align-items:flex-end">
+              <div><label>Document</label><select id="ev_doc"></select></div>
+              <div style="flex:0"><button class="btn btn-primary btn-sm" onclick="GC.attachEvidence()">Link</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collaboration: share with a team + discussion -->
+        <div class="sec" id="collabSec">
+          <h3>Collaboration</h3>
+          <div id="shareOwnerBox">
+            <div id="shareList" style="margin-bottom:8px"></div>
+            <div class="row" style="align-items:flex-end">
+              <div><label>Share with team</label><select id="share_team"></select></div>
+              <div style="flex:0;min-width:120px"><label>Permission</label><select id="share_perm"><option value="edit">Can edit</option><option value="view">View only</option></select></div>
+              <div style="flex:0"><button class="btn btn-ghost btn-sm" onclick="GC.shareReport()">Share</button></div>
+            </div>
+            <p class="savebar" style="margin-top:6px">Manage members on the <a href="/team" style="color:var(--gc-green)">Team page</a>.</p>
+          </div>
+          <div style="margin-top:14px">
+            <label>Discussion</label>
+            <div id="commentList" style="margin-bottom:8px"></div>
+            <div class="row" style="align-items:flex-end">
+              <div><input id="c_body" placeholder="Add a comment for your team…" /></div>
+              <div style="flex:0"><button class="btn btn-ghost btn-sm" onclick="GC.addComment()">Post</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="sections"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/brsr-workspace.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

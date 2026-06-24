@@ -46,6 +46,13 @@ from supplier_api import router as supplier_router
 from auth_api import router as auth_router
 from esg_api  import router as esg_router
 from contact_api import router as contact_router
+from dataroom_api import router as dataroom_router
+from brsr_workspace_api import router as brsr_workspace_router
+from collaboration_api import router as collaboration_router
+# Marketplace deferred to a future phase (legal/e-commerce regime not yet set up:
+# CP E-Commerce Rules 2020, GST TCS / GSTR-8, FSSAI organic, intermediary safe-harbour).
+# Code is preserved; re-enable this import and the lines below when ready to launch.
+# from marketplace_api import router as marketplace_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -81,15 +88,25 @@ app.include_router(esg_router)
 app.include_router(ai_router)
 app.include_router(supplier_router)
 app.include_router(contact_router)
+app.include_router(dataroom_router)
+app.include_router(brsr_workspace_router)
+app.include_router(collaboration_router)
+# app.include_router(marketplace_router)  # deferred — see note above
 
 # Serve static HTML/CSS/JS — must come AFTER API routes
 app.mount("/assets", StaticFiles(directory=str(BASE_DIR / "assets")), name="assets")
+
+# Marketplace media mount deferred along with the marketplace router (see note above).
+# _PRODUCT_IMG_DIR = BASE_DIR / "uploads" / "products"
+# _PRODUCT_IMG_DIR.mkdir(parents=True, exist_ok=True)
+# app.mount("/media/products", StaticFiles(directory=str(_PRODUCT_IMG_DIR)), name="product_media")
 
 HTML_FILES = [
     "admin", "calculator", "assurance", "brsr-generator", "brsr-simple",
     "analytics", "ccts", "esg-intelligence", "ghg-profile",
     "learn", "login", "methodology", "pricing", "privacy-policy", "supplier-form",
-    "tcfd-checker", "tcfd", "terms-of-use", "value-chain",
+    "tcfd-checker", "tcfd", "terms-of-use", "value-chain", "data-room", "brsr-workspace", "team",
+    # "marketplace", "seller-dashboard", "marketplace-admin",  # deferred — see note above
 ]
 
 @app.get("/")

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESG Data Room — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Your private, versioned workspace for ESG evidence — emissions data, policies, supplier docs, BRSR drafts and board minutes — all in one place." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=3" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:1080px; margin:0 auto; padding:28px 20px 80px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
+    .sub { color:#567; margin-top:0; font-size:.95rem; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:22px; }
+    .panel h2 { margin-top:0; font-size:1.12rem; color:#12331f; }
+    label { display:block; font-size:.85rem; font-weight:600; color:#456; margin:12px 0 4px; }
+    input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--gc-line); border-radius:8px; font-size:.95rem; font-family:inherit; box-sizing:border-box; }
+    textarea { min-height:60px; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; }
+    .row > div { flex:1; min-width:150px; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.95rem; }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .btn-primary:hover { background:var(--gc-green-dark); }
+    .btn-sm { padding:6px 12px; font-size:.82rem; }
+    .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
+    .btn-danger { background:#fff; border:1px solid #d9534f; color:#b42318; }
+    .msg { padding:10px 14px; border-radius:8px; margin:10px 0; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.error { background:#fde8e8; color:#b42318; }
+    .msg.success { background:#e3f5e9; color:#1f7a4d; }
+    .pill { font-size:.7rem; padding:3px 9px; border-radius:20px; font-weight:600; margin-left:6px; }
+    .pill.cat { background:#e8f1ff; color:#2456a6; }
+    .pill.year { background:#f0ebff; color:#5a3fb0; }
+    .pill.ver-pill { background:#eef1f4; color:#5a6b7b; }
+    .hidden { display:none; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+    .grid { display:grid; grid-template-columns:240px 1fr; gap:22px; align-items:start; }
+    @media (max-width:760px){ .grid { grid-template-columns:1fr; } }
+    .folder-item { padding:9px 12px; border-radius:8px; cursor:pointer; font-size:.9rem; color:#345; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+    .folder-item:hover { background:#f3f7f4; }
+    .folder-item.active { background:#e3f5e9; color:var(--gc-green-dark); font-weight:600; }
+    .folder-item .count { margin-left:auto; background:#dfe6df; color:#567; border-radius:12px; padding:1px 8px; font-size:.72rem; }
+    .folder-item .x { background:none; border:none; color:#a99; cursor:pointer; font-size:1rem; line-height:1; padding:0 2px; }
+    .item { border:1px solid var(--gc-line); border-radius:10px; padding:14px; margin-bottom:12px; }
+    .item-head { display:flex; align-items:center; flex-wrap:wrap; gap:2px; }
+    .item-head h4 { margin:0; }
+    .vers { margin:10px 0; }
+    .ver { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.82rem; color:#567; padding:5px 0; border-top:1px dashed var(--gc-line); }
+    .item-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .dpdp { background:#f3f9f5; border:1px solid #cfe6d7; border-radius:8px; padding:10px 14px; font-size:.8rem; color:#3a6b50; margin-top:8px; }
+    .share-box { margin-top:10px; padding:10px; border:1px dashed var(--gc-line); border-radius:8px; background:#fafdfb; }
+    .ver-chip { display:inline-flex; align-items:center; gap:6px; background:#eef5f0; border:1px solid #cfe6d7; border-radius:20px; padding:3px 9px; font-size:.78rem; color:#345; margin:2px 6px 2px 0; }
+    .ver-chip button { background:none; border:none; color:#789; cursor:pointer; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    table.audit { width:100%; border-collapse:collapse; font-size:.8rem; margin-top:10px; }
+    table.audit th, table.audit td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--gc-line); }
+    table.audit th { color:#567; font-weight:600; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/">← Back to Green Curve</a>
+    <h1>ESG Data Room</h1>
+    <p class="sub">Your private, versioned workspace for ESG evidence — emissions data, policies, supplier documents, BRSR drafts and board minutes, all in one auditable place.</p>
+    <div class="msg" id="msg"></div>
+
+    <!-- Not logged in -->
+    <div class="panel hidden" id="loginGate">
+      <h2>Sign in to use your Data Room</h2>
+      <p>Your Data Room is private to your Green Curve account. <a href="/login?next=/data-room">Sign in or create an account →</a></p>
+    </div>
+
+    <!-- DPDP consent gate -->
+    <div class="panel hidden" id="consentGate">
+      <h2>Before you start</h2>
+      <p style="color:#456" id="consentText"></p>
+      <div class="dpdp">
+        Green Curve acts as a <strong>Data Fiduciary</strong> under India's DPDP Act 2023. Your documents are private to your account.
+        You can export everything or permanently delete it at any time, and every action is recorded in your own audit log.
+      </div>
+      <div style="margin-top:16px"><button class="btn btn-primary" onclick="GC.acceptConsent()">I accept — open my Data Room</button></div>
+    </div>
+
+    <!-- Workspace -->
+    <div id="workspace" class="hidden">
+      <div class="toolbar">
+        <button class="btn btn-ghost btn-sm" onclick="GC.exportAll()">⬇ Export everything (.zip)</button>
+        <button class="btn btn-ghost btn-sm" onclick="GC.toggleAudit()">🛈 Activity log</button>
+      </div>
+      <div class="panel hidden" id="auditBox"></div>
+
+      <div class="panel">
+        <h2>Upload ESG evidence</h2>
+        <div class="row">
+          <div><label>Title</label><input id="d_title" placeholder="e.g. FY24 Scope 1 & 2 workings" /></div>
+          <div><label>Category</label><select id="d_category"></select></div>
+        </div>
+        <div class="row">
+          <div><label>Folder</label><select id="uploadFolder"><option value="">No folder (loose)</option></select></div>
+          <div><label>Reporting year</label><input id="d_year" placeholder="e.g. 2024-25" /></div>
+        </div>
+        <label>Note (optional)</label>
+        <input id="d_note" placeholder="What this version contains / what changed" />
+        <label>File (PDF, Office, CSV, XBRL/XML, images — max 25 MB)</label>
+        <input id="d_file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.webp,.xml,.json,.zip,.ppt,.pptx" />
+        <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.uploadDoc()">Upload document</button></div>
+      </div>
+
+      <div class="grid">
+        <div class="panel" style="position:sticky;top:16px">
+          <h2 style="font-size:1rem">Folders</h2>
+          <div id="folderList"></div>
+          <hr style="border:none;border-top:1px solid var(--gc-line);margin:14px 0" />
+          <label>New folder</label>
+          <input id="f_name" placeholder="e.g. FY25 BRSR evidence" />
+          <label>Default category</label>
+          <select id="f_category"></select>
+          <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="GC.createFolder()">+ Create folder</button></div>
+        </div>
+
+        <div class="panel">
+          <h2>Documents</h2>
+          <div id="docList"><p style="color:#789">Loading…</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/data-room.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>
