@@ -301,6 +301,17 @@ img, svg { display: block; }
   visibility: visible;
   transition: opacity .12s, visibility 0s;
 }
+/* Invisible bridge over the 8px gap between the toggle and the menu. Without it,
+   moving the cursor down to the menu items crosses dead space, drops :hover, and
+   the dropdown flickers closed ("blinks and gets stuck"). */
+.nav__dropdown::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
 .nav__dropdown li { display: block; list-style: none; padding: 0; margin: 0; }
 .nav__dropdown a {
   display: block;
