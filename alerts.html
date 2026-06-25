@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESG Alerts — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="One feed of what changed and what's due — ESG score moves, regulatory updates, BRSR deadlines and team tasks, from official sources." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=4" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:920px; margin:0 auto; padding:28px 20px 90px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
+    .sub { color:#567; margin-top:0; font-size:.95rem; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:20px; margin-bottom:20px; }
+    .panel h2 { margin-top:0; font-size:1.08rem; color:#12331f; }
+    .msg { padding:10px 14px; border-radius:8px; margin:10px 0; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.error { background:#fde8e8; color:#b42318; }
+    .msg.success { background:#e3f5e9; color:#1f7a4d; }
+    .hidden { display:none; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+    .btn { display:inline-block; padding:9px 16px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.9rem; }
+    .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+    .badge { font-size:.8rem; font-weight:700; padding:4px 12px; border-radius:20px; }
+    .badge.has-new { background:#fde8e8; color:#b42318; }
+    .badge.clear { background:#e3f5e9; color:#1f7a4d; }
+    .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+    .fbtn { background:#f3f7f4; border:1px solid var(--gc-line); border-radius:20px; padding:6px 12px; cursor:pointer; font-size:.82rem; color:#345; }
+    .fbtn.active { background:var(--gc-green); color:#fff; border-color:var(--gc-green); }
+    .fbtn .fc { opacity:.7; margin-left:4px; }
+    .alert { display:flex; gap:12px; padding:14px; border:1px solid var(--gc-line); border-left-width:4px; border-radius:10px; margin-bottom:10px; background:#fff; }
+    .alert.sev-high, .alert.sev-critical { border-left-color:#d9534f; }
+    .alert.sev-medium { border-left-color:#e0a83e; }
+    .alert.sev-info, .alert.sev-low { border-left-color:#7fae93; }
+    .alert-icon { font-size:1.3rem; line-height:1.4; }
+    .alert-body { flex:1; min-width:0; }
+    .alert-top { display:flex; align-items:center; gap:8px; }
+    .alert-title { font-weight:700; color:#12331f; font-size:.95rem; }
+    .newdot { width:8px; height:8px; border-radius:50%; background:#d9534f; display:inline-block; }
+    .alert-detail { color:#456; font-size:.86rem; margin:4px 0; line-height:1.5; }
+    .alert-meta { color:#8a98a5; font-size:.76rem; }
+    .alert-meta a { color:var(--gc-green); }
+    .alert-actions { display:flex; align-items:center; }
+    .alert-go { color:var(--gc-green); text-decoration:none; font-weight:600; font-size:.85rem; white-space:nowrap; }
+    .empty { color:#789; padding:20px; text-align:center; }
+    .prefs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px 16px; margin:10px 0; }
+    .prefs-grid label { display:flex; align-items:center; gap:8px; font-size:.88rem; color:#345; }
+    .digest-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px solid var(--gc-line); }
+    .digest-row select { padding:7px 10px; border:1px solid var(--gc-line); border-radius:8px; }
+    .note { font-size:.78rem; color:#8a98a5; margin-top:6px; }
+    details summary { cursor:pointer; font-weight:600; color:var(--gc-green-dark); }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/">← Back to Green Curve</a>
+    <h1>ESG Alerts</h1>
+    <p class="sub">One feed of what changed and what's due — score moves on your watchlist, regulatory updates, BRSR deadlines and team tasks. Facts only, linked to source.</p>
+    <div class="msg" id="msg"></div>
+
+    <div class="panel hidden" id="loginGate">
+      <h2>Sign in to see your alerts</h2>
+      <p>Alerts are personalised to your watchlist and reports. <a href="/login?next=/alerts">Sign in or create an account →</a></p>
+    </div>
+
+    <div id="workspace" class="hidden">
+      <div class="panel">
+        <div class="topbar">
+          <span class="badge clear" id="newBadge">…</span>
+          <button class="btn btn-ghost" onclick="GC.ack()">Mark all as seen</button>
+        </div>
+        <div class="filters">
+          <button class="fbtn active" data-t="all" onclick="GC.filter('all')">All <span class="fc">0</span></button>
+          <button class="fbtn" data-t="score_change" onclick="GC.filter('score_change')">Score changes <span class="fc">0</span></button>
+          <button class="fbtn" data-t="high_risk" onclick="GC.filter('high_risk')">High risk <span class="fc">0</span></button>
+          <button class="fbtn" data-t="regulatory" onclick="GC.filter('regulatory')">Regulatory <span class="fc">0</span></button>
+          <button class="fbtn" data-t="filing_deadline" onclick="GC.filter('filing_deadline')">Deadlines <span class="fc">0</span></button>
+          <button class="fbtn" data-t="task_due" onclick="GC.filter('task_due')">Tasks <span class="fc">0</span></button>
+        </div>
+        <div id="feed"><div class="empty">Loading…</div></div>
+      </div>
+
+      <div class="panel">
+        <details>
+          <summary>Alert preferences</summary>
+          <div class="prefs-grid">
+            <label><input type="checkbox" id="pref_score_change" /> Score / tier changes</label>
+            <label><input type="checkbox" id="pref_high_risk" /> High-risk companies</label>
+            <label><input type="checkbox" id="pref_regulatory" /> Regulatory updates</label>
+            <label><input type="checkbox" id="pref_filing_deadline" /> BRSR deadlines</label>
+            <label><input type="checkbox" id="pref_task_due" /> Assigned tasks</label>
+          </div>
+          <div class="digest-row">
+            <label style="display:flex;align-items:center;gap:8px;font-size:.88rem"><input type="checkbox" id="pref_digest_email" /> Email me a digest</label>
+            <select id="pref_digest_freq"><option value="weekly">Weekly</option><option value="daily">Daily</option></select>
+            <button class="btn btn-primary" onclick="GC.savePrefs()">Save preferences</button>
+          </div>
+          <p class="note">Email digests are queued for delivery once email sending is enabled on your account. Alerts only use official/public sources (SEBI, BEE, CPCB) and Green Curve's own scores.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/alerts.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

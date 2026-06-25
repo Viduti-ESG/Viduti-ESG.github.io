@@ -49,6 +49,7 @@ from contact_api import router as contact_router
 from dataroom_api import router as dataroom_router
 from brsr_workspace_api import router as brsr_workspace_router
 from collaboration_api import router as collaboration_router
+from alerts_api import router as alerts_router
 # Marketplace deferred to a future phase (legal/e-commerce regime not yet set up:
 # CP E-Commerce Rules 2020, GST TCS / GSTR-8, FSSAI organic, intermediary safe-harbour).
 # Code is preserved; re-enable this import and the lines below when ready to launch.
@@ -91,6 +92,7 @@ app.include_router(contact_router)
 app.include_router(dataroom_router)
 app.include_router(brsr_workspace_router)
 app.include_router(collaboration_router)
+app.include_router(alerts_router)
 # app.include_router(marketplace_router)  # deferred — see note above
 
 # Serve static HTML/CSS/JS — must come AFTER API routes
@@ -105,7 +107,7 @@ HTML_FILES = [
     "admin", "calculator", "assurance", "brsr-generator", "brsr-simple",
     "analytics", "ccts", "esg-intelligence", "ghg-profile",
     "learn", "login", "methodology", "pricing", "privacy-policy", "supplier-form",
-    "tcfd-checker", "tcfd", "terms-of-use", "value-chain", "data-room", "brsr-workspace", "team",
+    "tcfd-checker", "tcfd", "terms-of-use", "value-chain", "data-room", "brsr-workspace", "team", "alerts",
     # "marketplace", "seller-dashboard", "marketplace-admin",  # deferred — see note above
 ]
 
