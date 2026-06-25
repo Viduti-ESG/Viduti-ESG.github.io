@@ -47,7 +47,7 @@ posts.sort(key=lambda p: p["date"], reverse=True)
 print(f"Indexing {len(posts)} articles…")
 
 cards = "\n".join(f"""
-      <a class="post-card" href="{html.escape(p['file'][:-5])}">
+      <a class="post-card" href="{html.escape(p['file'])}">
         <span class="post-cat">{html.escape(p['section'])}</span>
         <h2 class="post-title">{html.escape(p['title'])}</h2>
         <p class="post-desc">{html.escape(p['desc'][:180])}…</p>
@@ -57,7 +57,7 @@ cards = "\n".join(f"""
 # ItemList JSON-LD helps Google understand the article collection
 items = ",\n".join(
     f'        {{"@type":"ListItem","position":{i+1},'
-    f'"url":"{BASE_URL}/posts/{p["file"][:-5]}","name":{json.dumps(p["title"])}}}'
+    f'"url":"{BASE_URL}/posts/{p["file"]}","name":{json.dumps(p["title"])}}}'
     for i, p in enumerate(posts)
 )
 

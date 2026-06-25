@@ -9,3 +9,12 @@ greencurve.db-wal
 greencurve.db-shm
 __pycache__/
 *.pyc
+
+# Reconciliation 2026-06-25: exclude on-server backups / venv / db dumps
+venv/
+*.bak
+*.bak-*
+*.bak.*
+*-orig.js
+.nav-backup-*/
+uploads/

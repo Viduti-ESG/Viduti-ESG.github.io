@@ -134,7 +134,7 @@ def render(g):
     article_ld = {
         "@context": "https://schema.org", "@type": "Article",
         "headline": g["h1"], "description": g["description"],
-        "url": f"{BASE_URL}/{g['slug']}",
+        "url": f"{BASE_URL}/{g['slug']}.html",
         "publisher": {"@type": "Organization", "name": "Green Curve Research",
                       "url": f"{BASE_URL}/", "logo": f"{BASE_URL}/assets/img/logo.png"},
         "inLanguage": "en-IN"
@@ -149,9 +149,9 @@ def render(g):
   <meta name="description" content="{html.escape(g['description'])}"/>
   <meta name="keywords" content="{html.escape(g['keywords'])}"/>
   <meta name="robots" content="index, follow"/>
-  <link rel="canonical" href="{BASE_URL}/{g['slug']}"/>
+  <link rel="canonical" href="{BASE_URL}/{g['slug']}.html"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:url" content="{BASE_URL}/{g['slug']}"/>
+  <meta property="og:url" content="{BASE_URL}/{g['slug']}.html"/>
   <meta property="og:site_name" content="Green Curve"/>
   <meta property="og:title" content="{html.escape(g['title'])}"/>
   <meta property="og:description" content="{html.escape(g['description'])}"/>
