@@ -20,7 +20,7 @@
     const opts = { method, headers };
     if (body !== undefined) { headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
     const res = await fetch(API + path, opts);
-    if (res.status === 401) { location.href = '/login?next=/brsr-workspace'; throw new Error('Not authenticated'); }
+    if (res.status === 401) { localStorage.removeItem('gc_auth_token'); localStorage.removeItem('gc_auth_user'); location.href = '/login?next=/brsr-workspace'; throw new Error('Not authenticated'); }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || data.message || 'Request failed');
     return data;

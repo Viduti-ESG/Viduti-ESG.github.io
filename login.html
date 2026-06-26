@@ -88,10 +88,15 @@
 
   <script src="/assets/js/auth.js"></script>
   <script>
-    // If already logged in, go straight to dashboard
-    if (localStorage.getItem('gc_auth_token')) {
+    // If already logged in WITH A VALID (unexpired) token, go straight to dashboard.
+    // gcAuth.isLoggedIn() validates expiry and clears an expired token, so a stale
+    // token shows the login form instead of bouncing back to ?next (no flicker loop).
+    if (window.gcAuth && gcAuth.isLoggedIn()) {
       const redirect = new URLSearchParams(location.search).get('next') || '/esg-intelligence';
       location.replace(redirect);
+    } else {
+      // Defensive: drop any stale/invalid token so nothing else auto-redirects on it.
+      try { localStorage.removeItem('gc_auth_token'); localStorage.removeItem('gc_auth_user'); } catch (e) {}
     }
 
     function showTab(tab) {

@@ -142,3 +142,12 @@ def init_db() -> None:
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
         """)
+
+        # ── Lightweight migrations ───────────────────────────────────────────
+        # CREATE TABLE IF NOT EXISTS cannot add columns to a table that already
+        # exists, so columns introduced in later versions must be backfilled
+        # here or pre-existing production DBs will be missing them. (The missing
+        # `role` column caused get_current_user to 500 on every authed request.)
+        ucols = {r[1] for r in conn.execute("PRAGMA table_info(users)").fetchall()}
+        if "role" not in ucols:
+            conn.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'")
