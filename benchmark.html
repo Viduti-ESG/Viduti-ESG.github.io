@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peer Benchmarking — Green Curve</title>
+  <meta name="robots" content="index,follow" />
+  <meta name="description" content="Benchmark any Indian listed company's ESG risk against its sector peers — percentile rank, sector distribution, dimension-by-dimension comparison, from public SEBI BRSR data." />
+  <link rel="canonical" href="https://greencurve.solutions/benchmark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=4" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:900px; margin:0 auto; padding:28px 20px 90px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
+    .sub { color:#567; margin-top:0; font-size:.95rem; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:20px; }
+    .searchrow { display:flex; gap:10px; flex-wrap:wrap; }
+    .searchrow input { flex:1; min-width:200px; padding:11px 13px; border:1px solid var(--gc-line); border-radius:8px; font-size:.95rem; font-family:inherit; }
+    .btn { padding:11px 20px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.95rem; background:var(--gc-green); color:#fff; }
+    .btn:hover { background:var(--gc-green-dark); }
+    .msg { padding:10px 14px; border-radius:8px; margin:10px 0 0; font-size:.9rem; display:none; background:#fde8e8; color:#b42318; }
+    .msg.show { display:block; }
+    .hidden { display:none; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+    h2 { font-family:'DM Serif Display',serif; color:#12331f; margin:0; font-size:1.5rem; }
+    h3 { color:#12331f; font-size:1rem; margin:24px 0 10px; }
+    h3 .hint { font-weight:400; color:#8a98a5; font-size:.8rem; }
+    .headline { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+    .headline .sub { margin:6px 0 0; }
+    .pctbox { border:2px solid var(--gc-green); border-radius:12px; padding:12px 18px; text-align:center; min-width:150px; }
+    .pctnum { font-size:2.2rem; font-weight:700; font-family:'DM Serif Display',serif; line-height:1; }
+    .pctlbl { font-size:.72rem; color:#567; margin-top:6px; line-height:1.3; }
+    .ranks { margin-top:12px; font-size:.9rem; color:#456; background:#f3f7f4; padding:10px 14px; border-radius:8px; }
+    .distwrap { margin:6px 0 4px; }
+    .distbar { position:relative; height:14px; background:linear-gradient(90deg,#cde7d6,#fbe3b3,#f6c6c0); border-radius:8px; }
+    .distbar .q { position:absolute; top:-3px; width:2px; height:20px; background:#9bb; }
+    .distbar .qmed { background:#567; width:2px; }
+    .distbar .you { position:absolute; top:-6px; width:14px; height:26px; background:var(--gc-green-dark); border:2px solid #fff; border-radius:4px; transform:translateX(-50%); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+    .distlabels { display:flex; justify-content:space-between; font-size:.72rem; color:#8a98a5; margin-top:8px; }
+    table.bm { width:100%; border-collapse:collapse; font-size:.9rem; }
+    table.bm th, table.bm td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--gc-line); }
+    table.bm th { color:#567; font-weight:600; font-size:.82rem; }
+    table.bm td.num, table.bm th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    table.bm tr.target { background:#eef5f0; font-weight:600; }
+    .youpill { background:var(--gc-green); color:#fff; font-size:.65rem; padding:1px 7px; border-radius:10px; }
+    .disclaimer { font-size:.76rem; color:#8a98a5; margin-top:18px; line-height:1.5; border-top:1px solid var(--gc-line); padding-top:12px; }
+    .examples { margin-top:10px; font-size:.82rem; color:#789; }
+    .examples a { color:var(--gc-green); cursor:pointer; }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/">← Back to Green Curve</a>
+    <h1>Peer Benchmarking</h1>
+    <p class="sub">See how any Indian listed company's ESG risk compares to its sector peers — percentile rank, where it sits in the distribution, and a dimension-by-dimension breakdown. Built on public SEBI BRSR filings.</p>
+
+    <div class="panel">
+      <div class="searchrow">
+        <input id="q" placeholder="Company name, e.g. Tata Steel Limited" />
+        <button class="btn" onclick="GC.run()">Benchmark</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="examples">Try: <a onclick="document.getElementById('q').value='Adani Power Limited';GC.run()">Adani Power</a> · <a onclick="document.getElementById('q').value='Tata Steel Limited';GC.run()">Tata Steel</a> · <a onclick="document.getElementById('q').value='Hindalco Industries Limited';GC.run()">Hindalco</a></div>
+    </div>
+
+    <div class="panel hidden" id="results"></div>
+  </div>
+
+  <script src="/assets/js/benchmark.js"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>
