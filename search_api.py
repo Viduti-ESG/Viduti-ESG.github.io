@@ -117,19 +117,55 @@ def _embed_query(text: str) -> np.ndarray:
 
 
 # ── Keyword fallback (also used when index is absent) ─────────────────────────
+# Generic words that carry no discriminating signal in an ESG corpus — dropping
+# them stops a query like "companies with high risk" from matching everything.
+_STOPWORDS = {
+    "the", "and", "with", "for", "from", "that", "this", "are", "has", "have",
+    "company", "companies", "limited", "ltd", "firm", "firms", "business",
+    "high", "low", "risk", "esg", "exposed", "exposure", "india", "indian",
+}
+
+
+def _tokenize(q: str) -> list[str]:
+    """Split a natural-language query into meaningful >=3-char tokens."""
+    import re
+    toks = re.findall(r"[a-zA-Z0-9]+", q.lower())
+    seen, out = set(), []
+    for t in toks:
+        if len(t) >= 3 and t not in _STOPWORDS and t not in seen:
+            seen.add(t)
+            out.append(t)
+    return out or [t for t in toks if t]  # if everything was a stopword, keep raw
+
+
 def _keyword_search(q: str, k: int, sector: Optional[str]) -> list[dict]:
-    like = f"%{q}%"
-    params: list = [like, like, like, like]
-    where = "(company_name LIKE ? OR products LIKE ? OR sector LIKE ? OR ai_summary LIKE ?)"
+    """Token-based fallback: rank by how many query words appear in the company's
+    searchable text (name/products/sector/summary), not by matching the whole
+    phrase as one substring (which fails for any multi-word query)."""
+    tokens = _tokenize(q)
+    if not tokens:
+        return []
+    # Score = number of distinct query tokens found in the concatenated text blob.
+    blob = "(company_name||' '||products||' '||sector||' '||COALESCE(ai_summary,''))"
+    score_expr = " + ".join([f"(CASE WHEN {blob} LIKE ? THEN 1 ELSE 0 END)" for _ in tokens])
+    token_params = [f"%{t}%" for t in tokens]
+
+    where = f"({score_expr}) > 0"
+    sector_params: list = []
     if sector:
         where += " AND sector = ?"
-        params.append(sector)
+        sector_params.append(sector)
+
+    # Param order must follow the SQL text: score_expr in SELECT, then in WHERE,
+    # then the optional sector filter, then LIMIT.
+    params = token_params + token_params + sector_params + [k]
     with get_conn() as conn:
         rows = conn.execute(
-            f"SELECT company_name, cin, sector, risk_tier, esg_risk_score "
+            f"SELECT company_name, cin, sector, risk_tier, esg_risk_score, "
+            f"  ({score_expr}) AS match_score "
             f"FROM companies WHERE {where} "
-            f"ORDER BY esg_risk_score DESC LIMIT ?",
-            params + [k],
+            f"ORDER BY match_score DESC, esg_risk_score DESC LIMIT ?",
+            params,
         ).fetchall()
     return [
         {
@@ -157,11 +193,12 @@ def semantic_search(
 
     # Fallback path — semantic index unavailable on this host.
     if idx is None:
+        kw = _keyword_search(q, k, sector)
         return JSONResponse({
             "query": q,
             "mode": "keyword",
-            "count": 0,
-            "results": _keyword_search(q, k, sector),
+            "count": len(kw),
+            "results": kw,
         })
 
     qvec = _embed_query(q)
