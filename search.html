@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semantic ESG Search — Green Curve</title>
+  <meta name="robots" content="index,follow" />
+  <meta name="description" content="Search 1,200+ Indian listed companies by meaning, not just name — e.g. 'cement makers with high water risk' or 'renewable energy firms with strong governance'. Built on public SEBI BRSR data." />
+  <link rel="canonical" href="https://greencurve.solutions/search" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=4" />
+  <link rel="icon" href="/assets/img/logo.png" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:860px; margin:0 auto; padding:28px 20px 90px; }
+    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
+    .sub { color:#567; margin-top:0; font-size:.95rem; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:20px; }
+    .searchrow { display:flex; gap:10px; flex-wrap:wrap; }
+    .searchrow input { flex:1; min-width:220px; padding:12px 14px; border:1px solid var(--gc-line); border-radius:8px; font-size:.98rem; font-family:inherit; }
+    .btn { padding:12px 22px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.95rem; background:var(--gc-green); color:#fff; }
+    .btn:hover { background:var(--gc-green-dark); }
+    .btn:disabled { opacity:.6; cursor:default; }
+    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
+    .examples { margin-top:12px; font-size:.85rem; color:#789; line-height:1.9; }
+    .examples a { color:var(--gc-green); cursor:pointer; text-decoration:none; background:#f3f7f4; padding:3px 9px; border-radius:12px; white-space:nowrap; }
+    .examples a:hover { background:#e6efe9; }
+    .msg { padding:10px 14px; border-radius:8px; margin-top:14px; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.err { background:#fde8e8; color:#b42318; }
+    .msg.info { background:#eef5f0; color:#155e3a; }
+    table.res { width:100%; border-collapse:collapse; font-size:.92rem; margin-top:6px; }
+    table.res th, table.res td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--gc-line); vertical-align:top; }
+    table.res th { color:#567; font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.03em; }
+    table.res td.num, table.res th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    .cname { font-weight:600; color:#12331f; }
+    .cname a { color:#12331f; text-decoration:none; }
+    .cname a:hover { color:var(--gc-green); text-decoration:underline; }
+    .csec { color:#789; font-size:.82rem; }
+    .tier { font-size:.7rem; padding:2px 9px; border-radius:10px; font-weight:600; white-space:nowrap; }
+    .tier.High { background:#fde8e8; color:#b42318; }
+    .tier.Medium { background:#fdf3e0; color:#9a6a12; }
+    .tier.Low { background:#e7f5ec; color:#1f7a4d; }
+    .match { font-variant-numeric:tabular-nums; color:#567; font-size:.85rem; }
+    .matchbar { height:6px; background:#eef2ef; border-radius:4px; margin-top:4px; overflow:hidden; }
+    .matchbar > span { display:block; height:100%; background:var(--gc-green); }
+    .disclaimer { font-size:.76rem; color:#8a98a5; margin-top:18px; line-height:1.5; border-top:1px solid var(--gc-line); padding-top:12px; }
+    .spin { display:inline-block; width:16px; height:16px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-3px; margin-right:6px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <script src="/assets/js/gc-config.js"></script>
+  <div class="wrap">
+    <a class="back" href="/">← Back to Green Curve</a>
+    <h1>Semantic ESG Search</h1>
+    <p class="sub">Search 1,200+ Indian listed companies by <em>meaning</em>, not just name. Describe what you're looking for in plain English — sector, risk theme, exposure — and we rank the closest matches from public SEBI BRSR data.</p>
+
+    <div class="panel">
+      <form class="searchrow" id="searchForm" autocomplete="off">
+        <input type="text" id="q" name="q" placeholder="e.g. cement makers with high water risk" aria-label="Search query" />
+        <button class="btn" type="submit" id="goBtn">Search</button>
+      </form>
+      <div class="examples">
+        Try:
+        <a data-q="cement makers with high water risk">water-risk cement</a>
+        <a data-q="renewable energy firms with strong governance">clean energy + good governance</a>
+        <a data-q="textile exporters exposed to labour and supply chain risk">textile supply-chain risk</a>
+        <a data-q="banks with climate transition exposure">banks &amp; climate</a>
+        <a data-q="pharma companies with effluent and pollution risk">pharma pollution</a>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="panel" id="resultsPanel" style="display:none;">
+      <div id="resultsMeta" class="sub" style="margin-bottom:10px;"></div>
+      <table class="res">
+        <thead>
+          <tr><th>Company</th><th>Risk tier</th><th class="num">ESG risk</th><th class="num">Match</th></tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <p class="disclaimer">Results are ranked by semantic similarity to your query using a CPU-only open-source embedding model (no third-party AI API, no data leaves the server). ESG risk scores are derived from public SEBI BRSR disclosures and are informational, not investment advice. A company appearing for a query does not imply any specific finding about it.</p>
+  </div>
+
+  <script>
+    var apiBase = window._gcApiBase || window.location.origin;
+    var form = document.getElementById('searchForm');
+    var qInput = document.getElementById('q');
+    var goBtn = document.getElementById('goBtn');
+    var msg = document.getElementById('msg');
+    var panel = document.getElementById('resultsPanel');
+    var body = document.getElementById('resultsBody');
+    var meta = document.getElementById('resultsMeta');
+
+    function showMsg(text, kind) {
+      msg.textContent = text;
+      msg.className = 'msg show ' + (kind || 'info');
+    }
+    function hideMsg() { msg.className = 'msg'; }
+
+    function tierClass(t) {
+      if (t === 'High' || t === 'Medium' || t === 'Low') return t;
+      return 'Medium';
+    }
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function render(data) {
+      var rows = data.results || [];
+      if (!rows.length) {
+        panel.style.display = 'none';
+        showMsg('No matching companies found. Try broader wording.', 'info');
+        return;
+      }
+      hideMsg();
+      var modeNote = data.mode === 'semantic'
+        ? 'Ranked by meaning (' + (data.count) + ' matches)'
+        : 'Keyword match (semantic index not loaded on this host)';
+      meta.textContent = modeNote + ' · query: "' + data.query + '"';
+
+      body.innerHTML = rows.map(function (r) {
+        var slug = encodeURIComponent(r.cin || r.company_name);
+        var pct = (r.score != null) ? Math.round(r.score * 100) : null;
+        var matchCell = (pct != null)
+          ? '<div class="match">' + pct + '%</div><div class="matchbar"><span style="width:' + pct + '%"></span></div>'
+          : '<span class="match">—</span>';
+        var tier = esc(r.risk_tier || 'Medium');
+        return '<tr>' +
+          '<td><div class="cname"><a href="/esg-intelligence?company=' + slug + '">' + esc(r.company_name) + '</a></div>' +
+          '<div class="csec">' + esc(r.sector || '') + '</div></td>' +
+          '<td><span class="tier ' + tierClass(tier) + '">' + tier + '</span></td>' +
+          '<td class="num">' + esc(r.esg_risk_score) + '</td>' +
+          '<td class="num">' + matchCell + '</td>' +
+          '</tr>';
+      }).join('');
+      panel.style.display = 'block';
+    }
+
+    function doSearch(q) {
+      q = (q || '').trim();
+      if (q.length < 2) { showMsg('Type at least 2 characters.', 'err'); return; }
+      goBtn.disabled = true;
+      goBtn.innerHTML = '<span class="spin"></span>Searching';
+      hideMsg();
+      fetch(apiBase + '/api/esg/search?q=' + encodeURIComponent(q) + '&k=25')
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(render)
+        .catch(function (e) {
+          panel.style.display = 'none';
+          showMsg('Search failed: ' + e.message, 'err');
+        })
+        .finally(function () {
+          goBtn.disabled = false;
+          goBtn.textContent = 'Search';
+        });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      doSearch(qInput.value);
+    });
+    document.querySelectorAll('.examples a').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        qInput.value = a.getAttribute('data-q');
+        doSearch(qInput.value);
+      });
+    });
+
+    // Allow deep-linking ?q=...
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('q')) { qInput.value = params.get('q'); doSearch(qInput.value); }
+  </script>
+</body>
+</html>

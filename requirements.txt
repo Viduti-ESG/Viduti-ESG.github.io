@@ -7,3 +7,7 @@ python-multipart==0.0.18
 python-jose[cryptography]==3.3.0
 bcrypt==4.2.1
 email-validator==2.2.0
+# Semantic company search (CPU-only, Apache-2.0, ONNX — no PyTorch).
+# If absent, /api/esg/search degrades gracefully to keyword search.
+fastembed==0.8.0
+numpy>=1.26
