@@ -36,11 +36,19 @@ import threading
 from pathlib import Path
 from typing import Optional
 
-import numpy as np
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 
 from db import get_conn
+
+# numpy (and fastembed, imported in _load_index) are only needed for the
+# *semantic* path. Import numpy lazily/safely so that on a host without these
+# deps the module still imports cleanly and the endpoint serves keyword search
+# instead of bringing down the whole app at `from search_api import router`.
+try:
+    import numpy as np
+except Exception:  # pragma: no cover - numpy not installed on this host
+    np = None
 
 logger = logging.getLogger("greencurve.search")
 
@@ -71,6 +79,8 @@ def _load_index() -> Optional[dict]:
         if _load_failed:
             return None
         try:
+            if np is None:
+                raise ModuleNotFoundError("numpy not installed")
             if not INDEX_PATH.exists():
                 raise FileNotFoundError(f"embedding index missing: {INDEX_PATH}")
             npz = np.load(INDEX_PATH, allow_pickle=True)
