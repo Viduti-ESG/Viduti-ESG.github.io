@@ -100,6 +100,58 @@ def _claude():
 HAIKU  = "claude-haiku-4-5-20251001"
 SONNET = "claude-sonnet-4-6"
 
+# ── LLM provider routing ──────────────────────────────────────────────────────
+# Two privacy-safe, commercial-OK lanes (see memory feedback_ai_vendor_constraints):
+#   • groq      — free, no card, does NOT train on inputs, ZDR opt-in. Used for
+#                 PUBLIC-company analysis. Open models (Llama-class).
+#   • anthropic — frontier quality; does NOT train; ZDR/DPA for client data.
+# GC_LLM_PROVIDER = auto (default) | groq | anthropic.
+#   auto → try Groq first (free, works even when the Claude balance is empty),
+#          then fall back to Claude if a key is configured.
+GROQ_URL   = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+
+
+def _providers_in_order() -> list[str]:
+    pref       = os.environ.get("GC_LLM_PROVIDER", "auto").lower()
+    have_groq  = bool(os.environ.get("GROQ_API_KEY"))
+    have_claude = bool(os.environ.get("ANTHROPIC_API_KEY")) and _ANTHROPIC_AVAILABLE
+    if pref == "groq":
+        order = ["groq"]
+    elif pref in ("anthropic", "claude"):
+        order = ["anthropic"]
+    else:  # auto — prefer the free/no-credit-needed provider first
+        order = ["groq", "anthropic"]
+    avail = {"groq": have_groq, "anthropic": have_claude}
+    return [p for p in order if avail[p]]
+
+
+def _groq_ask_json(system: str, user: str, max_tokens: int) -> Any:
+    """Call Groq's OpenAI-compatible chat API and return parsed JSON.
+
+    Uses httpx (already a dependency of the anthropic SDK), so no new package is
+    needed on the server. JSON mode keeps the reply parseable; _parse_json still
+    strips fences defensively."""
+    import httpx
+    key = os.environ["GROQ_API_KEY"]
+    resp = httpx.post(
+        GROQ_URL,
+        timeout=60,
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        json={
+            "model": GROQ_MODEL,
+            "max_tokens": max_tokens,
+            "temperature": 0.2,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+        },
+    )
+    resp.raise_for_status()
+    return _parse_json(resp.json()["choices"][0]["message"]["content"])
+
 
 def _parse_json(text: str) -> Any:
     """Parse model output into JSON, tolerating ``` fences and trailing prose."""
@@ -127,23 +179,40 @@ def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
     removes the most common cause of parse failures. _parse_json still strips
     fences/prose defensively in case a model ignores the prefill.
 
-    Prompt caching note: caching the system prompt was evaluated and is NOT
-    worth enabling — every system prompt here is ~270–440 tokens, below the
-    Anthropic cache minimums (1024 for Sonnet, 2048 for Haiku), so cache_control
-    would be silently ignored. If a system prompt ever grows past those limits,
-    pass system as a block list with cache_control to enable it, e.g.:
-        system=[{"type":"text","text":system,"cache_control":{"type":"ephemeral"}}]
+    Routes across configured providers (Groq → Claude by default) so the AI
+    features keep working on the free Groq lane even when the Claude balance is
+    empty. Prompt caching note: caching the system prompt was evaluated and is
+    NOT worth enabling on the Claude path — every system prompt here is ~270–440
+    tokens, below the Anthropic cache minimums (1024 Sonnet / 2048 Haiku), so
+    cache_control would be silently ignored.
     """
-    msg = _claude().messages.create(
-        model=model,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[
-            {"role": "user", "content": user},
-            {"role": "assistant", "content": "{"},
-        ],
-    )
-    return _parse_json("{" + msg.content[0].text)
+    providers = _providers_in_order()
+    if not providers:
+        raise RuntimeError(
+            "No LLM provider configured. Set GROQ_API_KEY (free, no card) "
+            "or ANTHROPIC_API_KEY."
+        )
+    last_err: Optional[Exception] = None
+    for provider in providers:
+        try:
+            if provider == "groq":
+                return _groq_ask_json(system, user, max_tokens)
+            # Anthropic: prefill the assistant turn with "{" so it continues a
+            # JSON object directly (can't wrap the reply in a code fence).
+            msg = _claude().messages.create(
+                model=model,
+                max_tokens=max_tokens,
+                system=system,
+                messages=[
+                    {"role": "user", "content": user},
+                    {"role": "assistant", "content": "{"},
+                ],
+            )
+            return _parse_json("{" + msg.content[0].text)
+        except Exception as e:  # noqa: BLE001 — try the next provider
+            last_err = e
+            continue
+    raise last_err if last_err else RuntimeError("All LLM providers failed")
 
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
@@ -533,6 +602,8 @@ try:
                 "POST /api/generate-digest (Haiku — weekly ESG digest, P4-F)",
             ],
             "anthropic_configured": bool(os.environ.get("ANTHROPIC_API_KEY")),
+            "groq_configured": bool(os.environ.get("GROQ_API_KEY")),
+            "llm_providers": _providers_in_order(),
         }
 except Exception:
     pass
