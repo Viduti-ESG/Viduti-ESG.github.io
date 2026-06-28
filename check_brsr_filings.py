@@ -36,19 +36,19 @@ TRACKER_OUT = DATA_DIR / "filing_tracker.json"
 
 init_db()
 
-# ── BSE API ───────────────────────────────────────────────────────────────────
-# BSE corporate announcements endpoint (public, no auth required).
-# Returns announcements in a date range; we filter by BRSR keywords.
+# ── Exchange API endpoints ────────────────────────────────────────────────────
+# NSE is primary (more accessible). BSE is fallback (sometimes geo-blocked).
+
+NSE_URL = (
+    "https://www.nseindia.com/api/corporate-announcements"
+    "?index=equities&from_date={from_d}&to_date={to_d}"
+)
+NSE_HOME = "https://www.nseindia.com"
 
 BSE_URL = (
     "https://api.bseindia.com/BseIndiaAPI/api/AnnGetData/w"
-    "?strCat=-1"
-    "&strPrevDate={from_d}"
-    "&strScrip="
-    "&strSearch="
-    "&strToDate={to_d}"
-    "&strType=C"
-    "&subcatid=0"
+    "?strCat=-1&strPrevDate={from_d}&strScrip=&strSearch="
+    "&strToDate={to_d}&strType=C&subcatid=0"
 )
 
 HEADERS = {
@@ -57,12 +57,11 @@ HEADERS = {
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/124.0.0.0 Safari/537.36"
     ),
-    "Referer": "https://www.bseindia.com/",
-    "Accept":   "application/json, text/plain, */*",
+    "Accept":         "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9",
 }
 
-# Headline keywords that identify a BRSR-type filing
+# Headline/description keywords that identify a BRSR-type filing
 BRSR_KEYWORDS = [
     "BUSINESS RESPONSIBILITY",
     "BRSR",
@@ -114,10 +113,49 @@ def match_company(bse_name: str, idx: dict):
     return None
 
 
-# ── BSE fetcher ────────────────────────────────────────────────────────────────
+# ── NSE fetcher (primary) ─────────────────────────────────────────────────────
+
+def fetch_nse(from_date: datetime, to_date: datetime, session: requests.Session) -> list:
+    """Fetch corporate announcements from NSE (primary source).
+    NSE format: DD-MM-YYYY. Returns normalised list or [] on failure."""
+    url = NSE_URL.format(
+        from_d=from_date.strftime("%d-%m-%Y"),
+        to_d=to_date.strftime("%d-%m-%Y"),
+    )
+    try:
+        # Seed cookies first (NSE requires this)
+        session.headers["Referer"] = NSE_HOME
+        session.get(NSE_HOME, timeout=15)
+        r = session.get(url, timeout=30)
+        r.raise_for_status()
+        data = r.json()
+        if not isinstance(data, list):
+            return []
+        # Normalise NSE rows → same structure used downstream
+        out = []
+        for row in data:
+            desc = (row.get("attchmntText") or row.get("desc") or "").upper()
+            if not any(kw in desc for kw in BRSR_KEYWORDS):
+                continue
+            out.append({
+                "COMPANY_NAME": row.get("sm_name", ""),
+                "HEADLINE":     row.get("attchmntText", "")[:200],
+                "NEWS_DT":      row.get("an_dt", ""),
+                "SCRIP_CD":     row.get("symbol", ""),
+                "ATTACHMENTNAME": "",
+                "_url":         row.get("attchmntFile", ""),
+                "_source":      "NSE",
+            })
+        return out
+    except Exception as e:
+        print(f"  [NSE] Error: {e}", file=sys.stderr)
+        return []
+
+
+# ── BSE fetcher (fallback) ────────────────────────────────────────────────────
 
 def fetch_bse(from_date: datetime, to_date: datetime, session: requests.Session,
-              retries: int = 3, backoff: int = 5) -> list:
+              retries: int = 2, backoff: int = 5) -> list:
     """Fetch BSE announcements with up to `retries` attempts and linear backoff.
     Returns empty list only after all attempts fail, so the tracker is not
     falsely zeroed on a transient BSE outage."""
@@ -130,10 +168,14 @@ def fetch_bse(from_date: datetime, to_date: datetime, session: requests.Session,
             r = session.get(url, timeout=25)
             r.raise_for_status()
             payload = r.json()
-            # BSE returns {"Table": [...]} or {"Table1": [...]}
+            # BSE API returns a JSON string ("No Record Found!") when blocked or empty.
+            # Only treat dict responses as valid data.
+            if not isinstance(payload, dict):
+                print(f"  [BSE] Non-dict response: {str(payload)[:80]}", file=sys.stderr)
+                return []
             return payload.get("Table") or payload.get("Table1") or []
         except requests.Timeout:
-            print(f"  [BSE] Timeout after 25 s (attempt {attempt}/{retries})", file=sys.stderr)
+            print(f"  [BSE] Timeout (attempt {attempt}/{retries})", file=sys.stderr)
         except requests.HTTPError as e:
             print(f"  [BSE] HTTP error: {e} (attempt {attempt}/{retries})", file=sys.stderr)
         except Exception as e:
@@ -150,16 +192,21 @@ def is_brsr_filing(row: dict) -> bool:
 
 
 def parse_bse_date(row: dict):
-    raw = row.get("NEWS_DT") or row.get("DT_TM") or ""
-    for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"):
+    raw = (row.get("NEWS_DT") or row.get("DT_TM") or "").strip()
+    for fmt in ("%d-%b-%Y %H:%M:%S", "%d-%b-%Y",
+                "%d/%m/%Y %H:%M:%S", "%d/%m/%Y",
+                "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"):
         try:
-            return datetime.strptime(raw[:len(fmt)], fmt)
+            return datetime.strptime(raw, fmt)
         except (ValueError, TypeError):
             continue
     return None
 
 
 def build_filing_url(row: dict) -> str:
+    # NSE rows carry a direct PDF url in _url
+    if row.get("_url"):
+        return row["_url"]
     attach = row.get("ATTACHMENTNAME") or row.get("attachement") or ""
     scrip  = str(row.get("SCRIP_CD") or row.get("scCode") or "")
     if attach:
@@ -186,25 +233,51 @@ def main() -> int:
 
     print("=" * 60)
     print("Green Curve — BRSR Filing Tracker")
-    print(f"  Period : {from_date.strftime('%Y-%m-%d')} → {now.strftime('%Y-%m-%d')}")
+    print(f"  Period : {from_date.strftime('%Y-%m-%d')} -> {now.strftime('%Y-%m-%d')}")
     print("=" * 60)
 
-    # ── Load company database from SQLite ─────────────────────────────────────
+    # ── Load company database (SQLite preferred, JSON fallback for local dev) ──
     with get_conn() as conn:
         rows = conn.execute(
             "SELECT company_name, cin, sector, esg_risk_score, risk_tier FROM companies"
         ).fetchall()
     companies = [dict(r) for r in rows]
-    idx = build_index(companies)
-    print(f"  DB: {len(companies)} companies indexed from greencurve.db")
 
-    # ── Fetch from BSE ─────────────────────────────────────────────────────────
+    if not companies:
+        # Local dev: DB is auth-only (no company rows). Fall back to esg_quotient.json.
+        json_path = BASE_DIR / "assets" / "data" / "esg_quotient.json"
+        if json_path.exists():
+            blob = json.loads(json_path.read_text(encoding="utf-8"))
+            for c in blob.get("companies", []):
+                companies.append({
+                    "company_name":   c.get("company_name", ""),
+                    "cin":            c.get("cin", ""),
+                    "sector":         c.get("sector", ""),
+                    "esg_risk_score": c.get("esg_risk_score"),
+                    "risk_tier":      c.get("risk_tier", ""),
+                })
+            print(f"  DB: 0 rows — fell back to esg_quotient.json ({len(companies)} companies)")
+        else:
+            print("  DB: 0 rows and no esg_quotient.json found — aborting", file=sys.stderr)
+            return 1
+    else:
+        print(f"  DB: {len(companies)} companies indexed from greencurve.db")
+
+    idx = build_index(companies)
+
+    # ── Fetch from NSE (primary) then BSE (fallback) ──────────────────────────
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    print("  Querying BSE corporate announcements…")
-    rows = fetch_bse(from_date, now, session)
-    print(f"  Got   : {len(rows)} total BSE announcements")
+    print("  Querying NSE corporate announcements (primary)...")
+    rows = fetch_nse(from_date, now, session)
+    print(f"  NSE   : {len(rows)} BRSR announcements found")
+
+    if not rows:
+        print("  NSE empty — trying BSE fallback...")
+        session.headers["Referer"] = "https://www.bseindia.com/"
+        rows = fetch_bse(from_date, now, session)
+        print(f"  BSE   : {len(rows)} total announcements")
 
     # ── Filter and match ───────────────────────────────────────────────────────
     matched = []
