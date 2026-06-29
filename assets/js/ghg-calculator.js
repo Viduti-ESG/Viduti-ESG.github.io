@@ -248,10 +248,26 @@ function handleUomChange() {
   if (state.uom) showFactorPreview();
 }
 
+// Official India grid factor — CEA CO₂ Baseline Database V21.0 (FY2024-25),
+// Ministry of Power, GoI. This is the BRSR/assurer-expected number for Indian
+// Scope 2 electricity and supersedes the older IFI 2020 figure (0.608) which we
+// keep only as an international reference.
+const CEA_ALL_INDIA = 0.7117;
+
 function showFactorPreview() {
-  const entry = findEntry(state.scope, state.level1, state.level2, state.level3, state.uom);
+  let entry = findEntry(state.scope, state.level1, state.level2, state.level3, state.uom);
   state.activeEntry = entry;
   if (!entry) return;
+
+  // India Scope 2 electricity → lead with the official CEA All-India factor
+  // instead of the IFI 2020 value carried in the dataset.
+  const isIndiaElec = entry.scope === 'Scope 2'
+    && (entry.level1 || '').toLowerCase().includes('electricity')
+    && (entry.level3 || '').toLowerCase() === 'india';
+  if (isIndiaElec) {
+    entry = { ...entry, factor: CEA_ALL_INDIA, source: 'CEA', vintage: 'V21.0 · FY2024-25', country: 'India' };
+    state.activeEntry = entry;
+  }
 
   els.factorValue.textContent = `${entry.factor} kg CO₂e / ${entry.uom || entry.uom_simple}`;
   if (els.factorSrc) {
@@ -672,15 +688,17 @@ function addCEAEntry() {
   if (!factor) { alert('Select a state / region.'); return; }
   if (!kwh || kwh <= 0) { alert('Enter kWh consumed.'); return; }
 
-  // Convert tCO₂/MWh × MWh to kg CO₂ factor per kWh: factor * 1000 / 1000 = factor kg/kWh
-  const factorKg = factor; // tCO₂/MWh = kg CO₂/kWh
+  // CEA factor is tCO₂/MWh, which is numerically identical to kg CO₂/kWh.
+  // amount is in kWh and calcTotals divides (factor × amount) by 1000 for kg→t,
+  // so the stored factor must be kg/kWh = the CEA value as-is (NO ×1000).
+  const factorKg = factor; // tCO₂/MWh ≡ kg CO₂/kWh
   state.items.push({
     id: `cea-${Date.now()}`,
     description: `Grid Electricity (CEA) › ${label}`,
     scope: 'Scope 2',
     amount: kwh,
     unit: 'kWh',
-    factor: factorKg * 1000, // kg CO₂e per MWh, so per kWh = factor
+    factor: factorKg, // kg CO₂e per kWh
   });
 
   kwhEl.value = '';
@@ -795,7 +813,7 @@ function exportBRSR() {
     }),
     [''],
     ['Data Sources', '', '', ''],
-    ['Emission Factors', 'DEFRA 2024 / CEA CO₂ Baseline Database V21.0 (Nov 2025)', '', ''],
+    ['Emission Factors', 'India grid: CEA CO₂ Baseline V21.0 (FY2024-25) · Fuels/other: DEFRA 2021 (OGL v3.0) · Grid by country: IFI 2020 · Hotels: Cornell CHSB 2020', '', ''],
     ['Standard', 'GHG Protocol Corporate Standard / SEBI BRSR Framework', '', ''],
     ['Calculator', 'Green Curve GHG Calculator (greencurve.solutions/calculator.html)', '', ''],
   ];

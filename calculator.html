@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carbon Footprint &amp; GHG Emissions Calculator for India — Scope 1, 2 &amp; 3 | Green Curve</title>
-  <meta name="description" content="Free GHG and carbon footprint calculator for Indian companies. Calculate Scope 1, Scope 2 and Scope 3 emissions with 3,000+ UNFCCC and India CEA emission factors — BRSR and ISSB S2 ready." />
+  <meta name="description" content="Free GHG and carbon footprint calculator for Indian companies. Calculate Scope 1, Scope 2 and Scope 3 emissions with 2,700+ emission factors (DEFRA, IFI and India CEA) — BRSR and ISSB S2 ready." />
   <meta name="keywords" content="GHG calculator India, carbon footprint calculator India, Scope 3 emissions calculator, carbon footprint calculator for companies, Scope 1 2 3 emissions calculator, BRSR emissions calculator" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://greencurve.solutions/calculator" />
   <meta property="og:type"    content="website" />
   <meta property="og:url"     content="https://greencurve.solutions/calculator" />
   <meta property="og:title"   content="Carbon Footprint &amp; GHG Calculator for India (Scope 1, 2 &amp; 3) — Free" />
-  <meta property="og:description" content="Calculate your company's Scope 1, 2 and 3 carbon emissions with 3,000+ UNFCCC and India CEA emission factors. Free, BRSR &amp; ISSB S2 ready." />
+  <meta property="og:description" content="Calculate your company's Scope 1, 2 and 3 carbon emissions with 2,700+ emission factors (DEFRA, IFI and India CEA). Free, BRSR &amp; ISSB S2 ready." />
   <meta property="og:image"   content="https://greencurve.solutions/assets/img/logo.png" />
 
   <!-- Google Analytics (consent mode — analytics blocked until user accepts) -->
@@ -276,7 +276,7 @@
         GHG &amp; Carbon Footprint<br/><em>Calculator</em> for India
       </h1>
       <p class="calc-hero__sub">
-        Calculate your company's Scope 1, 2 and 3 carbon emissions using 3,000+ UNFCCC and India CEA emission factors.
+        Calculate your company's Scope 1, 2 and 3 carbon emissions using 2,700+ emission factors (DEFRA, IFI and India CEA).
         A free carbon footprint calculator for Indian businesses, aligned with the GHG Protocol, SEBI BRSR and ISSB S2 reporting.
       </p>
     </div>
@@ -374,7 +374,7 @@
       <!-- CEA India notice (shown when India electricity selected) -->
       <div id="cea-notice" class="cea-notice" hidden>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>Using CEA All-India average. For state-specific accuracy, select from the CEA State Grid section below.</span>
+        <span>Using the official <strong>CEA All-India grid factor (0.7117 kg CO₂e/kWh</strong>, CEA CO₂ Baseline V21.0, FY2024-25) — the figure expected for BRSR. For state-specific accuracy, use the CEA State Grid section below. <em>(International IFI 2020 reference: 0.608.)</em></span>
       </div>
 
       <!-- Divider -->
@@ -394,7 +394,7 @@
         </div>
         <div class="commute-preview" id="spend-preview">Enter spend categories above to estimate Scope 3</div>
         <button id="spend-add" class="btn-secondary">Add spend-based Scope 3 entry</button>
-        <p class="calc-note" style="margin-top:8px">Source: DEFRA 2024 EEIO spend-based factors (converted to INR). Accuracy improves with activity-based data — use as a starting estimate.</p>
+        <p class="calc-note" style="margin-top:8px">Source: DEFRA EEIO spend-based factors (OGL v3.0), converted to INR. Accuracy improves with activity-based data — use as a starting estimate.</p>
       </div>
 
       <!-- CEA State Grid Module -->
@@ -512,7 +512,7 @@
         </div>
         <div class="commute-preview" id="commute-preview"></div>
         <button id="commute-add" class="btn-secondary">Add commute to inventory</button>
-        <p class="calc-note" style="margin-top:8px">Factors: DEFRA 2024 (kg CO₂e/km per employee). Round-trip automatically applied.</p>
+        <p class="calc-note" style="margin-top:8px">Factors: DEFRA (OGL v3.0), kg CO₂e/km per employee. Round-trip automatically applied.</p>
       </div>
 
       <!-- Water & Waste Module -->
@@ -757,7 +757,14 @@
         </div>
         <button onclick="generateShareableProfile()" class="btn-secondary btn-block">🔗 Copy Shareable Profile Link</button>
         <button id="reset-items" class="btn-secondary btn-block">Clear all items</button>
-        <p class="calc-note">Emission factors in kg CO₂e. Results in t CO₂e. BRSR export is a draft — verify before filing. Based on GHG Protocol Corporate Standard &amp; CEA CO₂ Baseline V21.0.</p>
+        <p class="calc-note">Emission factors in kg CO₂e. Results in t CO₂e. BRSR export is a draft — verify before filing. Based on the GHG Protocol Corporate Standard.</p>
+        <p class="calc-note" style="margin-top:6px;font-size:.72rem;line-height:1.6">
+          <strong>Emission factor sources &amp; licences:</strong>
+          India grid electricity — CEA CO₂ Baseline Database V21.0 (FY2024-25), Ministry of Power, Government of India.
+          Fuels &amp; other factors — UK Government GHG Conversion Factors 2021 (DEFRA/DESNZ); contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener" style="color:var(--emerald)">Open Government Licence v3.0</a>.
+          Per-country grid factors — IFI Dataset of Default Grid Factors (International Financial Institutions Technical Working Group on GHG Accounting, 2020).
+          Hotel-stay factors — Cornell Hotel Sustainability Benchmarking (CHSB) Index (2020).
+        </p>
       </div>
     </div>
   </div>
@@ -782,7 +789,7 @@
 
   <details class="faq-item" style="border-top:1px solid var(--border);padding:18px 0">
     <summary style="font-size:1.05rem;font-weight:600;color:#f1f5f9;cursor:pointer;list-style:none">Which emission factors does the carbon footprint calculator use?</summary>
-    <p style="color:var(--text-70);line-height:1.7;margin-top:12px">It uses 3,000+ emission factors from the UNFCCC database and India's Central Electricity Authority (CEA) CO₂ Baseline V21.0 for grid electricity, applied per the GHG Protocol Corporate Standard. India-specific factors make the result accurate for Indian operations rather than relying on generic global averages.</p>
+    <p style="color:var(--text-70);line-height:1.7;margin-top:12px">It uses 2,700+ emission factors from the UK Government GHG Conversion Factors (DEFRA, under the Open Government Licence), the IFI Default Grid Factors dataset, and India's Central Electricity Authority (CEA) CO₂ Baseline V21.0 for grid electricity, applied per the GHG Protocol Corporate Standard. India-specific factors make the result accurate for Indian operations rather than relying on generic global averages.</p>
   </details>
 
   <details class="faq-item" style="border-top:1px solid var(--border);padding:18px 0">
@@ -814,7 +821,7 @@
     {
       "@type": "Question",
       "name": "Which emission factors does the carbon footprint calculator use?",
-      "acceptedAnswer": { "@type": "Answer", "text": "It uses 3,000+ emission factors from the UNFCCC database and India's Central Electricity Authority (CEA) CO2 Baseline V21.0 for grid electricity, applied per the GHG Protocol Corporate Standard." }
+      "acceptedAnswer": { "@type": "Answer", "text": "It uses 2,700+ emission factors from the UK Government GHG Conversion Factors (DEFRA, Open Government Licence), the IFI Default Grid Factors dataset, and India's Central Electricity Authority (CEA) CO2 Baseline V21.0 for grid electricity, applied per the GHG Protocol Corporate Standard." }
     },
     {
       "@type": "Question",
@@ -890,9 +897,10 @@
       </p>
       <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
       <p style="font-size:.65rem;color:#475569;margin-top:6px;line-height:1.6">
-        Contains public sector information licensed under the
-        <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener" style="color:#64748b">Open Government Licence v3.0</a>
-        (DEFRA 2024 emission factors).
+        Emission factors: India grid — CEA CO₂ Baseline V21.0 (Ministry of Power, GoI).
+        Fuels &amp; other — UK Government GHG Conversion Factors 2021 (DEFRA/DESNZ), containing public sector information licensed under the
+        <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener" style="color:#64748b">Open Government Licence v3.0</a>.
+        Per-country grid — IFI Default Grid Factors (2020). Hotel stays — Cornell CHSB Index (2020).
       </p>
     </div>
   </div>
@@ -947,7 +955,7 @@
   }, { passive: true });
 </script>
 <script src="assets/js/gc-config.js?v=20260616"></script>
-<script src="assets/js/ghg-calculator.js?v=20260606" defer></script>
+<script src="assets/js/ghg-calculator.js?v=20260629" defer></script>
 <script src="assets/js/ghg-features2.js?v=20260606" defer></script>
 <script src="assets/js/ghg-features3.js?v=20260606" defer></script>
 
