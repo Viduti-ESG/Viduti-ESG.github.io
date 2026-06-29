@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import secrets
+import sqlite3
 import sys
 import threading
 import time
@@ -139,9 +140,12 @@ def require_admin(user=Depends(get_current_user)):
 
 # ── Auth endpoints ─────────────────────────────────────────────────────────────
 @router.post("/api/auth/register", status_code=201)
-def register(body: RegisterIn):
+def register(request: Request, body: RegisterIn):
+    _check_login_rate(request)   # same per-IP limiter — throttle mass registration
     if len(body.password) < 8:
         raise HTTPException(400, "Password must be at least 8 characters")
+    if len(body.password.encode()) > 72:   # bcrypt silently truncates beyond 72 bytes
+        raise HTTPException(400, "Password must be 72 bytes or fewer")
     pw_hash = bcrypt.hashpw(body.password.encode(), bcrypt.gensalt()).decode()
     try:
         with get_conn() as conn:
@@ -150,8 +154,12 @@ def register(body: RegisterIn):
                 (body.email.lower(), body.name.strip(), body.org.strip(), pw_hash)
             )
             user_id = cur.lastrowid
-    except Exception:
+    except sqlite3.IntegrityError:
+        # UNIQUE(email) violation — the only expected failure here.
         raise HTTPException(409, "Email already registered")
+    except Exception:
+        logger.exception("register failed for %s", body.email.lower())
+        raise HTTPException(500, "Could not create account. Please try again.")
     token = _make_token(user_id, body.email.lower())
     return {"token": token, "user": {"id": user_id, "email": body.email.lower(), "name": body.name, "org": body.org, "role": "user"}}
 
@@ -176,11 +184,12 @@ def me(user=Depends(get_current_user)):
 
 
 @router.post("/api/auth/forgot-password")
-def forgot_password(body: ForgotPasswordIn):
+def forgot_password(request: Request, body: ForgotPasswordIn):
     """Generate a password-reset token valid for 1 hour.
     When email delivery is configured, send the link via email.
     Currently logs the token to server logs for manual relay.
     """
+    _check_login_rate(request)   # throttle reset-token generation per IP
     conn = get_conn()
     row = conn.execute("SELECT id, email FROM users WHERE email=? AND is_active=1", (body.email.lower(),)).fetchone()
     # Always return success to avoid email enumeration
@@ -205,6 +214,8 @@ def forgot_password(body: ForgotPasswordIn):
 def reset_password(body: ResetPasswordIn):
     if len(body.new_password) < 8:
         raise HTTPException(400, "Password must be at least 8 characters")
+    if len(body.new_password.encode()) > 72:   # bcrypt silently truncates beyond 72 bytes
+        raise HTTPException(400, "Password must be 72 bytes or fewer")
 
     conn = get_conn()
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")

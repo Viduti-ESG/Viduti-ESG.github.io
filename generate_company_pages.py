@@ -39,6 +39,19 @@ def fmt_num(v):
     if v is None: return '—'
     return f"{v:,.1f}"
 
+def fmt_metric(v, unit):
+    """Physical disclosure metric (emissions/water/waste). A null (cleaned by the
+    data-quality layer) or a literal 0 both mean 'not disclosed' — a true zero is
+    not physically meaningful here — so render that explicitly rather than a
+    misleading '0.0 tCO2e' that reads as 'carbon-neutral'."""
+    if v is None or v == 0:
+        return 'Not disclosed'
+    return f"{v:,.1f} {unit}"
+
+# BRSR external-assurance coverage is a 3-level category. The bare token 'None'
+# reads ambiguously (looks like a null leak); relabel for clarity.
+ASSURANCE_LABEL = {'None': 'Not assured', 'Partial': 'Partially assured', 'All': 'Fully assured'}
+
 def risk_bar(val, label):
     v = val or 0
     col = score_color(v)
@@ -186,9 +199,11 @@ def make_page(c):
 
     t_color   = tier_color(tier)
     risks_str = ', '.join(top_risks[:3]) if top_risks else 'N/A'
-    fy_display = fy if fy and fy not in ('-', '') else '2024-25'
-    meta_desc = (f"ESG risk score {score}/10 ({tier} Risk). Key risks: {risks_str}. "
-                 f"Sector: {sector[:60]}. Based on SEBI BRSR FY {fy_display}.")
+    fy_known   = bool(fy and fy not in ('-', ''))
+    # Don't assert a specific reporting year when it isn't actually known.
+    fy_clause  = f" Based on SEBI BRSR FY {fy}." if fy_known else " Based on the company's SEBI BRSR disclosure."
+    meta_desc  = (f"ESG risk score {score}/10 ({tier} Risk). Key risks: {risks_str}. "
+                  f"Sector: {sector[:60]}.{fy_clause}")
 
     # Schema.org JSON-LD
     schema = json.dumps({
@@ -257,7 +272,7 @@ def make_page(c):
         <div class="cp-card">
           <h2 class="cp-section-title">AI Risk Summary</h2>
           <p class="cp-ai-text">{esc(ai_sum)}</p>
-          <p class="cp-disclaimer">Source: {esc(name)} BRSR Filing, FY {esc(fy)}. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
+          <p class="cp-disclaimer">Source: {esc(name)} BRSR Filing{f', FY {esc(fy)}' if fy_known else ''}. Derived from the company's own public disclosures. Not investment advice or a regulatory determination.</p>
         </div>"""
 
     page = f"""<!DOCTYPE html>
@@ -307,7 +322,7 @@ def make_page(c):
       <div class="cp-hero__meta">
         {f'<span>NSE: <strong>{esc(nse)}</strong></span>' if nse else ''}
         {f'<span>CIN: {esc(cin)}</span>' if cin else ''}
-        {f'<span>FY: {esc(fy)}</span>' if fy else ''}
+        {f'<span>FY: {esc(fy)}</span>' if fy_known else ''}
         {f'<span>Revenue: ₹{fmt_num(revenue)} Cr</span>' if revenue else ''}
       </div>
     </div>
@@ -361,10 +376,10 @@ def make_page(c):
       <div class="fe-grid">
         <div class="fe-item"><span class="fe-label">Est. Compliance Cost</span><span class="fe-val">{esc(fe.get('estimated_compliance_cost_band','—'))}</span></div>
         <div class="fe-item"><span class="fe-label">EPR Applicable</span><span class="fe-val">{esc(fe.get('epr_applicable','Unknown'))}</span></div>
-        <div class="fe-item"><span class="fe-label">Scope 1 Emissions</span><span class="fe-val">{fmt_num(fe.get('scope1_emissions_tco2e'))} tCO2e</span></div>
-        <div class="fe-item"><span class="fe-label">Scope 2 Emissions</span><span class="fe-val">{fmt_num(fe.get('scope2_emissions_tco2e'))} tCO2e</span></div>
-        <div class="fe-item"><span class="fe-label">Water Withdrawal</span><span class="fe-val">{fmt_num(fe.get('water_withdrawal_m3'))} m³</span></div>
-        <div class="fe-item"><span class="fe-label">Waste Generated</span><span class="fe-val">{fmt_num(fe.get('waste_tonnes'))} T</span></div>
+        <div class="fe-item"><span class="fe-label">Scope 1 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope1_emissions_tco2e'), 'tCO2e')}</span></div>
+        <div class="fe-item"><span class="fe-label">Scope 2 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope2_emissions_tco2e'), 'tCO2e')}</span></div>
+        <div class="fe-item"><span class="fe-label">Water Withdrawal</span><span class="fe-val">{fmt_metric(fe.get('water_withdrawal_m3'), 'm³')}</span></div>
+        <div class="fe-item"><span class="fe-label">Waste Generated</span><span class="fe-val">{fmt_metric(fe.get('waste_tonnes'), 'T')}</span></div>
       </div>
     </div>
 
@@ -374,7 +389,7 @@ def make_page(c):
       <div class="fe-grid">
         <div class="fe-item"><span class="fe-label">Anti-Corruption Policy</span><span class="fe-val">{esc(gov.get('anti_corruption_policy','—'))}</span></div>
         <div class="fe-item"><span class="fe-label">Conflict of Interest Policy</span><span class="fe-val">{esc(gov.get('conflict_of_interest','—'))}</span></div>
-        <div class="fe-item"><span class="fe-label">BRSR Assurance</span><span class="fe-val">{esc(gov.get('brsr_assurance','—'))}</span></div>
+        <div class="fe-item"><span class="fe-label">BRSR Assurance</span><span class="fe-val">{esc(ASSURANCE_LABEL.get(gov.get('brsr_assurance'), gov.get('brsr_assurance') or '—'))}</span></div>
         <div class="fe-item"><span class="fe-label">Assurance Provider</span><span class="fe-val">{esc(gov.get('assurance_provider','—'))}</span></div>
       </div>
     </div>
@@ -461,7 +476,7 @@ index_html = f"""<!DOCTYPE html>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>ESG Risk Scores — All Indian Listed Companies | Green Curve</title>
-  <meta name="description" content="ESG risk scores and BRSR-based financial risk analysis for {len(generated)} Indian listed companies. Powered by Green Curve."/>
+  <meta name="description" content="ESG risk scores and BRSR-based financial risk analysis for {len(generated):,} Indian listed companies. Powered by Green Curve."/>
   <meta name="robots" content="index,follow"/>
   <link rel="canonical" href="{BASE_URL}/company/"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -479,7 +494,7 @@ index_html = f"""<!DOCTYPE html>
 </div>
 <div class="container" style="padding:40px 0 80px">
   <h1 style="font-size:2rem;margin-bottom:8px">ESG Risk Scores — Indian Listed Companies</h1>
-  <p style="color:#94a3b8;margin-bottom:16px">{len(generated)} companies analysed · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
+  <p style="color:#94a3b8;margin-bottom:16px">{len(generated):,} companies analysed · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
   <p style="margin-bottom:28px"><a href="sectors.html" style="color:var(--emerald,#10b981);font-weight:600">Browse ESG scores by sector &rarr;</a></p>
   <div class="table-wrap">
     <table class="screener-table">

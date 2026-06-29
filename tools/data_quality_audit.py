@@ -139,6 +139,45 @@ if fe_path.exists():
 else:
     print("\n[7] fe_backfill.json not found — skipping displayed-artifact check")
 
+# ── 8. PUBLISHED artifact verification (the file the website + 1,200 pages READ) ─
+# This is the gate that was missing: steps 1–7 prove the cleaner CAN neutralise bad
+# values, but the website serves assets/data/esg_quotient.json, not fe_backfill.json.
+# If clean_published.py was not run before deploy, absurd figures reach production
+# while the gate stays green. Verifying the published file closes that gap.
+pub_path = Path(r"c:/Viduti/esg-site/assets/data/esg_quotient.json")
+if pub_path.exists():
+    pub = json.loads(pub_path.read_text(encoding="utf-8")).get("companies", [])
+    bad = []
+    for c in pub:
+        fe = c.get("financial_exposure") or {}
+        nm = c.get("company_name", "?")
+        for kk in ("scope1_emissions_tco2e", "scope2_emissions_tco2e", "scope3_emissions_tco2e"):
+            v = fe.get(kk)
+            if v is not None and (v >= dc.EMIS_CEIL or v < 0):
+                bad.append(f"{nm}:{kk}={v:,.0f}")
+        w = fe.get("water_withdrawal_m3")
+        if w is not None and (w >= dc.WATER_CEIL or w < 0):
+            bad.append(f"{nm}:water={w:,.0f}")
+        wt = fe.get("waste_tonnes")
+        if wt is not None and (wt >= dc.WASTE_CEIL or wt < 0):
+            bad.append(f"{nm}:waste={wt:,.0f}")
+        rev = c.get("revenue_crore")
+        if rev is not None and rev <= dc.REV_FLOOR:
+            bad.append(f"{nm}:revenue={rev}")
+        metrics = (c.get("risk_breakdown") or {}).get("metrics") or {}
+        for pf in ("renewable_pct", "waste_recovery_pct", "female_board_pct", "female_kmp_pct"):
+            pv = metrics.get(pf)
+            if pv is not None and not (0 <= pv <= 100):
+                bad.append(f"{nm}:{pf}={pv}")
+    print(f"\n[8] PUBLISHED esg_quotient.json — surviving implausible values: {len(bad)}")
+    for b in bad[:8]:
+        print(f"    BAD: {b}")
+    if bad:
+        failures.append(f"{len(bad)} implausible value(s) in PUBLISHED esg_quotient.json "
+                        f"(run: python tools/clean_published.py && python generate_company_pages.py)")
+else:
+    print("\n[8] esg_quotient.json not found — skipping published-artifact check")
+
 # ── verdict ───────────────────────────────────────────────────────────────────
 print("\n" + "=" * 78)
 if failures:

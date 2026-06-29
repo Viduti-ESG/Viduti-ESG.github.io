@@ -17,9 +17,12 @@ Responses are stored in: assets/data/supplier_responses.json
 import json
 import logging
 import os
+import secrets
 import smtplib
 import threading
+import time
 import uuid
+from collections import defaultdict
 from datetime import datetime, timezone
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -28,7 +31,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 try:
-    from fastapi import APIRouter, Depends, Header, HTTPException
+    from fastapi import APIRouter, Depends, Header, HTTPException, Request
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:
@@ -53,8 +56,25 @@ def _require_admin(x_api_key: str = Header(default="")) -> None:
     admin_key = os.environ.get("GC_ADMIN_KEY", "")
     if not admin_key:
         raise HTTPException(status_code=503, detail="Admin key not configured on server.")
-    if x_api_key != admin_key:
+    # Constant-time compare so a wrong key can't be recovered via response timing.
+    if not secrets.compare_digest(x_api_key or "", admin_key):
         raise HTTPException(status_code=401, detail="Invalid or missing X-Api-Key header.")
+
+
+# ── Submission rate limiter (per IP) — this endpoint is public, so cap abuse ────
+_submit_rl_lock = threading.Lock()
+_submit_rl: dict = defaultdict(list)
+_SUBMIT_MAX = 10          # max submissions …
+_SUBMIT_WINDOW = 600      # … per 10 minutes per IP
+
+def _check_submit_rate(request: Request) -> None:
+    ip = request.client.host if request.client else "unknown"
+    now = time.monotonic()
+    with _submit_rl_lock:
+        _submit_rl[ip] = [t for t in _submit_rl[ip] if now - t < _SUBMIT_WINDOW]
+        if len(_submit_rl[ip]) >= _SUBMIT_MAX:
+            raise HTTPException(429, "Too many submissions from this IP. Please try again later.")
+        _submit_rl[ip].append(now)
 
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
@@ -75,25 +95,25 @@ class SupplierResponseIn(BaseModel):
 
     # Section B — Environmental
     has_environmental_policy: bool  = False
-    scope1_tco2e:             Optional[float] = None
+    scope1_tco2e:             Optional[float] = Field(None, ge=0)
     scope1_not_disclosed:     bool  = False
-    scope2_tco2e:             Optional[float] = None
+    scope2_tco2e:             Optional[float] = Field(None, ge=0)
     scope2_not_disclosed:     bool  = False
-    water_m3:                 Optional[float] = None
+    water_m3:                 Optional[float] = Field(None, ge=0)
     water_not_disclosed:      bool  = False
-    waste_tonnes:             Optional[float] = None
+    waste_tonnes:             Optional[float] = Field(None, ge=0)
     waste_not_disclosed:      bool  = False
 
     # Section C — Social
-    total_employees:          int   = 0
+    total_employees:          int   = Field(0, ge=0)
     has_hr_policy:            bool  = False
-    safety_incidents:         int   = 0
-    women_pct:                float = 0.0
+    safety_incidents:         int   = Field(0, ge=0)
+    women_pct:                float = Field(0.0, ge=0, le=100)
 
     # Section D — Governance
     has_brsr_disclosure:      bool  = False
     has_code_of_conduct:      bool  = False
-    regulatory_violations:    int   = 0
+    regulatory_violations:    int   = Field(0, ge=0)
 
     # Computed by client; server can recompute to verify
     esg_risk_score:           Optional[float] = None
@@ -200,8 +220,9 @@ def _compute_risk(d: SupplierResponseIn) -> float:
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
 @router.post("/supplier-response", response_model=SupplierResponseOut)
-async def submit_supplier_response(payload: SupplierResponseIn):
+async def submit_supplier_response(payload: SupplierResponseIn, request: Request):
     """Receive a supplier ESG form submission and persist it."""
+    _check_submit_rate(request)
     record = payload.dict()
 
     # Server-side risk score is authoritative; ignore any client-supplied value

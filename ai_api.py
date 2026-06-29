@@ -25,11 +25,14 @@ Costs (Haiku ~₹0.43/1k tokens; Sonnet ~₹4.8/1k tokens):
 
 import base64
 import json
+import logging
 import os
 import time
 import threading
 from collections import defaultdict
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 try:
     from fastapi import APIRouter, HTTPException, Request
@@ -452,8 +455,9 @@ async def nl_query(request: Request, payload: NLQueryRequest):
         raise HTTPException(status_code=400, detail="Query is empty")
     try:
         return _ask_json(HAIKU, NL_SYSTEM, payload.query, max_tokens=300)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI parsing failed: {e}")
+    except Exception:
+        logger.exception("nl-query parsing failed")
+        raise HTTPException(status_code=500, detail="Could not parse that query. Please rephrase and try again.")
 
 
 # ── P4-E: PDF / TCFD Gap Checker (Claude Sonnet) ──────────────────────────────

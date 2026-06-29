@@ -39,6 +39,30 @@ SECTOR_MIN_PEERS = 8       # need this many peers to trust a sector median
 # national total; above this is a unit/parse error (e.g. litres entered as m³).
 WATER_CEIL = 1e11
 
+# tonnes — a single company generating >100 Mt of waste a year is implausible for
+# any non-mining sector (India's *entire* municipal solid waste is ~62 Mt/yr).
+# Mining overburden can exceed this but is reported separately, not as ESG "waste",
+# so a figure above the ceiling is treated as a unit/parse error (e.g. kg as tonnes).
+WASTE_CEIL = 1e8
+
+# ₹ crore — revenue at/below this on a listed company is a parse artefact (a
+# sub-figure or a unit slip): 0 / 0.1 cr "revenue" is never real. Only near-zero
+# revenue is unambiguous, so that is all we null here. A revenue that is merely
+# "too small for how big the company clearly is" (e.g. SAIL at ₹98.6 cr) is NOT
+# detectable without an external truth source — instead the extreme intensity it
+# produces is caught by the sector-outlier pass, which nulls the EMISSIONS. (An
+# earlier version also nulled revenue when emissions were large; that wrongly
+# discarded Amrutanjan's real ₹451 cr revenue and, by removing the denominator,
+# stopped the intensity guard from catching its impossible 149 Mt emissions.)
+REV_FLOOR = 1.0
+
+# Sector-relative magnitude guard for DISPLAYED emissions. Deliberately far looser
+# than the scoring threshold (SECTOR_HI_FACTOR=50): a 50× rule wrongly nulls
+# legitimate heavy emitters in heterogeneous sectors (NTPC ~74× its "Power" median),
+# so for display we only neutralise egregious magnitude errors (e.g. Amrutanjan at
+# ~15,700× the pharma median, Prime Focus at ~3,100×) and keep real outliers.
+DISPLAY_SECTOR_HI_FACTOR = 500.0
+
 # pay ratio guards
 MIN_WORKER_PAY = 1000      # ₹ — below this the worker-pay cell is a parse artefact
 MAX_PAY_RATIO = 500        # board/worker ratio above this is a unit mismatch
@@ -49,9 +73,34 @@ def clean_water(v):
     return v if (v is not None and 0 <= v < WATER_CEIL) else None
 
 
+def clean_waste(v):
+    """Null implausibly large waste-generation figures (parse/unit errors)."""
+    return v if (v is not None and 0 <= v < WASTE_CEIL) else None
+
+
+def clean_pct(v):
+    """Null percentage-field values outside the only possible range, 0–100.
+    Catches field-mapping / scaling errors (e.g. female_kmp_pct = 26,920,000)."""
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return f if 0 <= f <= 100 else None
+
+
 def revenue_suspect(rev, sector) -> bool:
     """True when revenue is implausibly large for the sector (parse error)."""
     return bool(rev and rev > REV_CEIL and sector not in REV_OK_SECTORS)
+
+
+def revenue_suspect_low(rev, s1=None, s2=None) -> bool:
+    """True when revenue is at/below REV_FLOOR — a near-zero parse artefact (0 / 0.1
+    cr on a listed company is never real, e.g. HCL shown at ₹0). The caller nulls the
+    *revenue* only; emissions are kept and judged separately by the intensity guard.
+    (s1/s2 are accepted for signature stability but no longer used — see REV_FLOOR.)"""
+    return rev is not None and rev <= REV_FLOOR
 
 
 def clean_emissions(s1, s2, s3, rev, sector):

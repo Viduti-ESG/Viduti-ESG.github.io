@@ -269,6 +269,21 @@ function showFactorPreview() {
     state.activeEntry = entry;
   }
 
+  // Guard against a genuinely MISSING factor (null/undefined — e.g. DEFRA gives no
+  // single figure for Plug-in Hybrid rows). A legitimate 0 is allowed: a Battery
+  // Electric Vehicle correctly has 0 Scope-1 (tailpipe) emissions — its footprint is
+  // the Scope-2 charging electricity, captured separately.
+  if (entry.factor == null || entry.factor < 0) {
+    els.factorValue.textContent = 'Factor unavailable';
+    if (els.factorSrc) {
+      els.factorSrc.textContent = 'No published factor for this selection — pick a different option or use a custom factor below.';
+    }
+    els.factorPreview.hidden = false;
+    els.qtyGroup.hidden = true;
+    els.addBtn.hidden = true;
+    return;
+  }
+
   els.factorValue.textContent = `${entry.factor} kg CO₂e / ${entry.uom || entry.uom_simple}`;
   if (els.factorSrc) {
     const parts = [entry.source, entry.vintage, entry.country].filter(Boolean);
@@ -286,6 +301,7 @@ function handleAddItem() {
   const qty = Number(els.qty.value);
 
   if (!entry) { alert('Select a complete emission source first.'); return; }
+  if (entry.factor == null || entry.factor < 0) { alert('No published emission factor for this selection. Choose a different option or enter a custom factor.'); return; }
   if (!qty || qty <= 0) { alert('Enter a quantity greater than 0.'); return; }
 
   const parts = [

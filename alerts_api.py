@@ -298,8 +298,7 @@ def _build_feed(conn, user: dict, prefs: dict) -> list:
             })
 
     _SEV = {"high": 0, "critical": 0, "medium": 1, "info": 2, "low": 2, "": 3}
-    alerts.sort(key=lambda a: (_SEV.get(a["severity"], 3), a["date"] or "", a["title"]), reverse=False)
-    # within severity, newest first
+    # Sort by severity, then newest first within each severity band.
     alerts.sort(key=lambda a: (_SEV.get(a["severity"], 3), _neg_date(a["date"])))
     return alerts
 

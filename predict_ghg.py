@@ -157,6 +157,14 @@ def _get_intensity(sector: str, products: str = "") -> tuple[float, str]:
     return SECTOR_INTENSITY["default"], "default (general industry)"
 
 
+# tCO2e — a linear (sector-intensity × revenue) estimate above this is the model
+# breaking down for very-high-revenue firms (e.g. Indian Oil extrapolated to ~1.2
+# billion tCO2e, ~4× India's largest *real* emitter). Such a figure is meaningless,
+# and any genuine emitter at that scale discloses real data anyway, so the estimate
+# is dropped rather than published.
+ESTIMATE_CEIL = 1e8  # 100 Mt
+
+
 def predict_ghg(company: dict) -> dict | None:
     """Return estimated GHG dict, or None if actual data already exists."""
     fe      = company.get("financial_exposure") or {}
@@ -177,6 +185,10 @@ def predict_ghg(company: dict) -> dict | None:
 
     # Total estimated tCO2e (combined Scope 1 + 2)
     total_est = round(intensity * rev)
+
+    # Drop physically-implausible estimates (model breakdown at very high revenue).
+    if total_est >= ESTIMATE_CEIL:
+        return None
 
     # Split: 70% Scope 1, 30% Scope 2 (unless one side is already disclosed)
     if s1_real is not None:

@@ -2,7 +2,7 @@
   "generated_at": "2026-06-11T07:35:18.580742+00:00",
   "methodology": "India-calibrated sector GHG intensity factors (tCO2e/₹Cr revenue). Sources: BEE PAT Cycle I/II data, CEEW India GHG Platform, MoEFCC National GHG Inventory 2024. Scope 2 uses India CEA grid factor: 0.82 kg CO2/kWh. Confidence: Medium (±40% typical range for sector-level proxies). Estimates apply only where Scope 1 and/or Scope 2 are not disclosed in BRSR.",
   "total_companies_processed": 1227,
-  "companies_with_estimates": 1205,
+  "companies_with_estimates": 1181,
   "companies_already_disclosed": 22,
   "estimates": {
     "GODAWARI POWER AND ISPAT LIMITED": {
@@ -111,28 +111,6 @@
       "intensity_factor_used": 240,
       "sector_matched": "logistics",
       "revenue_crore_used": 41308.0,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "ADANI POWER LIMITED": {
-      "scope1_estimated_tco2e": 379353352,
-      "scope2_estimated_tco2e": 162580008,
-      "total_estimated_tco2e": 541933360,
-      "intensity_factor_used": 9200,
-      "sector_matched": "power generation by coal",
-      "revenue_crore_used": 58905.8,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Adani Power Limited": {
-      "scope1_estimated_tco2e": 372652532,
-      "scope2_estimated_tco2e": 159708228,
-      "total_estimated_tco2e": 532360760,
-      "intensity_factor_used": 9200,
-      "sector_matched": "power generation by coal",
-      "revenue_crore_used": 57865.3,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -489,17 +467,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "HINDALCO INDUSTRIES LIMITED": {
-      "scope1_estimated_tco2e": 111016409,
-      "scope2_estimated_tco2e": 47578461,
-      "total_estimated_tco2e": 158594870,
-      "intensity_factor_used": 1700,
-      "sector_matched": "aluminium",
-      "revenue_crore_used": 93291.1,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "Hindustan Zinc Limited": {
       "scope1_estimated_tco2e": 33401732,
       "scope2_estimated_tco2e": 14315028,
@@ -518,17 +485,6 @@
       "intensity_factor_used": 160,
       "sector_matched": "default (general industry)",
       "revenue_crore_used": 12639.5,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "JSW Steel Limited": {
-      "scope1_estimated_tco2e": 158354280,
-      "scope2_estimated_tco2e": 67866120,
-      "total_estimated_tco2e": 226220400,
-      "intensity_factor_used": 1800,
-      "sector_matched": "iron ore",
-      "revenue_crore_used": 125678.0,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -595,39 +551,6 @@
       "intensity_factor_used": 2200,
       "sector_matched": "steel",
       "revenue_crore_used": 3535.6,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "TATA POWER COMPANY LIMITED": {
-      "scope1_estimated_tco2e": 216726720,
-      "scope2_estimated_tco2e": 92882880,
-      "total_estimated_tco2e": 309609600,
-      "intensity_factor_used": 4800,
-      "sector_matched": "power generation",
-      "revenue_crore_used": 64502.0,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Tata Steel Limited": {
-      "scope1_estimated_tco2e": 204075718,
-      "scope2_estimated_tco2e": 87461022,
-      "total_estimated_tco2e": 291536740,
-      "intensity_factor_used": 2200,
-      "sector_matched": "steel",
-      "revenue_crore_used": 132516.7,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Vedanta Limited": {
-      "scope1_estimated_tco2e": 182031920,
-      "scope2_estimated_tco2e": 78013680,
-      "total_estimated_tco2e": 260045600,
-      "intensity_factor_used": 1700,
-      "sector_matched": "aluminium",
-      "revenue_crore_used": 152968.0,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -2766,17 +2689,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "UltraTech Cement Limited": {
-      "scope1_estimated_tco2e": 101020283,
-      "scope2_estimated_tco2e": 43294407,
-      "total_estimated_tco2e": 144314690,
-      "intensity_factor_used": 1900,
-      "sector_matched": "cement",
-      "revenue_crore_used": 75955.1,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "UNITED BREWERIES LIMITED": {
       "scope1_estimated_tco2e": 2172890,
       "scope2_estimated_tco2e": 931238,
@@ -4027,17 +3939,6 @@
       "intensity_factor_used": 80,
       "sector_matched": "construction",
       "revenue_crore_used": 6254.1,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Torrent Power Limited": {
-      "scope1_estimated_tco2e": 97995408,
-      "scope2_estimated_tco2e": 41998032,
-      "total_estimated_tco2e": 139993440,
-      "intensity_factor_used": 4800,
-      "sector_matched": "power generation",
-      "revenue_crore_used": 29165.3,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -6451,17 +6352,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "Reliance Infrastructure Limited": {
-      "scope1_estimated_tco2e": 102228000,
-      "scope2_estimated_tco2e": 43812000,
-      "total_estimated_tco2e": 146040000,
-      "intensity_factor_used": 4800,
-      "sector_matched": "power generation",
-      "revenue_crore_used": 30425.0,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "RHI Magnesita India Ltd": {
       "scope1_estimated_tco2e": 323893,
       "scope2_estimated_tco2e": 138811,
@@ -7558,17 +7448,6 @@
       "intensity_factor_used": 420,
       "sector_matched": "specialty chemical",
       "revenue_crore_used": 8328.3,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "AIA ENGINEERING LIMITED": {
-      "scope1_estimated_tco2e": 585723264,
-      "scope2_estimated_tco2e": 251024256,
-      "total_estimated_tco2e": 836747520,
-      "intensity_factor_used": 2400,
-      "sector_matched": "iron and steel",
-      "revenue_crore_used": 348644.8,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -8937,17 +8816,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "Hindustan Petroleum Corporation Limited": {
-      "scope1_estimated_tco2e": 454962060,
-      "scope2_estimated_tco2e": 194983740,
-      "total_estimated_tco2e": 649945800,
-      "intensity_factor_used": 1400,
-      "sector_matched": "petroleum",
-      "revenue_crore_used": 464247.0,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "HMA AGRO INDUSTRIES LIMITED": {
       "scope1_estimated_tco2e": 544555,
       "scope2_estimated_tco2e": 233381,
@@ -9784,17 +9652,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "NTPC LIMITED": {
-      "scope1_estimated_tco2e": 571325664,
-      "scope2_estimated_tco2e": 244853856,
-      "total_estimated_tco2e": 816179520,
-      "intensity_factor_used": 4800,
-      "sector_matched": "power generation",
-      "revenue_crore_used": 170037.4,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "NUCLEUS SOFTWARE EXPORTS LIMITED": {
       "scope1_estimated_tco2e": 86094,
       "scope2_estimated_tco2e": 36898,
@@ -10455,28 +10312,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "SHIPPING CORPORATION OF INDIA LIMITED": {
-      "scope1_estimated_tco2e": 101780406,
-      "scope2_estimated_tco2e": 43620174,
-      "total_estimated_tco2e": 145400580,
-      "intensity_factor_used": 260,
-      "sector_matched": "transport",
-      "revenue_crore_used": 559233.0,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Shree Digvijay Cement Co.Ltd": {
-      "scope1_estimated_tco2e": 96444418,
-      "scope2_estimated_tco2e": 41333322,
-      "total_estimated_tco2e": 137777740,
-      "intensity_factor_used": 1900,
-      "sector_matched": "cement",
-      "revenue_crore_used": 72514.6,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "SIGACHI INDUSTRIES LIMITED": {
       "scope1_estimated_tco2e": 19982,
       "scope2_estimated_tco2e": 8564,
@@ -10792,17 +10627,6 @@
       "intensity_factor_used": 15,
       "sector_matched": "software",
       "revenue_crore_used": 8915.7,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Texmaco Rail & Engineering Limited": {
-      "scope1_estimated_tco2e": 652032920,
-      "scope2_estimated_tco2e": 279442680,
-      "total_estimated_tco2e": 931475600,
-      "intensity_factor_used": 2200,
-      "sector_matched": "steel",
-      "revenue_crore_used": 423398.0,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -11632,17 +11456,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "Bharat Petroleum Corporation Limited": {
-      "scope1_estimated_tco2e": 350259840,
-      "scope2_estimated_tco2e": 150111360,
-      "total_estimated_tco2e": 500371200,
-      "intensity_factor_used": 1000,
-      "sector_matched": "petrochemical",
-      "revenue_crore_used": 500371.2,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "Biocon Limited": {
       "scope1_estimated_tco2e": 1913373,
       "scope2_estimated_tco2e": 820017,
@@ -11852,17 +11665,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "Electrosteel Castings Limited": {
-      "scope1_estimated_tco2e": 75553890,
-      "scope2_estimated_tco2e": 32380238,
-      "total_estimated_tco2e": 107934128,
-      "intensity_factor_used": 160,
-      "sector_matched": "default (general industry)",
-      "revenue_crore_used": 674588.3,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "Emami Limited": {
       "scope1_estimated_tco2e": 109322,
       "scope2_estimated_tco2e": 46852,
@@ -11925,17 +11727,6 @@
       "intensity_factor_used": 60,
       "sector_matched": "healthcare",
       "revenue_crore_used": 110.7,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "GAIL (India) Limited": {
-      "scope1_estimated_tco2e": 134542240,
-      "scope2_estimated_tco2e": 57660960,
-      "total_estimated_tco2e": 192203200,
-      "intensity_factor_used": 1400,
-      "sector_matched": "petroleum",
-      "revenue_crore_used": 137288.0,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -12017,17 +11808,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "HARIOM PIPE INDUSTRIES LIMITED": {
-      "scope1_estimated_tco2e": 208985546,
-      "scope2_estimated_tco2e": 89565234,
-      "total_estimated_tco2e": 298550780,
-      "intensity_factor_used": 2200,
-      "sector_matched": "steel",
-      "revenue_crore_used": 135704.9,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "HDFC Asset Management Company Limited": {
       "scope1_estimated_tco2e": 367290,
       "scope2_estimated_tco2e": 157410,
@@ -12105,17 +11885,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     },
-    "IG Petrochemicals Limited": {
-      "scope1_estimated_tco2e": 74129227,
-      "scope2_estimated_tco2e": 31769669,
-      "total_estimated_tco2e": 105898896,
-      "intensity_factor_used": 480,
-      "sector_matched": "chemical",
-      "revenue_crore_used": 220622.7,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
     "IGARASHI MOTORS INDIA LIMITED": {
       "scope1_estimated_tco2e": 93901,
       "scope2_estimated_tco2e": 40243,
@@ -12123,17 +11892,6 @@
       "intensity_factor_used": 160,
       "sector_matched": "default (general industry)",
       "revenue_crore_used": 838.4,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Indian Oil Corporation Limited": {
-      "scope1_estimated_tco2e": 828602740,
-      "scope2_estimated_tco2e": 355115460,
-      "total_estimated_tco2e": 1183718200,
-      "intensity_factor_used": 1400,
-      "sector_matched": "petroleum",
-      "revenue_crore_used": 845513.0,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -12277,17 +12035,6 @@
       "intensity_factor_used": 260,
       "sector_matched": "transport",
       "revenue_crore_used": 116483.7,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "MANGALORE REFINERY AND PETROCHEMICALS LIMITED": {
-      "scope1_estimated_tco2e": 76494250,
-      "scope2_estimated_tco2e": 32783250,
-      "total_estimated_tco2e": 109277500,
-      "intensity_factor_used": 1000,
-      "sector_matched": "petrochemical",
-      "revenue_crore_used": 109277.5,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -12530,17 +12277,6 @@
       "intensity_factor_used": 150,
       "sector_matched": "port",
       "revenue_crore_used": 6.9,
-      "confidence": "Medium",
-      "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
-      "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
-    },
-    "Reliance Industries Limited": {
-      "scope1_estimated_tco2e": 390013960,
-      "scope2_estimated_tco2e": 167148840,
-      "total_estimated_tco2e": 557162800,
-      "intensity_factor_used": 1000,
-      "sector_matched": "petrochemical",
-      "revenue_crore_used": 557162.8,
       "confidence": "Medium",
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
@@ -13260,5 +12996,6 @@
       "method": "BEE sector intensity × revenue (tCO2e/₹Cr)",
       "note": "Estimated ±40%. Use actual BRSR disclosure for verified calculations."
     }
-  }
+  },
+  "estimate_cap_tco2e": 100000000.0
 }
