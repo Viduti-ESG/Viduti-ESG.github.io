@@ -13,6 +13,11 @@
   <link rel="icon" href="/assets/img/logo.png" type="image/png" />
   <style>
     :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    /* This is a light-themed page (white cards, dark text); the global style.css
+       gives <body> the dark --void background, which made the header text and
+       white-card paragraphs render dark-on-dark / light-on-white. Anchor a light
+       surface + dark default text so all content meets WCAG contrast. */
+    body { background:#f1f5f9; color:#334155; }
     .wrap { max-width:1080px; margin:0 auto; padding:28px 20px 80px; }
     h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
     .sub { color:#567; margin-top:0; font-size:.95rem; }
