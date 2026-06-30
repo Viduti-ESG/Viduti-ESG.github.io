@@ -93,11 +93,17 @@ function fmt(v, d = 2) {
   }).format(v);
 }
 
+// UK-specific DEFRA categories (e.g. "UK electricity", "UK electricity for Evs")
+// are irrelevant on an India-focused calculator and confuse the Scope 2 picker —
+// Indian users use "Electricity" → India, which applies the CEA grid factor. Hide
+// any "UK …" category. (DEFRA's universal fuel/material factors are unaffected.)
+const isUkOnlyCategory = (l1) => /^uk\s/i.test(l1 || '');
+
 // === data helpers =============================================================
 function getLevel1List(scope) {
   return [...new Set(
     state.factors
-      .filter(e => e.scope === scope && !WTT_SET.has(e.level1))
+      .filter(e => e.scope === scope && !WTT_SET.has(e.level1) && !isUkOnlyCategory(e.level1))
       .map(e => e.level1)
   )].sort();
 }
