@@ -13,28 +13,38 @@
   <link rel="icon" href="/assets/img/logo.png" type="image/png" />
   <style>
     :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
-    /* This is a light-themed page (white cards, dark text); the global style.css
-       gives <body> the dark --void background, which made the header text and
-       white-card paragraphs render dark-on-dark / light-on-white. Anchor a light
-       surface + dark default text so all content meets WCAG contrast. */
-    body { background:#f1f5f9; color:#334155; }
-    .wrap { max-width:1080px; margin:0 auto; padding:28px 20px 80px; }
-    h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
-    .sub { color:#567; margin-top:0; font-size:.95rem; }
-    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:22px; }
+
+    /* ── Branded hero (matches compliance-calendar / the rest of the site) ── */
+    .dr-hero { background:var(--void); padding:72px 0 40px; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+    .dr-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(52,211,153,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .dr-hero__orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); width:480px; height:480px; background:radial-gradient(circle,rgba(52,211,153,.14) 0%,transparent 65%); top:-180px; right:-80px; }
+    .dr-hero__content { position:relative; }
+    .dr-hero__back { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; font-weight:500; color:var(--text-70); border:1px solid var(--border-hi); border-radius:100px; padding:6px 16px; transition:all .2s; margin-bottom:22px; }
+    .dr-hero__back:hover { color:var(--emerald); border-color:rgba(52,211,153,.4); }
+    .dr-hero__eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--emerald); margin-bottom:16px; padding:5px 14px; background:rgba(52,211,153,.06); border:1px solid rgba(52,211,153,.22); border-radius:100px; }
+    .dr-hero__title { font-family:var(--serif); font-size:clamp(2rem,4vw,3rem); color:#fff; letter-spacing:-.03em; line-height:1.12; margin-bottom:14px; }
+    .dr-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--emerald),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .dr-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:620px; }
+
+    /* ── Light content body ── */
+    .dr-body { background:#f1f5f9; padding:40px 0 80px; min-height:46vh; color:#334155; }
+    h2 { color:#12331f; }
+    .sub { color:#567; }
+
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:14px; padding:22px; margin-bottom:22px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
     .panel h2 { margin-top:0; font-size:1.12rem; color:#12331f; }
     label { display:block; font-size:.85rem; font-weight:600; color:#456; margin:12px 0 4px; }
     input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--gc-line); border-radius:8px; font-size:.95rem; font-family:inherit; box-sizing:border-box; }
     textarea { min-height:60px; }
     .row { display:flex; gap:14px; flex-wrap:wrap; }
     .row > div { flex:1; min-width:150px; }
-    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.95rem; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.95rem; text-decoration:none; transition:background .15s; }
     .btn-primary { background:var(--gc-green); color:#fff; }
     .btn-primary:hover { background:var(--gc-green-dark); }
     .btn-sm { padding:6px 12px; font-size:.82rem; }
     .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
     .btn-danger { background:#fff; border:1px solid #d9534f; color:#b42318; }
-    .msg { padding:10px 14px; border-radius:8px; margin:10px 0; font-size:.9rem; display:none; }
+    .msg { padding:10px 14px; border-radius:8px; margin:0 0 18px; font-size:.9rem; display:none; }
     .msg.show { display:block; }
     .msg.error { background:#fde8e8; color:#b42318; }
     .msg.success { background:#e3f5e9; color:#1f7a4d; }
@@ -43,7 +53,6 @@
     .pill.year { background:#f0ebff; color:#5a3fb0; }
     .pill.ver-pill { background:#eef1f4; color:#5a6b7b; }
     .hidden { display:none; }
-    a.back { color:var(--gc-green); text-decoration:none; font-size:.9rem; }
     .grid { display:grid; grid-template-columns:240px 1fr; gap:22px; align-items:start; }
     @media (max-width:760px){ .grid { grid-template-columns:1fr; } }
     .folder-item { padding:9px 12px; border-radius:8px; cursor:pointer; font-size:.9rem; color:#345; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
@@ -65,78 +74,250 @@
     table.audit { width:100%; border-collapse:collapse; font-size:.8rem; margin-top:10px; }
     table.audit th, table.audit td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--gc-line); }
     table.audit th { color:#567; font-weight:600; }
+
+    /* ── Sign-in gate — centred, branded card ── */
+    .dr-gate { max-width:520px; margin:8px auto 0; text-align:center; }
+    .dr-gate__icon { width:54px; height:54px; margin:0 auto 16px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:rgba(31,122,77,.08); border:1px solid #cfe6d7; color:var(--gc-green); }
+    .dr-gate h2 { font-size:1.25rem; margin:0 0 8px; }
+    .dr-gate p { color:#5a6b7b; margin:0 0 20px; line-height:1.6; }
+    .dr-features { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+    .dr-feature { font-size:.78rem; color:#475569; background:#f3f7f4; border:1px solid #e3e8e3; border-radius:100px; padding:6px 14px; }
   </style>
 </head>
-<body>
-  <script src="/assets/js/gc-config.js"></script>
-  <div class="wrap">
-    <a class="back" href="/">← Back to Green Curve</a>
-    <h1>ESG Data Room</h1>
-    <p class="sub">Your private, versioned workspace for ESG evidence — emissions data, policies, supplier documents, BRSR drafts and board minutes, all in one auditable place.</p>
-    <div class="msg" id="msg"></div>
+<body class="calc-page-body">
+  <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
 
-    <!-- Not logged in -->
-    <div class="panel hidden" id="loginGate">
-      <h2>Sign in to use your Data Room</h2>
-      <p>Your Data Room is private to your Green Curve account. <a href="/login?next=/data-room">Sign in or create an account →</a></p>
+  <!-- NAV -->
+  <header class="site-header" id="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="nav__logo">
+        <img class="logo-mark" src="/assets/img/logo-nav.png" alt="Green Curve" />
+        <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+      </a>
+      <ul class="nav__links" role="list">
+        <li><a href="index.html">Insights</a></li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="brsr-generator.html">BRSR Report Builder</a></li>
+            <li><a href="brsr-simple.html">Quick BRSR</a></li>
+            <li><a href="assurance.html">Core Assurance Checker</a></li>
+            <li><a href="ccts.html">CCTS Compliance Tracker</a></li>
+            <li><a href="tcfd.html">TCFD Report</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="calculator.html">GHG Calculator</a></li>
+            <li><a href="data-baseline.html">Data Baseline Wizard <span class="nav-new">NEW</span></a></li>
+            <li><a href="value-chain.html">Value Chain / Scope 3</a></li>
+            <li><a href="learn.html">Carbon Literacy</a></li>
+            <li><a href="compliance-calendar.html">Compliance Calendar <span class="nav-new">NEW</span></a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+            <li><a href="esg-health-check.html">ESG Health Check <span class="nav-new">NEW</span></a></li>
+            <li><a href="/benchmark">Peer Benchmarking</a></li>
+            <li><a href="/search">Semantic Search</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle" href="/data-room">Workspace <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="/data-room">ESG Data Room</a></li>
+            <li><a href="/brsr-workspace">BRSR Workspace</a></li>
+            <li><a href="/team">Team &amp; Collaboration</a></li>
+            <li><a href="/alerts">ESG Alerts</a></li>
+          </ul>
+        </li>
+        <li><a href="pricing.html">Pricing</a></li>
+      </ul>
+      <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
+      <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html">Insights</a>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">BRSR</div>
+      <a href="brsr-generator.html">BRSR Report Builder</a>
+      <a href="brsr-simple.html">Quick BRSR</a>
+      <a href="assurance.html">Assurance Checker</a>
+      <a href="ccts.html">CCTS Tracker</a>
+      <a href="tcfd.html">TCFD Report</a>
     </div>
-
-    <!-- DPDP consent gate -->
-    <div class="panel hidden" id="consentGate">
-      <h2>Before you start</h2>
-      <p style="color:#456" id="consentText"></p>
-      <div class="dpdp">
-        Green Curve acts as a <strong>Data Fiduciary</strong> under India's DPDP Act 2023. Your documents are private to your account.
-        You can export everything or permanently delete it at any time, and every action is recorded in your own audit log.
-      </div>
-      <div style="margin-top:16px"><button class="btn btn-primary" onclick="GC.acceptConsent()">I accept — open my Data Room</button></div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">Carbon &amp; GHG</div>
+      <a href="calculator.html">GHG Calculator</a>
+      <a href="data-baseline.html">Data Baseline Wizard</a>
+      <a href="value-chain.html">Value Chain / Scope 3</a>
+      <a href="learn.html">Carbon Literacy</a>
+      <a href="compliance-calendar.html">Compliance Calendar</a>
     </div>
-
-    <!-- Workspace -->
-    <div id="workspace" class="hidden">
-      <div class="toolbar">
-        <button class="btn btn-ghost btn-sm" onclick="GC.exportAll()">⬇ Export everything (.zip)</button>
-        <button class="btn btn-ghost btn-sm" onclick="GC.toggleAudit()">🛈 Activity log</button>
-      </div>
-      <div class="panel hidden" id="auditBox"></div>
-
-      <div class="panel">
-        <h2>Upload ESG evidence</h2>
-        <div class="row">
-          <div><label>Title</label><input id="d_title" placeholder="e.g. FY24 Scope 1 & 2 workings" /></div>
-          <div><label>Category</label><select id="d_category"></select></div>
-        </div>
-        <div class="row">
-          <div><label>Folder</label><select id="uploadFolder"><option value="">No folder (loose)</option></select></div>
-          <div><label>Reporting year</label><input id="d_year" placeholder="e.g. 2024-25" /></div>
-        </div>
-        <label>Note (optional)</label>
-        <input id="d_note" placeholder="What this version contains / what changed" />
-        <label>File (PDF, Office, CSV, XBRL/XML, images — max 25 MB)</label>
-        <input id="d_file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.webp,.xml,.json,.zip,.ppt,.pptx" />
-        <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.uploadDoc()">Upload document</button></div>
-      </div>
-
-      <div class="grid">
-        <div class="panel" style="position:sticky;top:16px">
-          <h2 style="font-size:1rem">Folders</h2>
-          <div id="folderList"></div>
-          <hr style="border:none;border-top:1px solid var(--gc-line);margin:14px 0" />
-          <label>New folder</label>
-          <input id="f_name" placeholder="e.g. FY25 BRSR evidence" />
-          <label>Default category</label>
-          <select id="f_category"></select>
-          <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="GC.createFolder()">+ Create folder</button></div>
-        </div>
-
-        <div class="panel">
-          <h2>Documents</h2>
-          <div id="docList"><p style="color:#789">Loading…</p></div>
-        </div>
-      </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">ESG Quotient</div>
+      <a href="esg-intelligence.html">Overview &amp; Screener</a>
+      <a href="esg-health-check.html">ESG Health Check</a>
+      <a href="/benchmark">Peer Benchmarking</a>
+      <a href="/search">Semantic Search</a>
     </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">Workspace</div>
+      <a href="/data-room">ESG Data Room</a>
+      <a href="/brsr-workspace">BRSR Workspace</a>
+      <a href="/team">Team &amp; Collaboration</a>
+      <a href="/alerts">ESG Alerts</a>
+    </div>
+    <a href="pricing.html">Pricing</a>
   </div>
 
+  <!-- HERO -->
+  <section class="dr-hero">
+    <div class="dr-hero__orb" aria-hidden="true"></div>
+    <div class="dr-hero__content container">
+      <a href="/" class="dr-hero__back">&larr; Back to Green Curve</a>
+      <div class="dr-hero__eyebrow">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><rect x="2.5" y="5" width="7" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M4 5V3.6a2 2 0 0 1 4 0V5" stroke="currentColor" stroke-width="1.3"/></svg>
+        Private Workspace · DPDP-compliant
+      </div>
+      <h1 class="dr-hero__title">ESG Data <em>Room</em></h1>
+      <p class="dr-hero__sub">Your private, versioned workspace for ESG evidence — emissions data, policies, supplier documents, BRSR drafts and board minutes, all in one auditable place.</p>
+    </div>
+  </section>
+
+  <!-- BODY -->
+  <section class="dr-body">
+    <div class="container">
+      <div class="msg" id="msg"></div>
+
+      <!-- Not logged in -->
+      <div class="panel hidden dr-gate" id="loginGate">
+        <div class="dr-gate__icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/></svg>
+        </div>
+        <h2>Sign in to use your Data Room</h2>
+        <p>Your Data Room is private to your Green Curve account. Create a free account or sign in to upload and version your ESG evidence.</p>
+        <a class="btn btn-primary" href="/login?next=/data-room">Sign in or create an account &rarr;</a>
+        <div class="dr-features">
+          <span class="dr-feature">🔒 Private to your account</span>
+          <span class="dr-feature">🗂 Versioned &amp; auditable</span>
+          <span class="dr-feature">⬇ Export or delete anytime</span>
+        </div>
+      </div>
+
+      <!-- DPDP consent gate -->
+      <div class="panel hidden" id="consentGate">
+        <h2>Before you start</h2>
+        <p style="color:#456" id="consentText"></p>
+        <div class="dpdp">
+          Green Curve acts as a <strong>Data Fiduciary</strong> under India's DPDP Act 2023. Your documents are private to your account.
+          You can export everything or permanently delete it at any time, and every action is recorded in your own audit log.
+        </div>
+        <div style="margin-top:16px"><button class="btn btn-primary" onclick="GC.acceptConsent()">I accept — open my Data Room</button></div>
+      </div>
+
+      <!-- Workspace -->
+      <div id="workspace" class="hidden">
+        <div class="toolbar">
+          <button class="btn btn-ghost btn-sm" onclick="GC.exportAll()">⬇ Export everything (.zip)</button>
+          <button class="btn btn-ghost btn-sm" onclick="GC.toggleAudit()">🛈 Activity log</button>
+        </div>
+        <div class="panel hidden" id="auditBox"></div>
+
+        <div class="panel">
+          <h2>Upload ESG evidence</h2>
+          <div class="row">
+            <div><label>Title</label><input id="d_title" placeholder="e.g. FY24 Scope 1 & 2 workings" /></div>
+            <div><label>Category</label><select id="d_category"></select></div>
+          </div>
+          <div class="row">
+            <div><label>Folder</label><select id="uploadFolder"><option value="">No folder (loose)</option></select></div>
+            <div><label>Reporting year</label><input id="d_year" placeholder="e.g. 2024-25" /></div>
+          </div>
+          <label>Note (optional)</label>
+          <input id="d_note" placeholder="What this version contains / what changed" />
+          <label>File (PDF, Office, CSV, XBRL/XML, images — max 25 MB)</label>
+          <input id="d_file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.webp,.xml,.json,.zip,.ppt,.pptx" />
+          <div style="margin-top:14px"><button class="btn btn-primary" onclick="GC.uploadDoc()">Upload document</button></div>
+        </div>
+
+        <div class="grid">
+          <div class="panel" style="position:sticky;top:16px">
+            <h2 style="font-size:1rem">Folders</h2>
+            <div id="folderList"></div>
+            <hr style="border:none;border-top:1px solid var(--gc-line);margin:14px 0" />
+            <label>New folder</label>
+            <input id="f_name" placeholder="e.g. FY25 BRSR evidence" />
+            <label>Default category</label>
+            <select id="f_category"></select>
+            <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="GC.createFolder()">+ Create folder</button></div>
+          </div>
+
+          <div class="panel">
+            <h2>Documents</h2>
+            <div id="docList"><p style="color:#789">Loading…</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <a href="index.html" class="footer__logo">
+          <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+          </svg>
+          Green Curve
+        </a>
+        <p>Climate transition intelligence for Indian businesses.</p>
+      </div>
+      <div class="footer__right">
+        <p style="font-size:.71rem;color:#334155;margin-top:8px;line-height:1.8">
+          <a href="privacy-policy.html" style="color:#64748b;text-decoration:none">Privacy Policy</a>
+          &nbsp;&middot;&nbsp;
+          <a href="terms-of-use.html" style="color:#64748b;text-decoration:none">Terms of Use</a>
+        </p>
+        <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const header = document.getElementById('site-header');
+    const progress = document.getElementById('scroll-progress');
+    window.addEventListener('scroll', () => {
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      if (progress) progress.style.width = pct + '%';
+      if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+    // Mobile menu (desktop dropdowns are CSS :hover; this powers the burger)
+    const burger = document.getElementById('nav-burger');
+    const mobileNav = document.getElementById('nav-mobile');
+    if (burger && mobileNav) {
+      burger.addEventListener('click', () => {
+        const open = burger.classList.toggle('open');
+        mobileNav.classList.toggle('open', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+      mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        burger.classList.remove('open'); mobileNav.classList.remove('open'); document.body.style.overflow = '';
+      }));
+    }
+  </script>
+  <script src="/assets/js/gc-config.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/data-room.js?v=2"></script>
   <script src="/assets/js/cookie-consent.js"></script>
