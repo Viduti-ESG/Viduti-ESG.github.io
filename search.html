@@ -14,9 +14,6 @@
   <link rel="icon" href="/assets/img/logo.png" type="image/png" />
   <style>
     :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
-    /* Light-themed page; anchor a light surface so header + card text aren't
-       rendered on the global dark --void background. See data-room.html. */
-    body { background:#f1f5f9; color:#334155; }
     .wrap { max-width:860px; margin:0 auto; padding:28px 20px 90px; }
     h1 { font-family:'DM Serif Display',serif; color:#12331f; margin-bottom:4px; }
     .sub { color:#567; margin-top:0; font-size:.95rem; }
@@ -52,14 +49,134 @@
     .disclaimer { font-size:.76rem; color:#8a98a5; margin-top:18px; line-height:1.5; border-top:1px solid var(--gc-line); padding-top:12px; }
     .spin { display:inline-block; width:16px; height:16px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-3px; margin-right:6px; }
     @keyframes spin { to { transform:rotate(360deg); } }
+    /* ── Branded hero (matches compliance-calendar / the rest of the site) ── */
+    .dr-hero { background:var(--void); padding:72px 0 40px; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+    .dr-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(52,211,153,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .dr-hero__orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); width:480px; height:480px; background:radial-gradient(circle,rgba(52,211,153,.14) 0%,transparent 65%); top:-180px; right:-80px; }
+    .dr-hero__content { position:relative; }
+    .dr-hero__back { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; font-weight:500; color:var(--text-70); border:1px solid var(--border-hi); border-radius:100px; padding:6px 16px; transition:all .2s; margin-bottom:22px; }
+    .dr-hero__back:hover { color:var(--emerald); border-color:rgba(52,211,153,.4); }
+    .dr-hero__eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--emerald); margin-bottom:16px; padding:5px 14px; background:rgba(52,211,153,.06); border:1px solid rgba(52,211,153,.22); border-radius:100px; }
+    .dr-hero__title { font-family:var(--serif); font-size:clamp(2rem,4vw,3rem); color:#fff; letter-spacing:-.03em; line-height:1.12; margin-bottom:14px; }
+    .dr-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--emerald),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .dr-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:620px; }
+
+    /* ── Light content body ── */
+    .dr-body { background:#f1f5f9; padding:40px 0 80px; min-height:46vh; color:#334155; }
+    h2 { color:#12331f; }
+    .sub { color:#567; }
   </style>
 </head>
-<body>
-  <script src="/assets/js/gc-config.js"></script>
-  <div class="wrap">
-    <a class="back" href="/">← Back to Green Curve</a>
-    <h1>Semantic ESG Search</h1>
-    <p class="sub">Search 1,200+ Indian listed companies by <em>meaning</em>, not just name. Describe what you're looking for in plain English — sector, risk theme, exposure — and we rank the closest matches from public SEBI BRSR data.</p>
+<body class="calc-page-body">
+  <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="site-header" id="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="nav__logo">
+        <img class="logo-mark" src="/assets/img/logo-nav.png" alt="Green Curve" />
+        <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+      </a>
+      <ul class="nav__links" role="list">
+        <li><a href="index.html">Insights</a></li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="brsr-generator.html">BRSR Report Builder</a></li>
+            <li><a href="brsr-simple.html">Quick BRSR</a></li>
+            <li><a href="assurance.html">Core Assurance Checker</a></li>
+            <li><a href="ccts.html">CCTS Compliance Tracker</a></li>
+            <li><a href="tcfd.html">TCFD Report</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="calculator.html">GHG Calculator</a></li>
+            <li><a href="data-baseline.html">Data Baseline Wizard <span class="nav-new">NEW</span></a></li>
+            <li><a href="value-chain.html">Value Chain / Scope 3</a></li>
+            <li><a href="learn.html">Carbon Literacy</a></li>
+            <li><a href="compliance-calendar.html">Compliance Calendar <span class="nav-new">NEW</span></a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+            <li><a href="esg-health-check.html">ESG Health Check <span class="nav-new">NEW</span></a></li>
+            <li><a href="/benchmark">Peer Benchmarking</a></li>
+            <li><a href="/search">Semantic Search</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle" href="/data-room">Workspace <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="/data-room">ESG Data Room</a></li>
+            <li><a href="/brsr-workspace">BRSR Workspace</a></li>
+            <li><a href="/team">Team &amp; Collaboration</a></li>
+            <li><a href="/alerts">ESG Alerts</a></li>
+          </ul>
+        </li>
+        <li><a href="pricing.html">Pricing</a></li>
+      </ul>
+      <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
+      <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html">Insights</a>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">BRSR</div>
+      <a href="brsr-generator.html">BRSR Report Builder</a>
+      <a href="brsr-simple.html">Quick BRSR</a>
+      <a href="assurance.html">Assurance Checker</a>
+      <a href="ccts.html">CCTS Tracker</a>
+      <a href="tcfd.html">TCFD Report</a>
+    </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">Carbon &amp; GHG</div>
+      <a href="calculator.html">GHG Calculator</a>
+      <a href="data-baseline.html">Data Baseline Wizard</a>
+      <a href="value-chain.html">Value Chain / Scope 3</a>
+      <a href="learn.html">Carbon Literacy</a>
+      <a href="compliance-calendar.html">Compliance Calendar</a>
+    </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">ESG Quotient</div>
+      <a href="esg-intelligence.html">Overview &amp; Screener</a>
+      <a href="esg-health-check.html">ESG Health Check</a>
+      <a href="/benchmark">Peer Benchmarking</a>
+      <a href="/search">Semantic Search</a>
+    </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">Workspace</div>
+      <a href="/data-room">ESG Data Room</a>
+      <a href="/brsr-workspace">BRSR Workspace</a>
+      <a href="/team">Team &amp; Collaboration</a>
+      <a href="/alerts">ESG Alerts</a>
+    </div>
+    <a href="pricing.html">Pricing</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="dr-hero">
+    <div class="dr-hero__orb" aria-hidden="true"></div>
+    <div class="dr-hero__content container">
+      <a href="/" class="dr-hero__back">← Back to Green Curve</a>
+      <div class="dr-hero__eyebrow"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><rect x="2.5" y="5" width="7" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M4 5V3.6a2 2 0 0 1 4 0V5" stroke="currentColor" stroke-width="1.3"/></svg> ESG Quotient · Public BRSR data</div>
+      <h1 class="dr-hero__title">Semantic ESG <em>Search</em></h1>
+      <p class="dr-hero__sub">Search 1,200+ Indian listed companies by <em>meaning</em>, not just name. Describe what you're looking for in plain English — sector, risk theme, exposure — and we rank the closest matches from public SEBI BRSR data.</p>
+    </div>
+  </section>
+
+  <!-- BODY -->
+  <section class="dr-body">
+    <script src="/assets/js/gc-config.js"></script>
+    <div class="wrap">
 
     <div class="panel">
       <form class="searchrow" id="searchForm" autocomplete="off">
@@ -89,6 +206,55 @@
 
     <p class="disclaimer">Results are ranked by semantic similarity to your query using a CPU-only open-source embedding model (no third-party AI API, no data leaves the server). ESG risk scores are derived from public SEBI BRSR disclosures and are informational, not investment advice. A company appearing for a query does not imply any specific finding about it.</p>
   </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <a href="index.html" class="footer__logo">
+          <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+          </svg>
+          Green Curve
+        </a>
+        <p>Climate transition intelligence for Indian businesses.</p>
+      </div>
+      <div class="footer__right">
+        <p style="font-size:.71rem;color:#334155;margin-top:8px;line-height:1.8">
+          <a href="privacy-policy.html" style="color:#64748b;text-decoration:none">Privacy Policy</a>
+          &nbsp;&middot;&nbsp;
+          <a href="terms-of-use.html" style="color:#64748b;text-decoration:none">Terms of Use</a>
+        </p>
+        <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const header = document.getElementById('site-header');
+    const progress = document.getElementById('scroll-progress');
+    window.addEventListener('scroll', () => {
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      if (progress) progress.style.width = pct + '%';
+      if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+    // Mobile menu (desktop dropdowns are CSS :hover; this powers the burger)
+    const burger = document.getElementById('nav-burger');
+    const mobileNav = document.getElementById('nav-mobile');
+    if (burger && mobileNav) {
+      burger.addEventListener('click', () => {
+        const open = burger.classList.toggle('open');
+        mobileNav.classList.toggle('open', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+      mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        burger.classList.remove('open'); mobileNav.classList.remove('open'); document.body.style.overflow = '';
+      }));
+    }
+  </script>
 
   <script>
     var apiBase = window._gcApiBase || window.location.origin;
