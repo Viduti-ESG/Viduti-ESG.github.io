@@ -165,9 +165,14 @@
       if (!box.classList.contains('hidden')) { hide(box); return; }
       try {
         const { entries } = await api('GET', '/api/dataroom/audit-log?limit=100');
+        const istTime = (ts) => {
+          const d = new Date((ts || '').replace(' ', 'T') + 'Z');   // DB stores UTC
+          return isNaN(d) ? esc(ts) : d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata',
+            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        };
         box.innerHTML = entries.length
-          ? '<table class="audit"><tr><th>When (UTC)</th><th>Action</th><th>Detail</th><th>IP</th></tr>' +
-            entries.map(e => `<tr><td>${esc(e.created_at)}</td><td>${esc(e.action)}</td><td>${esc(e.detail)}</td><td>${esc(e.ip)}</td></tr>`).join('') +
+          ? '<table class="audit"><tr><th>When (IST)</th><th>Action</th><th>Detail</th><th>IP</th></tr>' +
+            entries.map(e => `<tr><td>${istTime(e.created_at)}</td><td>${esc(e.action)}</td><td>${esc(e.detail)}</td><td>${esc(e.ip)}</td></tr>`).join('') +
             '</table>'
           : '<p style="color:#789">No activity yet.</p>';
         show(box);
