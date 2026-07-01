@@ -9,9 +9,8 @@ const CATEGORY_LABELS = {
   'Bioenergy': 'Bioenergy',
   'Electricity': 'Grid Electricity (by country)',
   'Heat and steam': 'Heat & Steam',
-  'UK electricity': 'UK Grid Electricity',
-  'UK electricity for Evs': 'UK EV Electricity',
-  'UK electricity T&D for EVs': 'UK EV T&D',
+  // UK-only electricity categories are hidden on this India-focused tool
+  // (see isUkOnlyCategory); their labels are intentionally omitted.
   'Business travel- air': 'Air Travel',
   'Business travel- land': 'Employee Land Travel',
   'Business travel- sea': 'Sea Travel',
@@ -136,7 +135,8 @@ function getUomList(scope, level1, level2, level3) {
         e.scope === scope &&
         e.level1 === level1 &&
         (level2 !== null ? e.level2 === level2 : !e.level2) &&
-        e.level3 === level3
+        e.level3 === level3 &&
+        e.uom !== 'miles'   // India uses metric; every 'miles' factor has a 'km' equivalent
       )
       .map(e => e.uom).filter(Boolean)
   )].sort();
@@ -508,7 +508,7 @@ async function initCalculator() {
 
   try {
     setStatus('loading', 'Loading emission factors…');
-    const res = await fetch('assets/data/ghg-factors.json?v=20260529');
+    const res = await fetch('assets/data/ghg-factors.json?v=20260701');
     if (!res.ok) throw new Error(`HTTP ${res.status} — file not found`);
     state.factors = await res.json();
 
