@@ -107,10 +107,16 @@ function getLevel1List(scope) {
   )].sort();
 }
 
+// DEFRA's "Cars (by market segment)" uses UK new-car classes (Supermini, Executive,
+// Upper medium, MPV…) that don't map to how Indian users think about vehicles. The
+// parallel "Cars (by size)" path (Small/Medium/Large/Average) is intuitive and covers
+// the same factors, so hide the UK-segment path.
+const EXCLUDE_LEVEL2 = new Set(['Cars (by market segment)']);
+
 function getLevel2List(scope, level1) {
   return [...new Set(
     state.factors
-      .filter(e => e.scope === scope && e.level1 === level1 && e.level2)
+      .filter(e => e.scope === scope && e.level1 === level1 && e.level2 && !EXCLUDE_LEVEL2.has(e.level2))
       .map(e => e.level2)
   )].sort();
 }
