@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 8 84 84" role="img" aria-label="Green Curve Solutions">
+  <path d="M22 80 C 30 60 40 40 82 20 C 66 42 40 58 22 80 Z" fill="#16a34a"/>
+  <path d="M28 73 C 37 57 48 42 73 26" fill="none" stroke="#ffffff" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+  <circle cx="23" cy="78" r="4" fill="#0d9488"/>
+</svg>

@@ -23,9 +23,14 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=4"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=5"/>
   <link rel="stylesheet" href="assets/css/methodology.css"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png"/>
+  <link rel="shortcut icon" href="assets/img/favicon.ico"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png"/>
+  <link rel="manifest" href="site.webmanifest"/>
   <!-- Google Analytics (consent mode - analytics blocked until user accepts) -->
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -46,7 +51,7 @@
   <nav class="nav container">
     <a href="index.html" class="nav__logo">
       <img class="logo-mark" src="assets/img/logo-nav.png" alt="Green Curve"/>
-      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span></span>
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span> <span class="nav__logo-sol">Solutions</span></span>
     </a>
     <ul class="nav__links" role="list">
       <li><a href="index.html">Insights</a></li>
@@ -157,7 +162,7 @@
   <!-- 1. Data Sources -->
   <section class="meth-section" id="data-sources">
     <h2 class="meth-h2">1. Data Sources</h2>
-    <p class="meth-p">All ESG Financial Quotient scores are derived <strong>exclusively from companies' own public regulatory disclosures</strong>. We do not use estimates, surveys, or third-party data providers. The primary sources are:</p>
+    <p class="meth-p">Every ESG Financial Quotient <strong>score</strong> is derived <strong>exclusively from companies' own public regulatory disclosures</strong> — no surveys, no proprietary third-party ESG ratings. Market data (market capitalisation and trailing 1-year return) and any modelled estimates are shown separately as <strong>context only and never feed the score</strong>. The primary sources are:</p>
 
     <div class="meth-source-grid">
       <div class="meth-source-card">
@@ -188,10 +193,17 @@
           <div class="meth-source-desc">Published notifications and circulars from SEBI, MoEFCC, BEE, CPCB and other Indian regulators, used to assess compliance risk levels and upcoming regulatory obligations by sector.</div>
         </div>
       </div>
+      <div class="meth-source-card">
+        <div class="meth-source-icon">📈</div>
+        <div>
+          <div class="meth-source-title">Exchange Market Data (context only)</div>
+          <div class="meth-source-desc">Market capitalisation and trailing 1-year price return from public NSE/BSE end-of-day data, shown in the screener purely as financial context. These values are <strong>not</strong> inputs to the ESG Financial Quotient score.</div>
+        </div>
+      </div>
     </div>
 
     <div class="meth-callout">
-      <strong>What we do not use:</strong> Real-time stock prices, NSE/BSE live market data, proprietary databases, or self-reported ESG questionnaires outside of BRSR filings.
+      <strong>What does <em>not</em> influence the score:</strong> Share prices and market data (shown only as context), proprietary third-party ESG ratings, paid databases, or self-reported ESG questionnaires outside of BRSR filings. We do not use real-time or intraday market feeds.
     </div>
   </section>
 
@@ -339,7 +351,7 @@
     <p class="meth-p">Absolute ESG intensity varies by orders of magnitude across sectors — a steelmaker's carbon footprint is not comparable to a bank's. So alongside the absolute EFQ score, every company carries a <strong>sector-relative percentile</strong>: its rank against true peers, grouped by the official Indian <strong>NIC industrial classification</strong> (2-digit division) declared in its own BRSR filing. A company is judged against steelmakers, banks against banks. This is the headline figure on company cards; the absolute tier (Section 6) provides the cross-sector reference.</p>
 
     <div class="meth-callout meth-callout--blue">
-      <strong>How peers are formed:</strong> The 1,200+ companies resolve into ~20 NIC sector divisions. Where a division has at least 8 companies, the percentile is computed within that division; smaller divisions fall back to a whole-universe percentile so every company still gets a fair relative rank.
+      <strong>How peers are formed:</strong> The 1,221 companies resolve into ~20 NIC sector divisions. Where a division has at least 8 companies, the percentile is computed within that division; smaller divisions fall back to a whole-universe percentile so every company still gets a fair relative rank.
     </div>
 
     <h3 class="meth-h3" style="margin-top:32px">Disclosure Confidence</h3>
@@ -493,7 +505,7 @@
         <div class="meth-limit-icon">⚠️</div>
         <div>
           <strong>Coverage Scope</strong>
-          <p>The current dataset covers over 1,200 listed companies — a large subset of India's listed universe. Absence from our database does not imply lower or higher ESG risk. We are working to expand coverage further.</p>
+          <p>The current dataset covers 1,221 listed companies — a large subset of India's listed universe. Absence from our database does not imply lower or higher ESG risk. We are working to expand coverage further.</p>
         </div>
       </div>
     </div>

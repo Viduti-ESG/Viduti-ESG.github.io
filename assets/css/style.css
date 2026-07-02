@@ -149,6 +149,19 @@ img, svg { display: block; }
   white-space: nowrap;
 }
 .nav__logo-accent { color: var(--cyan); }
+.nav__logo-sol {
+  font-family: var(--sans);
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--text-70);
+  margin-left: 6px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+@media (max-width: 480px) { .nav__logo-sol { display: none; } }
 .logo-mark {
   height: 44px;
   width: auto;

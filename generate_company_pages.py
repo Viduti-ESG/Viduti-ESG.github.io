@@ -265,6 +265,17 @@ def make_page(c):
           {flags_inner}
         </div>"""
 
+    # Emissions-disclosure transparency note: when a company did not report
+    # absolute Scope 1 & Scope 2 in its BRSR, say so explicitly so the "Not
+    # disclosed" figures aren't read as zero, and explain the score impact.
+    emissions_note = ''
+    if not fe.get('scope1_emissions_tco2e') and not fe.get('scope2_emissions_tco2e'):
+        emissions_note = ('<p style="font-size:.76rem;color:#94a3b8;margin:10px 0 0;'
+            'line-height:1.5">This company did not report absolute Scope&nbsp;1 &amp; '
+            'Scope&nbsp;2 emissions (in tCO₂e) in its BRSR. "Not disclosed" means '
+            'absent data, not zero emissions — the GHG dimension reflects this '
+            'non-disclosure and it lowers the company’s Disclosure Confidence.</p>')
+
     # AI summary
     ai_html = ''
     if ai_sum:
@@ -381,6 +392,7 @@ def make_page(c):
         <div class="fe-item"><span class="fe-label">Water Withdrawal</span><span class="fe-val">{fmt_metric(fe.get('water_withdrawal_m3'), 'm³')}</span></div>
         <div class="fe-item"><span class="fe-label">Waste Generated</span><span class="fe-val">{fmt_metric(fe.get('waste_tonnes'), 'T')}</span></div>
       </div>
+      {emissions_note}
     </div>
 
     <!-- Governance -->

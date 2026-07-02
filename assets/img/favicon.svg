@@ -1,18 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#071a12"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Green Curve Solutions">
   <defs>
-    <linearGradient id="fb" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#4dd4a8"/>
-      <stop offset="100%" stop-color="#0e7a56"/>
+    <linearGradient id="fbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2317"/><stop offset="1" stop-color="#071a12"/>
+    </linearGradient>
+    <linearGradient id="fmk" x1="0.2" y1="1" x2="0.9" y2="0">
+      <stop offset="0" stop-color="#22c55e"/><stop offset="1" stop-color="#5eead4"/>
     </linearGradient>
   </defs>
-  <rect x="2"  y="18" width="4" height="8"  rx="0.8" fill="url(#fb)" opacity="0.6"/>
-  <rect x="8"  y="13" width="4" height="13" rx="0.8" fill="url(#fb)" opacity="0.75"/>
-  <rect x="14" y="7"  width="4" height="19" rx="0.8" fill="url(#fb)" opacity="0.95"/>
-  <rect x="20" y="11" width="4" height="15" rx="0.8" fill="url(#fb)" opacity="0.82"/>
-  <rect x="26" y="17" width="4" height="9"  rx="0.8" fill="url(#fb)" opacity="0.65"/>
-  <path d="M2 24 L28 4" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round"/>
-  <polygon points="28,4 26,9 23,5" fill="#00c8ff"/>
-  <path d="M3 17 Q0 11 3 6 Q6 11 3 17Z" fill="#4ade80" opacity="0.7"/>
-  <path d="M29 16 Q32 10 29 5 Q26 10 29 16Z" fill="#4ade80" opacity="0.7"/>
+  <rect width="32" height="32" rx="7" fill="url(#fbg)"/>
+  <path d="M6.7 25.3 C 9.2 19.1 12.3 12.9 25.3 6.7 C 20.3 13.5 12.3 18.5 6.7 25.3 Z" fill="url(#fmk)"/>
 </svg>

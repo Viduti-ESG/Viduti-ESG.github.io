@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 8 84 84" role="img" aria-label="Green Curve Solutions">
+  <defs>
+    <linearGradient id="gcLeaf" x1="0.2" y1="1" x2="0.9" y2="0">
+      <stop offset="0" stop-color="#15803d"/><stop offset="0.55" stop-color="#22c55e"/><stop offset="1" stop-color="#4ade80"/>
+    </linearGradient>
+  </defs>
+  <path d="M22 80 C 30 60 40 40 82 20 C 66 42 40 58 22 80 Z" fill="url(#gcLeaf)"/>
+  <path d="M28 73 C 37 57 48 42 73 26" fill="none" stroke="#06170d" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round" opacity="0.42"/>
+  <circle cx="23" cy="78" r="4" fill="#5eead4"/>
+</svg>
