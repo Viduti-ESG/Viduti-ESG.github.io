@@ -142,24 +142,24 @@ img, svg { display: block; }
   flex-shrink: 0;
 }
 .nav__logo-text {
+  display: inline-block;
   font-size: 1.25rem;
   font-weight: 700;
   color: #fff;
   letter-spacing: -.01em;
   white-space: nowrap;
+  line-height: 1.02;
 }
 .nav__logo-accent { color: var(--cyan); }
 .nav__logo-sol {
+  display: block;
   font-family: var(--sans);
-  font-size: .52rem;
+  font-size: .5rem;
   font-weight: 700;
-  letter-spacing: .26em;
+  letter-spacing: .34em;
   text-transform: uppercase;
   color: var(--text-70);
-  margin-left: 6px;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
+  margin-top: 3px;
 }
 @media (max-width: 480px) { .nav__logo-sol { display: none; } }
 .logo-mark {
