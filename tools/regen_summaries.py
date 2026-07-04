@@ -28,25 +28,25 @@ GROQ_URL   = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 SYSTEM = (
-    "You are an ESG financial-risk analyst writing for Green Curve, an Indian ESG "
-    "intelligence platform. You write one concise risk summary per company using ONLY "
-    "the structured data provided. Rules:\n"
-    "- 120-160 words, single flowing analytical paragraph.\n"
-    "- Start with a bold markdown header: **<COMPANY NAME> - Financial Risk Summary**.\n"
-    "- Reference the figures given: revenue, compliance-risk score, EPR exposure, the "
-    "estimated remediation-cost band, and top risk factors. Quote numbers exactly as given.\n"
-    "- If emissions are 'Not disclosed', say the company did not report absolute Scope 1/2 "
-    "emissions in its BRSR and treat this as a disclosure gap - NEVER imply zero or "
-    "carbon-neutral.\n"
-    "- Ground it in SEBI BRSR / EPR / CCTS context. Factual and measured; no investment "
-    "advice, no invented facts, no data not provided.\n"
-    "- End with an 'Immediate priority:' sentence.\n"
-    "- Output ONLY the summary text (no preamble, no JSON)."
+    "You are an ESG financial-risk analyst at Green Curve (India). Write ONE risk summary "
+    "from ONLY the given data. Rules:\n"
+    "- 120-150 words, one paragraph; open with bold header **<Company> - Financial Risk Summary**.\n"
+    "- Quote the revenue, EPR exposure, remediation-cost band and top risks exactly as given.\n"
+    "- SCORE DIRECTION (critical): all *_out_of_10 scores are RISK scores where HIGHER = WORSE. "
+    "A compliance-risk score near 0 means STRONG regulatory compliance / LOW risk; near 10 means "
+    "WEAK compliance / HIGH risk. Never invert this.\n"
+    "- EMISSIONS: each scope value is either a number (already DISCLOSED — state it as reported) "
+    "or the words 'Not disclosed'. Only describe a BRSR disclosure gap for a scope literally marked "
+    "'Not disclosed'. If a tCO2e number is given, report it as disclosed and do NOT call it a gap "
+    "or imply zero.\n"
+    "- Ground in SEBI BRSR / EPR / CCTS context; factual, no invented facts, no investment advice.\n"
+    "- End with an 'Immediate priority:' sentence. Write figures as plain text WITHOUT "
+    "surrounding quotation marks. Output only the summary."
 )
 
 def money(v):
     if v is None: return "Not disclosed"
-    return f"Rs {v:,.1f} crore"
+    return f"₹{v:,.1f} crore"   # ₹ — match the house style used elsewhere
 
 def emis(v):
     return "Not disclosed" if not v else f"{v:,.0f} tCO2e"
@@ -63,27 +63,59 @@ def build_user(c):
         "risk_tier": c.get("risk_tier"),
         "compliance_risk_out_of_10": rb.get("compliance_risk"),
         "epr_exposure_out_of_10": rb.get("epr_exposure"),
-        "ghg_intensity_out_of_10": rb.get("ghg_intensity"),
-        "water_intensity_out_of_10": rb.get("water_intensity"),
-        "waste_intensity_out_of_10": rb.get("waste_intensity"),
         "top_risk_factors": c.get("top_risk_factors"),
         "estimated_compliance_cost_band": fe.get("estimated_compliance_cost_band"),
         "epr_applicable": fe.get("epr_applicable"),
         "scope1_emissions": emis(fe.get("scope1_emissions_tco2e")),
         "scope2_emissions": emis(fe.get("scope2_emissions_tco2e")),
-        "disclosure_confidence_pct": rb.get("disclosure_confidence"),
     }
-    return "Company data (JSON):\n" + json.dumps(d, ensure_ascii=False, indent=1)
+    return "Company data (JSON):\n" + json.dumps(d, ensure_ascii=False)
 
-def groq(system, user, key, max_tokens=420):
+def groq(system, user, key, max_tokens=300, retries=3):
+    """POST to Groq with retry/backoff on 429 (free-tier rate limit) and 5xx."""
     import httpx
-    r = httpx.post(GROQ_URL, timeout=90,
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        json={"model": GROQ_MODEL, "max_tokens": max_tokens, "temperature": 0.3,
-              "messages": [{"role": "system", "content": system},
-                           {"role": "user", "content": user}]})
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    for attempt in range(retries):
+        r = httpx.post(GROQ_URL, timeout=90,
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json={"model": GROQ_MODEL, "max_tokens": max_tokens, "temperature": 0.3,
+                  "messages": [{"role": "system", "content": system},
+                               {"role": "user", "content": user}]})
+        if r.status_code == 429 or r.status_code >= 500:
+            # honour Retry-After if given (e.g. "7.5s" / "7.5"), else exponential backoff
+            ra = r.headers.get("retry-after", "")
+            try:
+                wait = float(re.sub(r"[^\d.]", "", ra)) if ra else 0
+            except ValueError:
+                wait = 0
+            wait = min(max(wait, 2 ** attempt * 2), 15)
+            print(f"    …rate-limited, waiting {wait:.0f}s (attempt {attempt+1}/{retries})")
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"].strip()
+    raise RuntimeError("rate-limited after retries")
+
+
+_REV_RE = re.compile(r"(?:revenue|turnover)\D{0,25}?(?:₹|Rs\.?\s*)([\d,]+\.?\d*)\s*crore", re.I)
+
+def is_stale(c):
+    """True if the current ai_summary is missing or cites a revenue figure that
+    contradicts the corrected revenue (so re-runs only retry what still needs it)."""
+    if c.get("_summary_regen"):          # reliably-tracked: already regenerated
+        return False
+    s = c.get("ai_summary") or ""
+    if not s:
+        return True
+    if "0–0 crore" in s or "0-0 crore" in s:
+        return True
+    rev = c.get("revenue_crore")
+    for m in _REV_RE.findall(s):
+        v = float(m.replace(",", ""))
+        if v > 50 and rev and (v > 3 * rev or v < rev / 3):
+            return True
+        if v > 50 and rev is None:          # summary asserts a revenue we've since nulled
+            return True
+    return False
 
 def changed_cins():
     """CINs whose revenue differs from the most recent pre-fix backup."""
@@ -104,6 +136,20 @@ def changed_cins():
     print(f"using backup {Path(baks[0]).name}; {len(out)} revenue-changed companies")
     return out
 
+def has_glitch(c):
+    """Detect the two 8b failure modes: inverted score direction, and calling a
+    DISCLOSED Scope 1/2 a 'disclosure gap'."""
+    s = c.get("ai_summary") or ""
+    if re.search(r"0(\.0)? out of 10[^.]{0,45}high risk of non-compl", s, re.I):
+        return True
+    fe = c.get("financial_exposure", {}) or {}
+    if fe.get("scope1_emissions_tco2e") or fe.get("scope2_emissions_tco2e"):
+        sl = s.lower()
+        if (re.search(r"scope 1 and (scope )?2[^.]{0,30}(not disclosed|disclosure gap)", sl)
+                or re.search(r"(not disclosed|disclosure gap)[^.]{0,30}scope 1", sl)):
+            return True
+    return False
+
 def main():
     dry   = "--dry-run" in sys.argv
     doall = "--all" in sys.argv
@@ -114,8 +160,18 @@ def main():
 
     doc = json.load(io.open(DATA, encoding="utf-8"))
     comps = doc["companies"]
-    target = None if doall else changed_cins()
-    todo = [c for c in comps if doall or c.get("cin") in target]
+    if "--fix-glitches" in sys.argv:
+        todo = [c for c in comps if has_glitch(c)]      # redo only the glitchy ones
+        print(f"glitch-fix mode: {len(todo)} companies with detectable summary glitches")
+    else:
+        target = None if doall else changed_cins()
+        todo = [c for c in comps if doall or c.get("cin") in target]
+        # resume by the completion flag: skip only companies already regenerated in a
+        # prior run. Reliable (unlike text-matching) and cheap after an interruption.
+        if "--force" not in sys.argv:
+            before = len(todo)
+            todo = [c for c in todo if not c.get("_summary_regen")]
+            print(f"{before - len(todo)} already regenerated, skipping them")
     if limit: todo = todo[:limit]
     print(f"companies to regenerate: {len(todo)}  (model={GROQ_MODEL}, dry={dry})")
 
@@ -137,15 +193,18 @@ def main():
             # guard: keep only if it looks like a real summary and doesn't reintroduce Rs0-0
             if len(txt.split()) >= 60 and "0-0 crore" not in txt and "0–0 crore" not in txt:
                 c["ai_summary"] = txt
+                c["_summary_regen"] = GROQ_MODEL   # mark done so re-runs skip it reliably
                 done += 1
+                if len(todo) <= 5 or "--show" in sys.argv:   # test mode: show the text
+                    print(f"\n----- {c['company_name']} -----\n{txt}\n")
             else:
                 fail += 1; print(f"  [skip weak output] {c['company_name']}")
         except Exception as e:
             fail += 1; print(f"  [error] {c['company_name']}: {e}")
-        if i % 10 == 0:
+        if i % 5 == 0:
             print(f"  {i}/{len(todo)} (ok={done} fail={fail})")
             json.dump(doc, io.open(DATA, "w", encoding="utf-8"), ensure_ascii=False)  # checkpoint
-        time.sleep(0.5)   # gentle on the free tier
+        time.sleep(6)   # ~10 req/min — respects 8b-instant's ~6k tokens/min free limit
     doc["data_cleaned_at"] = datetime.now().date().isoformat()
     json.dump(doc, io.open(DATA, "w", encoding="utf-8"), ensure_ascii=False)
     print(f"\nDONE: regenerated {done}, failed/skipped {fail}.")
