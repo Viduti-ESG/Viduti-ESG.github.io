@@ -18,3 +18,4 @@ venv/
 *-orig.js
 .nav-backup-*/
 uploads/
+*.bak_*
