@@ -20,6 +20,21 @@ feat = load(r"c:/Viduti/esg-site/tools/raw_features.json")
 emis = load(r"c:/Viduti/esg-site/tools/emissions_extracted.json")
 secs = load(r"c:/Viduti/esg-site/tools/sectors_extracted.json")
 
+# company_profiler still carries the old revenue unit bug (e.g. SAIL 98.6 vs the
+# XBRL-correct 102,097 cr). Intensities divide by revenue, so we override the
+# profiler's revenue with the corrected values already in production esg_quotient.json
+# (keyed by CIN, then normalised name). Without this the rescore would re-introduce
+# the very revenue error the XBRL fix removed.
+_eq = load(r"c:/Viduti/esg-site/assets/data/esg_quotient.json")["companies"]
+CORR_REV_BY_CIN  = {(_c.get("cin") or "").upper(): _c.get("revenue_crore")
+                    for _c in _eq if _c.get("cin")}
+CORR_REV_BY_NAME = {norm(_c["company_name"]): _c.get("revenue_crore") for _c in _eq}
+def corrected_rev(prof, name):
+    r = CORR_REV_BY_CIN.get((prof.get("cin") or "").upper())
+    if r is None:
+        r = CORR_REV_BY_NAME.get(norm(name))
+    return r if r is not None else prof.get("revenue_crore")
+
 def clamp(x, lo=0.0, hi=10.0): return max(lo, min(hi, x))
 
 # ── pass 1: raw dimension values per company ──────────────────────────────────
@@ -33,7 +48,7 @@ for c in slim:
     if k in seen:               # belt-and-suspenders: slim is deduped at source too
         continue
     seen.add(k)
-    prof = cp._score_company(c); rev = prof["revenue_crore"]
+    prof = cp._score_company(c); rev = corrected_rev(prof, c["company_name"])
     f = feat.get(k, {}); sec = secs.get(k, {}); sector = sec.get("sector", "Unclassified")
     em = emis.get(k, {})
     ren, nonren = f.get("energy_renew"), f.get("energy_nonrenew")

@@ -48,6 +48,18 @@ def fmt_metric(v, unit):
         return 'Not disclosed'
     return f"{v:,.1f} {unit}"
 
+def fmt_pct(v):
+    """Percentage KPI — 0 is a meaningful value (e.g. 0% renewable), only null hides."""
+    return 'Not disclosed' if v is None else f"{v:g}%"
+
+def fmt_kpi(v, unit=''):
+    """Count/rate KPI where 0 is meaningful (fatalities, POSH complaints, LTIFR)."""
+    if v is None:
+        return 'Not disclosed'
+    if isinstance(v, (int, float)) and float(v).is_integer():
+        return f"{int(v):,}{unit}"
+    return f"{v:,.2f}{unit}"
+
 # BRSR external-assurance coverage is a 3-level category. The bare token 'None'
 # reads ambiguously (looks like a null leak); relabel for clarity.
 ASSURANCE_LABEL = {'None': 'Not assured', 'Partial': 'Partially assured', 'All': 'Fully assured'}
@@ -389,10 +401,28 @@ def make_page(c):
         <div class="fe-item"><span class="fe-label">EPR Applicable</span><span class="fe-val">{esc(fe.get('epr_applicable','Unknown'))}</span></div>
         <div class="fe-item"><span class="fe-label">Scope 1 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope1_emissions_tco2e'), 'tCO2e')}</span></div>
         <div class="fe-item"><span class="fe-label">Scope 2 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope2_emissions_tco2e'), 'tCO2e')}</span></div>
+        <div class="fe-item"><span class="fe-label">Scope 3 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope3_emissions_tco2e'), 'tCO2e')}</span></div>
         <div class="fe-item"><span class="fe-label">Water Withdrawal</span><span class="fe-val">{fmt_metric(fe.get('water_withdrawal_m3'), 'm³')}</span></div>
+        <div class="fe-item"><span class="fe-label">Water Consumption</span><span class="fe-val">{fmt_metric(fe.get('water_consumption_m3'), 'm³')}</span></div>
         <div class="fe-item"><span class="fe-label">Waste Generated</span><span class="fe-val">{fmt_metric(fe.get('waste_tonnes'), 'T')}</span></div>
       </div>
       {emissions_note}
+    </div>
+
+    <!-- Sustainability & Social Performance (disclosed BRSR KPIs) -->
+    <div class="cp-card">
+      <h2 class="cp-section-title">Sustainability &amp; Social Performance</h2>
+      <p style="font-size:.76rem;color:#94a3b8;margin:0 0 10px">Key ESG KPIs disclosed in the company's BRSR filing.</p>
+      <div class="fe-grid">
+        <div class="fe-item"><span class="fe-label">Renewable Energy</span><span class="fe-val">{fmt_pct(rb.get('metrics',{}).get('renewable_pct'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Waste Recovered</span><span class="fe-val">{fmt_pct(rb.get('metrics',{}).get('waste_recovery_pct'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Women on Board</span><span class="fe-val">{fmt_pct(rb.get('metrics',{}).get('female_board_pct'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Women in KMP</span><span class="fe-val">{fmt_pct(rb.get('metrics',{}).get('female_kmp_pct'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Wages Paid to Women</span><span class="fe-val">{fmt_pct(rb.get('metrics',{}).get('female_wage_pct'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Lost-Time Injury Rate</span><span class="fe-val">{fmt_kpi(rb.get('metrics',{}).get('ltifr'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Employee Fatalities</span><span class="fe-val">{fmt_kpi(rb.get('metrics',{}).get('fatalities'))}</span></div>
+        <div class="fe-item"><span class="fe-label">POSH Complaints</span><span class="fe-val">{fmt_kpi(gov.get('posh_complaints'))}</span></div>
+      </div>
     </div>
 
     <!-- Governance -->
