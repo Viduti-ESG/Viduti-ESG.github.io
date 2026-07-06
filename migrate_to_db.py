@@ -49,6 +49,13 @@ def migrate():
                 json.dumps(c.get("esg_targets") or []),
                 json.dumps(c.get("materials_exposed") or []),
                 c.get("ai_summary", "") or "",
+                json.dumps(c.get("bottleneck_solutions") or []),
+                json.dumps(c.get("sector_benchmark") or {}),
+                json.dumps(c.get("safety_metrics") or {}),
+                json.dumps(c.get("energy_mix") or {}),
+                json.dumps(c.get("waste_profile") or {}),
+                json.dumps(c.get("governance_signals") or {}),
+                c.get("ghg_intensity_tco2e_per_cr"),
             )
 
             if existing:
@@ -57,7 +64,9 @@ def migrate():
                       cin=?,nse_symbol=?,sector=?,products=?,revenue_crore=?,financial_year=?,
                       esg_risk_score=?,risk_tier=?,risk_breakdown=?,top_risk_factors=?,
                       financial_exposure=?,supply_chain=?,governance=?,double_materiality=?,
-                      esg_targets=?,materials_exposed=?,ai_summary=?,updated_at=CURRENT_TIMESTAMP
+                      esg_targets=?,materials_exposed=?,ai_summary=?,
+                      bottleneck_solutions=?,sector_benchmark=?,safety_metrics=?,energy_mix=?,
+                      waste_profile=?,governance_signals=?,ghg_intensity=?,updated_at=CURRENT_TIMESTAMP
                     WHERE company_name=?
                 """, row_vals + (c["company_name"],))
                 updated += 1
@@ -67,8 +76,10 @@ def migrate():
                       (cin,nse_symbol,sector,products,revenue_crore,financial_year,
                        esg_risk_score,risk_tier,risk_breakdown,top_risk_factors,
                        financial_exposure,supply_chain,governance,double_materiality,
-                       esg_targets,materials_exposed,ai_summary,company_name)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                       esg_targets,materials_exposed,ai_summary,
+                       bottleneck_solutions,sector_benchmark,safety_metrics,energy_mix,
+                       waste_profile,governance_signals,ghg_intensity,company_name)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """, row_vals + (c["company_name"],))
                 inserted += 1
 

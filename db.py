@@ -105,6 +105,13 @@ def init_db() -> None:
                 materials_exposed   TEXT    DEFAULT '[]',
                 ai_summary          TEXT    DEFAULT '',
                 anomaly_flags       TEXT    DEFAULT '[]',
+                bottleneck_solutions TEXT   DEFAULT '[]',
+                sector_benchmark    TEXT    DEFAULT '{}',
+                safety_metrics      TEXT    DEFAULT '{}',
+                energy_mix          TEXT    DEFAULT '{}',
+                waste_profile       TEXT    DEFAULT '{}',
+                governance_signals  TEXT    DEFAULT '{}',
+                ghg_intensity       REAL,
                 updated_at          DATETIME DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -151,3 +158,18 @@ def init_db() -> None:
         ucols = {r[1] for r in conn.execute("PRAGMA table_info(users)").fetchall()}
         if "role" not in ucols:
             conn.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'")
+
+        # XBRL content-upgrade columns (bottlenecks / benchmarks / hard S&E metrics).
+        # Added to pre-existing prod DBs via ALTER; new DBs get them from CREATE above.
+        ccols = {r[1] for r in conn.execute("PRAGMA table_info(companies)").fetchall()}
+        for col, typ in [
+            ("bottleneck_solutions", "TEXT DEFAULT '[]'"),
+            ("sector_benchmark",     "TEXT DEFAULT '{}'"),
+            ("safety_metrics",       "TEXT DEFAULT '{}'"),
+            ("energy_mix",           "TEXT DEFAULT '{}'"),
+            ("waste_profile",        "TEXT DEFAULT '{}'"),
+            ("governance_signals",   "TEXT DEFAULT '{}'"),
+            ("ghg_intensity",        "REAL"),
+        ]:
+            if col not in ccols:
+                conn.execute(f"ALTER TABLE companies ADD COLUMN {col} {typ}")

@@ -429,7 +429,10 @@ Return ONLY valid JSON with this exact structure (omit fields not relevant):
     "min_compliance": 0.0,
     "has_scope1": true|false,
     "has_assurance": true,
-    "sort": "esg_desc|water_intensity_desc",
+    "min_renewable": 0.0,
+    "max_ghg_intensity": 0.0,
+    "has_fatalities": true|false,
+    "sort": "esg_desc|water_intensity_desc|renewable_desc|ghg_intensity_asc",
     "limit": 10
   }
 }
@@ -443,9 +446,14 @@ Available filter fields:
 - min_compliance: minimum compliance risk score (0–10)
 - has_scope1: true = only companies with Scope 1 disclosed; false = only those WITHOUT
 - has_assurance: true = only companies with BRSR 3rd-party assurance
-- sort: "esg_desc" (default), "water_intensity_desc"
+- min_renewable: minimum renewable share of energy, PERCENT 0–100 (e.g. "companies with over 50% renewable energy" -> min_renewable: 50)
+- max_ghg_intensity: maximum GHG intensity in tCO2e per ₹crore of revenue (e.g. "low-carbon-intensity companies" -> a small value like 5); lower = cleaner
+- has_fatalities: true = only companies that reported workplace fatalities; false = only those with zero fatalities
+- sort: "esg_desc" (default), "water_intensity_desc", "renewable_desc" (greenest first), "ghg_intensity_asc" (lowest carbon intensity first)
 - limit: max rows to return (default 50, max 100)
 
+Map intent to these fields, e.g. "greenest IT companies" -> {sector:"it", sort:"renewable_desc"};
+"chemical companies with any workplace fatalities" -> {sector:"chemical", has_fatalities:true}.
 Only include fields the user asked about. If the query is vague, return reasonable defaults."""
 
 @router.post("/nl-query")

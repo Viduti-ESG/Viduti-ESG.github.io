@@ -30,8 +30,15 @@ GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 SYSTEM = (
     "You are an ESG financial-risk analyst at Green Curve (India). Write ONE risk summary "
     "from ONLY the given data. Rules:\n"
-    "- 120-150 words, one paragraph; open with bold header **<Company> - Financial Risk Summary**.\n"
+    "- 150-190 words, one paragraph; open with bold header **<Company> - Financial Risk Summary**.\n"
     "- Quote the revenue, EPR exposure, remediation-cost band and top risks exactly as given.\n"
+    "- If 'sector_peer_benchmark' is present, state how the company ranks vs sector peers on 1-2 "
+    "metrics using the given quartile wording (e.g. 'bottom-quartile renewable share', 'top-quartile "
+    "safety'). Use ONLY the quartiles/values given.\n"
+    "- If 'disclosed_bottlenecks_and_best_fit_global_solution' is present, name the company's top 1-2 "
+    "material bottlenecks and the recommended global standard (e.g. ISO 45001, SBTi, EcoVadis) as an "
+    "actionable next step. Do not invent standards beyond those given.\n"
+    "- If 'disciplinary_actions_bribery_corruption' > 0, flag it as a governance-conduct signal.\n"
     "- SCORE DIRECTION (critical): all *_out_of_10 scores are RISK scores where HIGHER = WORSE. "
     "A compliance-risk score near 0 means STRONG regulatory compliance / LOW risk; near 10 means "
     "WEAK compliance / HIGH risk. Never invert this.\n"
@@ -69,6 +76,34 @@ def build_user(c):
         "scope1_emissions": emis(fe.get("scope1_emissions_tco2e")),
         "scope2_emissions": emis(fe.get("scope2_emissions_tco2e")),
     }
+    # ── Enriched signals from the XBRL content upgrade (bottlenecks / peer
+    # benchmarks / hard S&E metrics). Only include what's present so the model
+    # never invents a value it wasn't given.
+    sols = c.get("bottleneck_solutions") or []
+    if sols:
+        d["disclosed_bottlenecks_and_best_fit_global_solution"] = [
+            {"issue": s.get("issue"), "type": s.get("type"),
+             "best_fit_standard": (s.get("standards") or [None])[0]}
+            for s in sols[:4]
+        ]
+    sb = c.get("sector_benchmark") or {}
+    if sb.get("metrics"):
+        d["sector_peer_benchmark"] = {
+            "peer_group": sb.get("sector"),
+            "rankings": {m["label"]: f"{m['quartile']} (value {m['value']}{m['unit']}, sector median {m['sector_median']}{m['unit']})"
+                         for m in sb["metrics"].values()},
+        }
+    if c.get("ghg_intensity_tco2e_per_cr") is not None:
+        d["ghg_intensity_tco2e_per_cr_revenue"] = c["ghg_intensity_tco2e_per_cr"]
+    em = c.get("energy_mix") or {}
+    if em.get("renewable_share_pct") is not None:
+        d["renewable_energy_share_pct"] = em["renewable_share_pct"]
+    sm = c.get("safety_metrics") or {}
+    if any(v is not None for v in sm.values()):
+        d["safety"] = {k: v for k, v in sm.items() if v is not None}
+    gs = c.get("governance_signals") or {}
+    if gs.get("disciplinary_actions"):
+        d["disciplinary_actions_bribery_corruption"] = gs["disciplinary_actions"]
     return "Company data (JSON):\n" + json.dumps(d, ensure_ascii=False)
 
 def groq(system, user, key, max_tokens=300, retries=3):

@@ -5239,7 +5239,14 @@ function _aiqApplyFilters(data, filters) {
   if (filters.has_scope1 === false) rows = rows.filter(c => c.financial_exposure?.scope1_emissions_tco2e == null);
   if (filters.has_scope1 === true)  rows = rows.filter(c => c.financial_exposure?.scope1_emissions_tco2e != null);
   if (filters.has_assurance)    rows = rows.filter(c => (c.governance?.brsr_assurance||'None') !== 'None');
+  // XBRL content-upgrade filters (renewable share, GHG intensity, safety)
+  if (filters.min_renewable != null)     rows = rows.filter(c => (c.energy_mix?.renewable_share_pct ?? -1) >= filters.min_renewable);
+  if (filters.max_ghg_intensity != null) rows = rows.filter(c => c.ghg_intensity_tco2e_per_cr != null && c.ghg_intensity_tco2e_per_cr <= filters.max_ghg_intensity);
+  if (filters.has_fatalities === true)   rows = rows.filter(c => (c.safety_metrics?.fatalities||0) > 0);
+  if (filters.has_fatalities === false)  rows = rows.filter(c => (c.safety_metrics?.fatalities||0) === 0);
   if (filters.sort === 'water_intensity_desc') rows.sort((a,b) => (b.risk_breakdown?.water_intensity||0) - (a.risk_breakdown?.water_intensity||0));
+  else if (filters.sort === 'renewable_desc')  rows.sort((a,b) => (b.energy_mix?.renewable_share_pct||0) - (a.energy_mix?.renewable_share_pct||0));
+  else if (filters.sort === 'ghg_intensity_asc') rows.sort((a,b) => (a.ghg_intensity_tco2e_per_cr ?? 1e9) - (b.ghg_intensity_tco2e_per_cr ?? 1e9));
   else if (filters.sort === 'esg_desc')        rows.sort((a,b) => (b.esg_risk_score||0) - (a.esg_risk_score||0));
   else                                          rows.sort((a,b) => (b.esg_risk_score||0) - (a.esg_risk_score||0));
   if (filters.limit) rows = rows.slice(0, filters.limit);

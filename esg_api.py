@@ -79,9 +79,20 @@ def _row_to_company(row, lite: bool = False) -> dict:
         "esg_targets":        _loads_list(row["esg_targets"]),
         "materials_exposed":  _loads_list(row["materials_exposed"]),
         "anomaly_flags":      _loads_list(row["anomaly_flags"]) if "anomaly_flags" in row.keys() else [],
+        # XBRL content-upgrade metrics — compact, kept even in lite (feed the
+        # screener/NL-query filters + benchmark chips). '.keys()' guard tolerates a
+        # DB that hasn't been migrated yet.
+        "sector_benchmark":   _loads(row["sector_benchmark"]) if "sector_benchmark" in row.keys() else {},
+        "safety_metrics":     _loads(row["safety_metrics"]) if "safety_metrics" in row.keys() else {},
+        "energy_mix":         _loads(row["energy_mix"]) if "energy_mix" in row.keys() else {},
+        "waste_profile":      _loads(row["waste_profile"]) if "waste_profile" in row.keys() else {},
+        "governance_signals": _loads(row["governance_signals"]) if "governance_signals" in row.keys() else {},
+        "ghg_intensity_tco2e_per_cr": (row["ghg_intensity"] if "ghg_intensity" in row.keys() else None),
     }
     if not lite:
         out["ai_summary"] = row["ai_summary"] or ""
+        # bottleneck_solutions is heavy (advisory text per issue) — full record only.
+        out["bottleneck_solutions"] = _loads_list(row["bottleneck_solutions"]) if "bottleneck_solutions" in row.keys() else []
     return out
 
 def _get_meta(key: str, default=None):
