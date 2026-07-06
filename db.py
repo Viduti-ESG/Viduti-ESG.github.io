@@ -112,6 +112,7 @@ def init_db() -> None:
                 waste_profile       TEXT    DEFAULT '{}',
                 governance_signals  TEXT    DEFAULT '{}',
                 ghg_intensity       REAL,
+                summary_regen       TEXT    DEFAULT '',
                 updated_at          DATETIME DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -170,6 +171,7 @@ def init_db() -> None:
             ("waste_profile",        "TEXT DEFAULT '{}'"),
             ("governance_signals",   "TEXT DEFAULT '{}'"),
             ("ghg_intensity",        "REAL"),
+            ("summary_regen",        "TEXT DEFAULT ''"),
         ]:
             if col not in ccols:
                 conn.execute(f"ALTER TABLE companies ADD COLUMN {col} {typ}")
