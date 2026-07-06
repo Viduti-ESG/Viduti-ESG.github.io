@@ -821,28 +821,7 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/metals-mining</loc>
-    <lastmod>2026-07-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://greencurve.solutions/company/sector/capital-goods-machinery</loc>
-    <lastmod>2026-07-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
     <loc>https://greencurve.solutions/company/sector/banking-financial-services</loc>
-    <lastmod>2026-07-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://greencurve.solutions/company/sector/chemicals</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -856,14 +835,14 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/fmcg-food-beverages</loc>
+    <loc>https://greencurve.solutions/company/sector/metals-mining</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/it-software-services</loc>
+    <loc>https://greencurve.solutions/company/sector/chemicals</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -877,7 +856,7 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/automobiles-components</loc>
+    <loc>https://greencurve.solutions/company/sector/fmcg-food-beverages</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -891,21 +870,35 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/logistics-transport</loc>
+    <loc>https://greencurve.solutions/company/sector/textiles-apparel</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/plastics-rubber-packaging</loc>
+    <loc>https://greencurve.solutions/company/sector/automobiles-components</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/power-utilities</loc>
+    <loc>https://greencurve.solutions/company/sector/it-software-services</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://greencurve.solutions/company/sector/oil-gas-fuels</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://greencurve.solutions/company/sector/capital-goods-machinery</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -919,6 +912,20 @@
   </url>
 
   <url>
+    <loc>https://greencurve.solutions/company/sector/power-utilities</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://greencurve.solutions/company/sector/logistics-transport</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://greencurve.solutions/company/sector/cement-construction-materials</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
@@ -926,7 +933,7 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/insurance</loc>
+    <loc>https://greencurve.solutions/company/sector/plastics-rubber-packaging</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -940,14 +947,21 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/textiles-apparel</loc>
+    <loc>https://greencurve.solutions/company/sector/insurance</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/oil-gas-fuels</loc>
+    <loc>https://greencurve.solutions/company/sector/hospitality-tourism</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://greencurve.solutions/company/sector/asset-fund-management</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
