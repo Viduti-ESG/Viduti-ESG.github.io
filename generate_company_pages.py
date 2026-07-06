@@ -4,7 +4,7 @@ Reads assets/data/esg_quotient.json and writes one HTML file per company
 into the company/ directory, plus company/index.html and updates sitemap.xml.
 """
 
-import json, os, re, html
+import json, os, re, html, sys
 from datetime import date
 
 # ── Config ─────────────────────────────────────────────────────────────────────
@@ -76,42 +76,15 @@ def risk_bar(val, label):
       </div>"""
 
 # ── Sector normalisation ──────────────────────────────────────────────────────
-# BRSR "sector" is free-text (1,000+ unique variants). We bucket it into ~21
-# canonical sectors so we can build sector roll-up pages that rank for category
-# queries like "ESG scores of Indian banks / IT / pharma companies". First
-# matching rule wins; order matters (specific before generic).
-SECTOR_RULES = [
-    ("Banking & Financial Services", ["bank","nbfc","financial","finance","credit","leasing","brokerage","capital market","lending","loans","housing finance","microfinance","asset reconstruction"]),
-    ("Insurance",                     ["insurance"]),
-    ("Asset & Fund Management",       ["fund management","asset management","mutual fund","wealth","investment manage"]),
-    ("IT, Software & Services",       ["computer programming","software","information technology","it services","consultancy and related","data processing","internet"]),
-    ("Pharmaceuticals & Healthcare",  ["pharma","medicinal","drug","healthcare","hospital","medical","biotech","diagnostic","life science"]),
-    ("Chemicals",                     ["chemical","fertilis","fertiliz","agrochem","petrochem","dyes","paint"]),
-    ("Metals & Mining",               ["metal","steel","iron","mining","aluminium","aluminum","zinc","copper","ore","ferro"]),
-    ("Cement & Construction Materials",["cement","clinker","concrete","construction material","ceramic","tiles"]),
-    ("Automobiles & Components",      ["auto","vehicle","motor","tyre","tire","automobile","two wheeler","bearings"]),
-    ("Power & Utilities",             ["power generation","electric power","electricity","utilit","renewable","solar","wind power","transmission and distribution"]),
-    ("Oil, Gas & Fuels",             ["oil","gas","petroleum","refiner","lng","city gas","fuel","coal"]),
-    ("FMCG, Food & Beverages",        ["fmcg","fast moving","food","beverage","tobacco","dairy","agro product","consumer goods","sugar","tea","coffee"]),
-    ("Textiles & Apparel",            ["textile","apparel","garment","yarn","fabric","cotton","leather","footwear"]),
-    ("Real Estate & Infrastructure",  ["real estate","realty","property","infrastructure","construction","roads","highway"]),
-    ("Telecom & Media",               ["telecom","communication","media","broadcasting","entertainment","publishing"]),
-    ("Retail & Trading",              ["retail","wholesale","trading","e-commerce","distribution"]),
-    ("Capital Goods & Machinery",     ["machinery","electrical equipment","engineering","capital goods","industrial equipment","general purpose","special purpose","electronic"]),
-    ("Logistics & Transport",         ["transport","logistics","shipping","port","airline","aviation","courier","tour operator","travel agency"]),
-    ("Hospitality & Tourism",         ["hotel","hospitality","resort","tourism","restaurant"]),
-    ("Plastics, Rubber & Packaging",  ["plastic","rubber","packaging","polymer"]),
-    ("Paper & Forest Products",       ["paper","pulp","forest","wood"]),
-]
-SECTOR_MIN_COMPANIES = 5  # don't build a thin page for tiny buckets
+# Canonical-sector bucketing lives in the shared tools/sector_map.py (single
+# source of truth, also used by build_sector_benchmarks.py). Importing it — rather
+# than keeping a second copy here — guarantees a company's sector PAGE and its
+# peer BENCHMARK can never disagree. sector_map uses word-boundary matching so
+# "core"/"store" no longer false-match the Metals keyword "ore".
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+from sector_map import SECTOR_RULES, classify_sector  # noqa: E402
 
-def classify_sector(sector_text):
-    """Map a raw BRSR sector string to a canonical sector, or None if unclassifiable."""
-    t = (sector_text or "").lower()
-    for name, kws in SECTOR_RULES:
-        if any(k in t for k in kws):
-            return name
-    return None
+SECTOR_MIN_COMPANIES = 5  # don't build a thin page for tiny buckets
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 with open(DATA_FILE, encoding='utf-8') as f:
@@ -208,6 +181,13 @@ def make_page(c):
     top_risks      = c.get('top_risk_factors', [])
     ai_sum         = c.get('ai_summary', '')
     anomaly_flags  = c.get('anomaly_flags', [])
+    solutions      = c.get('bottleneck_solutions', [])
+    safety_m       = c.get('safety_metrics') or {}
+    energy_m       = c.get('energy_mix') or {}
+    waste_m        = c.get('waste_profile') or {}
+    gov_sig        = c.get('governance_signals') or {}
+    ghg_intensity  = c.get('ghg_intensity_tco2e_per_cr')
+    benchmark      = c.get('sector_benchmark') or {}
 
     t_color   = tier_color(tier)
     risks_str = ', '.join(top_risks[:3]) if top_risks else 'N/A'
@@ -255,11 +235,163 @@ def make_page(c):
           <tbody>{rows}</tbody></table>
         </div>"""
 
-    # Materials
+    # Bottleneck → best-fit global solution (flagship advisory section).
+    # Each disclosed BRSR material issue is paired with the globally recognised
+    # standard/playbook that best addresses it, plus the company's own stated
+    # mitigation. Replaces the old low-signal "Material Risks" pill list.
+    TYPE_STYLE = {
+        'Risk':               ('#f87171', 'Risk'),
+        'Opportunity':        ('#34d399', 'Opportunity'),
+        'Risk & Opportunity': ('#fbbf24', 'Risk & Opportunity'),
+    }
+    FIN_STYLE = {'negative': '#f87171', 'positive': '#34d399'}
     mats_html = ''
-    if materials:
-        pills = ''.join(f'<span class="mat-pill">{esc(m)}</span>' for m in materials)
-        mats_html = f'<div class="cp-card"><h2 class="cp-section-title">Material Risks</h2><div class="pills">{pills}</div></div>'
+    if solutions:
+        cards = ''
+        for s in solutions:
+            tcol, tlabel = TYPE_STYLE.get(s.get('type'), ('#94a3b8', s.get('type', '')))
+            fin = (s.get('financial_implication') or '').strip()
+            fcol = FIN_STYLE.get(fin.lower().split()[0], '#94a3b8') if fin else '#94a3b8'
+            fin_badge = (f'<span style="font-size:.72rem;color:{fcol}">◆ {esc(fin)}</span>'
+                         if fin else '')
+            std_pills = ''.join(
+                f'<span style="display:inline-block;background:rgba(52,211,153,.10);'
+                f'color:#34d399;border:1px solid rgba(52,211,153,.30);border-radius:999px;'
+                f'padding:2px 10px;font-size:.72rem;font-weight:600;margin:2px 4px 2px 0">'
+                f'{esc(st)}</span>' for st in s.get('standards', []))
+            links = ' · '.join(
+                f'<a href="{esc(src["url"])}" target="_blank" rel="noopener nofollow" '
+                f'style="color:#34d399;text-decoration:none">{esc(src["name"])} ↗</a>'
+                for src in s.get('sources', []))
+            mit = (s.get('company_mitigation') or '').strip()
+            mit_html = (f'<div style="margin-top:8px"><span style="font-size:.72rem;'
+                        f'font-weight:700;color:#cbd5e1">What {esc(name)} says it is doing: </span>'
+                        f'<span style="font-size:.78rem;color:#94a3b8;line-height:1.55">{esc(mit)}'
+                        f'{"…" if len(mit) >= 590 else ""}</span></div>') if mit else ''
+            cards += f"""
+          <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07)">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+              <span style="background:{tcol}22;color:{tcol};border:1px solid {tcol}44;border-radius:5px;padding:2px 9px;font-size:.7rem;font-weight:700;white-space:nowrap">{esc(tlabel)}</span>
+              <span style="font-size:.92rem;font-weight:600;color:#e2e8f0">{esc(s.get('issue',''))}</span>
+              {fin_badge}
+            </div>
+            <p style="font-size:.82rem;color:#cbd5e1;line-height:1.6;margin:4px 0 8px">
+              <span style="color:#34d399;font-weight:700">Best-fit global solution: </span>{esc(s.get('solution',''))}
+            </p>
+            <div style="margin-bottom:4px">{std_pills}</div>
+            {f'<div style="font-size:.72rem;color:#64748b;margin-top:4px">Reference: {links}</div>' if links else ''}
+            {mit_html}
+          </div>"""
+        mats_html = f"""
+        <div class="cp-card" style="border-color:rgba(52,211,153,.22)">
+          <h2 class="cp-section-title">Bottlenecks &amp; Best-Fit Global Solutions</h2>
+          <p style="font-size:.78rem;color:#94a3b8;margin:0 0 6px;line-height:1.55">
+            Material ESG issues <strong>{esc(name)}</strong> disclosed in its BRSR, each mapped to the
+            globally recognised standard or playbook best suited to address it. Solution mappings are
+            Green Curve's curated guidance based on published international frameworks — not endorsed by the issuing bodies.
+          </p>
+          {cards}
+        </div>"""
+
+    # Energy mix (renewable vs non-renewable) — 97% disclosed, previously unused.
+    energy_html = ''
+    ren_share = energy_m.get('renewable_share_pct')
+    if ren_share is not None or energy_m.get('total_energy'):
+        def gj(v): return 'Not disclosed' if not v else f"{v:,.0f} GJ"
+        ren_tot = (energy_m.get('elec_renewable') or 0) + (energy_m.get('fuel_renewable') or 0)
+        nonren_tot = (energy_m.get('elec_nonrenewable') or 0) + (energy_m.get('fuel_nonrenewable') or 0)
+        share = ren_share if ren_share is not None else 0
+        scol = '#34d399' if share >= 25 else '#fbbf24' if share >= 5 else '#f87171'
+        energy_html = f"""
+        <div class="cp-card">
+          <h2 class="cp-section-title">Energy Mix</h2>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;color:#94a3b8;margin-bottom:4px">
+              <span>Renewable share of total energy</span><span style="color:{scol};font-weight:700">{fmt_pct(ren_share)}</span>
+            </div>
+            <div style="height:8px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden">
+              <div style="height:100%;width:{min(share,100)}%;background:{scol}"></div>
+            </div>
+          </div>
+          <div class="fe-grid">
+            <div class="fe-item"><span class="fe-label">Renewable Energy</span><span class="fe-val">{gj(ren_tot)}</span></div>
+            <div class="fe-item"><span class="fe-label">Non-Renewable Energy</span><span class="fe-val">{gj(nonren_tot)}</span></div>
+            <div class="fe-item"><span class="fe-label">Total Energy</span><span class="fe-val">{gj(energy_m.get('total_energy'))}</span></div>
+          </div>
+        </div>"""
+
+    # Waste profile (stream breakdown) — 100% disclosed, previously unused.
+    waste_html = ''
+    if any(v is not None for v in waste_m.values()):
+        def mt(v): return 'Not disclosed' if v is None else f"{v:,.1f} MT"
+        waste_html = f"""
+        <div class="cp-card">
+          <h2 class="cp-section-title">Waste Profile</h2>
+          <p style="font-size:.76rem;color:#94a3b8;margin:0 0 10px">Waste streams disclosed in the BRSR (metric tonnes).</p>
+          <div class="fe-grid">
+            <div class="fe-item"><span class="fe-label">Total Waste</span><span class="fe-val">{mt(waste_m.get('total'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Recovered / Recycled</span><span class="fe-val">{mt(waste_m.get('recovered_recycled'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Plastic Waste</span><span class="fe-val">{mt(waste_m.get('plastic'))}</span></div>
+            <div class="fe-item"><span class="fe-label">E-Waste</span><span class="fe-val">{mt(waste_m.get('e_waste'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Battery Waste</span><span class="fe-val">{mt(waste_m.get('battery'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Bio-Medical Waste</span><span class="fe-val">{mt(waste_m.get('bio_medical'))}</span></div>
+          </div>
+        </div>"""
+
+    # Sector peer benchmark — polarity-aware percentile vs canonical-sector peers.
+    # A "Top 25%" badge always means good regardless of metric direction.
+    benchmark_html = ''
+    if benchmark.get('metrics'):
+        def fmt_val(m):
+            v = m['value']
+            vs = f"{v:g}" if isinstance(v, (int, float)) else str(v)
+            return f"{vs}{m['unit']}"
+        rows = ''
+        for m in benchmark['metrics'].values():
+            pctile = m['percentile']; col = m['color']
+            rows += f"""
+            <div style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px">
+                <span style="font-size:.84rem;color:#e2e8f0;font-weight:600">{esc(m['label'])}</span>
+                <span style="font-size:.78rem;color:#cbd5e1">{esc(fmt_val(m))}
+                  <span style="color:{col};font-weight:700;margin-left:6px">{esc(m['quartile'])}</span></span>
+              </div>
+              <div style="position:relative;height:7px;background:rgba(255,255,255,.07);border-radius:6px">
+                <div style="position:absolute;left:0;top:0;height:100%;width:{pctile}%;background:{col};border-radius:6px"></div>
+                <div style="position:absolute;left:50%;top:-2px;height:11px;width:1px;background:rgba(255,255,255,.25)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.68rem;color:#64748b;margin-top:3px">
+                <span>Sector median {esc(str(m['sector_median']))}{esc(m['unit'])}</span>
+                <span>{'Higher is better' if m['higher_better'] else 'Lower is better'}</span>
+              </div>
+            </div>"""
+        benchmark_html = f"""
+        <div class="cp-card" style="border-color:rgba(129,140,248,.22)">
+          <h2 class="cp-section-title">Sector Peer Benchmark</h2>
+          <p style="font-size:.78rem;color:#94a3b8;margin:0 0 6px;line-height:1.55">
+            Where <strong>{esc(name)}</strong> ranks against <strong>{benchmark['peer_count']}</strong>
+            {esc(benchmark['sector'])} peers on disclosed BRSR metrics. Bars show sector percentile (marker = median);
+            the badge colour reflects performance, not just position.
+          </p>
+          {rows}
+        </div>"""
+
+    # Safety performance (employees + workers, current year) — adds recordable
+    # injuries which no other card shows.
+    safety_html = ''
+    if any(v is not None for v in safety_m.values()):
+        fat = safety_m.get('fatalities')
+        fcol = '#f87171' if fat else '#34d399'
+        safety_html = f"""
+        <div class="cp-card">
+          <h2 class="cp-section-title">Safety Performance</h2>
+          <p style="font-size:.76rem;color:#94a3b8;margin:0 0 10px">Workforce (employees + workers), current reporting year.</p>
+          <div class="fe-grid">
+            <div class="fe-item"><span class="fe-label">Fatalities</span><span class="fe-val" style="color:{fcol}">{fmt_kpi(fat)}</span></div>
+            <div class="fe-item"><span class="fe-label">Recordable Injuries</span><span class="fe-val">{fmt_kpi(safety_m.get('recordable_injuries'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Lost-Time Injury Rate (worst)</span><span class="fe-val">{fmt_kpi(safety_m.get('ltifr_worst'))}</span></div>
+          </div>
+        </div>"""
 
     # Anomaly flags
     anomaly_html = ''
@@ -402,6 +534,7 @@ def make_page(c):
         <div class="fe-item"><span class="fe-label">Scope 1 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope1_emissions_tco2e'), 'tCO2e')}</span></div>
         <div class="fe-item"><span class="fe-label">Scope 2 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope2_emissions_tco2e'), 'tCO2e')}</span></div>
         <div class="fe-item"><span class="fe-label">Scope 3 Emissions</span><span class="fe-val">{fmt_metric(fe.get('scope3_emissions_tco2e'), 'tCO2e')}</span></div>
+        {f'<div class="fe-item"><span class="fe-label">GHG Intensity (S1+2 / Revenue)</span><span class="fe-val">{ghg_intensity:,.2f} tCO₂e/₹Cr</span></div>' if ghg_intensity is not None else ''}
         <div class="fe-item"><span class="fe-label">Water Withdrawal</span><span class="fe-val">{fmt_metric(fe.get('water_withdrawal_m3'), 'm³')}</span></div>
         <div class="fe-item"><span class="fe-label">Water Consumption</span><span class="fe-val">{fmt_metric(fe.get('water_consumption_m3'), 'm³')}</span></div>
         <div class="fe-item"><span class="fe-label">Waste Generated</span><span class="fe-val">{fmt_metric(fe.get('waste_tonnes'), 'T')}</span></div>
@@ -433,6 +566,8 @@ def make_page(c):
         <div class="fe-item"><span class="fe-label">Conflict of Interest Policy</span><span class="fe-val">{esc(gov.get('conflict_of_interest','—'))}</span></div>
         <div class="fe-item"><span class="fe-label">BRSR Assurance</span><span class="fe-val">{esc(ASSURANCE_LABEL.get(gov.get('brsr_assurance'), gov.get('brsr_assurance') or '—'))}</span></div>
         <div class="fe-item"><span class="fe-label">Assurance Provider</span><span class="fe-val">{esc(gov.get('assurance_provider','—'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Disciplinary Actions (bribery/corruption)</span><span class="fe-val">{fmt_kpi(gov_sig.get('disciplinary_actions'))}</span></div>
+        <div class="fe-item"><span class="fe-label">Conflict-of-Interest Complaints</span><span class="fe-val">{fmt_kpi(gov_sig.get('coi_complaints'))}</span></div>
       </div>
     </div>
 
@@ -456,10 +591,15 @@ def make_page(c):
       </div>
     </div>
 
+    {energy_html}
+    {safety_html}
+    {waste_html}
+
   </div><!-- /cp-grid -->
 
-  {anomaly_html}
   {mats_html}
+  {benchmark_html}
+  {anomaly_html}
   {targets_html}
   {ai_html}
 
@@ -572,6 +712,10 @@ for name, slug, score, tier, sraw, sname in generated:
         continue
     sector_groups.setdefault(sname, []).append((name, slug, score, tier))
 
+# slug -> benchmarked metric values, for building per-sector metric leaderboards
+bench_by_slug = {slugify(c['company_name']): (c.get('sector_benchmark') or {}).get('metrics', {})
+                 for c in companies}
+
 # Deeper nav/footer (two levels up from company/sector/)
 NAV2   = NAV.replace('../', '../../')
 FOOTER2 = FOOTER.replace('../', '../../')
@@ -596,6 +740,40 @@ def sector_page(sname, members):
         <td><span style="color:{tier_color(tier)};font-weight:700">{score}</span></td>
         <td><span style="color:{tier_color(tier)}">{tier}</span></td>
       </tr>""" for cname, slug, score, tier in members)
+
+    # Per-sector metric leaderboards (higher-is-better metrics) — reuse the
+    # benchmark data to rank the top disclosed performers. Strong shareable/SEO
+    # content: "greenest / most circular {sector} companies".
+    def leaderboard(mk, title, subtitle, top_n=5):
+        ranked = [(cname, slug, bench_by_slug.get(slug, {}).get(mk, {}).get('value'))
+                  for cname, slug, *_ in members]
+        ranked = [r for r in ranked if r[2] is not None]
+        if len(ranked) < 3:
+            return ''
+        ranked.sort(key=lambda x: -x[2])
+        items = ''.join(f"""
+          <li style="display:flex;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid rgba(148,163,184,.12)">
+            <span style="color:#818cf8;font-weight:700;min-width:20px">{i+1}</span>
+            <a href="../{sl}" style="flex:1;color:#e2e8f0;text-decoration:none">{esc(cn)}</a>
+            <span style="color:#34d399;font-weight:700">{v:g}%</span>
+          </li>""" for i, (cn, sl, v) in enumerate(ranked[:top_n]))
+        return f"""
+        <div style="flex:1;min-width:280px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px">
+          <h3 style="font-size:1.02rem;margin:0 0 2px">{title}</h3>
+          <p style="font-size:.76rem;color:#64748b;margin:0 0 8px">{subtitle}</p>
+          <ol style="list-style:none;padding:0;margin:0">{items}</ol>
+        </div>"""
+
+    lb_green = leaderboard('renewable_share', '🌱 Greenest energy mix',
+                           f'Top {sname} companies by renewable share of energy')
+    lb_circ  = leaderboard('waste_recovery', '♻️ Most circular',
+                           f'Top {sname} companies by waste recovery rate')
+    leaderboards_html = ''
+    if lb_green or lb_circ:
+        leaderboards_html = f"""
+  <h2 style="font-size:1.35rem;margin:8px 0 14px">Sustainability leaders in {esc(sname)}</h2>
+  <p style="color:#64748b;font-size:.82rem;margin:0 0 16px">Ranked from companies' own SEBI BRSR disclosures. Only companies that disclosed the metric are ranked.</p>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:34px">{lb_green}{lb_circ}</div>"""
 
     item_list = ",\n".join(
         f'      {{"@type":"ListItem","position":{i+1},'
@@ -653,6 +831,8 @@ def sector_page(sname, members):
     <span style="color:#fbbf24">● {med} Medium risk</span>
     <span style="color:#f87171">● {high} High risk</span>
   </div>
+  {leaderboards_html}
+  <h2 style="font-size:1.35rem;margin:8px 0 14px">All {esc(sname)} companies by ESG risk</h2>
   <div class="table-wrap">
     <table class="screener-table">
       <thead><tr><th>Company</th><th>ESG Risk Score (lower = better)</th><th>Risk Tier</th></tr></thead>
@@ -678,6 +858,30 @@ for sname, members in sorted(sector_groups.items(), key=lambda kv: -len(kv[1])):
     with open(os.path.join(SECTOR_DIR, f"{sslug}.html"), 'w', encoding='utf-8') as f:
         f.write(html_out)
     sector_slugs.append((sslug, sname, len(members)))
+
+# ── Cross-sector sustainability leaders (each sector's greenest company) ───────
+# Data-driven module surfaced on the sectors hub — reuses the benchmark data.
+_leader_cards = []
+for sslug, sname, cnt in sorted(sector_slugs, key=lambda x: x[1]):
+    ranked = [(cn, sl, bench_by_slug.get(sl, {}).get('renewable_share', {}).get('value'))
+              for cn, sl, *_ in sector_groups.get(sname, [])]
+    ranked = [r for r in ranked if r[2] is not None]
+    if not ranked:
+        continue
+    cn, sl, v = max(ranked, key=lambda x: x[2])
+    _leader_cards.append(f"""
+    <a href="sector/{sslug}.html" style="display:block;background:#0b1220;border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:16px 18px;text-decoration:none">
+      <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:#818cf8">{esc(sname)}</span>
+      <span style="display:block;font-size:1rem;font-weight:600;color:#f1f5f9;margin:4px 0 2px">{esc(cn)}</span>
+      <span style="font-size:.82rem;color:#34d399;font-weight:700">🌱 {v:g}% renewable energy</span>
+    </a>""")
+leaders_module = ''
+if _leader_cards:
+    leaders_module = f"""
+  <h2 style="font-size:1.4rem;margin:0 0 6px">🌱 Sustainability leaders across sectors</h2>
+  <p style="color:#94a3b8;margin-bottom:18px;font-size:.9rem">The greenest company in each sector by renewable share of energy — from their own SEBI BRSR disclosures. Explore each sector for full safety, circularity &amp; ESG-risk leaderboards.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:44px">{''.join(_leader_cards)}</div>
+"""
 
 # ── Sector hub: company/sectors.html ──────────────────────────────────────────
 cards = '\n'.join(f"""
@@ -717,6 +921,8 @@ sectors_hub = f"""<!DOCTYPE html>
 <div class="container" style="padding:40px 0 80px">
   <h1 style="font-size:2rem;margin-bottom:8px">ESG Scores by Sector</h1>
   <p style="color:#94a3b8;margin-bottom:32px">Indian listed companies grouped into {len(sector_slugs)} sectors · Based on SEBI BRSR public filings · Updated {data_as_of}</p>
+  {leaders_module}
+  <h2 style="font-size:1.4rem;margin:0 0 18px">Browse all sectors</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
 {cards}
   </div>

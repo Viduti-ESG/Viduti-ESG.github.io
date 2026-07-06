@@ -842,13 +842,6 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/chemicals</loc>
-    <lastmod>2026-07-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
     <loc>https://greencurve.solutions/company/sector/retail-trading</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
@@ -857,6 +850,13 @@
 
   <url>
     <loc>https://greencurve.solutions/company/sector/fmcg-food-beverages</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://greencurve.solutions/company/sector/chemicals</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -905,13 +905,6 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/telecom-media</loc>
-    <lastmod>2026-07-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
     <loc>https://greencurve.solutions/company/sector/power-utilities</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
@@ -919,7 +912,7 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/logistics-transport</loc>
+    <loc>https://greencurve.solutions/company/sector/telecom-media</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -933,6 +926,13 @@
   </url>
 
   <url>
+    <loc>https://greencurve.solutions/company/sector/logistics-transport</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://greencurve.solutions/company/sector/plastics-rubber-packaging</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
@@ -940,14 +940,14 @@
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/paper-forest-products</loc>
+    <loc>https://greencurve.solutions/company/sector/insurance</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://greencurve.solutions/company/sector/insurance</loc>
+    <loc>https://greencurve.solutions/company/sector/paper-forest-products</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
