@@ -7,7 +7,7 @@ that do not disclose in their BRSR filings.
 Methodology:
   - India-calibrated sector GHG intensity factors (tCO2e per ₹Crore revenue)
   - Derived from BEE PAT cycle data, CEEW sector studies, MoEFCC GHG inventory
-  - Scope 2 uses India grid emission factor: 0.82 kg CO2/kWh (CEA 2024 baseline)
+  - Grid electricity references CEA All-India factor: 0.7117 kg CO2e/kWh (CEA CO2 Baseline V21.0)
   - Intensity split: ~70% Scope 1 (combustion), ~30% Scope 2 (electricity)
   - Confidence: Medium (sector-level proxy, ±40% typical range)
 
@@ -266,7 +266,7 @@ def main():
         "methodology": (
             "India-calibrated sector GHG intensity factors (tCO2e/₹Cr revenue). "
             "Sources: BEE PAT Cycle I/II data, CEEW India GHG Platform, MoEFCC National GHG Inventory 2024. "
-            "Scope 2 uses India CEA grid factor: 0.82 kg CO2/kWh. "
+            "Grid-electricity emissions reference the CEA All-India grid factor (CEA CO₂ Baseline Database V21.0, 0.7117 kg CO₂e/kWh), consistent with the site's GHG calculator. "
             "Confidence: Medium (±40% typical range for sector-level proxies). "
             "Estimates apply only where Scope 1 and/or Scope 2 are not disclosed in BRSR."
         ),

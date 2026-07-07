@@ -18,10 +18,14 @@ MIN_PEERS = 8   # need a real distribution before we claim a percentile
 
 # metric_key -> (label, unit, higher_is_better, extractor)
 def _rev_rate(c):
+    # Canonical waste-recovery rate = recovered / (recovered + disposed), capped at
+    # 100%. Uses ALL recovery streams (reuse+recycle+other) so it matches the
+    # ESG-Quotient metric (risk_breakdown.metrics.waste_recovery_pct) shown on the
+    # same page — previously this used recycled-only/generated, which disagreed.
     w = c.get("waste_profile") or {}
-    tot, rec = w.get("total"), w.get("recovered_recycled")
-    if tot and rec is not None and tot > 0:
-        return round(min(100.0, 100 * rec / tot), 1)
+    rec, disp = w.get("recovered_total"), w.get("disposed")
+    if rec is not None and disp is not None and (rec + disp) > 0:
+        return round(min(100.0, 100 * rec / (rec + disp)), 1)
     return None
 
 METRICS = {

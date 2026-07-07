@@ -53,6 +53,7 @@ for c in slim:
     em = emis.get(k, {})
     ren, nonren = f.get("energy_renew"), f.get("energy_nonrenew")
     waste, disp, rec = f.get("waste_total"), f.get("waste_disposed"), f.get("waste_recovered")
+    rec, disp = dc.clean_recovery(rec, disp, waste)   # null impossible recovery > generated
 
     rev_suspect = dc.revenue_suspect(rev, sector)
     ghg = dc.clean_emissions(f.get("scope1"), f.get("scope2"), em.get("scope3"),
@@ -73,8 +74,10 @@ for c in slim:
             "recovery": (rec/(rec+disp)) if (rec and disp and (rec+disp) > 0) else None,
             "ltifr": f.get("ltifr"),
             "fatalities": f.get("fatalities"),
-            "female_board": female_board,
-            "female_kmp": f.get("pct_female_kmp"),
+            "female_board": female_board if (female_board is None or 0 <= female_board <= 1) else None,
+            # pct_female_kmp is a 0-1 fraction; anything outside is a parse artefact
+            # (e.g. Nandan Denim = 269200) — null it so it can't skew rank or display.
+            "female_kmp": (lambda x: x if (x is not None and 0 <= x <= 1) else None)(f.get("pct_female_kmp")),
             "pay_ratio": pay_ratio,
             "fines": (f.get("fines_amount")/rev) if (f.get("fines_amount") and rev) else (0.0 if rev else None),
             "assured": f.get("brsr_assured"), "anti_corrupt": f.get("anti_corruption"),
@@ -114,7 +117,7 @@ for r in rows:
     ghg, water = R["ghg"](v["ghg"]), R["water"](v["water"])
     waste = R["waste"](v["waste"])
     if waste is not None and v["recovery"] is not None:
-        waste = clamp(waste - 3*v["recovery"])          # credit circular waste handling
+        waste = round(clamp(waste - 3*v["recovery"]), 1)  # credit circular waste handling (rounded for display)
     transition = round(v["transition"]*10, 1) if v["transition"] is not None else None
     if transition is not None and v["zld"]:
         transition = clamp(transition - 0.5)

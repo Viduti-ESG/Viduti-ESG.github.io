@@ -182,6 +182,23 @@ def sector_intensity_outliers(items):
     return out
 
 
+# A company cannot recover more waste than it generated in the same period — it is a
+# mass-balance impossibility. We allow only a 0.1% float/rounding tolerance; beyond
+# that the recovery split is a disclosure error and is treated as not-disclosed
+# rather than shown as an impossible >100%-of-generation figure. A trusted ESG
+# platform must NEVER display "recovered > generated" to an analyst.
+RECOVERY_MAX_FACTOR = 1.001
+
+
+def clean_recovery(recovered, disposed, generated):
+    """Return (recovered, disposed), nulled together when recovered grossly exceeds
+    generation. Keeps score and displayed recovery bounded and physically sane."""
+    if (recovered is not None and generated
+            and recovered > RECOVERY_MAX_FACTOR * generated):
+        return None, None
+    return recovered, disposed
+
+
 def clean_features(f: dict):
     """Clean governance/diversity features prone to parse errors.
 
@@ -211,6 +228,32 @@ def clean_features(f: dict):
         flags.append("female_board_zero")
 
     return {"pay_ratio": pay_ratio, "female_board": female_board, "flags": flags}
+
+
+def select_canonical_filings(paths, prefer_fy="FY24-25"):
+    """One XBRL filing per company, so every extractor reads the SAME reporting year.
+
+    Some companies filed more than one year (e.g. an early FY25-26 alongside the
+    standard FY24-25). If different pipelines pick different files the score and the
+    displayed figures silently disagree. We prefer the canonical BRSR cycle
+    (FY24-25); where it is absent we fall back to the latest available year.
+
+    paths: iterable of pathlib.Path (…/COMPANY_FYxx-yy.xml). Returns a filtered list.
+    """
+    import re as _re
+    from pathlib import Path as _Path
+    best = {}   # norm(company) -> (is_non_preferred 0/1, fy_string, path_str)
+    for p in paths:
+        stem = _Path(p).stem
+        company = _re.sub(r'_FY\d{2}-\d{2}$', '', stem)
+        m = _re.search(r'_FY(\d{2}-\d{2})$', stem)
+        fy = ("FY" + m.group(1)) if m else ""
+        cand = (0 if fy == prefer_fy else 1, fy, str(p))
+        cur = best.get(norm(company))
+        # prefer the canonical year (rank 0); within the same rank keep the latest fy
+        if cur is None or (cand[0] < cur[0]) or (cand[0] == cur[0] and cand[1] > cur[1]):
+            best[norm(company)] = cand
+    return [_Path(v[2]) for v in best.values()]
 
 
 def dedupe_companies(companies, name_key="company_name"):

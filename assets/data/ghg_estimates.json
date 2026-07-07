@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-06-11T07:35:18.580742+00:00",
-  "methodology": "India-calibrated sector GHG intensity factors (tCO2e/₹Cr revenue). Sources: BEE PAT Cycle I/II data, CEEW India GHG Platform, MoEFCC National GHG Inventory 2024. Scope 2 uses India CEA grid factor: 0.82 kg CO2/kWh. Confidence: Medium (±40% typical range for sector-level proxies). Estimates apply only where Scope 1 and/or Scope 2 are not disclosed in BRSR.",
+  "methodology": "India-calibrated sector GHG intensity factors (tCO2e/₹Cr revenue). Sources: BEE PAT Cycle I/II data, CEEW India GHG Platform, MoEFCC National GHG Inventory 2024. Grid-electricity emissions reference the CEA All-India grid factor (CEA CO₂ Baseline Database V21.0, 0.7117 kg CO₂e/kWh), consistent with the site GHG calculator. Confidence: Medium (±40% typical range for sector-level proxies). Estimates apply only where Scope 1 and/or Scope 2 are not disclosed in BRSR.",
   "total_companies_processed": 1227,
   "companies_with_estimates": 1181,
   "companies_already_disclosed": 22,

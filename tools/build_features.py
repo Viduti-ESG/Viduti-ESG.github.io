@@ -3,8 +3,11 @@ ONE-PASS XBRL feature extraction for the 3-pillar ESG Quotient rebuild.
 Pulls every raw E/S/G signal we need from the 1,254 raw filings -> raw_features.json
 Non-destructive.
 """
-import re, json
+import re, json, sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+import data_clean as dc  # shared canonical-filing selector
 
 XBRL_DIR = Path(r"c:/Viduti/BRSR XBRL PDF/downloads/xbrl")
 OUT = Path(r"c:/Viduti/esg-site/tools/raw_features.json")
@@ -18,9 +21,15 @@ def pairs(text, local):
         except: pass
     return out
 
-def is_cy(ctx):  # current year = not prior-year
+def is_cy(ctx):  # current year = NOT a prior-year context
     c = ctx.lower()
-    return not ("py" in c.split("_")[-1:] or "prior" in c) and not c.endswith("_py")
+    # BRSR encodes the prior year as "DPYMain" (the P in D-PY-Main), a trailing
+    # "_py" (e.g. D_Employees_PY), or the literal word "prior". Current-year
+    # contexts (DCYMain, D_Employees, D_Workers, ...) match none of these.
+    # NB: the previous test ('py' in c.split('_')[-1:]) never matched "DPYMain"
+    # because that segment is "dpymain", not "py" — so prior-year data leaked into
+    # every sum_cy/max_cy field (waste_recovered doubled, fines/coi inflated).
+    return not (c.startswith("dpy") or c.endswith("_py") or "prior" in c)
 
 def main_val(text, local):
     p = pairs(text, local)
@@ -53,7 +62,7 @@ def text_yes(text, local):
 EW = {"D_Employees", "D_Workers"}  # current-year employee + worker split
 
 results = {}
-files = sorted(XBRL_DIR.glob("*.xml"))
+files = sorted(dc.select_canonical_filings(XBRL_DIR.glob("*.xml")))
 for fp in files:
     company = re.sub(r'_FY\d{2}-\d{2}$', '', fp.stem)
     t = fp.read_text(encoding="utf-8", errors="ignore")

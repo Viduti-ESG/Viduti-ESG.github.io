@@ -12,9 +12,12 @@ per cohort (employees vs workers). We always take the CURRENT year:
   - duration facts   -> contextRef "DCYMain"      (prior year = "DPYMain")
   - safety facts     -> contextRef "D_Employees" / "D_Workers"  (prior = *_PY)
 """
-import re, json, statistics as st
+import re, json, sys, statistics as st
 from pathlib import Path
 from collections import Counter
+
+sys.path.insert(0, str(Path(__file__).parent))
+import data_clean as dc  # shared guards (recovery > generated)
 
 XBRL_DIR = Path(r"c:/Viduti/BRSR XBRL PDF/downloads/xbrl")
 OUT      = Path(r"c:/Viduti/esg-site/tools/bottlenecks_extracted.json")
@@ -110,7 +113,7 @@ def material_issues(text):
 
 # ── main loop ───────────────────────────────────────────────────────────────
 results = {}
-files = sorted(XBRL_DIR.glob("*.xml"))
+files = sorted(dc.select_canonical_filings(XBRL_DIR.glob("*.xml")))
 for fp in files:
     company = re.sub(r'_FY\d{2}-\d{2}$', '', fp.stem)
     text = fp.read_text(encoding="utf-8", errors="ignore")
@@ -129,13 +132,27 @@ for fp in files:
     tot = energy["total_energy"] or (sum(v for v in energy.values() if v) - (energy["total_energy"] or 0))
     energy["renewable_share_pct"] = round(100 * ren / tot, 1) if tot else None
 
+    # recovered_total = reuse + recycle + other recovery (current year only), so the
+    # recovery rate is comparable to score_engine's (both use all three streams, not
+    # just the recycled one). disposed = landfill/incineration/other disposal.
+    _rec_reuse = scalar(text, "WasteRecoveredThroughReUsed")
+    _rec_recyc = scalar(text, "WasteRecoveredThroughRecycled")
+    _rec_other = scalar(text, "WasteRecoveredThroughOtherRecoveryOperations")
+    _rec_parts = [x for x in (_rec_reuse, _rec_recyc, _rec_other) if x is not None]
+    _generated = scalar(text, "TotalWasteGenerated")
+    _rec_total = (sum(_rec_parts) if _rec_parts else scalar(text, "TotalWasteRecovered"))
+    _disposed  = scalar(text, "TotalWasteDisposed")
+    # Null the recovery split when it is physically impossible (recovered >> generated).
+    _rec_total, _disposed = dc.clean_recovery(_rec_total, _disposed, _generated)
     waste = {
         "plastic":        scalar(text, "PlasticWaste"),
         "e_waste":        scalar(text, "EWaste"),
         "battery":        scalar(text, "BatteryWaste"),
         "bio_medical":    scalar(text, "BioMedicalWaste"),
-        "total":          scalar(text, "TotalWasteGenerated"),
-        "recovered_recycled": scalar(text, "WasteRecoveredThroughRecycled"),
+        "total":          _generated,
+        "recovered_recycled": (_rec_recyc if _rec_total is not None else None),
+        "recovered_total": _rec_total,
+        "disposed":       _disposed,
     }
 
     safety = {

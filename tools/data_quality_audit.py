@@ -55,6 +55,7 @@ for c in slim:
     rows.append({"name": c["company_name"], "k": k, "rev": rev, "sector": sector,
                  "s1": f.get("scope1"), "s2": f.get("scope2"),
                  "ce": ce, "cf": cf,
+                 "wr": f.get("waste_recovered"), "wg": f.get("waste_total"),
                  "mwp": f.get("median_worker_pay"), "mbp": f.get("median_board_pay"),
                  "fb": cf["female_board"],
                  "raw_fb": (f.get("female_board_count") / f.get("total_directors"))
@@ -105,6 +106,26 @@ gate("4 PAY-RATIO parse errors",
 gate("5 FALSE-ZERO female board (0%)",
      lambda r: r["raw_fb"] == 0,
      lambda r: r["cf"]["female_board"] == 0)
+
+# ── 5b. Waste-recovery plausibility (regression guard for the prior-year leak) ─
+# A company cannot recover materially more waste than it generated in-year. The
+# old build_features.is_cy() bug summed current + prior year for waste_recovered,
+# pushing ~42% of firms above generation. Post-fix a small residue (~2%) are
+# genuine source-disclosure inconsistencies. We GATE on the *rate*: if an
+# implausible share exceed 1.5x generation, the prior-year leak (or a similar
+# extraction regression) is back and must be fixed before publish.
+wr_rows = [r for r in rows if r.get("wr") and r.get("wg") and r["wg"] > 0]
+wr_over = [r for r in wr_rows if r["wr"] > 1.5 * r["wg"]]
+wr_frac = len(wr_over) / max(len(wr_rows), 1)
+WR_MAX_FRAC = 0.10
+status = "OK" if wr_frac <= WR_MAX_FRAC else "FAIL"
+print(f"\n[5b WASTE recovered > 1.5x generated] {len(wr_over)}/{len(wr_rows)} "
+      f"({100*wr_frac:.1f}%)  threshold <= {int(WR_MAX_FRAC*100)}%  [{status}]")
+for r in sorted(wr_over, key=lambda r: -(r["wr"]/r["wg"]))[:5]:
+    print(f"    {r['name'][:40]:40} recovered {r['wr']/r['wg']:.1f}x generated")
+if wr_frac > WR_MAX_FRAC:
+    failures.append(f"{100*wr_frac:.0f}% of waste-disclosing firms show recovered > 1.5x generated "
+                    f"— likely a prior-year-context leak in build_features.py (check is_cy)")
 
 # ── 6. Coverage gaps (informational, not gating) ──────────────────────────────
 print("\n[6] COVERAGE (informational — not gated)")

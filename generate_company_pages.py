@@ -330,7 +330,8 @@ def make_page(c):
           <p style="font-size:.76rem;color:#94a3b8;margin:0 0 10px">Waste streams disclosed in the BRSR (metric tonnes).</p>
           <div class="fe-grid">
             <div class="fe-item"><span class="fe-label">Total Waste</span><span class="fe-val">{mt(waste_m.get('total'))}</span></div>
-            <div class="fe-item"><span class="fe-label">Recovered / Recycled</span><span class="fe-val">{mt(waste_m.get('recovered_recycled'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Recovered (reuse+recycle+other)</span><span class="fe-val">{mt(waste_m.get('recovered_total') if waste_m.get('recovered_total') is not None else waste_m.get('recovered_recycled'))}</span></div>
+            <div class="fe-item"><span class="fe-label">Disposed</span><span class="fe-val">{mt(waste_m.get('disposed'))}</span></div>
             <div class="fe-item"><span class="fe-label">Plastic Waste</span><span class="fe-val">{mt(waste_m.get('plastic'))}</span></div>
             <div class="fe-item"><span class="fe-label">E-Waste</span><span class="fe-val">{mt(waste_m.get('e_waste'))}</span></div>
             <div class="fe-item"><span class="fe-label">Battery Waste</span><span class="fe-val">{mt(waste_m.get('battery'))}</span></div>

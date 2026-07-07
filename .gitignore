@@ -11,6 +11,7 @@ __pycache__/
 *.pyc
 
 # Reconciliation 2026-06-25: exclude on-server backups / venv / db dumps
+_dq_backups/
 venv/
 *.bak
 *.bak-*
