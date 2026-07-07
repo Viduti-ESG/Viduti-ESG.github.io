@@ -17,7 +17,7 @@ from typing import Optional
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Header, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Header, Query, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -136,6 +136,10 @@ def _compute_sector_averages(companies: list) -> dict:
 
 
 # ── Response cache (in-memory, invalidated when DB changes) ───────────────────
+# "body" holds the SERIALIZED JSON string, not the dict: JSONResponse would
+# re-run json.dumps on ~3.8 MB of payload for every warm-cache hit, and the
+# dict form of the payload costs several times more RAM than the string —
+# both matter on the 1 GB prod VM (x2 uvicorn workers).
 _esg_data_cache: dict = {"etag": None, "body": None}
 
 def _invalidate_esg_cache():
@@ -157,9 +161,10 @@ def get_full_data(request: Request):
         return JSONResponse(status_code=304, content=None)
 
     if _esg_data_cache["body"] and _esg_data_cache["etag"]:
-        # Cache is warm but client doesn't have it — serve cached body
-        return JSONResponse(
+        # Cache is warm but client doesn't have it — serve the pre-serialized body
+        return Response(
             content=_esg_data_cache["body"],
+            media_type="application/json",
             headers={
                 "Cache-Control": "public, max-age=3600",
                 "ETag": _esg_data_cache["etag"],
@@ -206,10 +211,11 @@ def get_full_data(request: Request):
     etag     = '"' + hashlib.md5(body_str.encode()).hexdigest() + '"'
 
     _esg_data_cache["etag"] = etag
-    _esg_data_cache["body"] = payload
+    _esg_data_cache["body"] = body_str
 
-    return JSONResponse(
-        content=payload,
+    return Response(
+        content=body_str,
+        media_type="application/json",
         headers={
             "Cache-Control": "public, max-age=3600",
             "ETag": etag,

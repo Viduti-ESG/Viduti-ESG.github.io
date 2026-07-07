@@ -29,6 +29,18 @@ fi
 "$SITE_DIR/venv/bin/pip" install --quiet --upgrade pip
 "$SITE_DIR/venv/bin/pip" install --quiet -r "$SITE_DIR/requirements.txt"
 
+echo "==> [3b/7] Minifying JS/CSS assets"
+# Overwrites the checked-out sources with minified copies (same filenames, so
+# no HTML changes needed). A later git pull/reset restores the readable
+# sources; this step re-minifies on every deploy. Run this step by hand after
+# any quick deploy that bypasses this script (git reset --hard flow):
+#   cd /var/www/greencurve && venv/bin/python build_assets.py \
+#     && cp -r build/assets/js/. assets/js/ && cp -r build/assets/css/. assets/css/
+"$SITE_DIR/venv/bin/pip" install --quiet -r "$SITE_DIR/requirements-build.txt"
+(cd "$SITE_DIR" && ./venv/bin/python build_assets.py)
+cp -r "$SITE_DIR/build/assets/js/."  "$SITE_DIR/assets/js/"
+cp -r "$SITE_DIR/build/assets/css/." "$SITE_DIR/assets/css/"
+
 echo "==> [4/7] Checking .env file"
 if [ ! -f "$SITE_DIR/.env" ]; then
     cp "$SITE_DIR/.env.example" "$SITE_DIR/.env"
