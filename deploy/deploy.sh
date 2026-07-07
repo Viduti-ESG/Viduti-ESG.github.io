@@ -14,8 +14,13 @@ apt-get install -y nginx python3 python3-pip python3-venv git curl
 
 echo "==> [2/7] Cloning / updating repository"
 if [ -d "$SITE_DIR/.git" ]; then
-    echo "    Repo exists — pulling latest"
-    git -C "$SITE_DIR" pull --ff-only
+    echo "    Repo exists — syncing to origin/main"
+    # reset --hard (not pull --ff-only): step [3b] overwrites tracked assets/
+    # with minified copies, so the tree is always dirty by the next deploy and
+    # a pull would abort. Reset discards the overlay cleanly; .env, venv/,
+    # *.db, build/, uploads/ are gitignored and survive.
+    git -C "$SITE_DIR" fetch origin
+    git -C "$SITE_DIR" reset --hard origin/main
 else
     echo "    Fresh clone"
     mkdir -p "$SITE_DIR"
