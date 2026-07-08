@@ -155,8 +155,13 @@ def get_full_data(request: Request):
     esg-intelligence.js calls this URL instead of the static file.
     Includes ETag-based caching: unchanged data returns 304 Not Modified."""
 
-    # Serve from in-memory cache if ETag matches
-    client_etag = request.headers.get("if-none-match", "")
+    # Serve from in-memory cache if ETag matches. Cloudflare re-compresses
+    # responses and downgrades the strong ETag to a weak one (W/"..."), so
+    # browsers echo back the W/ form — strip it before comparing or the 304
+    # path never fires for visitors behind the CDN.
+    client_etag = request.headers.get("if-none-match", "").strip()
+    if client_etag.startswith("W/"):
+        client_etag = client_etag[2:]
     if _esg_data_cache["etag"] and _esg_data_cache["etag"] == client_etag:
         return JSONResponse(status_code=304, content=None)
 
