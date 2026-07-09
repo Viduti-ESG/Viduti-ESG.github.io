@@ -52,6 +52,7 @@ from collaboration_api import router as collaboration_router
 from alerts_api import router as alerts_router
 from benchmark_api import router as benchmark_router
 from search_api import router as search_router
+from booking_api import router as booking_router
 # Marketplace deferred to a future phase (legal/e-commerce regime not yet set up:
 # CP E-Commerce Rules 2020, GST TCS / GSTR-8, FSSAI organic, intermediary safe-harbour).
 # Code is preserved; re-enable this import and the lines below when ready to launch.
@@ -82,7 +83,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "X-Api-Key"],
 )
 
@@ -97,6 +98,7 @@ app.include_router(collaboration_router)
 app.include_router(alerts_router)
 app.include_router(benchmark_router)
 app.include_router(search_router)
+app.include_router(booking_router)
 # app.include_router(marketplace_router)  # deferred — see note above
 
 # Serve static HTML/CSS/JS — must come AFTER API routes
@@ -112,6 +114,7 @@ HTML_FILES = [
     "analytics", "ccts", "esg-intelligence", "ghg-profile",
     "learn", "login", "methodology", "pricing", "privacy-policy", "supplier-form",
     "tcfd-checker", "tcfd", "terms-of-use", "value-chain", "data-room", "brsr-workspace", "team", "alerts", "benchmark", "search",
+    "bookings", "booking-admin", "booking-legal",
     # "marketplace", "seller-dashboard", "marketplace-admin",  # deferred — see note above
 ]
 
@@ -129,6 +132,45 @@ for _page in HTML_FILES:
         return _handler
 
     app.get(_path)(_make_handler(_file))
+
+
+# Public booking room — clean link /book/{slug}. The slug is read client-side
+# from the path; this always serves the same shell. (In production nginx serves
+# book.html for /book/* directly; this route covers the dev server.)
+@app.get("/book/{slug}")
+async def serve_booking_room(slug: str):
+    return FileResponse(str(BASE_DIR / "book.html"))
+
+
+# ── Green Curve Bookings PWA / TWA (Android app) surface ───────────────────────
+@app.get("/app")
+async def serve_app():
+    return FileResponse(str(BASE_DIR / "app.html"))
+
+@app.get("/offline")
+async def serve_offline():
+    return FileResponse(str(BASE_DIR / "offline.html"))
+
+@app.get("/booking.webmanifest")
+async def serve_booking_manifest():
+    return FileResponse(str(BASE_DIR / "booking.webmanifest"), media_type="application/manifest+json")
+
+@app.get("/booking-sw.js")
+async def serve_booking_sw():
+    # Service worker must be served from root so its scope can be "/".
+    return FileResponse(
+        str(BASE_DIR / "booking-sw.js"),
+        media_type="application/javascript",
+        headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"},
+    )
+
+@app.get("/.well-known/assetlinks.json")
+async def serve_assetlinks():
+    # Digital Asset Links — verifies the TWA Android app owns this domain.
+    return FileResponse(
+        str(BASE_DIR / ".well-known" / "assetlinks.json"),
+        media_type="application/json",
+    )
 
 @app.get("/health")
 async def health():

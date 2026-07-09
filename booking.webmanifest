@@ -1,0 +1,38 @@
+{
+  "id": "/app",
+  "name": "Green Curve Bookings",
+  "short_name": "GC Bookings",
+  "description": "Create private branded booking rooms, share one link, and manage every appointment. DPDP-compliant, tracker-free scheduling by Green Curve.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "/app?src=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#050e07",
+  "background_color": "#050e07",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/assets/img/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/app-icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/assets/img/app-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Booking Studio",
+      "short_name": "Studio",
+      "description": "Manage your booking rooms",
+      "url": "/booking-admin?src=shortcut",
+      "icons": [{ "src": "/assets/img/app-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Create a room",
+      "short_name": "New room",
+      "description": "Spin up a new branded booking room",
+      "url": "/booking-admin?new=1&src=shortcut",
+      "icons": [{ "src": "/assets/img/app-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

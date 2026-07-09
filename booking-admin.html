@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Studio — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg"/>
+  <style>
+    :root {
+      --void:#050e07; --deep:#081408; --surface:#0d1c10; --surface-2:#112315; --surface-3:#162b1a;
+      --border:rgba(255,255,255,.07); --border-hi:rgba(255,255,255,.13);
+      /* .55 alpha keeps WCAG AA (~4.9:1) on --void for hints/small print */
+      --text:#dde4f0; --text-70:rgba(221,228,240,.70); --text-40:rgba(221,228,240,.55);
+      --cyan:#22c55e; --cyan-dim:rgba(34,197,94,.12); --cyan-soft:rgba(34,197,94,.06);
+      --rose:#fb7185; --rose-dim:rgba(251,113,133,.12);
+      --amber:#fbbf24; --gold:#d4a843;
+      --serif:'DM Serif Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+      --r:14px; --r-lg:20px; --r-xl:28px;
+      --shadow:0 4px 20px rgba(0,0,0,.45); --shadow-xl:0 24px 80px rgba(0,0,0,.65);
+      --ease:cubic-bezier(.22,.61,.36,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--sans);background:var(--void);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:radial-gradient(700px 420px at 90% -10%,var(--cyan-soft),transparent 70%)}
+    a{color:inherit;text-decoration:none}
+    .wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:0 24px 80px}
+
+    header.bar{display:flex;align-items:center;justify-content:space-between;padding:20px 0 26px}
+    .wordmark{display:flex;align-items:center;gap:10px;font-weight:600}
+    .wordmark img{width:26px;height:26px}
+    .wordmark .chip{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);
+      background:var(--cyan-dim);padding:3px 10px;border-radius:20px;margin-left:6px}
+    .userbox{font-size:.82rem;color:var(--text-40)}
+    .userbox a{color:var(--text-70);border-bottom:1px dotted var(--text-40);margin-left:12px;cursor:pointer}
+    .userbox a:hover{color:var(--cyan)}
+
+    h1.pagetitle{font-family:var(--serif);font-size:2rem;margin:6px 0 2px}
+    .pagesub{color:var(--text-40);font-size:.92rem;margin-bottom:30px}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:12px;
+      border:none;cursor:pointer;font-family:var(--sans);font-weight:600;font-size:.88rem;transition:all .2s var(--ease)}
+    .btn-primary{background:var(--cyan);color:#04110a;box-shadow:0 0 22px rgba(34,197,94,.22)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(34,197,94,.36)}
+    .btn-primary:disabled{opacity:.5;transform:none}
+    .btn-ghost{background:transparent;border:1px solid var(--border-hi);color:var(--text-70)}
+    .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+    .btn-danger{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(251,113,133,.35)}
+    .btn-danger:hover{background:rgba(251,113,133,.22)}
+    .btn-sm{padding:7px 14px;font-size:.8rem;border-radius:10px}
+
+    /* room cards */
+    .rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+    .room-card{border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;cursor:pointer;
+      background:linear-gradient(160deg,var(--surface),var(--deep));transition:all .22s var(--ease);position:relative;overflow:hidden}
+    .room-card:hover{transform:translateY(-3px);border-color:var(--border-hi);box-shadow:var(--shadow)}
+    .room-card .glyph{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+      font-family:var(--serif);font-size:1.2rem;color:#04110a;margin-bottom:14px}
+    .room-card h3{font-size:1.08rem}
+    .room-card .slug{font-size:.78rem;color:var(--text-40);margin-bottom:12px}
+    .room-card .stats{display:flex;gap:16px;font-size:.78rem;color:var(--text-70)}
+    .room-card .stats b{color:var(--text);font-size:1.05rem;display:block}
+    .room-card.paused::after{content:"Paused";position:absolute;top:14px;right:14px;font-size:.66rem;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--amber);background:rgba(251,191,36,.12);padding:3px 10px;border-radius:20px}
+    .room-card.newcard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      border-style:dashed;color:var(--text-40);min-height:170px;background:none}
+    .room-card.newcard:hover{color:var(--cyan);border-color:var(--cyan)}
+    .room-card.newcard .plus{font-size:1.9rem;line-height:1}
+
+    /* panel / detail */
+    .panel{border:1px solid var(--border);border-radius:var(--r-xl);background:linear-gradient(160deg,var(--surface),var(--deep));
+      box-shadow:var(--shadow-xl);overflow:hidden;margin-top:6px}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:26px 30px 0;flex-wrap:wrap}
+    .panel-head .glyph{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+      font-family:var(--serif);font-size:1.3rem;color:#04110a}
+    .panel-head h2{font-family:var(--serif);font-size:1.5rem}
+    .panel-head .link{font-size:.82rem;color:var(--text-40)}
+    .panel-head .link a{color:var(--cyan)}
+    .tabs{display:flex;gap:4px;padding:20px 30px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+    .tab{padding:10px 18px;font-size:.86rem;color:var(--text-40);cursor:pointer;border:none;background:none;
+      font-family:var(--sans);font-weight:500;border-bottom:2px solid transparent;transition:all .18s}
+    .tab:hover{color:var(--text-70)}
+    .tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+    .tabpane{display:none;padding:28px 30px 34px;animation:rise .3s var(--ease)}
+    .tabpane.active{display:block}
+    @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    /* tables */
+    table{width:100%;border-collapse:collapse;font-size:.86rem}
+    th{color:var(--text-40);font-weight:500;text-align:left;padding:8px 12px;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+    td{padding:12px;border-top:1px solid var(--border);color:var(--text-70);vertical-align:top}
+    td b{color:var(--text)}
+    .scroller{overflow-x:auto}
+    .chip{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+    .chip.confirmed{background:var(--cyan-dim);color:var(--cyan)}
+    .chip.cancelled{background:var(--rose-dim);color:var(--rose)}
+    .subtabs{display:flex;gap:8px;margin-bottom:16px}
+    .subtab{padding:6px 14px;font-size:.78rem;border-radius:20px;border:1px solid var(--border);background:none;
+      color:var(--text-40);cursor:pointer;font-family:var(--sans);transition:all .18s}
+    .subtab.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-soft)}
+
+    /* forms */
+    .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:640px){.fgrid{grid-template-columns:1fr}}
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:.78rem;color:var(--text-70);margin-bottom:6px;font-weight:500}
+    .field input,.field textarea,.field select{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--border-hi);
+      background:rgba(255,255,255,.03);color:var(--text);font-family:var(--sans);font-size:.9rem;transition:border-color .2s,box-shadow .2s}
+    .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23808a99'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+    .field select option{background:var(--surface-2);color:var(--text)}
+    .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,197,94,.14)}
+    .field .hint{font-size:.72rem;color:var(--text-40);margin-top:4px}
+    .swatches{display:flex;gap:10px;margin-top:4px}
+    .swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .18s}
+    .swatch.sel{border-color:#fff;transform:scale(1.12);box-shadow:0 0 14px rgba(255,255,255,.15)}
+    .slugprev{font-size:.8rem;color:var(--text-40);margin-top:6px}
+    .slugprev b{color:var(--cyan);font-weight:500}
+
+    /* availability editor */
+    .avday{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .avday .dname{width:96px;font-size:.86rem;font-weight:600;padding-top:8px}
+    .avday .dname.off{color:var(--text-40);font-weight:400}
+    .avwins{flex:1;display:flex;flex-direction:column;gap:8px}
+    .avwin{display:flex;align-items:center;gap:8px}
+    .avwin input[type=time]{padding:8px 10px;border-radius:9px;border:1px solid var(--border-hi);
+      background:rgba(255,255,255,.03);color:var(--text);font-family:var(--sans);font-size:.84rem;color-scheme:dark}
+    .icon-btn{width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:none;color:var(--text-40);
+      cursor:pointer;font-size:.95rem;transition:all .18s}
+    .icon-btn:hover{color:var(--rose);border-color:var(--rose)}
+    .icon-btn.add:hover{color:var(--cyan);border-color:var(--cyan)}
+    .avoff{color:var(--text-40);font-size:.82rem;padding-top:8px}
+
+    /* embed */
+    .embed-block{margin-bottom:26px}
+    .embed-block h4{font-size:.95rem;margin-bottom:4px}
+    .embed-block p{font-size:.82rem;color:var(--text-40);margin-bottom:10px}
+    pre.code{background:#03150c;border:1px solid var(--border);border-radius:12px;padding:16px 18px;font-size:.78rem;
+      overflow-x:auto;color:#9fe8bd;line-height:1.55;position:relative}
+    .copyrow{display:flex;justify-content:flex-end;margin-top:8px}
+    .linkbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--cyan-soft);
+      border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:16px 18px;margin-bottom:26px}
+    .linkbox .url{font-size:.95rem;color:var(--cyan);font-weight:600;word-break:break-all}
+
+    /* event type cards in admin */
+    .et-row{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid var(--border);
+      border-radius:var(--r);padding:16px 20px;margin-bottom:12px;background:rgba(255,255,255,.012)}
+    .et-row .meta{font-size:.78rem;color:var(--text-40);margin-top:2px}
+    .et-row .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .et-row.inactive{opacity:.5}
+
+    /* modal */
+    .modal-bg{position:fixed;inset:0;background:rgba(2,8,4,.75);backdrop-filter:blur(4px);z-index:300;
+      display:none;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow-y:auto}
+    .modal-bg.open{display:flex}
+    .modal{background:linear-gradient(160deg,var(--surface-2),var(--surface));border:1px solid var(--border-hi);
+      border-radius:var(--r-lg);padding:30px;max-width:560px;width:100%;box-shadow:var(--shadow-xl);animation:rise .25s var(--ease)}
+    .modal h3{font-family:var(--serif);font-size:1.3rem;margin-bottom:18px}
+
+    /* toast */
+    #toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);z-index:400;
+      background:var(--surface-3);border:1px solid var(--border-hi);color:var(--text);padding:12px 22px;
+      border-radius:14px;font-size:.86rem;box-shadow:var(--shadow-xl);transition:transform .3s var(--ease);max-width:90vw}
+    #toast.show{transform:translateX(-50%) translateY(0)}
+    #toast.ok{border-color:rgba(34,197,94,.4)}
+    #toast.bad{border-color:rgba(251,113,133,.4)}
+
+    .empty{color:var(--text-40);font-size:.88rem;text-align:center;padding:40px 12px}
+    .view{display:none}.view.active{display:block;animation:rise .3s var(--ease)}
+    .notice{font-size:.78rem;color:var(--text-40);border-left:2px solid var(--cyan-dim);padding-left:12px;margin-top:20px;line-height:1.6}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="wordmark" href="/"><img src="/assets/img/favicon.svg" alt="" /><span>Green Curve</span><span class="chip">Booking Studio</span></a>
+    <span class="userbox"><span id="userName"></span><a id="logout">Sign out</a></span>
+  </header>
+
+  <!-- LIST VIEW -->
+  <div class="view active" id="viewList">
+    <h1 class="pagetitle">Your booking rooms</h1>
+    <p class="pagesub">Each room is a private, branded scheduling space with its own shareable link — perfect for a consultancy, academy, NGO or team.</p>
+    <div class="rooms-grid" id="roomsGrid"></div>
+    <p class="notice">Compliance built in: invitees give explicit, versioned consent before any data is stored; they can cancel or permanently erase their data via a secure link; invitee personal data is auto-anonymised 180 days after a meeting. You are the data fiduciary for bookings made in your rooms — see the <a href="/booking-legal" target="_blank" style="color:var(--cyan)">booking terms &amp; privacy notice</a>.</p>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div class="view" id="viewRoom">
+    <a class="userbox" style="cursor:pointer" id="backToRooms">&#8592; All rooms</a>
+    <div class="panel" style="margin-top:16px">
+      <div class="panel-head">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div class="glyph" id="dGlyph">·</div>
+          <div>
+            <h2 id="dName"></h2>
+            <div class="link">Live at <a id="dUrl" target="_blank" rel="noopener"></a></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" id="btnCopyLink">Copy link</button>
+          <a class="btn btn-primary btn-sm" id="btnOpenLink" target="_blank" rel="noopener">Open booking page</a>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="tabBookings">Bookings</button>
+        <button class="tab" data-tab="tabSessions">Sessions</button>
+        <button class="tab" data-tab="tabAvail">Availability</button>
+        <button class="tab" data-tab="tabEmbed">Share &amp; Embed</button>
+        <button class="tab" data-tab="tabSettings">Settings</button>
+      </div>
+
+      <div class="tabpane active" id="tabBookings">
+        <div class="subtabs">
+          <button class="subtab active" data-scope="upcoming">Upcoming</button>
+          <button class="subtab" data-scope="past">Past</button>
+          <button class="subtab" data-scope="cancelled">Cancelled</button>
+        </div>
+        <div class="scroller"><table>
+          <thead><tr><th>When</th><th>Session</th><th>Invitee</th><th>Notes</th><th>Status</th><th></th></tr></thead>
+          <tbody id="bookingsBody"></tbody>
+        </table></div>
+        <div class="empty" id="bookingsEmpty" style="display:none">Nothing here yet.</div>
+      </div>
+
+      <div class="tabpane" id="tabSessions">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <p style="font-size:.85rem;color:var(--text-40)">The meeting types people can book in this room.</p>
+          <button class="btn btn-primary btn-sm" id="btnNewEt">+ New session type</button>
+        </div>
+        <div id="etRows"></div>
+      </div>
+
+      <div class="tabpane" id="tabAvail">
+        <p style="font-size:.85rem;color:var(--text-40);margin-bottom:10px">Weekly hours in the room's timezone (<b id="availTz"></b>). Slots are generated inside these windows, minus buffers and booked times.</p>
+        <div id="avEditor"></div>
+        <div class="field" style="margin-top:20px;max-width:420px">
+          <label>Blackout dates <span style="color:var(--text-40);font-weight:400">(holidays, leave — comma-separated YYYY-MM-DD)</span></label>
+          <input id="blackouts" placeholder="2026-08-15, 2026-10-02" />
+        </div>
+        <button class="btn btn-primary" id="btnSaveAvail" style="margin-top:8px">Save availability</button>
+      </div>
+
+      <div class="tabpane" id="tabEmbed">
+        <div class="linkbox">
+          <div style="flex:1;min-width:220px">
+            <div style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-40);margin-bottom:4px">Your private room link</div>
+            <div class="url" id="shareUrl"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" data-copy="#shareUrl">Copy</button>
+        </div>
+        <div class="embed-block">
+          <h4>Inline embed</h4>
+          <p>Drops the full booking experience into any page of your website.</p>
+          <pre class="code" id="snipInline"></pre>
+          <div class="copyrow"><button class="btn btn-ghost btn-sm" data-copy="#snipInline">Copy snippet</button></div>
+        </div>
+        <div class="embed-block">
+          <h4>Floating button (widget)</h4>
+          <p>Adds an elegant "Book a time" button in the corner of your site that opens the booking room in a panel.</p>
+          <pre class="code" id="snipWidget"></pre>
+          <div class="copyrow"><button class="btn btn-ghost btn-sm" data-copy="#snipWidget">Copy snippet</button></div>
+        </div>
+        <div class="embed-block">
+          <h4>Plain iframe</h4>
+          <p>For site builders that only accept raw HTML.</p>
+          <pre class="code" id="snipIframe"></pre>
+          <div class="copyrow"><button class="btn btn-ghost btn-sm" data-copy="#snipIframe">Copy snippet</button></div>
+        </div>
+      </div>
+
+      <div class="tabpane" id="tabSettings">
+        <div class="fgrid">
+          <div class="field"><label>Room name</label><input id="sName" maxlength="80" /></div>
+          <div class="field"><label>Timezone</label><select id="sTz"></select></div>
+        </div>
+        <div class="field"><label>Tagline</label><input id="sTagline" maxlength="140" placeholder="ESG advisory for growing businesses" /></div>
+        <div class="field"><label>Welcome message</label><textarea id="sWelcome" maxlength="500" placeholder="A short note shown on your booking page."></textarea></div>
+        <div class="fgrid">
+          <div class="field"><label>Notification email</label><input id="sEmail" type="email" maxlength="200" /><div class="hint">Booking alerts for this room go here.</div></div>
+          <div class="field"><label>Accent</label><div class="swatches" id="sSwatches"></div></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary" id="btnSaveRoom">Save changes</button>
+          <button class="btn btn-ghost" id="btnPause"></button>
+          <button class="btn btn-ghost" id="btnExport">Export data (JSON)</button>
+          <button class="btn btn-danger" id="btnDelete">Delete room</button>
+        </div>
+        <p class="notice">Export gives you a complete, machine-readable copy of this room and its bookings (data portability). Deleting the room permanently removes all its data, including invitee bookings.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE ROOM MODAL -->
+<div class="modal-bg" id="modalRoom">
+  <div class="modal">
+    <h3>Create a booking room</h3>
+    <div class="field"><label>Room name</label><input id="nName" maxlength="80" placeholder="ABC Academy" />
+      <div class="slugprev">Link: <b id="nSlugPrev">greencurve.solutions/book/…</b></div></div>
+    <div class="fgrid">
+      <div class="field"><label>Custom link name <span style="color:var(--text-40);font-weight:400">(optional)</span></label>
+        <input id="nSlug" maxlength="40" placeholder="abc-academy" /></div>
+      <div class="field"><label>Timezone</label><select id="nTz"></select></div>
+    </div>
+    <div class="field"><label>Tagline <span style="color:var(--text-40);font-weight:400">(optional)</span></label>
+      <input id="nTagline" maxlength="140" placeholder="Book a session with our team" /></div>
+    <div class="field"><label>Accent</label><div class="swatches" id="nSwatches"></div></div>
+    <p style="font-size:.75rem;color:var(--text-40);margin-bottom:16px">Your room starts ready to share: Mon–Fri 10:00–17:00 availability and a 30-minute consultation, all editable.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" data-close>Cancel</button>
+      <button class="btn btn-primary" id="btnCreateRoom">Create room</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT TYPE MODAL -->
+<div class="modal-bg" id="modalEt">
+  <div class="modal">
+    <h3 id="etModalTitle">New session type</h3>
+    <div class="field"><label>Title</label><input id="eTitle" maxlength="80" placeholder="BRSR readiness call" /></div>
+    <div class="field"><label>Description</label><textarea id="eDesc" maxlength="500"></textarea></div>
+    <div class="fgrid">
+      <div class="field"><label>Duration (minutes)</label><input id="eDuration" type="number" min="10" max="480" value="30" /></div>
+      <div class="field"><label>Mode</label><select id="eLoc">
+        <option value="video">Video call</option><option value="phone">Phone call</option><option value="in_person">In person</option>
+      </select></div>
+      <div class="field"><label>Buffer between meetings (min)</label><input id="eBuffer" type="number" min="0" max="120" value="10" /></div>
+      <div class="field"><label>Minimum notice (hours)</label><input id="eNotice" type="number" min="0" max="336" value="12" /></div>
+      <div class="field"><label>Book up to (days ahead)</label><input id="eAdvance" type="number" min="1" max="365" value="60" /></div>
+      <div class="field"><label>Meeting link <span style="color:var(--text-40);font-weight:400">(optional)</span></label>
+        <input id="eLink" maxlength="300" placeholder="https://meet.google.com/…" />
+        <div class="hint">Shared with the invitee after booking.</div></div>
+    </div>
+    <div class="field"><label>Cancellation policy <span style="color:var(--text-40);font-weight:400">(optional — shown before booking)</span></label>
+      <textarea id="ePolicy" maxlength="600" placeholder="Please give at least 12 hours' notice to reschedule."></textarea></div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:.85rem;margin-bottom:16px">
+      <input type="checkbox" id="eActive" checked style="accent-color:var(--cyan)" /> Open for booking</label>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" data-close>Cancel</button>
+      <button class="btn btn-primary" id="btnSaveEt">Save session</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  var API = window._gcApiBase || localStorage.getItem("gc_api_base") || "";
+  function token(){ return localStorage.getItem("gc_auth_token"); }
+  if (!token()) { location.href = "/login?next=/booking-admin"; return; }
+
+  var SITE = "https://greencurve.solutions";
+  var state = { rooms: [], room: null, detail: null, accents: {}, scope: "upcoming", editEt: null };
+
+  function $(s){ return document.querySelector(s); }
+  function esc(s){ var d=document.createElement("div"); d.textContent = s==null?"":s; return d.innerHTML; }
+  function toast(msg, bad){
+    var t = $("#toast"); t.textContent = msg;
+    t.className = bad ? "bad" : "ok"; t.classList.add("show");
+    clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove("show"); }, 2600);
+  }
+  function api(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({"Content-Type":"application/json","Authorization":"Bearer "+token()}, opts.headers||{});
+    return fetch(API+path, opts).then(function(res){
+      if (res.status === 401){ localStorage.removeItem("gc_auth_token"); localStorage.removeItem("gc_auth_user"); location.href="/login?next=/booking-admin"; throw new Error("Not authenticated"); }
+      return res.json().catch(function(){ return {}; }).then(function(data){
+        if (!res.ok) throw new Error(data.detail || "Request failed");
+        return data;
+      });
+    });
+  }
+  function switchView(id){
+    document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+    $("#"+id).classList.add("active");
+  }
+  function fmtWhen(iso){
+    var d = new Date(iso);
+    return d.toLocaleDateString([], {weekday:"short", day:"numeric", month:"short"}) + " · " +
+           d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+  }
+
+  // user chip + logout
+  try { var u = JSON.parse(localStorage.getItem("gc_auth_user")||"{}"); $("#userName").textContent = u.name || u.email || ""; } catch(e){}
+  $("#logout").onclick = function(){ localStorage.removeItem("gc_auth_token"); localStorage.removeItem("gc_auth_user"); location.href="/login"; };
+  $("#backToRooms").onclick = function(){ switchView("viewList"); loadRooms(); };
+
+  // timezone selects
+  var TZS = ["Asia/Kolkata","Asia/Dubai","Asia/Singapore","Asia/Tokyo","Europe/London","Europe/Paris","Europe/Berlin","America/New_York","America/Chicago","America/Los_Angeles","Australia/Sydney","UTC"];
+  function fillTz(sel, val){
+    sel.innerHTML = TZS.map(function(t){ return '<option value="'+t+'"'+(t===val?" selected":"")+">"+t+"</option>"; }).join("");
+  }
+
+  // accent swatches
+  function renderSwatches(host, selected, onPick){
+    host.innerHTML = "";
+    Object.keys(state.accents).forEach(function(key){
+      var s = document.createElement("div");
+      s.className = "swatch" + (key===selected ? " sel" : "");
+      s.style.background = state.accents[key];
+      s.title = key;
+      s.onclick = function(){
+        host.querySelectorAll(".swatch").forEach(function(x){ x.classList.remove("sel"); });
+        s.classList.add("sel"); onPick(key);
+      };
+      host.appendChild(s);
+    });
+  }
+
+  // ── rooms list ───────────────────────────────────────────────
+  function loadRooms(){
+    api("/api/booking/rooms").then(function(d){
+      state.rooms = d.rooms; state.accents = d.accents;
+      var g = $("#roomsGrid"); g.innerHTML = "";
+      d.rooms.forEach(function(r){
+        var c = document.createElement("div");
+        c.className = "room-card" + (r.is_active ? "" : " paused");
+        c.innerHTML = '<div class="glyph" style="background:'+esc(r.accent_hex)+'">'+esc(r.name.charAt(0).toUpperCase())+"</div>"+
+          "<h3>"+esc(r.name)+"</h3>"+
+          '<div class="slug">/book/'+esc(r.slug)+"</div>"+
+          '<div class="stats"><span><b>'+(r.upcoming||0)+"</b>upcoming</span><span><b>"+(r.total_bookings||0)+"</b>all-time</span></div>";
+        c.onclick = function(){ openRoom(r.id); };
+        g.appendChild(c);
+      });
+      var add = document.createElement("div");
+      add.className = "room-card newcard";
+      add.innerHTML = '<span class="plus">+</span><span>Create a room</span>';
+      add.onclick = openCreateModal;
+      g.appendChild(add);
+    }).catch(function(e){ toast(e.message, true); });
+  }
+
+  // ── create room modal ───────────────────────────────────────
+  var newAccent = "curve";
+  function openCreateModal(){
+    newAccent = "curve";
+    renderSwatches($("#nSwatches"), newAccent, function(k){ newAccent = k; });
+    fillTz($("#nTz"), "Asia/Kolkata");
+    $("#nName").value = ""; $("#nSlug").value = ""; $("#nTagline").value = "";
+    $("#nSlugPrev").textContent = "greencurve.solutions/book/…";
+    $("#modalRoom").classList.add("open");
+  }
+  function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40); }
+  function updSlugPrev(){
+    var s = slugify($("#nSlug").value || $("#nName").value);
+    $("#nSlugPrev").textContent = "greencurve.solutions/book/" + (s || "…");
+  }
+  $("#nName").addEventListener("input", updSlugPrev);
+  $("#nSlug").addEventListener("input", updSlugPrev);
+  $("#btnCreateRoom").onclick = function(){
+    var btn = this; btn.disabled = true;
+    api("/api/booking/rooms", {method:"POST", body: JSON.stringify({
+      name: $("#nName").value.trim(), slug: slugify($("#nSlug").value),
+      tagline: $("#nTagline").value.trim(), accent: newAccent, timezone: $("#nTz").value
+    })}).then(function(d){
+      $("#modalRoom").classList.remove("open");
+      toast("Room created — your link is live.");
+      loadRooms(); openRoom(d.room.id);
+    }).catch(function(e){ toast(e.message, true); })
+      .then(function(){ btn.disabled = false; });
+  };
+
+  // ── room detail ─────────────────────────────────────────────
+  function openRoom(id){
+    api("/api/booking/rooms/"+id).then(function(d){
+      state.detail = d; state.room = d.room;
+      var r = d.room;
+      $("#dGlyph").style.background = r.accent_hex;
+      $("#dGlyph").textContent = r.name.charAt(0).toUpperCase();
+      $("#dName").textContent = r.name;
+      $("#dUrl").textContent = r.url.replace(/^https?:\/\//,"");
+      $("#dUrl").href = r.url; $("#btnOpenLink").href = r.url;
+      renderBookings(); renderEts(); renderAvail(); renderEmbed(); renderSettings();
+      switchView("viewRoom");
+      document.querySelectorAll(".tab").forEach(function(t,i){ t.classList.toggle("active", i===0); });
+      document.querySelectorAll(".tabpane").forEach(function(p){ p.classList.toggle("active", p.id==="tabBookings"); });
+    }).catch(function(e){ toast(e.message, true); });
+  }
+  document.querySelectorAll(".tab").forEach(function(t){
+    t.onclick = function(){
+      document.querySelectorAll(".tab").forEach(function(x){ x.classList.remove("active"); });
+      document.querySelectorAll(".tabpane").forEach(function(p){ p.classList.remove("active"); });
+      t.classList.add("active"); $("#"+t.dataset.tab).classList.add("active");
+    };
+  });
+  $("#btnCopyLink").onclick = function(){ copyText(state.room.url); };
+
+  // bookings
+  document.querySelectorAll(".subtab").forEach(function(st){
+    st.onclick = function(){
+      document.querySelectorAll(".subtab").forEach(function(x){ x.classList.remove("active"); });
+      st.classList.add("active"); state.scope = st.dataset.scope; renderBookings();
+    };
+  });
+  function renderBookings(){
+    api("/api/booking/rooms/"+state.room.id+"/bookings?scope="+state.scope).then(function(d){
+      var tb = $("#bookingsBody"); tb.innerHTML = "";
+      $("#bookingsEmpty").style.display = d.bookings.length ? "none" : "block";
+      d.bookings.forEach(function(b){
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td><b>"+esc(fmtWhen(b.starts_at_utc))+"</b></td>"+
+          "<td>"+esc(b.event_title)+"</td>"+
+          "<td><b>"+esc(b.invitee_name)+"</b><br><span style='font-size:.78rem'>"+esc(b.invitee_email)+"</span></td>"+
+          "<td style='max-width:220px'>"+esc(b.invitee_notes||"—")+"</td>"+
+          '<td><span class="chip '+esc(b.status)+'">'+esc(b.status)+"</span></td>"+
+          "<td></td>";
+        if (b.status === "confirmed" && state.scope === "upcoming"){
+          var btn = document.createElement("button");
+          btn.className = "btn btn-danger btn-sm"; btn.textContent = "Cancel";
+          btn.onclick = function(){
+            if (!confirm("Cancel this booking? The invitee will be notified.")) return;
+            api("/api/booking/rooms/"+state.room.id+"/bookings/"+b.public_id+"/cancel", {method:"POST", body:"{}"})
+              .then(function(){ toast("Booking cancelled."); renderBookings(); })
+              .catch(function(e){ toast(e.message, true); });
+          };
+          tr.lastElementChild.appendChild(btn);
+        }
+        tb.appendChild(tr);
+      });
+    }).catch(function(e){ toast(e.message, true); });
+  }
+
+  // sessions (event types)
+  function renderEts(){
+    var host = $("#etRows"); host.innerHTML = "";
+    if (!state.detail.event_types.length){ host.innerHTML = '<div class="empty">No session types yet.</div>'; return; }
+    state.detail.event_types.forEach(function(et){
+      var row = document.createElement("div");
+      row.className = "et-row" + (et.is_active ? "" : " inactive");
+      var mode = {video:"Video", phone:"Phone", in_person:"In person"}[et.location_type] || "Video";
+      row.innerHTML = "<div><b>"+esc(et.title)+"</b>"+(et.is_active?"":' <span class="chip cancelled">closed</span>')+
+        '<div class="meta">'+et.duration_minutes+" min · "+mode+" · "+et.buffer_minutes+" min buffer · "+
+        et.min_notice_hours+"h notice · up to "+et.max_advance_days+" days ahead</div></div>";
+      var actions = document.createElement("div"); actions.className = "actions";
+      var edit = document.createElement("button"); edit.className="btn btn-ghost btn-sm"; edit.textContent="Edit";
+      edit.onclick = function(){ openEtModal(et); };
+      var del = document.createElement("button"); del.className="btn btn-danger btn-sm"; del.textContent="Delete";
+      del.onclick = function(){
+        if (!confirm('Delete "'+et.title+'"?')) return;
+        api("/api/booking/rooms/"+state.room.id+"/event-types/"+et.id, {method:"DELETE"})
+          .then(function(d){ toast(d.archived ? d.message : "Session deleted."); return refreshDetail(); })
+          .catch(function(e){ toast(e.message, true); });
+      };
+      actions.appendChild(edit); actions.appendChild(del); row.appendChild(actions);
+      host.appendChild(row);
+    });
+  }
+  function refreshDetail(){
+    return api("/api/booking/rooms/"+state.room.id).then(function(d){
+      state.detail = d; state.room = d.room; renderEts(); renderAvail();
+    });
+  }
+  $("#btnNewEt").onclick = function(){ openEtModal(null); };
+  function openEtModal(et){
+    state.editEt = et;
+    $("#etModalTitle").textContent = et ? "Edit session type" : "New session type";
+    $("#eTitle").value = et ? et.title : "";
+    $("#eDesc").value = et ? et.description : "";
+    $("#eDuration").value = et ? et.duration_minutes : 30;
+    $("#eLoc").value = et ? et.location_type : "video";
+    $("#eBuffer").value = et ? et.buffer_minutes : 10;
+    $("#eNotice").value = et ? et.min_notice_hours : 12;
+    $("#eAdvance").value = et ? et.max_advance_days : 60;
+    $("#eLink").value = et ? et.meeting_link : "";
+    $("#ePolicy").value = et ? et.cancellation_policy : "";
+    $("#eActive").checked = et ? et.is_active : true;
+    $("#modalEt").classList.add("open");
+  }
+  $("#btnSaveEt").onclick = function(){
+    var body = JSON.stringify({
+      title: $("#eTitle").value.trim(), description: $("#eDesc").value.trim(),
+      duration_minutes: +$("#eDuration").value || 30, location_type: $("#eLoc").value,
+      meeting_link: $("#eLink").value.trim(), buffer_minutes: +$("#eBuffer").value || 0,
+      min_notice_hours: +$("#eNotice").value || 0, max_advance_days: +$("#eAdvance").value || 60,
+      cancellation_policy: $("#ePolicy").value.trim(), is_active: $("#eActive").checked
+    });
+    var p = state.editEt
+      ? api("/api/booking/rooms/"+state.room.id+"/event-types/"+state.editEt.id, {method:"PUT", body:body})
+      : api("/api/booking/rooms/"+state.room.id+"/event-types", {method:"POST", body:body});
+    p.then(function(){
+      $("#modalEt").classList.remove("open");
+      toast("Session saved."); return refreshDetail();
+    }).catch(function(e){ toast(e.message, true); });
+  };
+
+  // availability
+  var DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  function minToTime(m){ return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"); }
+  function timeToMin(t){ var p=t.split(":"); return (+p[0])*60 + (+p[1]||0); }
+  function renderAvail(){
+    $("#availTz").textContent = state.room.timezone;
+    var byDay = {};
+    state.detail.windows.forEach(function(w){ (byDay[w.day_of_week]=byDay[w.day_of_week]||[]).push(w); });
+    var ed = $("#avEditor"); ed.innerHTML = "";
+    DAYS.forEach(function(dn, i){
+      var row = document.createElement("div"); row.className = "avday";
+      var wins = byDay[i] || [];
+      var name = document.createElement("div");
+      name.className = "dname" + (wins.length ? "" : " off"); name.textContent = dn.slice(0,3);
+      var col = document.createElement("div"); col.className = "avwins";
+      function addWin(w){
+        var wr = document.createElement("div"); wr.className = "avwin";
+        wr.innerHTML = '<input type="time" class="ws" value="'+minToTime(w.start_min)+'" /> – <input type="time" class="we" value="'+minToTime(w.end_min)+'" />';
+        var rm = document.createElement("button"); rm.className="icon-btn"; rm.innerHTML="&times;"; rm.title="Remove";
+        rm.onclick = function(){ wr.remove(); if(!col.querySelector(".avwin")) name.classList.add("off"); };
+        wr.appendChild(rm); col.insertBefore(wr, col.lastElementChild);
+        name.classList.remove("off");
+      }
+      var addRow = document.createElement("div");
+      var add = document.createElement("button"); add.className="icon-btn add"; add.textContent="+"; add.title="Add hours";
+      add.onclick = function(){ addWin({start_min:600, end_min:1020}); };
+      addRow.appendChild(add); col.appendChild(addRow);
+      wins.forEach(addWin);
+      if (!wins.length){ var off=document.createElement("span"); off.className="avoff"; off.textContent="Unavailable"; addRow.insertBefore(off, add); }
+      row.appendChild(name); row.appendChild(col);
+      row.dataset.day = i;
+      ed.appendChild(row);
+    });
+    $("#blackouts").value = (state.detail.blackouts||[]).join(", ");
+  }
+  $("#btnSaveAvail").onclick = function(){
+    var windows = [];
+    var bad = null;
+    document.querySelectorAll(".avday").forEach(function(row){
+      var day = +row.dataset.day;
+      row.querySelectorAll(".avwin").forEach(function(w){
+        var s = timeToMin(w.querySelector(".ws").value), e = timeToMin(w.querySelector(".we").value);
+        if (e <= s) bad = "Each window must end after it starts.";
+        windows.push({day_of_week: day, start_min: s, end_min: e});
+      });
+    });
+    if (bad) return toast(bad, true);
+    var blackouts = $("#blackouts").value.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+    api("/api/booking/rooms/"+state.room.id+"/availability", {method:"PUT", body: JSON.stringify({windows:windows, blackouts:blackouts})})
+      .then(function(){ toast("Availability saved."); return refreshDetail(); })
+      .catch(function(e){ toast(e.message, true); });
+  };
+
+  // share & embed
+  function renderEmbed(){
+    var url = state.room.url;
+    $("#shareUrl").textContent = url;
+    $("#snipInline").textContent =
+'<!-- Green Curve Bookings — inline embed -->\n<div data-gc-booking="'+state.room.slug+'" style="min-height:640px"></div>\n<script src="'+SITE+'/assets/js/gc-booking.js" async><\/script>';
+    $("#snipWidget").textContent =
+'<!-- Green Curve Bookings — floating button -->\n<script src="'+SITE+'/assets/js/gc-booking.js" async\n        data-gc-booking-popup="'+state.room.slug+'"\n        data-label="Book a time"><\/script>';
+    $("#snipIframe").textContent =
+'<iframe src="'+url+'?embed=1" style="width:100%;height:680px;border:0;border-radius:16px" loading="lazy" title="Book a time — '+state.room.name.replace(/"/g,"&quot;")+'"></iframe>';
+  }
+  function copyText(text){
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+      .then(function(){ toast("Copied to clipboard."); })
+      .catch(function(){
+        var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand("copy"); ta.remove(); toast("Copied to clipboard.");
+      });
+  }
+  document.querySelectorAll("[data-copy]").forEach(function(b){
+    b.onclick = function(){ copyText($(b.dataset.copy).textContent); };
+  });
+
+  // settings
+  var setAccent = "curve";
+  function renderSettings(){
+    var r = state.room;
+    $("#sName").value = r.name; $("#sTagline").value = r.tagline; $("#sWelcome").value = r.welcome;
+    $("#sEmail").value = r.contact_email; fillTz($("#sTz"), r.timezone);
+    setAccent = r.accent;
+    renderSwatches($("#sSwatches"), setAccent, function(k){ setAccent = k; });
+    $("#btnPause").textContent = r.is_active ? "Pause bookings" : "Resume bookings";
+  }
+  $("#btnSaveRoom").onclick = function(){
+    api("/api/booking/rooms/"+state.room.id, {method:"PATCH", body: JSON.stringify({
+      name: $("#sName").value.trim(), tagline: $("#sTagline").value.trim(),
+      welcome: $("#sWelcome").value.trim(), contact_email: $("#sEmail").value.trim(),
+      timezone: $("#sTz").value, accent: setAccent
+    })}).then(function(d){
+      state.room = d.room; toast("Saved.");
+      $("#dName").textContent = d.room.name;
+      $("#dGlyph").style.background = d.room.accent_hex;
+      renderEmbed();
+    }).catch(function(e){ toast(e.message, true); });
+  };
+  $("#btnPause").onclick = function(){
+    api("/api/booking/rooms/"+state.room.id, {method:"PATCH", body: JSON.stringify({is_active: !state.room.is_active})})
+      .then(function(d){ state.room = d.room; renderSettings(); toast(d.room.is_active ? "Bookings resumed." : "Bookings paused."); })
+      .catch(function(e){ toast(e.message, true); });
+  };
+  $("#btnExport").onclick = function(){
+    api("/api/booking/rooms/"+state.room.id+"/export").then(function(d){
+      var blob = new Blob([JSON.stringify(d, null, 2)], {type:"application/json"});
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "greencurve-bookings-"+state.room.slug+".json";
+      a.click(); URL.revokeObjectURL(a.href);
+    }).catch(function(e){ toast(e.message, true); });
+  };
+  $("#btnDelete").onclick = function(){
+    if (!confirm('Delete room "'+state.room.name+'" and ALL its bookings permanently? This cannot be undone.')) return;
+    if (!confirm("Really delete? Consider exporting your data first.")) return;
+    api("/api/booking/rooms/"+state.room.id, {method:"DELETE"})
+      .then(function(){ toast("Room deleted."); switchView("viewList"); loadRooms(); })
+      .catch(function(e){ toast(e.message, true); });
+  };
+
+  // modal close handlers
+  document.querySelectorAll(".modal-bg").forEach(function(m){
+    m.addEventListener("click", function(ev){ if (ev.target === m) m.classList.remove("open"); });
+    m.querySelectorAll("[data-close]").forEach(function(b){ b.onclick = function(){ m.classList.remove("open"); }; });
+  });
+
+  loadRooms();
+
+  // deep-link from the app home: /booking-admin?new=1 opens the create-room modal
+  if (new URLSearchParams(location.search).get("new") === "1") {
+    openCreateModal();
+  }
+})();
+</script>
+</body>
+</html>
