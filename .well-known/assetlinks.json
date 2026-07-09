@@ -5,8 +5,7 @@
       "namespace": "android_app",
       "package_name": "solutions.greencurve.bookings",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_UPLOAD_KEY_SHA256_FINGERPRINT",
-        "REPLACE_WITH_PLAY_APP_SIGNING_SHA256_FINGERPRINT"
+        "91:10:87:E5:20:1B:19:05:FE:FC:72:BC:D5:45:78:60:C7:94:57:36:96:F2:2D:5F:3D:C0:9A:9D:3F:2D:75:19"
       ]
     }
   }
