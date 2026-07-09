@@ -169,18 +169,122 @@ def login(request: Request, body: LoginIn):
     _check_login_rate(request)
     with get_conn() as conn:
         row = conn.execute(
-            "SELECT id, email, name, org, password_hash FROM users WHERE email=? AND is_active=1",
+            "SELECT id, email, name, org, role, password_hash FROM users WHERE email=? AND is_active=1",
             (body.email.lower(),)
         ).fetchone()
     if not row or not bcrypt.checkpw(body.password.encode(), row["password_hash"].encode()):
         raise HTTPException(401, "Invalid email or password")
     token = _make_token(row["id"], row["email"])
-    return {"token": token, "user": {"id": row["id"], "email": row["email"], "name": row["name"], "org": row["org"], "role": row.get("role", "user")}}
+    # sqlite3.Row has no .get() — a prior .get("role") here 500'd every login
+    return {"token": token, "user": {"id": row["id"], "email": row["email"], "name": row["name"], "org": row["org"], "role": row["role"] or "user"}}
 
 
 @router.get("/api/auth/me")
 def me(user=Depends(get_current_user)):
     return {"user": user}
+
+
+# ── Google Sign-In (OAuth 2.0 / OpenID Connect) ───────────────────────────────
+# The login page shows "Continue with Google" only when GOOGLE_CLIENT_ID is set,
+# so this deploys safely before the OAuth client exists. The client sends the
+# Google Identity Services ID token; we verify its signature against Google's
+# published JWKS, check audience/issuer/expiry/email_verified, then find-or-create
+# the user by verified email and issue our normal JWT.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+_GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs"
+_GOOGLE_ISSUERS  = {"https://accounts.google.com", "accounts.google.com"}
+
+_jwks_lock:  threading.Lock = threading.Lock()
+_jwks_cache: dict = {"keys": None, "fetched_at": 0.0}
+
+class GoogleIn(BaseModel):
+    credential: str
+
+
+def _google_jwks(force: bool = False) -> list:
+    """Google's signing keys, cached for 6 hours (refetched on unknown kid)."""
+    import urllib.request
+    with _jwks_lock:
+        fresh = time.monotonic() - _jwks_cache["fetched_at"] < 6 * 3600
+        if _jwks_cache["keys"] is not None and fresh and not force:
+            return _jwks_cache["keys"]
+        req = urllib.request.Request(_GOOGLE_JWKS_URL, headers={"User-Agent": "greencurve-auth"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            _jwks_cache["keys"] = json.loads(resp.read())["keys"]
+        _jwks_cache["fetched_at"] = time.monotonic()
+        return _jwks_cache["keys"]
+
+
+def _verify_google_token(credential: str) -> dict:
+    """Validate a Google ID token; returns its claims or raises 401."""
+    try:
+        kid = jwt.get_unverified_header(credential).get("kid", "")
+        keys = _google_jwks()
+        key = next((k for k in keys if k.get("kid") == kid), None)
+        if key is None:   # key rotation — refetch once
+            keys = _google_jwks(force=True)
+            key = next((k for k in keys if k.get("kid") == kid), None)
+        if key is None:
+            raise JWTError("Unknown signing key")
+        claims = jwt.decode(
+            credential, key, algorithms=["RS256"], audience=GOOGLE_CLIENT_ID
+        )
+    except JWTError:
+        raise HTTPException(401, "Google sign-in could not be verified. Please try again.")
+    if claims.get("iss") not in _GOOGLE_ISSUERS:
+        raise HTTPException(401, "Google sign-in could not be verified. Please try again.")
+    if claims.get("email_verified") is not True or not claims.get("email"):
+        raise HTTPException(401, "Your Google account email is not verified.")
+    return claims
+
+
+@router.get("/api/auth/config")
+def auth_config():
+    """Public auth configuration for the login page (no secrets — the OAuth
+    client ID is public by design)."""
+    return {"google_client_id": GOOGLE_CLIENT_ID}
+
+
+@router.post("/api/auth/google")
+def google_sign_in(request: Request, body: GoogleIn):
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(503, "Google sign-in is not enabled on this server.")
+    _check_login_rate(request)
+    claims = _verify_google_token(body.credential)
+    email = claims["email"].lower()
+    name  = (claims.get("name") or email.split("@")[0]).strip()[:100]
+
+    conn = get_conn()
+    row = conn.execute(
+        "SELECT id, email, name, org, role, is_active FROM users WHERE email=?", (email,)
+    ).fetchone()
+    if row and not row["is_active"]:
+        raise HTTPException(403, "This account has been deactivated.")
+    if row:
+        user_id, user_name, user_org, user_role = row["id"], row["name"], row["org"], row["role"] or "user"
+    else:
+        # New account via Google — no usable password. Store a bcrypt hash of a
+        # random secret so the password-login path stays valid but unguessable;
+        # the user can set a real password later via the reset flow.
+        random_pw = secrets.token_urlsafe(32)
+        pw_hash = bcrypt.hashpw(random_pw.encode(), bcrypt.gensalt()).decode()
+        try:
+            with conn:
+                cur = conn.execute(
+                    "INSERT INTO users (email, name, org, password_hash) VALUES (?,?,?,?)",
+                    (email, name, "", pw_hash),
+                )
+                user_id = cur.lastrowid
+        except sqlite3.IntegrityError:
+            # raced with a concurrent registration for the same email
+            row = conn.execute("SELECT id, name, org, role FROM users WHERE email=?", (email,)).fetchone()
+            user_id, name = row["id"], row["name"]
+        user_name, user_org, user_role = name, "", "user"
+        logger.info("New account via Google sign-in (user_id=%s)", user_id)
+
+    token = _make_token(user_id, email)
+    return {"token": token, "user": {"id": user_id, "email": email, "name": user_name,
+                                     "org": user_org, "role": user_role}}
 
 
 @router.post("/api/auth/forgot-password")

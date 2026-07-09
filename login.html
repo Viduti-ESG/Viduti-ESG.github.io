@@ -44,6 +44,16 @@
     <!-- Message banner -->
     <div class="auth-msg" id="auth-msg"></div>
 
+    <!-- ── Google Sign-In (shown only when the server has a client ID) ── -->
+    <div id="google-auth" style="display:none">
+      <div id="gbtn" style="display:flex;justify-content:center;margin:2px 0 4px"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin:14px 0 6px">
+        <span style="flex:1;height:1px;background:var(--border,rgba(255,255,255,.09))"></span>
+        <span style="font-size:.75rem;color:var(--text-40,rgba(221,228,240,.5));letter-spacing:.08em">OR</span>
+        <span style="flex:1;height:1px;background:var(--border,rgba(255,255,255,.09))"></span>
+      </div>
+    </div>
+
     <!-- ── Login form ── -->
     <form class="auth-form" id="form-login" onsubmit="submitLogin(event)">
       <div class="auth-field">
@@ -99,6 +109,9 @@
       try { localStorage.removeItem('gc_auth_token'); localStorage.removeItem('gc_auth_user'); } catch (e) {}
     }
 
+    // Deep link: /login#register opens the Create Account tab directly.
+    if (location.hash === '#register') showTab('register');
+
     function showTab(tab) {
       document.getElementById('form-login').style.display    = tab === 'login'    ? 'flex' : 'none';
       document.getElementById('form-register').style.display = tab === 'register' ? 'flex' : 'none';
@@ -116,6 +129,54 @@
       const el = document.getElementById('auth-msg');
       el.className = 'auth-msg';
       el.textContent = '';
+    }
+
+    // ── Google Sign-In ─────────────────────────────────────────────────
+    // Enabled server-side: the button renders only if /api/auth/config
+    // returns a client ID, so this page works unchanged when it's off.
+    (async function initGoogleSignIn() {
+      try {
+        const apiBase = localStorage.getItem('gc_api_base') || '';
+        const cfg = await fetch(apiBase + '/api/auth/config').then(r => r.json());
+        if (!cfg.google_client_id) return;
+
+        const s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client';
+        s.async = true;
+        s.onload = function () {
+          google.accounts.id.initialize({
+            client_id: cfg.google_client_id,
+            callback: onGoogleCredential,
+            ux_mode: 'popup',
+          });
+          google.accounts.id.renderButton(document.getElementById('gbtn'), {
+            theme: 'filled_blue', size: 'large', shape: 'pill',
+            text: 'continue_with', width: 320, logo_alignment: 'left',
+          });
+          document.getElementById('google-auth').style.display = 'block';
+        };
+        document.head.appendChild(s);
+      } catch (e) { /* config unavailable — email/password still works */ }
+    })();
+
+    async function onGoogleCredential(response) {
+      clearMsg();
+      try {
+        const apiBase = localStorage.getItem('gc_api_base') || '';
+        const res = await fetch(apiBase + '/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.detail || 'Google sign-in failed.');
+        localStorage.setItem('gc_auth_token', data.token);
+        localStorage.setItem('gc_auth_user', JSON.stringify(data.user));
+        const redirect = new URLSearchParams(location.search).get('next') || '/esg-intelligence';
+        location.replace(redirect);
+      } catch (err) {
+        showMsg(err.message || 'Google sign-in failed. Please try again.', 'error');
+      }
     }
 
     async function submitLogin(e) {
