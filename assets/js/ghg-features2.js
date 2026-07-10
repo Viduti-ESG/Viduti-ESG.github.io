@@ -295,6 +295,7 @@ function initChatCopilot() {
         }),
         signal: AbortSignal.timeout(20000),
       });
+      if (!res.ok) { updateLastChatMsg('The AI copilot is temporarily unavailable — please try again later.'); return; }
       const data = await res.json();
       updateLastChatMsg(data.answer || 'No response.');
     } catch { updateLastChatMsg('Could not reach backend. Make sure it is running.'); }
