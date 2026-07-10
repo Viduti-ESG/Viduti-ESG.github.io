@@ -272,8 +272,25 @@ function initChatCopilot() {
   const toggle = document.getElementById('chat-toggle');
   const panel  = document.getElementById('chat-panel');
   if (!toggle || !panel) return;
-  toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; if (!panel.hidden) document.getElementById('chat-input')?.focus(); });
-  document.getElementById('chat-close')?.addEventListener('click', () => { panel.hidden = true; });
+  let closeTimer = null;
+  const isClosed = () => panel.hidden || panel.classList.contains('chat-panel--closing');
+  const openPanel = () => {
+    clearTimeout(closeTimer);
+    panel.classList.remove('chat-panel--closing');
+    panel.hidden = false;
+    // Focusing pops the keyboard over the panel on phones — desktop only.
+    if (window.matchMedia('(min-width: 641px)').matches) document.getElementById('chat-input')?.focus();
+  };
+  const closePanel = () => {
+    if (isClosed()) return;
+    panel.classList.add('chat-panel--closing');
+    closeTimer = setTimeout(() => {
+      panel.hidden = true;
+      panel.classList.remove('chat-panel--closing');
+    }, 200);
+  };
+  toggle.addEventListener('click', () => { isClosed() ? openPanel() : closePanel(); });
+  document.getElementById('chat-close')?.addEventListener('click', closePanel);
   document.getElementById('chat-form')?.addEventListener('submit', async e => {
     e.preventDefault();
     const input = document.getElementById('chat-input');
