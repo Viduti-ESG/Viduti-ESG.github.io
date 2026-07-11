@@ -787,6 +787,17 @@
         Questions about climate transition strategy, regulatory compliance, or Green Curve?
         We'd love to hear from you — drop us an email or connect on LinkedIn.
       </p>
+      <!--email_off-->
+      <div style="margin-top:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        <a href="mailto:neha@greencurve.solutions" style="color:#4ade80;text-decoration:none;font-weight:600;font-size:1rem;letter-spacing:.01em">neha@greencurve.solutions</a>
+        <button type="button" onclick="gcCopyEmail(this)" aria-label="Copy email address"
+          style="cursor:pointer;background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.35);border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;font-family:inherit;letter-spacing:.02em;transition:all .18s">Copy</button>
+      </div>
+      <!--/email_off-->
     </div>
     <div style="display:flex;flex-direction:column;align-items:stretch;gap:12px;flex-shrink:0">
     <!--email_off--><a class="email-btn"
@@ -808,12 +819,29 @@
       </svg>
       Connect on LinkedIn &nearr;
     </a>
-    <!--email_off--><p style="margin:2px 0 0;text-align:center;font-size:.78rem;color:#94a3b8;letter-spacing:.01em">
-      <a href="mailto:neha@greencurve.solutions" style="color:#94a3b8;text-decoration:none">neha@greencurve.solutions</a>
-    </p><!--/email_off-->
     </div>
   </div>
 </section>
+
+<script>
+function gcCopyEmail(btn) {
+  var addr = 'neha' + '@' + 'greencurve.solutions';
+  var done = function () {
+    var old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = 'rgba(74,222,128,.25)';
+    setTimeout(function () {
+      btn.textContent = old;
+      btn.style.background = 'rgba(74,222,128,.1)';
+    }, 1600);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(addr).then(done, function () { window.prompt('Copy this email address:', addr); });
+  } else {
+    window.prompt('Copy this email address:', addr);
+  }
+}
+</script>
 
 <!-- FOOTER — rich multi-column (imagine.art pattern) -->
 <footer class="footer-rich">
