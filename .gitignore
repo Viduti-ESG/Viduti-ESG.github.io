@@ -30,3 +30,4 @@ tools/sectors_extracted.json
 tools/raw_features.json
 posts_extracted.json
 blog/
+.climate_agent/

@@ -396,12 +396,12 @@ def admin_delete_company(company_name: str, _=Depends(require_admin)):
 # ── Admin: daily blog generator (Anthropic-billed) ───────────────────────────
 @router.post("/api/admin/blog/generate")
 def admin_blog_generate(_=Depends(require_admin)):
-    """Generate today's blog post now — same script the gc-daily-blog timer runs."""
+    """Run the Climate Agent now — same script the gc-daily-blog timer runs."""
     import subprocess
     import sys as _sys
     try:
         proc = subprocess.run(
-            [_sys.executable, str(BASE_DIR / "tools" / "generate_blog_post.py")],
+            [_sys.executable, str(BASE_DIR / "tools" / "climate_agent.py")],
             cwd=BASE_DIR, capture_output=True, text=True, timeout=240,
         )
     except subprocess.TimeoutExpired:
