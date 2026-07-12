@@ -60,6 +60,20 @@
       </div>
     </div>
 
+    <!-- Users & AI plans -->
+    <div class="admin-table-wrap" style="margin-bottom:18px;padding:14px 16px">
+      <div style="font-weight:700;margin-bottom:10px">Users &amp; AI Plans</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input class="admin-search" id="plan-email" type="email" placeholder="account email…" style="max-width:280px"
+               onkeydown="if(event.key==='Enter')lookupPlan()"/>
+        <button class="admin-btn admin-btn--ghost" onclick="lookupPlan()">Look up</button>
+        <button class="admin-btn admin-btn--primary" onclick="extendFreeTier()">Extend free tier → 25 days</button>
+        <button class="admin-btn admin-btn--ghost" onclick="setPlan('paid')">Set Paid</button>
+        <button class="admin-btn admin-btn--ghost" onclick="setPlan('free')">Set Free</button>
+      </div>
+      <div id="plan-result" style="margin-top:10px;font-size:.85rem;color:#475569"></div>
+    </div>
+
     <!-- Toolbar -->
     <div class="admin-toolbar">
       <input class="admin-search" id="search-input" type="search" placeholder="Search company, CIN, NSE symbol…" oninput="onSearch()"/>
@@ -176,5 +190,45 @@
 <div class="admin-toast" id="admin-toast"></div>
 
 <script src="/assets/js/admin.js"></script>
+<script>
+/* Users & AI plans panel (inline: admin.js is immutable-cached; HTML is not). */
+function _planEmail() {
+  const v = document.getElementById('plan-email').value.trim();
+  if (!v) { toast('Enter an account email first', 'error'); }
+  return v;
+}
+function _renderPlan(d) {
+  const badge = d.plan === 'paid'
+    ? '<span style="color:#149256;font-weight:700">PAID</span>'
+    : '<span style="color:#b45309;font-weight:700">FREE</span>';
+  document.getElementById('plan-result').innerHTML =
+    `<b>${d.name}</b> &lt;${d.email}&gt; — plan: ${badge}` +
+    ` · signed up ${d.created_at || '?'}` +
+    (d.plan === 'paid' ? '' :
+      ` · free tier ends <b>${d.free_tier_expires_at || '?'}</b>` +
+      (d.free_tier_extended ? ' (extended)' : ' (default 14d)'));
+}
+async function lookupPlan() {
+  const email = _planEmail(); if (!email) return;
+  try { _renderPlan(await adminFetch('/api/admin/users/plan?email=' + encodeURIComponent(email))); }
+  catch (e) { toast(e.message || 'Lookup failed', 'error'); }
+}
+async function extendFreeTier() {
+  const email = _planEmail(); if (!email) return;
+  try {
+    _renderPlan(await adminFetch('/api/admin/users/extend-free-tier',
+      { method: 'POST', body: JSON.stringify({ email }) }));
+    toast('Free tier extended to 25 days from signup', 'ok');
+  } catch (e) { toast(e.message || 'Extend failed', 'error'); }
+}
+async function setPlan(plan) {
+  const email = _planEmail(); if (!email) return;
+  try {
+    _renderPlan(await adminFetch('/api/admin/users/set-plan',
+      { method: 'POST', body: JSON.stringify({ email, plan }) }));
+    toast('Plan set to ' + plan, 'ok');
+  } catch (e) { toast(e.message || 'Update failed', 'error'); }
+}
+</script>
 </body>
 </html>

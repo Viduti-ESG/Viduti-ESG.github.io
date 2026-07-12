@@ -159,6 +159,13 @@ def init_db() -> None:
         ucols = {r[1] for r in conn.execute("PRAGMA table_info(users)").fetchall()}
         if "role" not in ucols:
             conn.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'")
+        # AI plan tiers (2026-07-13): 'free' (14-day trial window, weekly caps) or
+        # 'paid' (monthly caps). free_tier_expires_at NULL = derive created_at + 14
+        # days at check time; admin extend writes an explicit timestamp.
+        if "plan" not in ucols:
+            conn.execute("ALTER TABLE users ADD COLUMN plan TEXT DEFAULT 'free'")
+        if "free_tier_expires_at" not in ucols:
+            conn.execute("ALTER TABLE users ADD COLUMN free_tier_expires_at DATETIME")
 
         # XBRL content-upgrade columns (bottlenecks / benchmarks / hard S&E metrics).
         # Added to pre-existing prod DBs via ALTER; new DBs get them from CREATE above.

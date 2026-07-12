@@ -393,6 +393,99 @@ def admin_delete_company(company_name: str, _=Depends(require_admin)):
     return {"ok": True}
 
 
+# ── Admin: daily blog generator (Anthropic-billed) ───────────────────────────
+@router.post("/api/admin/blog/generate")
+def admin_blog_generate(_=Depends(require_admin)):
+    """Generate today's blog post now — same script the gc-daily-blog timer runs."""
+    import subprocess
+    import sys as _sys
+    try:
+        proc = subprocess.run(
+            [_sys.executable, str(BASE_DIR / "tools" / "generate_blog_post.py")],
+            cwd=BASE_DIR, capture_output=True, text=True, timeout=240,
+        )
+    except subprocess.TimeoutExpired:
+        raise HTTPException(504, "Blog generation timed out")
+    tail = ((proc.stdout or "") + (proc.stderr or "")).strip()[-800:]
+    if proc.returncode == 3:
+        raise HTTPException(503, f"Blog generator dormant: {tail}")
+    if proc.returncode != 0:
+        raise HTTPException(500, f"Blog generation failed: {tail}")
+    return {"ok": True, "output": tail}
+
+
+# ── Admin: user plans & free-tier windows (AI usage caps) ────────────────────
+# Plans gate the Claude-billed AI endpoints served by gcai (:8001), which reads
+# the users table from this DB. free = 14-day trial window + weekly caps;
+# admin can extend any account's window to 25 days (from signup) in one click.
+
+def _plan_row(conn, email: str):
+    row = conn.execute(
+        "SELECT id, email, name, org, plan, role, created_at, free_tier_expires_at "
+        "FROM users WHERE email=?", (email.strip().lower(),)
+    ).fetchone()
+    if not row:
+        raise HTTPException(404, "No account with that email")
+    return row
+
+
+def _plan_payload(row) -> dict:
+    from datetime import datetime, timedelta
+    created = row["created_at"] or ""
+    explicit = row["free_tier_expires_at"]
+    effective = explicit
+    if not effective and created:
+        try:
+            dt = datetime.fromisoformat(created.replace(" ", "T"))
+            effective = (dt + timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            effective = None
+    return {
+        "email": row["email"], "name": row["name"], "org": row["org"],
+        "plan": row["plan"] or "free", "role": row["role"],
+        "created_at": created,
+        "free_tier_expires_at": effective,
+        "free_tier_extended": bool(explicit),
+    }
+
+
+class PlanIn(BaseModel):
+    email: str
+    plan: str = ""
+
+
+@router.get("/api/admin/users/plan")
+def admin_user_plan(email: str = Query(...), _=Depends(require_admin)):
+    with get_conn() as conn:
+        return _plan_payload(_plan_row(conn, email))
+
+
+@router.post("/api/admin/users/extend-free-tier")
+def admin_extend_free_tier(body: PlanIn, _=Depends(require_admin)):
+    """One-click: extend the account's free-tier window to 25 days from signup."""
+    from datetime import datetime, timedelta
+    with get_conn() as conn:
+        row = _plan_row(conn, body.email)
+        try:
+            created = datetime.fromisoformat((row["created_at"] or "").replace(" ", "T"))
+        except ValueError:
+            raise HTTPException(500, "Account has no valid created_at date")
+        new_expiry = (created + timedelta(days=25)).strftime("%Y-%m-%d %H:%M:%S")
+        conn.execute("UPDATE users SET free_tier_expires_at=? WHERE id=?",
+                     (new_expiry, row["id"]))
+        return _plan_payload(_plan_row(conn, body.email))
+
+
+@router.post("/api/admin/users/set-plan")
+def admin_set_plan(body: PlanIn, _=Depends(require_admin)):
+    if body.plan not in ("free", "paid"):
+        raise HTTPException(400, "plan must be 'free' or 'paid'")
+    with get_conn() as conn:
+        row = _plan_row(conn, body.email)
+        conn.execute("UPDATE users SET plan=? WHERE id=?", (body.plan, row["id"]))
+        return _plan_payload(_plan_row(conn, body.email))
+
+
 @router.post("/api/admin/reimport")
 def admin_reimport(_=Depends(require_admin)):
     """Re-run the JSON → SQLite migration from the current esg_quotient.json on disk."""
