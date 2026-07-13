@@ -26,6 +26,7 @@ Run from the site root:  venv/bin/python tools/anthropic_usage_report.py
 Designed for the gc-usage-report systemd timer (User=www-data,
 EnvironmentFile=/var/www/greencurve/.env).
 """
+import argparse
 import os
 import smtplib
 import sys
@@ -124,6 +125,31 @@ def fetch_total_cost_usd(admin_key: str, start: datetime, end: datetime) -> floa
     return total_cents / 100.0
 
 
+def fetch_cost_by_day(admin_key: str, start: datetime, end: datetime) -> dict:
+    """date (YYYY-MM-DD) -> billed USD. Used by --breakdown to find where spend went."""
+    params = {
+        "starting_at": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "ending_at": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    by_day, page = {}, None
+    while True:
+        q = dict(params)
+        if page:
+            q["page"] = page
+        resp = requests.get(f"{API_BASE}/organizations/cost_report",
+                             headers=_admin_headers(admin_key), params=q, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+        for bucket in data.get("data", []):
+            day = (bucket.get("starting_at") or "")[:10]
+            cents = sum(float(i.get("amount", 0)) for i in bucket.get("results", []))
+            by_day[day] = by_day.get(day, 0.0) + cents / 100.0
+        if not data.get("has_more"):
+            break
+        page = data["next_page"]
+    return by_day
+
+
 def summarize(buckets: list, key_names: dict) -> tuple[dict, dict]:
     """Returns (per_staff, per_model) each mapping name -> {tokens, cost_usd}."""
     per_staff, per_model = {}, {}
@@ -194,6 +220,15 @@ def send_mail(subject: str, body: str, to_addr: str):
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser(description="Anthropic usage/cost report")
+    ap.add_argument("--days", type=int, default=1,
+                    help="how many days back to cover (default 1 = yesterday)")
+    ap.add_argument("--print", dest="to_stdout", action="store_true",
+                    help="print to screen instead of emailing (works without SMTP)")
+    ap.add_argument("--breakdown", action="store_true",
+                    help="also show cost per day — use this to find where spend went")
+    args = ap.parse_args()
+
     admin_key = os.environ.get("ANTHROPIC_ADMIN_KEY", "")
     if not admin_key:
         print("DORMANT: ANTHROPIC_ADMIN_KEY not set — create one at "
@@ -201,9 +236,10 @@ def main() -> int:
         sys.exit(3)
 
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    start = today - timedelta(days=1)
-    end = today
-    report_date = start.strftime("%Y-%m-%d")
+    start = today - timedelta(days=args.days)
+    end = today + timedelta(days=1)          # include today's partial usage
+    report_date = (start.strftime("%Y-%m-%d") if args.days == 1
+                   else f"{start:%Y-%m-%d} to {today:%Y-%m-%d}")
 
     key_names = fetch_api_key_names(admin_key)
     buckets = fetch_usage(admin_key, start, end)
@@ -211,6 +247,19 @@ def main() -> int:
     per_staff, per_model = summarize(buckets, key_names)
 
     body = build_email(report_date, total_cost_usd, per_staff, per_model)
+
+    if args.breakdown:
+        by_day = fetch_cost_by_day(admin_key, start, end)
+        lines = ["", "Cost per day:"]
+        for day in sorted(by_day):
+            if by_day[day] > 0:
+                lines.append(f"  {day}   ${by_day[day]:>8.2f}  {'#' * int(by_day[day] * 2)}")
+        body += "\n".join(lines)
+
+    if args.to_stdout:
+        print(body)
+        return 0
+
     to_addr = os.environ.get("USAGE_REPORT_TO", DEFAULT_TO)
     send_mail(f"Green Curve — Anthropic API usage, {report_date}", body, to_addr)
     print(f"Sent usage report for {report_date} to {to_addr}")
