@@ -87,13 +87,16 @@ Rules:
   actual regulation (e.g. SEBI LODR, E-Waste Management Rules 2022) without
   invented clause numbers.
 
-Return ONLY valid JSON:
-{{
-  "title": "<compelling, specific title, max 70 chars>",
-  "meta_description": "<max 155 chars>",
-  "slug": "<kebab-case-slug-max-6-words>",
-  "body_html": "<the article as clean HTML using only h2, h3, p, ul, ol, li, strong, em tags — no h1, no inline styles, no scripts>"
-}}"""
+Return ONLY plain text in exactly this format (no markdown fences, no JSON):
+===TITLE===
+<compelling, specific title, max 70 chars>
+===META===
+<meta description, max 155 chars>
+===SLUG===
+<kebab-case-slug-max-6-words>
+===BODY===
+<the article as clean HTML using only h2, h3, p, ul, ol, li, strong, em tags — no h1, no inline styles, no scripts>
+===END==="""
 
 PAGE_TMPL = """<!DOCTYPE html>
 <html lang="en">
@@ -183,29 +186,25 @@ def generate(topic: str) -> dict:
             max_tokens=4000,
             messages=[{"role": "user",
                        "content": PROMPT.format(topic=topic, site=SITE)}],
-            output_config={
-                "format": {
-                    "type": "json_schema",
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "title": {"type": "string"},
-                            "meta_description": {"type": "string"},
-                            "slug": {"type": "string"},
-                            "body_html": {"type": "string"},
-                        },
-                        "required": ["title", "meta_description", "slug", "body_html"],
-                        "additionalProperties": False,
-                    },
-                }
-            },
         )
     except anthropic.BadRequestError as e:
         if "credit balance" in str(e).lower():
             print("DORMANT: Anthropic credit balance is empty — top up to enable daily blogs.")
             sys.exit(3)
         raise
-    post = json.loads(msg.content[0].text.strip())
+    raw = msg.content[0].text.strip()
+    # Delimiter-based parsing (not JSON): the model's HTML body routinely
+    # contains unescaped quotes/braces that break naive JSON extraction.
+    sections = re.split(r"===(TITLE|META|SLUG|BODY|END)===", raw)
+    fields = {}
+    for i in range(1, len(sections) - 1, 2):
+        fields[sections[i]] = sections[i + 1].strip()
+    post = {
+        "title": fields.get("TITLE", ""),
+        "meta_description": fields.get("META", ""),
+        "slug": fields.get("SLUG", ""),
+        "body_html": fields.get("BODY", ""),
+    }
     for field in ("title", "meta_description", "slug", "body_html"):
         if not post.get(field):
             raise ValueError(f"model response missing {field}")
