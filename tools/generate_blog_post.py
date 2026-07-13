@@ -183,15 +183,29 @@ def generate(topic: str) -> dict:
             max_tokens=4000,
             messages=[{"role": "user",
                        "content": PROMPT.format(topic=topic, site=SITE)}],
+            output_config={
+                "format": {
+                    "type": "json_schema",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "meta_description": {"type": "string"},
+                            "slug": {"type": "string"},
+                            "body_html": {"type": "string"},
+                        },
+                        "required": ["title", "meta_description", "slug", "body_html"],
+                        "additionalProperties": False,
+                    },
+                }
+            },
         )
     except anthropic.BadRequestError as e:
         if "credit balance" in str(e).lower():
             print("DORMANT: Anthropic credit balance is empty — top up to enable daily blogs.")
             sys.exit(3)
         raise
-    raw = msg.content[0].text.strip()
-    start, end = raw.find("{"), raw.rfind("}")
-    post = json.loads(raw[start:end + 1])
+    post = json.loads(msg.content[0].text.strip())
     for field in ("title", "meta_description", "slug", "body_html"):
         if not post.get(field):
             raise ValueError(f"model response missing {field}")
