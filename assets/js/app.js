@@ -1,28 +1,12 @@
 /* Green Curve — Frontend App */
 
 const PER_PAGE   = 9;
-const PRIORITY_DOMAINS = ['climateactiontracker.org', 'carbontracker.org'];
 let _modalScrollCtrl = null; // tracks the active modal scroll listener so it can be cancelled on re-open
 let allPosts     = [];
 let filtered     = [];
 let page         = 1;
 let activeFilter = 'Daily Digest';
 let searchQuery  = '';
-
-function _normalizeSourceHost(value) {
-  if (!value) return '';
-  const text = String(value).trim().toLowerCase();
-  try {
-    return new URL(text).hostname.replace(/^www\./, '');
-  } catch {
-    return text.replace(/^www\./, '');
-  }
-}
-
-function isPrioritySource(post) {
-  const host = _normalizeSourceHost(post.link) || _normalizeSourceHost(post.source);
-  return PRIORITY_DOMAINS.some(domain => host === domain || host.endsWith('.' + domain));
-}
 
 /* DOM refs */
 const grid      = document.getElementById('posts-grid');
@@ -85,11 +69,11 @@ async function loadPosts() {
   try {
     const res  = await fetch('posts/index.json?t=' + Date.now());
     const data = await res.json();
-    const sorted = (data.posts || []).sort((a, b) => new Date(b.date) - new Date(a.date));
-    allPosts = [
-      ...sorted.filter(isPrioritySource),
-      ...sorted.filter(post => !isPrioritySource(post)),
-    ];
+    // Sort strictly by recency — a previous version pinned "priority domain"
+    // sources (Carbon Tracker, Climate Action Tracker) to the very front
+    // regardless of date, so once those sources went quiet the homepage
+    // looked frozen even as 100+ newer posts from other sources piled up.
+    allPosts = (data.posts || []).sort((a, b) => new Date(b.date) - new Date(a.date));
     statPosts.textContent = allPosts.length;
     buildBadges();
     applyFilter(activeFilter);
