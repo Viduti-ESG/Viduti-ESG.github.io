@@ -36,6 +36,7 @@ POSTS_DIR  = BASE_DIR / "posts"
 STATE_DIR  = BASE_DIR / ".climate_agent"          # gitignored
 FEED_PATH  = BASE_DIR / "feed.xml"
 INDEX_PATH = POSTS_DIR / "index.html"
+INDEX_JSON_PATH = POSTS_DIR / "index.json"
 SITE_URL   = "https://greencurve.solutions"
 MODEL      = "claude-sonnet-4-6"
 MAX_PER_RUN_DEFAULT = int(os.environ.get("GC_BLOG_MAX_PER_RUN", "2"))
@@ -360,6 +361,29 @@ def update_index(post: dict, pid: str, date_iso: str) -> None:
     INDEX_PATH.write_text(html.replace(marker, marker + card, 1), encoding="utf-8")
 
 
+def update_index_json(post: dict, item: dict, pid: str, date_iso: str) -> None:
+    """The homepage's "Latest Insights" widget (assets/js/app.js loadPosts())
+    reads posts/index.json, not posts/index.html — must stay in sync or new
+    posts never appear there even though the standalone pages publish fine."""
+    if INDEX_JSON_PATH.exists():
+        data = json.loads(INDEX_JSON_PATH.read_text(encoding="utf-8"))
+    else:
+        data = {"posts": []}
+    if any(p.get("id") == pid for p in data["posts"]):
+        return
+    data["posts"].insert(0, {
+        "id": pid,
+        "title": post["title"],
+        "date": date_iso,
+        "category": post.get("category", "ESG Intelligence"),
+        "source": item["source"],
+        "summary": post["summary"],
+        "link": item["link"],
+        "sections": post.get("sections", {}),
+    })
+    INDEX_JSON_PATH.write_text(json.dumps(data, indent=1, ensure_ascii=False), encoding="utf-8")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -394,6 +418,7 @@ def main() -> int:
         (POSTS_DIR / f"{pid}.html").write_text(page, encoding="utf-8")
         update_feed(post, pid, date_iso)
         update_index(post, pid, date_iso)
+        update_index_json(post, item, pid, date_iso)
         processed.add(item["link"])
         save_processed(processed)
         published.append(f"{SITE_URL}/posts/{pid}.html")
