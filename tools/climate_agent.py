@@ -180,6 +180,15 @@ def save_processed(processed: set):
 
 
 # ── Claude ─────────────────────────────────────────────────────────────────────
+def _parse_post_json(raw: str) -> dict:
+    """Extract the JSON object from a model reply, tolerating ```json fences."""
+    raw = re.sub(r"^\s*```(?:json)?|```\s*$", "", raw.strip()).strip()
+    start, end = raw.find("{"), raw.rfind("}")
+    if start == -1 or end == -1:
+        raise json.JSONDecodeError("no JSON object in model reply", raw or "", 0)
+    return json.loads(raw[start:end + 1])
+
+
 def write_post(item: dict, body: str) -> dict:
     key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not key:
@@ -203,7 +212,26 @@ def write_post(item: dict, body: str) -> dict:
             sys.exit(3)
         raise
     raw = msg.content[0].text.strip()
-    return json.loads(raw[raw.find("{"): raw.rfind("}") + 1])
+    try:
+        return _parse_post_json(raw)
+    except json.JSONDecodeError as e:
+        # The model occasionally emits an unescaped quote/newline inside a JSON
+        # string. Rather than lose the post (and, before this, the rest of the
+        # run), hand the broken text back and ask for a clean re-emit once.
+        print(f"  invalid JSON from model ({e}) — retrying once")
+        fix = client.messages.create(
+            model=MODEL, max_tokens=2500,
+            messages=[
+                {"role": "user", "content": user},
+                {"role": "assistant", "content": raw},
+                {"role": "user", "content":
+                 "That was not valid JSON — it failed to parse. Re-emit the same "
+                 "content as strictly valid JSON matching the schema. Escape every "
+                 "quote, backslash and newline inside string values. Output the "
+                 "JSON object only, with no text before or after it."},
+            ],
+        )
+        return _parse_post_json(fix.content[0].text.strip())
 
 
 # ── Rendering (format matches the 95 pre-June-12 posts) ───────────────────────
@@ -406,12 +434,21 @@ def main() -> int:
 
     published = []
     date_iso = datetime.now().strftime("%Y-%m-%d")
+    failures = 0
     for item in fresh[: args.max]:
         print(f"Writing: [{item['source']}] {item['title'][:80]}")
-        body = fetch_article_body(item["link"])
-        post = write_post(item, body)          # exits 3 if dormant
-        pid = f"{_slug(post['title'])}-{int(time.time())}"
-        page = render_post_page(post, item, pid, date_iso)
+        try:
+            body = fetch_article_body(item["link"])
+            post = write_post(item, body)      # SystemExit(3) if dormant — never caught here
+            pid = f"{_slug(post['title'])}-{int(time.time())}"
+            page = render_post_page(post, item, pid, date_iso)
+        except SystemExit:
+            raise                              # dormancy is fatal by design
+        except Exception as e:
+            # One malformed post must not take the rest of the run down with it.
+            failures += 1
+            print(f"  SKIPPED — {type(e).__name__}: {e}")
+            continue
         if args.dry_run:
             print(f"  DRY RUN — would publish posts/{pid}.html")
             continue
@@ -423,6 +460,9 @@ def main() -> int:
         save_processed(processed)
         published.append(f"{SITE_URL}/posts/{pid}.html")
         print(f"  Published: {published[-1]}")
+
+    if failures:
+        print(f"{failures} item(s) skipped after errors; {len(published)} published")
 
     if published:
         try:
