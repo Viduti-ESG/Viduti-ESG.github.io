@@ -4,7 +4,14 @@
  * submits to /api/generate-report, and displays the result.
  */
 
-const API_BASE = "https://3c4d2a163a29ba.lhr.life";
+// TUNNEL_BASE is auto-rewritten by start_brsr.py on every tunnel rotation. It is
+// ONLY used on the GitHub Pages mirror (viduti-esg.github.io), which has no
+// backend of its own. On greencurve.solutions the API is same-origin (nginx
+// routes /api/* to the on-box services), so API_BASE must stay "" there — a
+// tunnel URL here would send production traffic through a free localhost.run
+// tunnel. Host-aware so daemon commits can never break the production site.
+const TUNNEL_BASE = "https://3c4d2a163a29ba.lhr.life";
+const API_BASE = location.hostname.endsWith("github.io") ? TUNNEL_BASE : "";
 
 let formSchema   = null;
 let currentStep  = 0;
