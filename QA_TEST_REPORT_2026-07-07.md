@@ -74,6 +74,11 @@ The `is_cy` bug (C1) therefore currently corrupts only the **unpublished** v2 pi
 
 **Decision required (large, outward-facing, hard to reverse):** publish the corrected v2 scoring. This changes ~1,195 companies' public ESG scores (mean Δ≈1.5, max≈5.1). Recommended, but needs sign-off before deploy.
 
+## ✅ DEPLOYED TO PRODUCTION — 2026-07-07 (commit 8f0aeb72)
+- Pushed to GitHub → VM `git pull --ff-only` → DB backup → `chown www-data` → `migrate_to_db.py` (rebuilt DB, 1,221 updated) → deleted 6 stale case-variant rows (DB 1227 → 1,221) → restarted `greencurve-api`.
+- **Verified live via Cloudflare:** homepage 200; `/api/esg/stats` → `{total:1221, high:410, medium:425, low:386}`; SAIL page serves score 7.5/High with "Waste Recovered → Not disclosed" (mass-balance guard live).
+- **Owner call:** `RECOVERY_MAX_FACTOR` set to 1.001 — zero companies can display recovered > generated.
+
 ## Fix status (code — DONE)
 - ✅ C1 `is_cy` fixed; verified: SAIL waste_recovered 29.74M → 15.37M (exact XBRL); impossible recovered>generated 517 → 44 (residual = genuine source inconsistencies, now nulled by `clean_recovery`).
 - ✅ M1 scores rounded (658 → 0 unrounded).
