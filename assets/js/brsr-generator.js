@@ -4,7 +4,7 @@
  * submits to /api/generate-report, and displays the result.
  */
 
-const API_BASE = "";
+const API_BASE = "https://3c4d2a163a29ba.lhr.life";
 
 let formSchema   = null;
 let currentStep  = 0;
