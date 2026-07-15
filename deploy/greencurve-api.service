@@ -8,7 +8,11 @@ User=www-data
 Group=www-data
 WorkingDirectory=/var/www/greencurve
 EnvironmentFile=/var/www/greencurve/.env
-ExecStart=/var/www/greencurve/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2
+# --proxy-headers + --forwarded-allow-ips pins the trusted proxy hop to the local
+# nginx only, so client IPs used by the app's rate limiters come from nginx's
+# X-Forwarded-For (real visitor IP via CF-Connecting-IP) and cannot be forged by
+# a client setting its own XFF header.
+ExecStart=/var/www/greencurve/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips 127.0.0.1
 Restart=always
 RestartSec=5
 StandardOutput=journal
@@ -18,6 +22,12 @@ SyslogIdentifier=greencurve-api
 # Security hardening
 NoNewPrivileges=true
 PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
 
 [Install]
 WantedBy=multi-user.target
