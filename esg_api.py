@@ -419,10 +419,13 @@ def admin_blog_generate(_=Depends(require_admin)):
 # the users table from this DB. free = 14-day trial window + weekly caps;
 # admin can extend any account's window to 25 days (from signup) in one click.
 
+INTERNAL_EMAIL_DOMAIN = "greencurve.solutions"
+
+
 def _plan_row(conn, email: str):
     row = conn.execute(
-        "SELECT id, email, name, org, plan, role, created_at, free_tier_expires_at "
-        "FROM users WHERE email=?", (email.strip().lower(),)
+        "SELECT id, email, name, org, plan, role, created_at, free_tier_expires_at, "
+        "plan_expires_at FROM users WHERE email=?", (email.strip().lower(),)
     ).fetchone()
     if not row:
         raise HTTPException(404, "No account with that email")
@@ -440,18 +443,51 @@ def _plan_payload(row) -> dict:
             effective = (dt + timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")
         except ValueError:
             effective = None
+    email = row["email"] or ""
+    internal = email.lower().endswith("@" + INTERNAL_EMAIL_DOMAIN)
+    plan_end = row["plan_expires_at"]
+    lapsed = False
+    if plan_end and (row["plan"] or "free") == "paid":
+        try:
+            lapsed = datetime.utcnow() > datetime.fromisoformat(plan_end.replace(" ", "T"))
+        except ValueError:
+            pass
     return {
-        "email": row["email"], "name": row["name"], "org": row["org"],
-        "plan": row["plan"] or "free", "role": row["role"],
+        "email": email, "name": row["name"], "org": row["org"],
+        "plan": "internal" if internal else (row["plan"] or "free"),
+        "role": row["role"],
         "created_at": created,
         "free_tier_expires_at": effective,
         "free_tier_extended": bool(explicit),
+        # Staff accounts are uncapped regardless of the stored plan column.
+        "internal": internal,
+        "plan_expires_at": plan_end,
+        "plan_lapsed": lapsed,
     }
 
 
 class PlanIn(BaseModel):
     email: str
     plan: str = ""
+    # Paid end date: "YYYY-MM-DD" (or full timestamp) to set one, "" to leave the
+    # existing value untouched, "never" to clear it (open-ended paid plan).
+    expires_at: str = ""
+
+
+def _parse_plan_expiry(raw: str) -> str | None:
+    """'' → keep existing (caller handles), 'never' → None, else a stored timestamp.
+    A bare date means end-of-day, so 'paid until 2027-01-13' includes the 13th."""
+    from datetime import datetime
+    s = (raw or "").strip()
+    if s.lower() == "never":
+        return None
+    try:
+        dt = datetime.fromisoformat(s.replace(" ", "T"))
+    except ValueError:
+        raise HTTPException(400, "expires_at must be YYYY-MM-DD, a timestamp, or 'never'")
+    if dt.hour == 0 and dt.minute == 0 and dt.second == 0:
+        dt = dt.replace(hour=23, minute=59, second=59)
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 @router.get("/api/admin/users/plan")
@@ -482,7 +518,16 @@ def admin_set_plan(body: PlanIn, _=Depends(require_admin)):
         raise HTTPException(400, "plan must be 'free' or 'paid'")
     with get_conn() as conn:
         row = _plan_row(conn, body.email)
-        conn.execute("UPDATE users SET plan=? WHERE id=?", (body.plan, row["id"]))
+        if body.plan == "free":
+            # Downgrading clears any subscription end date so a later Set Paid with
+            # no date doesn't silently inherit the old (expired) one.
+            conn.execute("UPDATE users SET plan='free', plan_expires_at=NULL WHERE id=?",
+                         (row["id"],))
+        elif body.expires_at.strip():
+            conn.execute("UPDATE users SET plan='paid', plan_expires_at=? WHERE id=?",
+                         (_parse_plan_expiry(body.expires_at), row["id"]))
+        else:
+            conn.execute("UPDATE users SET plan='paid' WHERE id=?", (row["id"],))
         return _plan_payload(_plan_row(conn, body.email))
 
 

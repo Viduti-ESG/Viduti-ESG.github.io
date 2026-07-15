@@ -68,8 +68,20 @@
                onkeydown="if(event.key==='Enter')lookupPlan()"/>
         <button class="admin-btn admin-btn--ghost" onclick="lookupPlan()">Look up</button>
         <button class="admin-btn admin-btn--primary" onclick="extendFreeTier()">Extend free tier → 25 days</button>
-        <button class="admin-btn admin-btn--ghost" onclick="setPlan('paid')">Set Paid</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
+        <label for="plan-until" style="font-size:.85rem;color:var(--text-70)">Paid until</label>
+        <input class="admin-search" id="plan-until" type="date" style="max-width:170px"/>
+        <button class="admin-btn admin-btn--ghost" onclick="planPreset(1)">+1 mo</button>
+        <button class="admin-btn admin-btn--ghost" onclick="planPreset(3)">+3 mo</button>
+        <button class="admin-btn admin-btn--ghost" onclick="planPreset(6)">+6 mo</button>
+        <button class="admin-btn admin-btn--ghost" onclick="planPreset(12)">+12 mo</button>
+        <button class="admin-btn admin-btn--ghost" onclick="planPreset(0)">No end date</button>
+        <button class="admin-btn admin-btn--primary" onclick="setPlan('paid')">Set Paid</button>
         <button class="admin-btn admin-btn--ghost" onclick="setPlan('free')">Set Free</button>
+      </div>
+      <div style="margin-top:6px;font-size:.78rem;color:var(--text-70)">
+        Blank date = open-ended paid plan. Staff on @greencurve.solutions are always uncapped.
       </div>
       <div id="plan-result" style="margin-top:10px;font-size:.85rem;color:#475569"></div>
     </div>
@@ -198,15 +210,36 @@ function _planEmail() {
   return v;
 }
 function _renderPlan(d) {
-  const badge = d.plan === 'paid'
-    ? '<span style="color:#149256;font-weight:700">PAID</span>'
-    : '<span style="color:#b45309;font-weight:700">FREE</span>';
+  const badges = {
+    internal: '<span style="color:#149256;font-weight:700">STAFF · UNCAPPED</span>',
+    paid:     '<span style="color:#149256;font-weight:700">PAID</span>',
+    free:     '<span style="color:#b45309;font-weight:700">FREE</span>',
+  };
+  let tail;
+  if (d.internal) {
+    tail = ' · no usage cap (company domain)';
+  } else if (d.plan === 'paid') {
+    tail = d.plan_expires_at
+      ? ` · paid until <b>${d.plan_expires_at.slice(0, 10)}</b>` +
+        (d.plan_lapsed ? ' <span style="color:#b91c1c;font-weight:700">(LAPSED)</span>' : '')
+      : ' · no end date';
+  } else {
+    tail = ` · free tier ends <b>${d.free_tier_expires_at || '?'}</b>` +
+           (d.free_tier_extended ? ' (extended)' : ' (default 14d)');
+  }
   document.getElementById('plan-result').innerHTML =
-    `<b>${d.name}</b> &lt;${d.email}&gt; — plan: ${badge}` +
-    ` · signed up ${d.created_at || '?'}` +
-    (d.plan === 'paid' ? '' :
-      ` · free tier ends <b>${d.free_tier_expires_at || '?'}</b>` +
-      (d.free_tier_extended ? ' (extended)' : ' (default 14d)'));
+    `<b>${d.name}</b> &lt;${d.email}&gt; — plan: ${badges[d.plan] || badges.free}` +
+    ` · signed up ${d.created_at || '?'}` + tail;
+  // Reflect the stored end date so Set Paid re-submits it rather than wiping it.
+  document.getElementById('plan-until').value = d.plan_expires_at ? d.plan_expires_at.slice(0, 10) : '';
+}
+/* n months from today; 0 = clear the field (open-ended paid plan). */
+function planPreset(months) {
+  const el = document.getElementById('plan-until');
+  if (!months) { el.value = ''; return; }
+  const d = new Date();
+  d.setMonth(d.getMonth() + months);
+  el.value = d.toISOString().slice(0, 10);
 }
 async function lookupPlan() {
   const email = _planEmail(); if (!email) return;
@@ -223,10 +256,17 @@ async function extendFreeTier() {
 }
 async function setPlan(plan) {
   const email = _planEmail(); if (!email) return;
+  // An empty date field is an explicit choice here (open-ended), so send 'never'
+  // rather than '' — '' means "leave whatever is stored alone".
+  const until = document.getElementById('plan-until').value.trim();
+  const body  = plan === 'paid' ? { email, plan, expires_at: until || 'never' } : { email, plan };
   try {
-    _renderPlan(await adminFetch('/api/admin/users/set-plan',
-      { method: 'POST', body: JSON.stringify({ email, plan }) }));
-    toast('Plan set to ' + plan, 'ok');
+    const d = await adminFetch('/api/admin/users/set-plan',
+      { method: 'POST', body: JSON.stringify(body) });
+    _renderPlan(d);
+    toast(plan === 'paid'
+      ? 'Plan set to paid' + (until ? ' until ' + until : ' (no end date)')
+      : 'Plan set to free', 'ok');
   } catch (e) { toast(e.message || 'Update failed', 'error'); }
 }
 </script>

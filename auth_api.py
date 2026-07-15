@@ -47,6 +47,12 @@ SECRET_KEY = _jwt_secret_env
 ALGORITHM  = "HS256"
 TOKEN_DAYS = 7
 
+# Staff accounts on the company domain get uncapped AI (see gcai's _user_plan), so
+# the domain has to be unforgeable. Registration here does NOT verify that the
+# caller owns the address, so self-signup on the domain is refused outright: the
+# only way an @greencurve.solutions account can exist is if an admin creates it.
+INTERNAL_EMAIL_DOMAIN = "greencurve.solutions"
+
 router  = APIRouter()
 bearer  = HTTPBearer(auto_error=False)
 
@@ -142,6 +148,12 @@ def require_admin(user=Depends(get_current_user)):
 @router.post("/api/auth/register", status_code=201)
 def register(request: Request, body: RegisterIn):
     _check_login_rate(request)   # same per-IP limiter — throttle mass registration
+    if body.email.lower().strip().endswith("@" + INTERNAL_EMAIL_DOMAIN):
+        raise HTTPException(
+            403,
+            "Green Curve staff accounts are provisioned by your administrator. "
+            "Contact neha@greencurve.solutions to have one created.",
+        )
     if len(body.password) < 8:
         raise HTTPException(400, "Password must be at least 8 characters")
     if len(body.password.encode()) > 72:   # bcrypt silently truncates beyond 72 bytes

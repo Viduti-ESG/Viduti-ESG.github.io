@@ -166,6 +166,11 @@ def init_db() -> None:
             conn.execute("ALTER TABLE users ADD COLUMN plan TEXT DEFAULT 'free'")
         if "free_tier_expires_at" not in ucols:
             conn.execute("ALTER TABLE users ADD COLUMN free_tier_expires_at DATETIME")
+        # plan_expires_at NULL on a paid account = open-ended (no end date). A past
+        # timestamp = subscription lapsed; gcai then refuses the AI endpoints rather
+        # than silently dropping the account back to the (long-expired) free trial.
+        if "plan_expires_at" not in ucols:
+            conn.execute("ALTER TABLE users ADD COLUMN plan_expires_at DATETIME")
 
         # XBRL content-upgrade columns (bottlenecks / benchmarks / hard S&E metrics).
         # Added to pre-existing prod DBs via ALTER; new DBs get them from CREATE above.
