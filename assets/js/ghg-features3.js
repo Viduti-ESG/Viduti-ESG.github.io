@@ -102,10 +102,16 @@ function renderSBTiReadiness() {
   if (totals.total <= 0) return;
 
   const baseYear = new Date().getFullYear();
-  const t2030 = +(totals.total * Math.pow(1 - 0.042, 2030 - baseYear)).toFixed(2);
+  // Guard the 2030 near-term pathway: once the base year reaches or passes 2030
+  // the "reduce by 2030" horizon is gone, so dividing by (2030 - baseYear) would
+  // be a divide-by-zero (Infinity) or a negative, and any number shown would be
+  // meaningless. Flag that case and prompt for a fresh near-term horizon instead.
+  const yearsTo2030 = 2030 - baseYear;
+  const targetPassed = yearsTo2030 <= 0;
+  const t2030 = +(totals.total * Math.pow(1 - 0.042, Math.max(0, yearsTo2030))).toFixed(2);
   const t2050 = +(totals.total * 0.10).toFixed(2);
   const reductionNeeded2030 = +((totals.total - t2030)).toFixed(2);
-  const annualReduction = +(reductionNeeded2030 / (2030 - baseYear)).toFixed(2);
+  const annualReduction = targetPassed ? 0 : +(reductionNeeded2030 / yearsTo2030).toFixed(2);
 
   // Readiness checklist
   const hasS1 = totals.s1 > 0;
@@ -115,7 +121,7 @@ function renderSBTiReadiness() {
     { label: 'Scope 1 measured', ok: hasS1 },
     { label: 'Scope 2 measured', ok: hasS2 },
     { label: 'Scope 3 measured (recommended)', ok: hasS3 },
-    { label: '2030 target calculated', ok: true },
+    { label: targetPassed ? 'Near-term target set' : '2030 target calculated', ok: !targetPassed },
     { label: 'Base year established', ok: true },
   ];
   const readyCount = readinessItems.filter(i => i.ok).length;
@@ -124,9 +130,11 @@ function renderSBTiReadiness() {
   el.innerHTML = `
     <div class="sbti-grid">
       <div class="sbti-card">
-        <div class="sbti-val">${t2030} t CO2e</div>
+        <div class="sbti-val">${targetPassed ? '—' : t2030 + ' t CO2e'}</div>
         <div class="sbti-lbl">Near-term target (2030)</div>
-        <div class="sbti-desc">${((1 - t2030/totals.total)*100).toFixed(0)}% absolute reduction<br>vs ${baseYear} baseline · 4.2%/yr</div>
+        <div class="sbti-desc">${targetPassed
+          ? '2030 horizon reached — set a new near-term target (e.g. 2035)'
+          : `${((1 - t2030/totals.total)*100).toFixed(0)}% absolute reduction<br>vs ${baseYear} baseline · 4.2%/yr`}</div>
       </div>
       <div class="sbti-card">
         <div class="sbti-val">${t2050} t CO2e</div>
@@ -135,7 +143,9 @@ function renderSBTiReadiness() {
       </div>
     </div>
     <div class="sbti-card" style="margin-bottom:10px">
-      <div class="sbti-lbl" style="margin-bottom:6px">Annual reduction required: <strong style="color:#065f46">${annualReduction} t CO2e/year</strong> (${reductionNeeded2030} t total by 2030)</div>
+      <div class="sbti-lbl" style="margin-bottom:6px">${targetPassed
+        ? 'The 2030 near-term target year has been reached — set a new near-term horizon to recalculate the annual pathway.'
+        : `Annual reduction required: <strong style="color:#065f46">${annualReduction} t CO2e/year</strong> (${reductionNeeded2030} t total by 2030)`}</div>
       <div style="height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
         <div style="height:100%;width:${readyPct}%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:3px"></div>
       </div>

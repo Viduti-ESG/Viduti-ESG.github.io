@@ -3141,7 +3141,10 @@ function renderESGEvents() {
 
 function _applyEventsRender(el) {
   const watchlist = _WL.list();
-  let events = (_ESG_EVENTS.events || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  // Coerce the sort key so a null/missing date can't throw and blank the whole tab;
+  // undated events fall to the bottom of the descending sort.
+  let events = (_ESG_EVENTS.events || []).slice()
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
 
   // Apply filters
   if (_evFilter.cat !== 'All')    events = events.filter(e => e.category === _evFilter.cat);

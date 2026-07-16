@@ -221,9 +221,11 @@ def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
 # ── Pydantic models ────────────────────────────────────────────────────────────
 
 class CCTSRequest(BaseModel):
-    company_name:    str
-    sector:          str = ""
-    products:        str = ""
+    # Length caps bound any prompt-injection payload in free-text fields that are
+    # interpolated into the LLM prompt (defense-in-depth; see review finding 4).
+    company_name:    str = Field(..., max_length=200)
+    sector:          str = Field("", max_length=120)
+    products:        str = Field("", max_length=1000)
     scope1_emissions: Optional[float] = None
     scope2_emissions: Optional[float] = None
     brsr_assurance:  str = "None"
@@ -234,8 +236,8 @@ class CCTSRequest(BaseModel):
 
 
 class TCFDRequest(BaseModel):
-    company_name:          str
-    sector:                str = ""
+    company_name:          str = Field(..., max_length=200)
+    sector:                str = Field("", max_length=120)
     scope1_emissions:      Optional[float] = None
     scope2_emissions:      Optional[float] = None
     scope3_emissions:      Optional[float] = None
@@ -247,8 +249,8 @@ class TCFDRequest(BaseModel):
 
 
 class EPRRequest(BaseModel):
-    stream:        str            # plastic | ewaste | battery | tyre
-    category:      str = ""       # human-readable category label
+    stream:        str = Field(..., max_length=40)   # plastic | ewaste | battery | tyre
+    category:      str = Field("", max_length=200)    # human-readable category label
     qty_tonnes:    float          # quantity placed on market (t/yr)
     target_pct:    float          # recycling/collection target (%)
     done_tonnes:   float = 0.0    # already collected/recycled (t)
@@ -556,10 +558,10 @@ Sections to include (tailor to the company context provided):
 
 
 class DigestRequest(BaseModel):
-    email:          str
-    company_name:   str = ""
-    sector:         str = ""
-    watchlist:      list[str] = []
+    email:          str = Field(..., max_length=254)
+    company_name:   str = Field("", max_length=200)
+    sector:         str = Field("", max_length=120)
+    watchlist:      list[str] = Field(default_factory=list, max_length=50)
     esg_risk_score: Optional[float] = None
     week_of:        str = ""  # ISO date string
 
