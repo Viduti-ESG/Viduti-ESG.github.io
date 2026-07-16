@@ -228,11 +228,11 @@ class CCTSRequest(BaseModel):
     products:        str = Field("", max_length=1000)
     scope1_emissions: Optional[float] = None
     scope2_emissions: Optional[float] = None
-    brsr_assurance:  str = "None"
+    brsr_assurance:  str = Field("None", max_length=50)
     compliance_risk: Optional[float] = None
     ghg_intensity:   Optional[float] = None
     revenue_crore:   Optional[float] = None
-    esg_targets:     list[dict] = []
+    esg_targets:     list[dict] = Field(default_factory=list, max_length=20)
 
 
 class TCFDRequest(BaseModel):
@@ -241,11 +241,11 @@ class TCFDRequest(BaseModel):
     scope1_emissions:      Optional[float] = None
     scope2_emissions:      Optional[float] = None
     scope3_emissions:      Optional[float] = None
-    brsr_assurance:        str = "None"
+    brsr_assurance:        str = Field("None", max_length=50)
     compliance_risk:       Optional[float] = None
     governance_risk:       Optional[float] = None
-    anti_corruption_policy: str = "Unknown"
-    esg_targets:           list[dict] = []
+    anti_corruption_policy: str = Field("Unknown", max_length=50)
+    esg_targets:           list[dict] = Field(default_factory=list, max_length=20)
 
 
 class EPRRequest(BaseModel):
@@ -257,7 +257,7 @@ class EPRRequest(BaseModel):
     shortfall_t:   float = 0.0    # tonnes still to cover
     cost_inr:      float = 0.0    # indicative procurement cost (₹)
     ec_inr:        float = 0.0    # indicative environmental compensation if unaddressed (₹)
-    fy:            str = ""
+    fy:            str = Field("", max_length=20)
 
 
 class NLQueryRequest(BaseModel):
@@ -309,7 +309,7 @@ BRSR assurance level: {payload.brsr_assurance}
 Compliance risk score: {payload.compliance_risk or 'N/A'} / 10
 GHG intensity score: {payload.ghg_intensity or 'N/A'} / 10
 Revenue: {payload.revenue_crore or 'N/A'} crore INR
-ESG targets: {json.dumps([t.get('metric','') for t in payload.esg_targets[:5]])}"""
+ESG targets: {json.dumps([str(t.get('metric',''))[:100] for t in payload.esg_targets[:5]])}"""
 
     try:
         return _ask_json(HAIKU, CCTS_SYSTEM, data_summary, max_tokens=700)
@@ -395,7 +395,7 @@ Mark 'disclosed' only when there is strong evidence. Mark 'partial' when signal 
 @router.post("/tcfd-gap")
 async def tcfd_gap(request: Request, payload: TCFDRequest):
     _rate_limit(request, limit=30)
-    targets_str = ", ".join([t.get("metric", "") for t in payload.esg_targets[:5]]) or "None"
+    targets_str = ", ".join([str(t.get("metric", ""))[:100] for t in payload.esg_targets[:5]]) or "None"
     data_summary = f"""Company: {payload.company_name}
 Sector: {payload.sector}
 Scope 1: {payload.scope1_emissions or 'Not disclosed'} tCO2e
@@ -563,7 +563,7 @@ class DigestRequest(BaseModel):
     sector:         str = Field("", max_length=120)
     watchlist:      list[str] = Field(default_factory=list, max_length=50)
     esg_risk_score: Optional[float] = None
-    week_of:        str = ""  # ISO date string
+    week_of:        str = Field("", max_length=20)  # ISO date string
 
 
 @router.post("/generate-digest")
@@ -573,7 +573,7 @@ async def generate_digest(request: Request, payload: DigestRequest):
 Company: {payload.company_name or 'Not specified'}
 Sector: {payload.sector or 'Not specified'}
 ESG Risk Score: {payload.esg_risk_score or 'Not provided'} / 10
-Watchlist companies: {', '.join(payload.watchlist[:10]) or 'None set'}
+Watchlist companies: {', '.join(w[:100] for w in payload.watchlist[:10]) or 'None set'}
 Week of: {payload.week_of or 'Current week'}"""
 
     try:
