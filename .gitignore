@@ -3,6 +3,8 @@ build/
 
 # Local env / runtime
 .env
+.env.*
+!.env.example
 *.log
 greencurve.db
 greencurve.db-wal
