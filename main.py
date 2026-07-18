@@ -53,6 +53,7 @@ from alerts_api import router as alerts_router
 from benchmark_api import router as benchmark_router
 from search_api import router as search_router
 from booking_api import router as booking_router
+from ctap_api import router as ctap_router
 # Marketplace deferred to a future phase (legal/e-commerce regime not yet set up:
 # CP E-Commerce Rules 2020, GST TCS / GSTR-8, FSSAI organic, intermediary safe-harbour).
 # Code is preserved; re-enable this import and the lines below when ready to launch.
@@ -99,6 +100,7 @@ app.include_router(alerts_router)
 app.include_router(benchmark_router)
 app.include_router(search_router)
 app.include_router(booking_router)
+app.include_router(ctap_router)
 # app.include_router(marketplace_router)  # deferred — see note above
 
 # Serve static HTML/CSS/JS — must come AFTER API routes
@@ -114,7 +116,7 @@ HTML_FILES = [
     "analytics", "ccts", "esg-intelligence", "ghg-profile",
     "learn", "login", "methodology", "pricing", "privacy-policy", "supplier-form",
     "tcfd-checker", "tcfd", "terms-of-use", "value-chain", "data-room", "brsr-workspace", "team", "alerts", "benchmark", "search",
-    "bookings", "booking-admin", "booking-legal",
+    "bookings", "booking-admin", "booking-legal", "ctap",
     # "marketplace", "seller-dashboard", "marketplace-admin",  # deferred — see note above
 ]
 

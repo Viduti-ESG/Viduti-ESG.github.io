@@ -142,6 +142,7 @@ NAV = """
           <li><a href="/calculator">GHG Calculator</a></li>
           <li><a href="/data-baseline">Data Baseline Wizard <span class="nav-new">NEW</span></a></li>
           <li><a href="/value-chain">Value Chain / Scope 3</a></li>
+          <li><a href="/ctap">Climate Transition Plan <span class="nav-new">NEW</span></a></li>
           <li><a href="/learn">Carbon Literacy</a></li>
           <li><a href="/compliance-calendar">Compliance Calendar <span class="nav-new">NEW</span></a></li>
         </ul>
@@ -176,6 +177,7 @@ NAV = """
         <ul class="nav__dropdown">
           <li><a href="/data-room">ESG Data Room <span class="nav-new">NEW</span></a></li>
           <li><a href="/brsr-workspace">BRSR Workspace <span class="nav-new">NEW</span></a></li>
+          <li><a href="/ctap">Climate Transition Plan <span class="nav-new">NEW</span></a></li>
           <li><a href="/team">Team &amp; Collaboration <span class="nav-new">NEW</span></a></li>
           <li><a href="/alerts">ESG Alerts <span class="nav-new">NEW</span></a></li>
         </ul>
@@ -206,6 +208,7 @@ NAV = """
     <a href="/calculator">GHG Calculator</a>
     <a href="/data-baseline">Data Baseline Wizard</a>
     <a href="/value-chain">Value Chain / Scope 3</a>
+    <a href="/ctap">Climate Transition Plan</a>
     <a href="/learn">Carbon Literacy</a>
     <a href="/compliance-calendar">Compliance Calendar</a>
   </div>
@@ -234,6 +237,7 @@ NAV = """
     <div class="nav__mobile-label">Workspace</div>
     <a href="/data-room">ESG Data Room</a>
     <a href="/brsr-workspace">BRSR Workspace</a>
+    <a href="/ctap">Climate Transition Plan</a>
     <a href="/team">Team &amp; Collaboration</a>
     <a href="/alerts">ESG Alerts</a>
   </div>

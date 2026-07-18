@@ -61,6 +61,7 @@ CANONICAL_HEADER = '''<header class="site-header" id="site-header">
           <li><a href="/calculator">GHG Calculator</a></li>
           <li><a href="/data-baseline">Data Baseline Wizard <span class="nav-new">NEW</span></a></li>
           <li><a href="/value-chain">Value Chain / Scope 3</a></li>
+          <li><a href="/ctap">Climate Transition Plan <span class="nav-new">NEW</span></a></li>
           <li><a href="/learn">Carbon Literacy</a></li>
           <li><a href="/compliance-calendar">Compliance Calendar <span class="nav-new">NEW</span></a></li>
         </ul>
@@ -95,6 +96,7 @@ CANONICAL_HEADER = '''<header class="site-header" id="site-header">
         <ul class="nav__dropdown">
           <li><a href="/data-room">ESG Data Room <span class="nav-new">NEW</span></a></li>
           <li><a href="/brsr-workspace">BRSR Workspace <span class="nav-new">NEW</span></a></li>
+          <li><a href="/ctap">Climate Transition Plan <span class="nav-new">NEW</span></a></li>
           <li><a href="/team">Team &amp; Collaboration <span class="nav-new">NEW</span></a></li>
           <li><a href="/alerts">ESG Alerts <span class="nav-new">NEW</span></a></li>
         </ul>
@@ -125,6 +127,7 @@ CANONICAL_MOBILE = '''<!-- Mobile nav overlay -->
     <a href="/calculator">GHG Calculator</a>
     <a href="/data-baseline">Data Baseline Wizard</a>
     <a href="/value-chain">Value Chain / Scope 3</a>
+    <a href="/ctap">Climate Transition Plan</a>
     <a href="/learn">Carbon Literacy</a>
     <a href="/compliance-calendar">Compliance Calendar</a>
   </div>
@@ -153,6 +156,7 @@ CANONICAL_MOBILE = '''<!-- Mobile nav overlay -->
     <div class="nav__mobile-label">Workspace</div>
     <a href="/data-room">ESG Data Room</a>
     <a href="/brsr-workspace">BRSR Workspace</a>
+    <a href="/ctap">Climate Transition Plan</a>
     <a href="/team">Team &amp; Collaboration</a>
     <a href="/alerts">ESG Alerts</a>
   </div>
@@ -197,14 +201,14 @@ def find_block(text: str, start_pat: str, open_tag: str, close_tag: str) -> tupl
 
 
 def bump_assets(text: str) -> tuple[str, bool]:
-    """Cache-bust rebranded logo + favicons; normalize style.css to v6."""
+    """Cache-bust rebranded logo + favicons; normalize style.css to v7."""
     orig = text
     # logo-nav.png (nav) and logo.png / logo-transparent.png (footers, og excluded)
     text = re.sub(r'((?:src|href)="[./]*assets/img/(?:logo-nav|logo|logo-transparent)\.png)(\?v=\d+)?"',
                   r'\1?v=2"', text)
     text = re.sub(r'(href="[./]*assets/img/(?:favicon(?:-16|-32)?\.(?:png|ico|svg)|apple-touch-icon\.png))(\?v=\d+)?"',
                   r'\1?v=2"', text)
-    text = re.sub(r'(href="[./]*assets/css/style\.css)(\?v=\d+)?"', r'\1?v=6"', text)
+    text = re.sub(r'(href="[./]*assets/css/style\.css)(\?v=\d+)?"', r'\1?v=7"', text)
     return text, text != orig
 
 

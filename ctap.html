@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Climate Transition Plan (CTAP) — Green Curve</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Build a framework-aligned Climate Transition Action Plan (CTAP) from your own BRSR data — structured on the TPT / IFRS S2 framework, reviewed by Green Curve before release." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=7" />
+  <link rel="icon" href="/assets/img/logo.png?v=2" type="image/png" />
+  <style>
+    :root { --gc-green:#1f7a4d; --gc-green-dark:#155e3a; --gc-line:#e3e8e3; }
+    .wrap { max-width:1080px; margin:0 auto; padding:28px 20px 90px; }
+    h1 { font-family:'DM Serif Display',serif; }
+    .panel { background:#fff; border:1px solid var(--gc-line); border-radius:12px; padding:22px; margin-bottom:22px; }
+    .panel h2 { margin-top:0; font-size:1.12rem; color:#12331f; }
+    label { display:block; font-size:.82rem; font-weight:600; color:#456; margin:10px 0 4px; }
+    input, textarea, select { width:100%; padding:9px 11px; border:1px solid var(--gc-line); border-radius:8px; font-size:.92rem; font-family:inherit; box-sizing:border-box; }
+    textarea { min-height:64px; resize:vertical; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; }
+    .row > div { flex:1; min-width:160px; }
+    .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:600; border:none; cursor:pointer; font-size:.94rem; }
+    .btn-primary { background:var(--gc-green); color:#fff; }
+    .btn-primary:hover { background:var(--gc-green-dark); }
+    .btn-sm { padding:6px 12px; font-size:.82rem; }
+    .btn-ghost { background:#fff; border:1px solid var(--gc-green); color:var(--gc-green); }
+    .btn-ghost:hover { background:#f2f9f4; }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .msg { padding:10px 14px; border-radius:8px; margin:0 0 16px; font-size:.9rem; display:none; }
+    .msg.show { display:block; }
+    .msg.error { background:#fde8e8; color:#b42318; }
+    .msg.success { background:#e3f5e9; color:#1f7a4d; }
+    .hidden { display:none !important; }
+    [hidden] { display:none !important; }
+    .disclaimer { background:#fff8e6; border:1px solid #f0d98a; border-radius:8px; padding:11px 15px; font-size:.82rem; color:#7a5a00; margin-bottom:18px; line-height:1.5; }
+    .pill { font-size:.68rem; padding:3px 10px; border-radius:20px; font-weight:700; text-transform:capitalize; letter-spacing:.02em; }
+    .pill.draft { background:#eef1f4; color:#5a6b7b; }
+    .pill.submitted, .pill.in_review { background:#fff3e0; color:#b06a00; }
+    .pill.changes_requested { background:#fde8e8; color:#b42318; }
+    .pill.released { background:#e3f5e9; color:#1f7a4d; }
+    /* draft cards */
+    .rgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
+    .rcard { border:1px solid var(--gc-line); border-radius:10px; padding:14px; position:relative; transition:box-shadow .15s; background:#fff; }
+    .rcard:hover { box-shadow:0 4px 14px rgba(0,0,0,.07); }
+    .rcard h4 { margin:0 0 4px; font-size:.98rem; color:#12331f; }
+    .rmeta { font-size:.76rem; color:#789; margin-top:6px; }
+    .rcard-actions { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+    .rdel { background:none; border:none; color:#b08; opacity:.6; cursor:pointer; font-size:.78rem; padding:0; }
+    .rdel:hover { opacity:1; color:#b42318; }
+    /* form sections */
+    .fsec { border-top:1px solid var(--gc-line); padding-top:16px; margin-top:20px; }
+    .fsec:first-of-type { border-top:none; padding-top:4px; margin-top:6px; }
+    .fsec h3 { font-size:1.02rem; color:#12331f; margin:0 0 3px; }
+    .fsec .fsec-note { font-size:.78rem; color:#789; margin:0 0 8px; }
+    .prov { font-size:.66rem; font-weight:700; padding:1px 7px; border-radius:5px; margin-left:7px; vertical-align:middle; letter-spacing:.03em; }
+    .prov.BRSR { background:#e3f0fb; color:#1c5aa8; }
+    .prov.SBTi { background:#efe7fb; color:#6b3fb0; }
+    .prov.ASK  { background:#eef1f4; color:#5a6b7b; }
+    /* preview */
+    #previewBox { font-size:.9rem; line-height:1.6; color:#243; }
+    #previewBox h3 { color:#12331f; font-size:1rem; margin:16px 0 6px; }
+    #previewBox .pv-item { margin:2px 0; }
+    #previewBox .pv-gap { color:#b42318; font-family:ui-monospace,monospace; font-size:.82rem; }
+    #previewBox .pv-prov { color:#8a9; font-size:.78rem; }
+    .gapchip { display:inline-block; background:#fde8e8; color:#b42318; border-radius:6px; padding:2px 9px; font-size:.76rem; font-family:ui-monospace,monospace; margin:3px 5px 0 0; }
+    .note-banner { border-radius:8px; padding:11px 15px; font-size:.86rem; margin-bottom:14px; }
+    .note-banner.changes { background:#fde8e8; color:#8a2318; border:1px solid #f3c2be; }
+    .note-banner.released { background:#e3f5e9; color:#155e3a; border:1px solid #bfe3cd; }
+    a.inline { color:var(--gc-green); font-weight:600; text-decoration:none; }
+    /* branded hero (matches brsr-workspace / compliance-calendar) */
+    .dr-hero { background:var(--void); padding:64px 0 38px; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+    .dr-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(52,211,153,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .dr-hero__orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); width:480px; height:480px; background:radial-gradient(circle,rgba(52,211,153,.14) 0%,transparent 65%); top:-180px; right:-80px; }
+    .dr-hero__content { position:relative; }
+    .dr-hero__back { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; font-weight:500; color:var(--text-70); border:1px solid var(--border-hi); border-radius:100px; padding:6px 16px; transition:all .2s; margin-bottom:22px; }
+    .dr-hero__back:hover { color:var(--emerald); border-color:rgba(52,211,153,.4); }
+    .dr-hero__eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--emerald); margin-bottom:16px; padding:5px 14px; background:rgba(52,211,153,.06); border:1px solid rgba(52,211,153,.22); border-radius:100px; }
+    .dr-hero__title { font-family:var(--serif); font-size:clamp(2rem,4vw,3rem); color:#fff; letter-spacing:-.03em; line-height:1.12; margin-bottom:14px; }
+    .dr-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--emerald),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .dr-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:640px; }
+    .dr-body { background:#f6f8f6; min-height:60vh; }
+    .nav-new { font-size:.6rem; font-weight:700; color:#fff; background:var(--gc-green); border-radius:4px; padding:1px 5px; margin-left:5px; vertical-align:middle; letter-spacing:.04em; }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <!-- NAV -->
+  <header class="site-header" id="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="nav__logo">
+        <img class="logo-mark" src="/assets/img/logo-nav.png?v=2" alt="Green Curve" />
+        <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span> <span class="nav__logo-sol">Solutions</span></span>
+      </a>
+      <ul class="nav__links" role="list">
+        <li><a href="index.html">Insights</a></li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="brsr-generator.html">BRSR Report Builder</a></li>
+            <li><a href="brsr-simple.html">Quick BRSR</a></li>
+            <li><a href="assurance.html">Core Assurance Checker</a></li>
+            <li><a href="ccts.html">CCTS Compliance Tracker</a></li>
+            <li><a href="tcfd.html">TCFD Report</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="calculator.html">GHG Calculator</a></li>
+            <li><a href="data-baseline.html">Data Baseline Wizard</a></li>
+            <li><a href="value-chain.html">Value Chain / Scope 3</a></li>
+            <li><a href="/ctap">Climate Transition Plan <span class="nav-new">NEW</span></a></li>
+            <li><a href="learn.html">Carbon Literacy</a></li>
+            <li><a href="compliance-calendar.html">Compliance Calendar</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle" href="esg-intelligence.html">ESG Quotient <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="esg-intelligence.html">Overview &amp; Screener</a></li>
+            <li><a href="esg-health-check.html">ESG Health Check</a></li>
+            <li><a href="/benchmark">Peer Benchmarking</a></li>
+            <li><a href="/search">Semantic Search</a></li>
+          </ul>
+        </li>
+        <li class="nav__has-dropdown">
+          <a class="nav__dropdown-toggle" href="/data-room">Workspace <span class="nav__caret"></span></a>
+          <ul class="nav__dropdown">
+            <li><a href="/data-room">ESG Data Room</a></li>
+            <li><a href="/brsr-workspace">BRSR Workspace</a></li>
+            <li><a href="/ctap">Climate Transition Plan</a></li>
+            <li><a href="/team">Team &amp; Collaboration</a></li>
+            <li><a href="/alerts">ESG Alerts</a></li>
+          </ul>
+        </li>
+        <li><a href="pricing.html">Pricing</a></li>
+      </ul>
+      <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
+      <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html">Insights</a>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">BRSR</div>
+      <a href="brsr-generator.html">BRSR Report Builder</a>
+      <a href="brsr-simple.html">Quick BRSR</a>
+      <a href="assurance.html">Assurance Checker</a>
+      <a href="ccts.html">CCTS Tracker</a>
+      <a href="tcfd.html">TCFD Report</a>
+    </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">Carbon &amp; GHG</div>
+      <a href="calculator.html">GHG Calculator</a>
+      <a href="data-baseline.html">Data Baseline Wizard</a>
+      <a href="value-chain.html">Value Chain / Scope 3</a>
+      <a href="/ctap">Climate Transition Plan</a>
+      <a href="learn.html">Carbon Literacy</a>
+      <a href="compliance-calendar.html">Compliance Calendar</a>
+    </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">ESG Quotient</div>
+      <a href="esg-intelligence.html">Overview &amp; Screener</a>
+      <a href="esg-health-check.html">ESG Health Check</a>
+      <a href="/benchmark">Peer Benchmarking</a>
+      <a href="/search">Semantic Search</a>
+    </div>
+    <div class="nav__mobile-group">
+      <div class="nav__mobile-label">Workspace</div>
+      <a href="/data-room">ESG Data Room</a>
+      <a href="/brsr-workspace">BRSR Workspace</a>
+      <a href="/ctap">Climate Transition Plan</a>
+      <a href="/team">Team &amp; Collaboration</a>
+      <a href="/alerts">ESG Alerts</a>
+    </div>
+    <a href="pricing.html">Pricing</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="dr-hero">
+    <div class="dr-hero__orb" aria-hidden="true"></div>
+    <div class="dr-hero__content container">
+      <a href="/" class="dr-hero__back">← Back to Green Curve</a>
+      <div class="dr-hero__eyebrow">Workspace · Climate transition</div>
+      <h1 class="dr-hero__title">Climate <em>Transition</em> Plan</h1>
+      <p class="dr-hero__sub">Turn your own BRSR data into a credible, framework-aligned Climate Transition Action Plan — structured on the TPT / IFRS S2 framework. Green Curve reviews every plan before it's released, so nothing leaves the door unchecked.</p>
+    </div>
+  </section>
+
+  <!-- BODY -->
+  <section class="dr-body">
+    <script src="/assets/js/gc-config.js"></script>
+    <div class="wrap">
+      <div class="msg" id="msg"></div>
+
+      <!-- Login gate -->
+      <div class="panel hidden" id="loginGate">
+        <h2>Sign in to build a transition plan</h2>
+        <p>Your CTAP drafts are private to your Green Curve account. <a class="inline" href="/login?next=/ctap">Sign in or create an account →</a></p>
+      </div>
+
+      <!-- App -->
+      <div id="app" class="hidden">
+        <div class="disclaimer">
+          This tool prepares a <strong>draft</strong> Climate Transition Action Plan from the data you provide. Every forward-looking statement is <strong>your company's own commitment</strong>, subject to your review and approval. The plan is <strong>not assured</strong> and is <strong>not a statement of regulatory compliance</strong>. Green Curve reviews each draft against a credibility checklist before release — it does <strong>not</strong> rate, score, or assure the plan.
+        </div>
+
+        <!-- LIST VIEW -->
+        <div id="listView">
+          <div class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <h2 style="margin:0;">Your transition plans</h2>
+              <button class="btn btn-primary" id="btnNew">+ New plan</button>
+            </div>
+            <div id="draftList" style="margin-top:16px;"></div>
+          </div>
+
+          <!-- Admin review queue -->
+          <div class="panel hidden" id="adminPanel">
+            <h2>Review queue <span class="pill submitted" id="queueCount">0</span></h2>
+            <p style="font-size:.85rem;color:#567;margin-top:2px;">Plans submitted by clients, waiting for Green Curve review before release.</p>
+            <div id="adminQueue" style="margin-top:14px;"></div>
+          </div>
+        </div>
+
+        <!-- EDITOR VIEW -->
+        <div id="editorView" class="hidden">
+          <button class="btn btn-ghost btn-sm" id="btnBack" style="margin-bottom:16px;">← All plans</button>
+          <div id="noteBanner"></div>
+
+          <div class="panel">
+            <h2 id="editorTitle">New transition plan</h2>
+            <p style="font-size:.85rem;color:#567;margin-top:0;">Start by pulling your company's ESG data from Green Curve, then complete the plan. Anything you leave blank is flagged as an open item — we never invent a figure to fill it.</p>
+            <div class="row" style="align-items:flex-end;">
+              <div style="flex:2;"><label>Company (name or CIN)</label><input id="prefillCompany" placeholder="e.g. Ambuja Cements or L24…" /></div>
+              <div style="flex:0 0 auto;"><button class="btn btn-ghost" id="btnPrefill">Auto-fill from BRSR</button></div>
+            </div>
+            <div class="msg" id="prefillMsg" style="margin-top:12px;"></div>
+          </div>
+
+          <div class="panel">
+            <form id="ctapForm" autocomplete="off"><div id="formSections"></div></form>
+          </div>
+
+          <div class="panel">
+            <h2>Live preview <span style="font-size:.8rem;font-weight:500;color:#789;">— structured on the TPT / IFRS S2 framework</span></h2>
+            <div id="gapSummary" style="margin:8px 0 14px;"></div>
+            <div id="previewBox"></div>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:#f6f8f6;padding:14px 0;border-top:1px solid var(--gc-line);">
+            <button class="btn btn-ghost" id="btnSaveDraft">Save draft</button>
+            <button class="btn btn-primary" id="btnSubmit">Submit for Green Curve review</button>
+            <button class="btn btn-ghost btn-sm hidden" id="btnDownloadMd">Download .md</button>
+            <button class="btn btn-ghost btn-sm hidden" id="btnDownloadHtml">Download .html</button>
+          </div>
+        </div>
+
+        <!-- ADMIN REVIEW DETAIL -->
+        <div id="reviewView" class="hidden">
+          <button class="btn btn-ghost btn-sm" id="btnReviewBack" style="margin-bottom:16px;">← Back to queue</button>
+          <div class="panel">
+            <h2 id="reviewTitle">Review plan</h2>
+            <p id="reviewMeta" style="font-size:.85rem;color:#567;"></p>
+            <div id="reviewGaps" style="margin:10px 0;"></div>
+            <div id="reviewPreview" style="font-size:.9rem;line-height:1.6;"></div>
+          </div>
+          <div class="panel">
+            <h2>Reviewer decision</h2>
+            <label>Note to client (required when requesting changes)</label>
+            <textarea id="reviewNote" placeholder="e.g. Scope 3 baseline missing; net-zero year needs an interim 2030 target before release."></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+              <button class="btn btn-ghost" id="btnStart">Mark in review</button>
+              <button class="btn btn-ghost" id="btnRequestChanges">Request changes</button>
+              <button class="btn btn-primary" id="btnRelease">Approve &amp; release</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /app -->
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom" style="text-align:center;padding:22px 0;">
+        <p style="font-size:.82rem;">
+          <a href="privacy-policy.html" style="color:#64748b;text-decoration:none">Privacy Policy</a>
+          &nbsp;&middot;&nbsp;
+          <a href="terms-of-use.html" style="color:#64748b;text-decoration:none">Terms of Use</a>
+        </p>
+        <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const header = document.getElementById('site-header');
+    const progress = document.getElementById('scroll-progress');
+    window.addEventListener('scroll', () => {
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      if (progress) progress.style.width = pct + '%';
+      if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+    const burger = document.getElementById('nav-burger');
+    const mobileNav = document.getElementById('nav-mobile');
+    if (burger && mobileNav) {
+      burger.addEventListener('click', () => {
+        const open = burger.classList.toggle('open');
+        mobileNav.classList.toggle('open', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+      mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        burger.classList.remove('open'); mobileNav.classList.remove('open'); document.body.style.overflow = '';
+      }));
+    }
+  </script>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/ctap.js?v=1"></script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>
