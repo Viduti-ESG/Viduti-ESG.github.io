@@ -199,6 +199,18 @@ if pub_path.exists():
 else:
     print("\n[8] esg_quotient.json not found — skipping published-artifact check")
 
+# ── 9. skill-drift guard ──────────────────────────────────────────────────────
+# The skills assert facts about this codebase (thresholds, ground-truth spot
+# values). Drifted facts steer every future session wrong — treat as gate FAIL.
+print("\n[9] SKILL-CONSTANTS drift check")
+try:
+    import check_skill_constants
+    if check_skill_constants.main() != 0:
+        failures.append("skill files cite facts that no longer match the code "
+                        "(see [9]; update SKILL.md in BOTH skills locations)")
+except Exception as _e:  # never let the guard itself break the audit
+    print(f"    skill-constants check errored (non-fatal): {_e}")
+
 # ── verdict ───────────────────────────────────────────────────────────────────
 print("\n" + "=" * 78)
 if failures:
