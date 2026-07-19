@@ -50,6 +50,11 @@ for c in companies:
     c["risk_tier"] = rec["risk_tier"]
     c["risk_breakdown"] = rec["risk_breakdown"]
     c["top_risk_factors"] = rec["top_risk_factors"]
+    # reconciled revenue from score_engine/company_profiler — keeps the
+    # displayed revenue identical to the intensity denominator (SAIL was
+    # published at ₹98.6 cr against a ₹1.02-lakh-cr filing before this)
+    if rec.get("revenue_crore") is not None:
+        c["revenue_crore"] = rec["revenue_crore"]
     im = rec.get("impact_materiality")
     fm = rec["esg_risk_score"]
     if im is None:

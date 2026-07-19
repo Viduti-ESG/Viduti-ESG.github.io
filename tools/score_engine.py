@@ -20,20 +20,14 @@ feat = load(r"c:/Viduti/esg-site/tools/raw_features.json")
 emis = load(r"c:/Viduti/esg-site/tools/emissions_extracted.json")
 secs = load(r"c:/Viduti/esg-site/tools/sectors_extracted.json")
 
-# company_profiler still carries the old revenue unit bug (e.g. SAIL 98.6 vs the
-# XBRL-correct 102,097 cr). Intensities divide by revenue, so we override the
-# profiler's revenue with the corrected values already in production esg_quotient.json
-# (keyed by CIN, then normalised name). Without this the rescore would re-introduce
-# the very revenue error the XBRL fix removed.
-_eq = load(r"c:/Viduti/esg-site/assets/data/esg_quotient.json")["companies"]
-CORR_REV_BY_CIN  = {(_c.get("cin") or "").upper(): _c.get("revenue_crore")
-                    for _c in _eq if _c.get("cin")}
-CORR_REV_BY_NAME = {norm(_c["company_name"]): _c.get("revenue_crore") for _c in _eq}
+# Revenue reconciliation now lives in company_profiler._reconcile_revenue
+# (cross-field consensus over RevenueFromOperations/TotalRevenue/Turnover).
+# The old overlay that copied revenue_crore forward from the production
+# esg_quotient.json was circular: after the 2026-07-15 universe rebuild it
+# preserved the very unit bugs it was built to fix (SAIL ₹98.6 cr). The
+# profiler is authoritative — do not re-add a published-artifact override.
 def corrected_rev(prof, name):
-    r = CORR_REV_BY_CIN.get((prof.get("cin") or "").upper())
-    if r is None:
-        r = CORR_REV_BY_NAME.get(norm(name))
-    return r if r is not None else prof.get("revenue_crore")
+    return prof.get("revenue_crore")
 
 def clamp(x, lo=0.0, hi=10.0): return max(lo, min(hi, x))
 
@@ -200,7 +194,11 @@ for r in rows: r["tier"] = tier(r["score"])
 # ── write output ──────────────────────────────────────────────────────────────
 out = {r["name"]: {"sector": r["sector"], "esg_risk_score": r["score"], "risk_tier": r["tier"],
                    "risk_breakdown": r["rb"], "top_risk_factors": r["top"] or ["Data insufficient"],
-                   "impact_materiality": r["impact"]}
+                   "impact_materiality": r["impact"],
+                   # reconciled revenue (company_profiler._reconcile_revenue) —
+                   # apply_rescored publishes it so the displayed revenue and the
+                   # intensity denominators can never diverge again
+                   "revenue_crore": r["revenue_crore"]}
        for r in rows}
 Path(r"c:/Viduti/esg-site/tools/rescored.json").write_text(json.dumps(out), encoding="utf-8")
 

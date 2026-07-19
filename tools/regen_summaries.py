@@ -198,6 +198,16 @@ def main():
     if "--fix-glitches" in sys.argv:
         todo = [c for c in comps if has_glitch(c)]      # redo only the glitchy ones
         print(f"glitch-fix mode: {len(todo)} companies with detectable summary glitches")
+    elif any(a.startswith("--list") for a in sys.argv):
+        # explicit company-name list (JSON array) — used when the caller has
+        # already computed exactly which companies' data materially changed
+        arg = next(a for a in sys.argv if a.startswith("--list"))
+        lp = arg.split("=", 1)[-1] if "=" in arg else sys.argv[sys.argv.index(arg) + 1]
+        names = {n.strip().lower() for n in json.load(io.open(lp, encoding="utf-8"))}
+        todo = [c for c in comps if c.get("company_name", "").strip().lower() in names]
+        for c in todo:
+            c.pop("_summary_regen", None)   # force regeneration for listed companies
+        print(f"list mode: {len(todo)} of {len(names)} listed companies matched")
     else:
         target = None if doall else changed_cins()
         todo = [c for c in comps if doall or c.get("cin") in target]

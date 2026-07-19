@@ -182,12 +182,16 @@ def sector_intensity_outliers(items):
     return out
 
 
-# A company cannot recover more waste than it generated in the same period — it is a
-# mass-balance impossibility. We allow only a 0.1% float/rounding tolerance; beyond
-# that the recovery split is a disclosure error and is treated as not-disclosed
-# rather than shown as an impossible >100%-of-generation figure. A trusted ESG
-# platform must NEVER display "recovered > generated" to an analyst.
-RECOVERY_MAX_FACTOR = 1.001
+# Recovery moderately above same-period generation is physically real: plants
+# processing accumulated stock (SAIL reprocesses legacy slag dumps) legitimately
+# recover more than they generated that year. SAIL's FY24-25 filing reports
+# recovered 15.37 Mt vs generated 14.14 Mt (1.086x) — exact XBRL, verified
+# against the raw filing 2026-07-19. We therefore display exact filed values up
+# to 1.5x generation — the same plausibility threshold audit step [5b] uses —
+# and null the pair beyond it (the Piccadily-436x class IS disclosure error).
+# The old 1.001 tolerance dated from the is_cy era when recovered > generated
+# was a symptom of prior-year context leakage, not a real filing value.
+RECOVERY_MAX_FACTOR = 1.5
 
 
 def clean_recovery(recovered, disposed, generated):
