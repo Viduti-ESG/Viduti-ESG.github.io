@@ -10,7 +10,7 @@
 // routes /api/* to the on-box services), so API_BASE must stay "" there — a
 // tunnel URL here would send production traffic through a free localhost.run
 // tunnel. Host-aware so daemon commits can never break the production site.
-const TUNNEL_BASE = "https://fb2a24dd9cd41a.lhr.life";
+const TUNNEL_BASE = "https://7b4640b5167d49.lhr.life";
 const API_BASE = location.hostname.endsWith("github.io") ? TUNNEL_BASE : "";
 
 let formSchema   = null;
