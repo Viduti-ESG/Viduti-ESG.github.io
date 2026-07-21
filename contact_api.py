@@ -6,14 +6,13 @@ if SMTP env vars are configured.
 
 import logging
 import os
-import smtplib
 import sqlite3
 from datetime import datetime, timezone
-from email.mime.text import MIMEText
 
 from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel, EmailStr
 
+import graph_mailer
 from db import get_conn
 
 logger = logging.getLogger("greencurve.contact")
@@ -54,14 +53,7 @@ class PricingRequest(BaseModel):
 
 
 def _send_email(req: PricingRequest, row_id: int):
-    smtp_host = os.environ.get("SMTP_HOST", "")
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-    smtp_user = os.environ.get("SMTP_USER", "")
-    smtp_pass = os.environ.get("SMTP_PASS", "")
     notify_to = os.environ.get("NOTIFY_EMAIL", "kneha2381@gmail.com")
-
-    if not smtp_host or not smtp_user:
-        return
 
     body = f"""New pricing request #{row_id} — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}
 
@@ -76,19 +68,10 @@ Use case:     {req.use_case or '—'}
 Message:
 {req.message or '(none)'}
 """
-    msg = MIMEText(body)
-    msg["Subject"] = f"[Green Curve] Pricing Request — {req.company}"
-    msg["From"] = smtp_user
-    msg["To"] = notify_to
-
-    try:
-        with smtplib.SMTP(smtp_host, smtp_port) as s:
-            s.starttls()
-            s.login(smtp_user, smtp_pass)
-            s.sendmail(smtp_user, [notify_to], msg.as_string())
+    if graph_mailer.send_mail(notify_to, f"[Green Curve] Pricing Request — {req.company}", body):
         logger.info("Pricing request email sent for %s <%s>", req.company, req.email)
-    except Exception as exc:
-        logger.error("Failed to send pricing request email: %s", exc)
+    else:
+        logger.warning("Pricing request email not sent (mailer not configured or failed)")
 
 
 @router.post("/pricing-request")

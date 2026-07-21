@@ -18,15 +18,15 @@ import json
 import logging
 import os
 import secrets
-import smtplib
 import threading
 import time
 import uuid
 from collections import defaultdict
 from datetime import datetime, timezone
-from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Optional
+
+import graph_mailer
 
 logger = logging.getLogger(__name__)
 
@@ -128,20 +128,15 @@ class SupplierResponseOut(BaseModel):
 # ── Email notification helper ──────────────────────────────────────────────────
 
 def _send_supplier_notification(record: dict) -> None:
-    """Send a new-supplier-response email to the notification address.
-    Requires GC_SMTP_HOST, GC_SMTP_USER, GC_SMTP_PASS, GC_SMTP_PORT (default 587).
-    GC_NOTIFY_EMAIL defaults to kneha2381@gmail.com.
-    If SMTP is not configured, logs a warning and returns silently.
+    """Send a new-supplier-response email to the notification address via
+    Microsoft Graph (see graph_mailer.py). GC_NOTIFY_EMAIL defaults to
+    kneha2381@gmail.com. If the mailer isn't configured, logs and returns.
     """
-    smtp_host = os.environ.get("GC_SMTP_HOST", "")
-    smtp_user = os.environ.get("GC_SMTP_USER", "")
-    smtp_pass = os.environ.get("GC_SMTP_PASS", "")
     notify_to = os.environ.get("GC_NOTIFY_EMAIL", "kneha2381@gmail.com")
-    smtp_port = int(os.environ.get("GC_SMTP_PORT", "587"))
 
-    if not (smtp_host and smtp_user and smtp_pass):
+    if not graph_mailer.ready():
         logger.info(
-            "New supplier response [%s] from %s for %s — SMTP not configured, skipping email",
+            "New supplier response [%s] from %s for %s — mailer not configured, skipping email",
             record.get("id"), record.get("supplier_name"), record.get("mandating_company_name"),
         )
         return
@@ -159,19 +154,11 @@ def _send_supplier_notification(record: dict) -> None:
         f"Log in to the Green Curve dashboard to view the full response.\n"
         f"https://greencurve.solutions/esg-intelligence\n"
     )
-    msg = MIMEText(body)
-    msg["Subject"] = f"[Green Curve] New Supplier Response — {record.get('supplier_name', 'Unknown')}"
-    msg["From"]    = smtp_user
-    msg["To"]      = notify_to
-
-    try:
-        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
-            s.starttls()
-            s.login(smtp_user, smtp_pass)
-            s.send_message(msg)
+    subject = f"[Green Curve] New Supplier Response — {record.get('supplier_name', 'Unknown')}"
+    if graph_mailer.send_mail(notify_to, subject, body):
         logger.info("Supplier notification email sent to %s for response %s", notify_to, record.get("id"))
-    except Exception as exc:
-        logger.warning("Failed to send supplier notification email: %s", exc)
+    else:
+        logger.warning("Failed to send supplier notification email")
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────

@@ -24,15 +24,10 @@ import logging
 import os
 import re
 import secrets
-import smtplib
 import threading
 import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email import encoders
 from typing import Optional
 from urllib.parse import quote
 from zoneinfo import ZoneInfo, available_timezones
@@ -41,6 +36,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, EmailStr, Field
 
+import graph_mailer
 from auth_api import get_current_user
 from db import get_conn
 
@@ -307,36 +303,9 @@ def _google_cal_url(b: dict, room: dict) -> str:
             f"&text={title}&dates={start}/{end}&details={details}")
 
 
-# ── Email (same SMTP env convention as contact_api) ───────────────────────────
-def _smtp_ready() -> bool:
-    return bool(os.environ.get("SMTP_HOST") and os.environ.get("SMTP_USER"))
-
+# ── Email (Microsoft Graph — see graph_mailer.py) ──────────────────────────────
 def _send_mail(to_addr: str, subject: str, body: str, ics: Optional[str] = None):
-    if not _smtp_ready() or not to_addr:
-        return
-    smtp_host = os.environ["SMTP_HOST"]
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-    smtp_user = os.environ["SMTP_USER"]
-    smtp_pass = os.environ.get("SMTP_PASS", "")
-    # header-injection guard: no CR/LF may ever reach a header value
-    subject = re.sub(r"[\r\n]+", " ", subject)
-    to_addr = to_addr.strip().splitlines()[0]
-    msg = MIMEMultipart()
-    msg["Subject"], msg["From"], msg["To"] = subject, smtp_user, to_addr
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-    if ics:
-        part = MIMEBase("text", "calendar", method="PUBLISH", name="invite.ics")
-        part.set_payload(ics.encode("utf-8"))
-        encoders.encode_base64(part)
-        part.add_header("Content-Disposition", "attachment", filename="invite.ics")
-        msg.attach(part)
-    try:
-        with smtplib.SMTP(smtp_host, smtp_port) as s:
-            s.starttls()
-            s.login(smtp_user, smtp_pass)
-            s.sendmail(smtp_user, [to_addr], msg.as_string())
-    except Exception as exc:
-        logger.error("Booking email to <redacted> failed: %s", exc)
+    graph_mailer.send_mail(to_addr, subject, body, ics=ics)
 
 
 def _fmt_local(b_start_utc: str, tzname: str) -> str:

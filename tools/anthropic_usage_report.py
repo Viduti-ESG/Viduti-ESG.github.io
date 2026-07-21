@@ -9,8 +9,9 @@ Requires:
   ANTHROPIC_ADMIN_KEY  — an Admin API key (sk-ant-admin01-...), separate from
                           the regular ANTHROPIC_API_KEY. Create one at
                           console.anthropic.com -> Settings -> Admin API Keys.
-  SMTP_HOST / SMTP_USER / SMTP_PASS (SMTP_PORT optional, default 587)
-                          — same convention as booking_api.py / contact_api.
+  GRAPH_TENANT_ID / GRAPH_CLIENT_ID / GRAPH_CLIENT_SECRET
+                          — Microsoft Graph app-only mail sending, same as
+                            booking_api.py / contact_api.py. See graph_mailer.py.
 
 Optional:
   USAGE_REPORT_TO      — recipient email (default: neha@greencurve.solutions)
@@ -19,7 +20,7 @@ There is currently no Anthropic API for remaining prepaid credit balance —
 only token usage and billed USD cost are queryable. The report notes this
 and links to the Console billing page instead of guessing a number.
 
-Exit codes: 0 = sent, 3 = dormant (admin key or SMTP not configured yet,
+Exit codes: 0 = sent, 3 = dormant (admin key or mailer not configured yet,
 not an error in monitoring terms), 1 = real failure.
 
 Run from the site root:  venv/bin/python tools/anthropic_usage_report.py
@@ -28,13 +29,14 @@ EnvironmentFile=/var/www/greencurve/.env).
 """
 import argparse
 import os
-import smtplib
 import sys
 from datetime import datetime, timedelta, timezone
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from pathlib import Path
 
 import requests
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+import graph_mailer
 
 API_BASE = "https://api.anthropic.com/v1"
 ANTHROPIC_VERSION = "2023-06-01"
@@ -203,20 +205,12 @@ def build_email(report_date: str, total_cost_usd: float, per_staff: dict, per_mo
 
 
 def send_mail(subject: str, body: str, to_addr: str):
-    smtp_host = os.environ.get("SMTP_HOST")
-    smtp_user = os.environ.get("SMTP_USER")
-    smtp_pass = os.environ.get("SMTP_PASS", "")
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-    if not smtp_host or not smtp_user:
-        print("DORMANT: SMTP_HOST/SMTP_USER not set — skipping send.")
+    if not graph_mailer.ready():
+        print("DORMANT: GRAPH_TENANT_ID/GRAPH_CLIENT_ID/GRAPH_CLIENT_SECRET not set — skipping send.")
         sys.exit(3)
-    msg = MIMEMultipart()
-    msg["Subject"], msg["From"], msg["To"] = subject, smtp_user, to_addr
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-    with smtplib.SMTP(smtp_host, smtp_port) as s:
-        s.starttls()
-        s.login(smtp_user, smtp_pass)
-        s.sendmail(smtp_user, [to_addr], msg.as_string())
+    if not graph_mailer.send_mail(to_addr, subject, body):
+        print("FAILED: graph_mailer.send_mail returned False — check logs.")
+        sys.exit(1)
 
 
 def main() -> int:
