@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=7"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=8"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=2"/>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=2"/>
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=2"/>
@@ -212,6 +212,7 @@
 </section>
 
 <div class="ct-body container">
+  <div id="gc-ai-status" class="gc-ai-status-banner" style="display:none"></div>
 
   <!-- Timeline -->
   <div class="ct-timeline">
@@ -415,6 +416,7 @@
   </div>
 </footer>
 
+<script src="assets/js/gc-ai-status.js?v=1"></script>
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -441,8 +443,12 @@ async function getScorecard() {
       }),
       signal: AbortSignal.timeout(20000),
     });
-    if (!res.ok) throw new Error('Server error');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Server error');
+    }
     const d = await res.json();
+    if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['ccts_scorecard']);
     const statusIcon = s => s === 'met' ? '✓' : s === 'attention' ? '⚠' : '✗';
     const statusColor = s => s === 'met' ? '#34d399' : s === 'attention' ? '#fbbf24' : '#f87171';
     const priColor = p => p === 'high' ? '#f87171' : p === 'medium' ? '#fbbf24' : '#34d399';
@@ -473,6 +479,7 @@ async function getScorecard() {
   }
 }
 window.getScorecard = getScorecard;
+if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['ccts_scorecard']);
 const header = document.getElementById('site-header');
 window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
 const burger = document.getElementById('nav-burger');

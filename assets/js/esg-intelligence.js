@@ -1298,6 +1298,7 @@ async function openDeepDive(companyName) {
   document.querySelector('.dd-tab[data-ddtab="overview"]').classList.add('dd-tab--active');
 
   overlay.classList.add('is-open');
+  if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status-dd', ['briefing'], 'gcai');
 
   // The bulk /api/esg/data payload omits ai_summary (≈49% of its size) to keep
   // it light. Lazy-fetch the full same-origin record once per company and merge.
@@ -1326,6 +1327,14 @@ async function openDeepDive(companyName) {
       if (r.ok) {
         _currentDDData = await r.json();
         renderDDTab('overview');
+        if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status-dd', ['briefing'], 'gcai');
+      } else {
+        // Was previously silent — the loading spinner stayed on-screen forever
+        // if the AI cap/trial was hit. Surface the backend's own detail message.
+        const e = await r.json().catch(() => ({}));
+        const sec = document.getElementById('ddAiSection');
+        if (sec) sec.innerHTML = `<p style="color:#64748b;font-size:.8rem">${(e.detail || 'AI analysis unavailable.').replace(/</g, '&lt;')}</p>`;
+        if (typeof gcShowAiError === 'function') gcShowAiError(e);
       }
     } catch {
       document.getElementById('ddAiSection').innerHTML =
@@ -3610,9 +3619,11 @@ async function downloadBoardBriefing() {
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     _track('board_briefing_downloaded', { company: company.company_name });
+    if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status-dd', ['briefing'], 'gcai');
     if (btn) { btn.textContent = '✓ Downloaded'; setTimeout(() => { btn.textContent = '↓ Board Briefing PDF'; btn.disabled = false; }, 3000); }
   } catch (e) {
-    alert(`Board briefing failed: ${e.message}`);
+    if (typeof gcToast === 'function') gcToast(e.message || 'Board briefing failed.', 'error');
+    else alert(`Board briefing failed: ${e.message}`);
     if (btn) { btn.textContent = '↓ Board Briefing PDF'; btn.disabled = false; }
   }
 }

@@ -38,6 +38,24 @@
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
+    /* AI usage/trial status banner — standalone page, no shared style.css here */
+    .gc-ai-status-banner {
+      display: none; align-items: center; gap: 8px;
+      font-size: .78rem; color: var(--muted);
+      background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.22);
+      border-radius: 8px; padding: 10px 16px; margin: 14px 0 0;
+    }
+    .gc-ai-status-banner a { color: var(--green); font-weight: 600; text-decoration: none; }
+    .gc-ai-status-banner a:hover { text-decoration: underline; }
+    .gc-ai-status-banner--warn { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.3); color: var(--amber); }
+    .gc-ai-status-banner--warn a { color: var(--amber); }
+    #gc-toast {
+      display: none; position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      max-width: 360px; padding: 12px 18px; border-radius: 10px;
+      font-size: .82rem; background: rgba(10,15,26,.97); border: 1px solid var(--border); color: var(--text);
+    }
+    #gc-toast.gc-toast--error { border-color: rgba(248,113,113,.4); color: var(--red); }
+
     /* NAV */
     nav {
       display: flex; align-items: center; gap: 16px;
@@ -280,6 +298,7 @@
     <div class="page-badge">P4-E · New Tool</div>
     <h1 class="page-title">PDF / TCFD Gap Checker</h1>
     <p class="page-sub">Upload any corporate sustainability report, BRSR, or annual report and get an instant AI assessment of TCFD (Task Force on Climate-related Financial Disclosures) alignment across all four pillars — using Claude Sonnet.</p>
+    <div id="gc-ai-status" class="gc-ai-status-banner" style="display:none"></div>
   </div>
 
   <!-- TCFD pillars intro -->
@@ -400,6 +419,7 @@
 </div>
 
 <script src="assets/js/gc-config.js?v=20260616"></script>
+<script src="assets/js/gc-ai-status.js?v=1"></script>
 <script>
   const API_BASE = localStorage.getItem('gc_api_base') || window._gcApiBase || '';
   let _selectedFile = null;
@@ -537,6 +557,7 @@
       const data = await res.json();
       hideStatus();
       renderResults(data);
+      if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['tcfd_pdf']);
     } catch(e) {
       showStatus('Analysis failed: ' + e.message, 'error');
     }
@@ -657,6 +678,7 @@
     if (!API_BASE) {
       document.getElementById('noBackendNotice').style.display = 'block';
     }
+    if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['tcfd_pdf']);
   });
 </script>
 <script src="assets/js/auth.js"></script>

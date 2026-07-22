@@ -323,7 +323,11 @@ async function generateReport() {
 
   } catch (e) {
     hide("loadingOverlay");
-    alert(`Report generation failed: ${e.message}\n\nPlease try again. If the issue persists, contact support.`);
+    if (typeof gcToast === 'function') {
+      gcToast(e.message || 'Report generation failed. Please try again.', 'error');
+    } else {
+      alert(`Report generation failed: ${e.message}\n\nPlease try again. If the issue persists, contact support.`);
+    }
     show("wizardOverlay");
   }
 }

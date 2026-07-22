@@ -2296,6 +2296,22 @@ button:focus:not(:focus-visible) { outline: none; }
 .gc-toast--info    { background: rgba(12,22,41,.96); border: 1px solid rgba(34,197,94,.3); }
 
 /* ══════════════════════════════════════════════════════════════
+   AI USAGE / TRIAL STATUS BANNER
+   ══════════════════════════════════════════════════════════════ */
+.gc-ai-status-banner {
+  display: none; align-items: center; gap: var(--s-2);
+  font-size: .78rem; color: var(--text-70);
+  background: var(--emerald-dim); border: 1px solid rgba(52,211,153,.22);
+  border-radius: var(--r-sm); padding: 10px 16px; margin: 0 0 var(--s-4);
+}
+.gc-ai-status-banner a { color: var(--emerald); font-weight: 600; text-decoration: none; }
+.gc-ai-status-banner a:hover { text-decoration: underline; }
+.gc-ai-status-banner--warn {
+  background: var(--amber-dim); border-color: rgba(251,191,36,.3); color: var(--amber);
+}
+.gc-ai-status-banner--warn a { color: var(--amber); }
+
+/* ══════════════════════════════════════════════════════════════
    ENHANCED FOOTER LOGO
    ══════════════════════════════════════════════════════════════ */
 .footer__left p { line-height: 1.7; }

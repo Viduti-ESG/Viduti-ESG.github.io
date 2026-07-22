@@ -30,12 +30,18 @@ import os
 import time
 import threading
 from collections import defaultdict
+from datetime import datetime, timedelta
 from typing import Any, Optional
+
+from jose import JWTError, jwt
+
+from db import get_conn
+from auth_api import SECRET_KEY, ALGORITHM, INTERNAL_EMAIL_DOMAIN
 
 logger = logging.getLogger(__name__)
 
 try:
-    from fastapi import APIRouter, HTTPException, Request
+    from fastapi import APIRouter, HTTPException, Query, Request
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:
@@ -81,6 +87,163 @@ def _rate_limit(request: Request, limit: int, window: int = 60) -> None:
                 detail=f"Rate limit exceeded: max {limit} requests per {window}s from this IP.",
             )
         _rl_counts[key].append(now)
+
+# ── AI usage caps (2026-07-22) ─────────────────────────────────────────────────
+# Mirrors gcai's _enforce_ai_cap (brsr-generator/backend/main.py) — same identity
+# keying, same free=ISO-week / paid=calendar-month convention, same messaging
+# style — but reads the users/ai_usage tables directly via db.py since this
+# router runs in-process with auth_api.py (no cross-service relay needed).
+# IMPORTANT: only the billed-Claude fallback is capped/metered here — Groq-served
+# calls are free and unmetered by design (they still sit under Groq's own
+# shared account-wide rate limit; see the Groq API sheet in
+# "Green Curve Operational/Anthropic API Usage Track.xlsx").
+FREE_LIMITS_AI  = {  # per ISO week
+    "ccts_scorecard": 7, "epr_scorecard": 7, "tcfd_gap": 7,
+    "nl_query": 60, "tcfd_pdf": 3, "generate_digest": 2,
+}
+PAID_LIMITS_AI  = {  # per calendar month
+    "ccts_scorecard": 300, "epr_scorecard": 300, "tcfd_gap": 300,
+    "nl_query": 800, "tcfd_pdf": 40, "generate_digest": 30,
+}
+METRIC_LABELS_AI = {
+    "ccts_scorecard":  ("CCTS scorecard check", "CCTS scorecard checks"),
+    "epr_scorecard":   ("EPR remediation check", "EPR remediation checks"),
+    "tcfd_gap":        ("TCFD gap check", "TCFD gap checks"),
+    "nl_query":        ("search query", "search queries"),
+    "tcfd_pdf":        ("PDF/TCFD document check", "PDF/TCFD document checks"),
+    "generate_digest": ("digest generation", "digest generations"),
+}
+FREE_WINDOW_DAYS_AI = 14
+_UPGRADE_CONTACT_AI = "neha@greencurve.solutions"
+_ai_usage_lock = threading.Lock()
+
+
+def _identity_and_plan(request: Request) -> tuple[str, str, Optional[str]]:
+    """Return (identity, plan, window_end). plan is 'internal'|'paid'|'lapsed'|'free'.
+    Anonymous or unrecognised tokens degrade gracefully to an IP-keyed free identity
+    (mirrors gcai's _jwt_user_id, which never raises on a bad/missing token)."""
+    user_id = None
+    auth = request.headers.get("authorization", "")
+    if auth.lower().startswith("bearer "):
+        try:
+            payload = jwt.decode(auth[7:].strip(), SECRET_KEY, algorithms=[ALGORITHM])
+            user_id = int(payload["sub"])
+        except (JWTError, KeyError, ValueError, TypeError):
+            user_id = None
+
+    if user_id is None:
+        ip = request.headers.get("x-real-ip") or (request.client.host if request.client else "unknown")
+        return f"ip:{ip}", "free", None
+
+    identity = f"user:{user_id}"
+    row = get_conn().execute(
+        "SELECT email, plan, created_at, free_tier_expires_at, plan_expires_at "
+        "FROM users WHERE id=? AND is_active=1", (user_id,),
+    ).fetchone()
+    if not row:
+        return identity, "free", None
+    if str(row["email"] or "").lower().endswith("@" + INTERNAL_EMAIL_DOMAIN):
+        return identity, "internal", None
+    if (row["plan"] or "free").lower() == "paid":
+        end = row["plan_expires_at"]
+        if not end:
+            return identity, "paid", None
+        try:
+            expired = datetime.utcnow() > datetime.fromisoformat(str(end).replace(" ", "T"))
+        except ValueError:
+            expired = False  # unparseable date must not lock a payer out
+        return identity, ("lapsed" if expired else "paid"), end
+    end = row["free_tier_expires_at"]
+    if not end and row["created_at"]:
+        try:
+            created = datetime.fromisoformat(str(row["created_at"]).replace(" ", "T"))
+            end = (created + timedelta(days=FREE_WINDOW_DAYS_AI)).strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            end = None
+    return identity, "free", end
+
+
+def _enforce_ai_cap(request: Request, metric: str):
+    """Raise 403 (trial over) / 429 (quota) or return a record() callback the
+    caller must invoke after a successful Claude generation. Call this ONLY on
+    the paid-Claude code path — never on a Groq-served request."""
+    identity, plan, window_end = _identity_and_plan(request)
+    now = datetime.utcnow()
+    conn = get_conn()
+
+    with _ai_usage_lock:
+        if plan == "internal":
+            period, limit = now.strftime("%Y-%m"), None
+        elif plan == "lapsed":
+            raise HTTPException(
+                403,
+                f"Your Green Curve paid plan ended on {(window_end or '')[:10]}. "
+                f"Email {_UPGRADE_CONTACT_AI} to renew and restore access to AI features.",
+            )
+        elif plan == "free":
+            if identity.startswith("ip:"):
+                row = conn.execute(
+                    "SELECT first_use FROM ai_identities WHERE identity=?", (identity,)
+                ).fetchone()
+                if row:
+                    first = datetime.fromisoformat(row["first_use"])
+                else:
+                    first = now
+                    conn.execute(
+                        "INSERT INTO ai_identities (identity, first_use) VALUES (?,?)",
+                        (identity, now.isoformat()),
+                    )
+                    conn.commit()
+                end = first + timedelta(days=FREE_WINDOW_DAYS_AI)
+            else:
+                end = (datetime.fromisoformat(window_end.replace(" ", "T"))
+                       if window_end else now + timedelta(days=FREE_WINDOW_DAYS_AI))
+            if now > end:
+                raise HTTPException(
+                    403,
+                    "Your free trial of Green Curve AI features has ended. "
+                    f"Email {_UPGRADE_CONTACT_AI} to upgrade to a paid plan for higher usage limits.",
+                )
+            iso = now.isocalendar()
+            period, limit = f"{iso[0]}-W{iso[1]:02d}", FREE_LIMITS_AI[metric]
+            singular, plural = METRIC_LABELS_AI[metric]
+            noun = singular if limit == 1 else plural
+            cap_msg = (
+                f"Free plan limit reached: {limit} {noun} per week. "
+                f"Your quota resets next week, or email {_UPGRADE_CONTACT_AI} to upgrade to a paid plan."
+            )
+        else:
+            period, limit = now.strftime("%Y-%m"), PAID_LIMITS_AI[metric]
+            singular, plural = METRIC_LABELS_AI[metric]
+            noun = singular if limit == 1 else plural
+            cap_msg = (
+                f"Monthly limit reached: {limit} {noun} on the paid plan. "
+                f"Your quota resets on the 1st, or email {_UPGRADE_CONTACT_AI} about a higher tier."
+            )
+
+        if limit is not None:
+            row = conn.execute(
+                "SELECT count FROM ai_usage WHERE identity=? AND metric=? AND period=?",
+                (identity, metric, period),
+            ).fetchone()
+            if (row["count"] if row else 0) >= limit:
+                raise HTTPException(429, cap_msg)
+
+    def record():
+        try:
+            with _ai_usage_lock:
+                conn2 = get_conn()
+                conn2.execute(
+                    "INSERT INTO ai_usage (identity, metric, period, count) VALUES (?,?,?,1) "
+                    "ON CONFLICT(identity, metric, period) DO UPDATE SET count = count + 1",
+                    (identity, metric, period),
+                )
+                conn2.commit()
+        except Exception as e:
+            logger.error(f"[ai-caps] failed to record usage for {identity}/{metric}: {e}")
+
+    return record
+
 
 # ── Claude client (lazy, initialised once at first request) ───────────────────
 _client      = None
@@ -174,7 +337,7 @@ def _parse_json(text: str) -> Any:
         raise
 
 
-def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
+def _ask_json(model: str, system: str, user: str, max_tokens: int, request: Request, metric: str) -> Any:
     """Call Claude and return parsed JSON.
 
     The assistant turn is prefilled with ``{`` so the model continues a JSON
@@ -188,6 +351,9 @@ def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
     NOT worth enabling on the Claude path — every system prompt here is ~270–440
     tokens, below the Anthropic cache minimums (1024 Sonnet / 2048 Haiku), so
     cache_control would be silently ignored.
+
+    ``request``/``metric`` gate and meter ONLY the Claude fallback attempt via
+    _enforce_ai_cap — a Groq-served call is free and never touches the quota.
     """
     providers = _providers_in_order()
     if not providers:
@@ -200,6 +366,9 @@ def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
         try:
             if provider == "groq":
                 return _groq_ask_json(system, user, max_tokens)
+            # Falling through to billed Claude — gate before the call, meter
+            # only on success (a Claude outage/empty balance never burns quota).
+            record_usage = _enforce_ai_cap(request, metric)
             # Anthropic: prefill the assistant turn with "{" so it continues a
             # JSON object directly (can't wrap the reply in a code fence).
             msg = _claude().messages.create(
@@ -211,7 +380,11 @@ def _ask_json(model: str, system: str, user: str, max_tokens: int = 600) -> Any:
                     {"role": "assistant", "content": "{"},
                 ],
             )
-            return _parse_json("{" + msg.content[0].text)
+            result = _parse_json("{" + msg.content[0].text)
+            record_usage()
+            return result
+        except HTTPException:
+            raise  # cap/trial errors (403/429) must propagate as-is, never swallowed below
         except Exception as e:  # noqa: BLE001 — try the next provider
             last_err = e
             continue
@@ -312,7 +485,9 @@ Revenue: {payload.revenue_crore or 'N/A'} crore INR
 ESG targets: {json.dumps([str(t.get('metric',''))[:100] for t in payload.esg_targets[:5]])}"""
 
     try:
-        return _ask_json(HAIKU, CCTS_SYSTEM, data_summary, max_tokens=700)
+        return _ask_json(HAIKU, CCTS_SYSTEM, data_summary, 700, request, "ccts_scorecard")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
@@ -354,7 +529,9 @@ Indicative certificate procurement cost: ₹{payload.cost_inr:,.0f}
 Indicative Environmental Compensation if unaddressed: ₹{payload.ec_inr:,.0f}"""
 
     try:
-        return _ask_json(HAIKU, EPR_SYSTEM, data_summary, max_tokens=700)
+        return _ask_json(HAIKU, EPR_SYSTEM, data_summary, 700, request, "epr_scorecard")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
@@ -408,7 +585,9 @@ Governance risk score: {payload.governance_risk or 'N/A'} / 10
 ESG targets stated: {targets_str}"""
 
     try:
-        return _ask_json(HAIKU, TCFD_SYSTEM, data_summary, max_tokens=800)
+        return _ask_json(HAIKU, TCFD_SYSTEM, data_summary, 800, request, "tcfd_gap")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
@@ -464,7 +643,9 @@ async def nl_query(request: Request, payload: NLQueryRequest):
     if not payload.query.strip():
         raise HTTPException(status_code=400, detail="Query is empty")
     try:
-        return _ask_json(HAIKU, NL_SYSTEM, payload.query, max_tokens=300)
+        return _ask_json(HAIKU, NL_SYSTEM, payload.query, 300, request, "nl_query")
+    except HTTPException:
+        raise
     except Exception:
         logger.exception("nl-query parsing failed")
         raise HTTPException(status_code=500, detail="Could not parse that query. Please rephrase and try again.")
@@ -523,7 +704,9 @@ async def tcfd_pdf(request: Request, payload: TCFDPDFRequest):
     text_excerpt = payload.text[:15000]  # Cap at ~15k chars
     user_msg = f"File: {payload.filename or 'uploaded document'}\n\n--- DOCUMENT TEXT ---\n{text_excerpt}\n--- END ---\n\nAssess this document for TCFD alignment."
     try:
-        return _ask_json(SONNET, TCFD_PDF_SYSTEM, user_msg, max_tokens=2000)
+        return _ask_json(SONNET, TCFD_PDF_SYSTEM, user_msg, 2000, request, "tcfd_pdf")
+    except HTTPException:
+        raise
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"AI returned invalid JSON: {e}")
     except Exception as e:
@@ -577,11 +760,64 @@ Watchlist companies: {', '.join(w[:100] for w in payload.watchlist[:10]) or 'Non
 Week of: {payload.week_of or 'Current week'}"""
 
     try:
-        return _ask_json(HAIKU, DIGEST_SYSTEM, context, max_tokens=800)
+        return _ask_json(HAIKU, DIGEST_SYSTEM, context, 800, request, "generate_digest")
+    except HTTPException:
+        raise
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"AI returned invalid JSON: {e}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Digest generation failed: {e}")
+
+
+# ── AI plan/usage status (2026-07-22) ─────────────────────────────────────────
+# Read-only — lets the frontend show a proactive trial/usage banner instead of
+# only surfacing a cap message after the user hits 403/429.
+@router.get("/user/ai-status")
+async def ai_status(request: Request, metrics: str = Query("", max_length=200)):
+    _rate_limit(request, limit=60)
+    identity, plan, window_end = _identity_and_plan(request)
+    now = datetime.utcnow()
+    conn = get_conn()
+
+    trial_ends_at = None
+    if plan == "free":
+        if identity.startswith("ip:"):
+            row = conn.execute(
+                "SELECT first_use FROM ai_identities WHERE identity=?", (identity,)
+            ).fetchone()
+            first = datetime.fromisoformat(row["first_use"]) if row else now
+            trial_ends_at = (first + timedelta(days=FREE_WINDOW_DAYS_AI)).strftime("%Y-%m-%d")
+        else:
+            end = (datetime.fromisoformat(window_end.replace(" ", "T"))
+                   if window_end else now + timedelta(days=FREE_WINDOW_DAYS_AI))
+            trial_ends_at = end.strftime("%Y-%m-%d")
+
+    usage: dict[str, dict] = {}
+    for metric in (m.strip() for m in metrics.split(",")):
+        if metric not in FREE_LIMITS_AI:
+            continue
+        if plan == "internal":
+            usage[metric] = {"used": None, "limit": None, "period": "unlimited"}
+            continue
+        if plan == "free":
+            iso = now.isocalendar()
+            period, limit = f"{iso[0]}-W{iso[1]:02d}", FREE_LIMITS_AI[metric]
+        elif plan in ("paid", "lapsed"):
+            period, limit = now.strftime("%Y-%m"), PAID_LIMITS_AI[metric]
+        else:
+            continue
+        row = conn.execute(
+            "SELECT count FROM ai_usage WHERE identity=? AND metric=? AND period=?",
+            (identity, metric, period),
+        ).fetchone()
+        usage[metric] = {"used": (row["count"] if row else 0), "limit": limit, "period": period}
+
+    return {
+        "plan": plan,
+        "trial_ends_at": trial_ends_at,
+        "lapsed": plan == "lapsed",
+        "usage": usage,
+    }
 
 
 # ── Standalone app ─────────────────────────────────────────────────────────────

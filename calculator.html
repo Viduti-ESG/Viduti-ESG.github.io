@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/style.css?v=7" />
+  <link rel="stylesheet" href="assets/css/style.css?v=8" />
   <link rel="stylesheet" href="assets/css/ghg-calculator.css?v=20260710" />
   <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=2"/>
@@ -942,6 +942,7 @@
     <span>AI Carbon Copilot</span>
     <button id="chat-close" class="chat-close">✕</button>
   </div>
+  <div id="gc-ai-status" class="gc-ai-status-banner" style="display:none;margin:8px 12px 0"></div>
   <div id="chat-messages" class="chat-messages">
     <div class="chat-msg chat-msg--bot">Hi! I can answer questions about your emission inventory, help reduce specific items, or explain any calculation. What would you like to know?</div>
   </div>
@@ -965,8 +966,9 @@
   }, { passive: true });
 </script>
 <script src="assets/js/gc-config.js?v=20260616"></script>
+<script src="assets/js/gc-ai-status.js?v=1" defer></script>
 <script src="assets/js/ghg-calculator.js?v=20260701c" defer></script>
-<script src="assets/js/ghg-features2.js?v=20260710b" defer></script>
+<script src="assets/js/ghg-features2.js?v=20260723" defer></script>
 <script src="assets/js/ghg-features3.js?v=20260716" defer></script>
 
 <script src="assets/js/cookie-consent.js"></script>

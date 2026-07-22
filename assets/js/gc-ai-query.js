@@ -2,7 +2,7 @@
 // Depends on: allCompanies, esc(), scoreBar(), fmt(), openDeepDive() from esg-intelligence.js
 
 function initAIQuery() {
-  // nothing to pre-load; ready on open
+  if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['nl_query']);
 }
 
 function aiqSetAndRun(q) {
@@ -45,9 +45,13 @@ async function runAIQuery() {
         const data = await res.json();
         filters = data.filters;
         explain = data.explanation || '';
-      } else if (res.status === 429) {
+        if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['nl_query']);
+      } else if (res.status === 429 || res.status === 403) {
+        const e = await res.json().catch(() => ({}));
         status.className = 'aiq-status aiq-status--error';
-        status.textContent = 'Rate limit reached — please wait 60 seconds and try again.';
+        status.textContent = e.detail || (res.status === 429
+          ? 'Rate limit reached — please wait 60 seconds and try again.'
+          : 'Your AI search trial has ended.');
         return;
       }
     }

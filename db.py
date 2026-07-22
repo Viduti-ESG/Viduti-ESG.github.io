@@ -149,6 +149,19 @@ def init_db() -> None:
                 value      TEXT    NOT NULL,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
+
+            -- AI usage caps for ai_api.py's Claude-fallback endpoints (2026-07-22).
+            -- Same shape as gcai's ai_usage/ai_identities (brsr-generator/backend/
+            -- main.py's usage.db) — kept here instead because ai_api.py runs
+            -- in-process with this db, unlike gcai which is a separate service.
+            CREATE TABLE IF NOT EXISTS ai_usage (
+                identity TEXT, metric TEXT, period TEXT, count INTEGER DEFAULT 0,
+                PRIMARY KEY (identity, metric, period)
+            );
+
+            CREATE TABLE IF NOT EXISTS ai_identities (
+                identity TEXT PRIMARY KEY, first_use TEXT
+            );
         """)
 
         # ── Lightweight migrations ───────────────────────────────────────────

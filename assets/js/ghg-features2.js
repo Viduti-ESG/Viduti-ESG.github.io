@@ -278,6 +278,7 @@ function initChatCopilot() {
     clearTimeout(closeTimer);
     panel.classList.remove('chat-panel--closing');
     panel.hidden = false;
+    if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['ghg_chat', 'extract_bill'], 'gcai');
     // Focusing pops the keyboard over the panel on phones — desktop only.
     if (window.matchMedia('(min-width: 641px)').matches) document.getElementById('chat-input')?.focus();
   };
@@ -312,9 +313,14 @@ function initChatCopilot() {
         }),
         signal: AbortSignal.timeout(20000),
       });
-      if (!res.ok) { updateLastChatMsg('The AI copilot is temporarily unavailable — please try again later.'); return; }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        updateLastChatMsg(err.detail || 'The AI copilot is temporarily unavailable — please try again later.');
+        return;
+      }
       const data = await res.json();
       updateLastChatMsg(data.answer || 'No response.');
+      if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['ghg_chat', 'extract_bill'], 'gcai');
     } catch { updateLastChatMsg('Could not reach backend. Make sure it is running.'); }
   });
 }
@@ -360,6 +366,7 @@ async function uploadBill(input) {
     }
     const result = await res.json();
     const d = result.data;
+    if (typeof gcRenderAiStatusBanner === 'function') gcRenderAiStatusBanner('gc-ai-status', ['ghg_chat', 'extract_bill'], 'gcai');
 
     // Pre-fill kWh field
     if (d.kwh) document.getElementById('cea-kwh').value = d.kwh;

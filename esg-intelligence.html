@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=7"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=8"/>
   <link rel="stylesheet" href="assets/css/esg-intelligence.css?v=20260617b"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=2"/>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=2"/>
@@ -1100,6 +1100,7 @@
       <h3 class="dm-intro-title">AI ESG Query Assistant</h3>
       <p class="dm-intro-text">Ask questions in plain English about the 1,221 Indian listed companies in the Green Curve dataset. With backend active, Claude AI parses your query into filters. Without backend, keyword search is used as fallback.</p>
     </div>
+    <div id="gc-ai-status" class="gc-ai-status-banner" style="display:none"></div>
     <div class="aiq-input-wrap">
       <input type="text" id="aiq-input" class="aiq-input" placeholder='e.g. "Steel companies with GHG intensity above 7" or "Low-risk pharma companies with BRSR assurance"' autocomplete="off"/>
       <button class="aiq-btn" onclick="runAIQuery()">Ask AI</button>
@@ -1194,6 +1195,8 @@
       <button class="dd-tab" data-ddtab="tcfd">TCFD Gap <span class="intel-tab-new">NEW</span></button>
     </div>
 
+    <div id="gc-ai-status-dd" class="gc-ai-status-banner" style="display:none;margin:8px 24px 0"></div>
+
     <div class="deepdive-body" id="deepDiveBody">
       <div class="dd-loading" id="ddLoading">
         <div class="dd-spinner"></div>
@@ -1226,9 +1229,10 @@
 
 <script src="assets/js/gc-config.js?v=20260616"></script>
 <script src="assets/js/auth.js"></script>
-<script src="assets/js/esg-intelligence.js?v=20260716" defer></script>
+<script src="assets/js/gc-ai-status.js?v=1" defer></script>
+<script src="assets/js/esg-intelligence.js?v=20260723" defer></script>
 <script src="assets/js/gc-supplier-tab.js?v=20260616a" defer></script>
-<script src="assets/js/gc-ai-query.js?v=20260616a" defer></script>
+<script src="assets/js/gc-ai-query.js?v=20260723" defer></script>
 <script src="assets/js/gc-onboarding.js?v=20260616a" defer></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
