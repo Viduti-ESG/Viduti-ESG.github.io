@@ -9,9 +9,8 @@ Requires:
   ANTHROPIC_ADMIN_KEY  — an Admin API key (sk-ant-admin01-...), separate from
                           the regular ANTHROPIC_API_KEY. Create one at
                           console.anthropic.com -> Settings -> Admin API Keys.
-  GRAPH_TENANT_ID / GRAPH_CLIENT_ID / GRAPH_CLIENT_SECRET
-                          — Microsoft Graph app-only mail sending, same as
-                            booking_api.py / contact_api.py. See graph_mailer.py.
+  RESEND_API_KEY        — mail sending via Resend, same as booking_api.py /
+                            contact_api.py. See mailer.py.
 
 Optional:
   USAGE_REPORT_TO      — recipient email (default: neha@greencurve.solutions)
@@ -36,7 +35,7 @@ from pathlib import Path
 import requests
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-import graph_mailer
+import mailer
 
 API_BASE = "https://api.anthropic.com/v1"
 ANTHROPIC_VERSION = "2023-06-01"
@@ -205,11 +204,11 @@ def build_email(report_date: str, total_cost_usd: float, per_staff: dict, per_mo
 
 
 def send_mail(subject: str, body: str, to_addr: str):
-    if not graph_mailer.ready():
-        print("DORMANT: GRAPH_TENANT_ID/GRAPH_CLIENT_ID/GRAPH_CLIENT_SECRET not set — skipping send.")
+    if not mailer.ready():
+        print("DORMANT: RESEND_API_KEY not set — skipping send.")
         sys.exit(3)
-    if not graph_mailer.send_mail(to_addr, subject, body):
-        print("FAILED: graph_mailer.send_mail returned False — check logs.")
+    if not mailer.send_mail(to_addr, subject, body):
+        print("FAILED: mailer.send_mail returned False — check logs.")
         sys.exit(1)
 
 

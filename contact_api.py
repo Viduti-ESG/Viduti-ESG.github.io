@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel, EmailStr
 
-import graph_mailer
+import mailer
 from db import get_conn
 
 logger = logging.getLogger("greencurve.contact")
@@ -68,7 +68,7 @@ Use case:     {req.use_case or '—'}
 Message:
 {req.message or '(none)'}
 """
-    if graph_mailer.send_mail(notify_to, f"[Green Curve] Pricing Request — {req.company}", body):
+    if mailer.send_mail(notify_to, f"[Green Curve] Pricing Request — {req.company}", body):
         logger.info("Pricing request email sent for %s <%s>", req.company, req.email)
     else:
         logger.warning("Pricing request email not sent (mailer not configured or failed)")

@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-import graph_mailer
+import mailer
 
 logger = logging.getLogger(__name__)
 
@@ -129,12 +129,12 @@ class SupplierResponseOut(BaseModel):
 
 def _send_supplier_notification(record: dict) -> None:
     """Send a new-supplier-response email to the notification address via
-    Microsoft Graph (see graph_mailer.py). GC_NOTIFY_EMAIL defaults to
+    Resend (see mailer.py). GC_NOTIFY_EMAIL defaults to
     kneha2381@gmail.com. If the mailer isn't configured, logs and returns.
     """
     notify_to = os.environ.get("GC_NOTIFY_EMAIL", "kneha2381@gmail.com")
 
-    if not graph_mailer.ready():
+    if not mailer.ready():
         logger.info(
             "New supplier response [%s] from %s for %s — mailer not configured, skipping email",
             record.get("id"), record.get("supplier_name"), record.get("mandating_company_name"),
@@ -155,7 +155,7 @@ def _send_supplier_notification(record: dict) -> None:
         f"https://greencurve.solutions/esg-intelligence\n"
     )
     subject = f"[Green Curve] New Supplier Response — {record.get('supplier_name', 'Unknown')}"
-    if graph_mailer.send_mail(notify_to, subject, body):
+    if mailer.send_mail(notify_to, subject, body):
         logger.info("Supplier notification email sent to %s for response %s", notify_to, record.get("id"))
     else:
         logger.warning("Failed to send supplier notification email")

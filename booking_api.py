@@ -36,7 +36,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, EmailStr, Field
 
-import graph_mailer
+import mailer
 from auth_api import get_current_user
 from db import get_conn
 
@@ -303,9 +303,9 @@ def _google_cal_url(b: dict, room: dict) -> str:
             f"&text={title}&dates={start}/{end}&details={details}")
 
 
-# ── Email (Microsoft Graph — see graph_mailer.py) ──────────────────────────────
+# ── Email (Resend — see mailer.py) ─────────────────────────────────────────────
 def _send_mail(to_addr: str, subject: str, body: str, ics: Optional[str] = None):
-    graph_mailer.send_mail(to_addr, subject, body, ics=ics)
+    mailer.send_mail(to_addr, subject, body, ics=ics)
 
 
 def _fmt_local(b_start_utc: str, tzname: str) -> str:
