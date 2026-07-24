@@ -495,7 +495,7 @@ function applyTemplate(idx) {
   document.querySelectorAll('.st-pill[data-tmpl]').forEach(b => b.classList.toggle('st-pill--active', Number(b.dataset.tmpl) === idx));
 
   // Clear all filter inputs first
-  ['cf-company','cf-ghg','cf-water','cf-epr','cf-comp','cf-rev-min','cf-cap-min'].forEach(id => {
+  ['cf-company','cf-ghg','cf-scope1-min','cf-scope2-min','cf-scope3-min','cf-water','cf-epr','cf-comp','cf-rev-min','cf-cap-min'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   ['cf-sector','cf-risk-tier','cf-return','screenerSearch','screenerRisk'].forEach(id => {
@@ -531,6 +531,9 @@ function applyColFilters(clearActiveTmpl) {
   const sector   = document.getElementById('cf-sector')?.value   || '';
   const riskTier = document.getElementById('cf-risk-tier')?.value || '';
   const ghgMin   = Number(document.getElementById('cf-ghg')?.value   || 0);
+  const scope1Min = Number(document.getElementById('cf-scope1-min')?.value || 0);
+  const scope2Min = Number(document.getElementById('cf-scope2-min')?.value || 0);
+  const scope3Min = Number(document.getElementById('cf-scope3-min')?.value || 0);
   const waterMin = Number(document.getElementById('cf-water')?.value || 0);
   const eprMin   = Number(document.getElementById('cf-epr')?.value   || 0);
   const compMin  = Number(document.getElementById('cf-comp')?.value  || 0);
@@ -542,12 +545,12 @@ function applyColFilters(clearActiveTmpl) {
   const topSearch = (document.getElementById('screenerSearch')?.value || '').toLowerCase();
 
   renderScreener('', '', '', {
-    company, sector, riskTier, ghgMin, waterMin, eprMin, compMin, revMin, capMin, retDir, confidence, topSearch
+    company, sector, riskTier, ghgMin, scope1Min, scope2Min, scope3Min, waterMin, eprMin, compMin, revMin, capMin, retDir, confidence, topSearch
   });
 }
 
 function resetColFilters() {
-  ['cf-company','cf-ghg','cf-water','cf-epr','cf-comp','cf-rev-min','cf-cap-min'].forEach(id => {
+  ['cf-company','cf-ghg','cf-scope1-min','cf-scope2-min','cf-scope3-min','cf-water','cf-epr','cf-comp','cf-rev-min','cf-cap-min'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -578,6 +581,9 @@ function exportScreenerCSV() {
     ['ESG Risk Score', c => c.esg_risk_score ?? ''],
     ['Risk Tier',      c => c.risk_tier || ''],
     ['GHG Intensity',  c => c.risk_breakdown?.ghg_intensity ?? ''],
+    ['Scope 1 (tCO2e)',c => c.financial_exposure?.scope1_emissions_tco2e ?? ''],
+    ['Scope 2 (tCO2e)',c => c.financial_exposure?.scope2_emissions_tco2e ?? ''],
+    ['Scope 3 (tCO2e)',c => c.financial_exposure?.scope3_emissions_tco2e ?? ''],
     ['Water Intensity',c => c.risk_breakdown?.water_intensity ?? ''],
     ['EPR Exposure',   c => c.risk_breakdown?.epr_exposure ?? ''],
     ['Compliance Risk',c => c.risk_breakdown?.compliance_risk ?? ''],
@@ -637,6 +643,9 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
     if (colFilters.company)  data = data.filter(c => (c.company_name||'').toLowerCase().includes(colFilters.company));
     if (colFilters.sector)   data = data.filter(c => (c.sector||'').replace('Manufacturing — ','').trim() === colFilters.sector);
     if (colFilters.ghgMin)   data = data.filter(c => (c.risk_breakdown?.ghg_intensity||0)   >= colFilters.ghgMin);
+    if (colFilters.scope1Min) data = data.filter(c => (c.financial_exposure?.scope1_emissions_tco2e||0) >= colFilters.scope1Min);
+    if (colFilters.scope2Min) data = data.filter(c => (c.financial_exposure?.scope2_emissions_tco2e||0) >= colFilters.scope2Min);
+    if (colFilters.scope3Min) data = data.filter(c => (c.financial_exposure?.scope3_emissions_tco2e||0) >= colFilters.scope3Min);
     if (colFilters.waterMin) data = data.filter(c => (c.risk_breakdown?.water_intensity||0) >= colFilters.waterMin);
     if (colFilters.eprMin)   data = data.filter(c => (c.risk_breakdown?.epr_exposure||0)    >= colFilters.eprMin);
     if (colFilters.compMin)  data = data.filter(c => (c.risk_breakdown?.compliance_risk||0) >= colFilters.compMin);
@@ -661,6 +670,9 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
       case 'sector':         va = a.sector||'';       vb = b.sector||'';       return va.localeCompare(vb) * sortDir;
       case 'esg_risk_score': va = a.esg_risk_score||0; vb = b.esg_risk_score||0; break;
       case 'ghg':            va = a.risk_breakdown?.ghg_intensity||0;   vb = b.risk_breakdown?.ghg_intensity||0;   break;
+      case 'scope1':         va = a.financial_exposure?.scope1_emissions_tco2e ?? -1; vb = b.financial_exposure?.scope1_emissions_tco2e ?? -1; break;
+      case 'scope2':         va = a.financial_exposure?.scope2_emissions_tco2e ?? -1; vb = b.financial_exposure?.scope2_emissions_tco2e ?? -1; break;
+      case 'scope3':         va = a.financial_exposure?.scope3_emissions_tco2e ?? -1; vb = b.financial_exposure?.scope3_emissions_tco2e ?? -1; break;
       case 'water':          va = a.risk_breakdown?.water_intensity||0; vb = b.risk_breakdown?.water_intensity||0; break;
       case 'epr':            va = a.risk_breakdown?.epr_exposure||0;    vb = b.risk_breakdown?.epr_exposure||0;    break;
       case 'compliance':     va = a.risk_breakdown?.compliance_risk||0; vb = b.risk_breakdown?.compliance_risk||0; break;
@@ -669,7 +681,7 @@ function renderScreener(filter = '', risk = '', sort = '', colFilters = null) {
       case 'return_1y':      va = a.market_data?.return_1y_pct??-999;   vb = b.market_data?.return_1y_pct??-999;   break;
       default:               va = a.esg_risk_score||0; vb = b.esg_risk_score||0;
     }
-    return (vb - va) * sortDir;
+    return (va - vb) * sortDir;
   });
 
   _screenerData = data;
@@ -730,6 +742,9 @@ function _renderScreenerPage(page) {
         <td><span class="risk-badge risk-badge--${displayTier}" title="${_scoreTrack === 'conservative' ? 'Conservative (confidence-adjusted) score' : 'Standard score'}">${displayScore}</span></td>
         <td>${_pctileBadge(getSectorPercentile(c))}</td>
         <td>${scoreBar(rb.ghg_intensity)}</td>
+        <td>${_scopeCell(c.financial_exposure?.scope1_emissions_tco2e)}</td>
+        <td>${_scopeCell(c.financial_exposure?.scope2_emissions_tco2e)}</td>
+        <td>${_scopeCell(c.financial_exposure?.scope3_emissions_tco2e)}</td>
         <td>${scoreBar(rb.water_intensity)}</td>
         <td>${scoreBar(rb.epr_exposure)}</td>
         <td>${scoreBar(rb.compliance_risk)}</td>
@@ -744,7 +759,7 @@ function _renderScreenerPage(page) {
     const remaining = _screenerData.length - _GUEST_LIMIT;
     tbody.innerHTML += `
       <tr class="screener-gate-row">
-        <td colspan="13">
+        <td colspan="16">
           <div class="screener-gate">
             <div class="screener-gate__icon">🔒</div>
             <div class="screener-gate__title">See all ${_screenerData.length.toLocaleString('en-IN')} companies</div>
@@ -4106,6 +4121,11 @@ function esc(s) {
 }
 function fmt(n) {
   return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n);
+}
+function _scopeCell(v) {
+  return v != null
+    ? `<span style="font-size:.8rem">${fmt(v)}</span>`
+    : `<span style="font-size:.78rem;color:#64748b;font-style:italic">Not disclosed</span>`;
 }
 
 // ── Feature #3: Filing Deadline Countdown ─────────────────────────────────────
