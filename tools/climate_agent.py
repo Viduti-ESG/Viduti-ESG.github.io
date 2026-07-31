@@ -39,6 +39,11 @@ INDEX_PATH = POSTS_DIR / "index.html"
 INDEX_JSON_PATH = POSTS_DIR / "index.json"
 SITE_URL   = "https://greencurve.solutions"
 MODEL      = "claude-sonnet-4-6"
+# Output ceiling for one post. The schema asks for six analytical sections plus
+# lists (~1,200-2,000 words of JSON-escaped text); the previous 2,500 sat right
+# on that edge and truncated roughly half of all posts. max_tokens is a ceiling,
+# not a charge - raising it costs nothing on posts that already fit.
+MAX_POST_TOKENS = 4000
 MAX_PER_RUN_DEFAULT = int(os.environ.get("GC_BLOG_MAX_PER_RUN", "2"))
 
 HEADERS = {
@@ -180,12 +185,28 @@ def save_processed(processed: set):
 
 
 # ── Claude ─────────────────────────────────────────────────────────────────────
+class TruncatedReply(Exception):
+    """The model ran out of output budget mid-JSON — retrying at the same cap
+    cannot succeed, so this is raised separately from a genuine parse error."""
+
+
 def _parse_post_json(raw: str) -> dict:
     """Extract the JSON object from a model reply, tolerating ```json fences."""
     raw = re.sub(r"^\s*```(?:json)?|```\s*$", "", raw.strip()).strip()
     start, end = raw.find("{"), raw.rfind("}")
     if start == -1 or end == -1:
-        raise json.JSONDecodeError("no JSON object in model reply", raw or "", 0)
+        # An opening brace with no closing one means the reply was cut off, not
+        # malformed. Distinguishing the two matters: the old code raised the same
+        # JSONDecodeError for both, always at pos 0, so every failure logged as
+        # "no JSON object in model reply: line 1 column 1 (char 0)" no matter what
+        # the model actually returned — which hid a truncation problem for weeks.
+        if start != -1 and end == -1:
+            raise TruncatedReply(
+                f"reply opened a JSON object but never closed it "
+                f"({len(raw)} chars received) — raise max_tokens")
+        raise json.JSONDecodeError(
+            f"no JSON object in model reply (got {len(raw)} chars: "
+            f"{raw[:200]!r})", raw or "", 0)
     return json.loads(raw[start:end + 1])
 
 
@@ -201,7 +222,7 @@ def write_post(item: dict, body: str) -> dict:
             "Write the expert analysis post now.")
     try:
         msg = client.messages.create(
-            model=MODEL, max_tokens=2500,
+            model=MODEL, max_tokens=MAX_POST_TOKENS,
             system=[{"type": "text", "text": NEWS_SYSTEM_PROMPT,
                      "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": user}],
@@ -212,15 +233,28 @@ def write_post(item: dict, body: str) -> dict:
             sys.exit(3)
         raise
     raw = msg.content[0].text.strip()
+    # stop_reason is the single most useful diagnostic here and was never logged;
+    # "max_tokens" means the post was cut off, not that the model misbehaved.
+    if msg.stop_reason == "max_tokens":
+        print(f"  TRUNCATED at max_tokens={MAX_POST_TOKENS} "
+              f"({msg.usage.output_tokens} output tokens) — SKIPPED, no retry "
+              f"(a retry at the same cap would truncate identically). "
+              f"Raise MAX_POST_TOKENS if this recurs.")
+        raise TruncatedReply(f"hit max_tokens={MAX_POST_TOKENS}")
     try:
         return _parse_post_json(raw)
+    except TruncatedReply as e:
+        # Ran out of budget without the API flagging it — same conclusion:
+        # re-asking at the same ceiling is spend with no chance of success.
+        print(f"  TRUNCATED ({e}) — SKIPPED, no retry")
+        raise
     except json.JSONDecodeError as e:
         # The model occasionally emits an unescaped quote/newline inside a JSON
         # string. Rather than lose the post (and, before this, the rest of the
         # run), hand the broken text back and ask for a clean re-emit once.
         print(f"  invalid JSON from model ({e}) — retrying once")
         fix = client.messages.create(
-            model=MODEL, max_tokens=2500,
+            model=MODEL, max_tokens=MAX_POST_TOKENS,
             messages=[
                 {"role": "user", "content": user},
                 {"role": "assistant", "content": raw},

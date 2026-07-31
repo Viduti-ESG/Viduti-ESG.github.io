@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Green Curve vs CRISIL vs Bloomberg — ESG Platform Comparison India</title>
-  <meta name="description" content="Detailed comparison of Green Curve vs CRISIL ESG, D&B ESG, EcoVadis, and Bloomberg for Indian listed companies. BRSR compliance, pricing, AI analysis, and India coverage."/>
-  <meta name="keywords" content="ESG software comparison India, CRISIL ESG vs Green Curve, best ESG platform India, BRSR compliance software, Bloomberg ESG India, EcoVadis India alternative"/>
+  <title>How to Choose an ESG Data Provider in India — A Buyer’s Guide | Green Curve</title>
+  <meta name="description" content="A practical guide to evaluating ESG data and BRSR compliance platforms for Indian listed companies — the questions to ask, the criteria that matter, and how to run a fair trial."/>
+  <meta name="keywords" content="how to choose ESG software India, ESG data provider evaluation, BRSR compliance software, ESG platform buyers guide India, ESG vendor selection criteria"/>
   <meta name="robots" content="index, follow"/>
   <link rel="canonical" href="https://greencurve.solutions/compare"/>
   <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Green Curve vs CRISIL, Bloomberg & EcoVadis — India ESG Platform Comparison"/>
-  <meta property="og:description" content="Independent feature-by-feature comparison of the top ESG platforms for Indian listed companies. Pricing, India coverage, BRSR compliance, and AI capabilities."/>
+  <meta property="og:title" content="How to Choose an ESG Data Provider in India — A Buyer’s Guide"/>
+  <meta property="og:description" content="The evaluation criteria that actually matter when selecting an ESG data or BRSR compliance platform — and how to test them before you buy."/>
   <meta property="og:image" content="https://greencurve.solutions/assets/img/logo.png"/>
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
@@ -85,6 +85,13 @@
     .tag-amber { background:rgba(251,191,36,.12); color:var(--amber); }
     .tag-red   { background:rgba(248,113,113,.12); color:var(--red); }
 
+    .cmp-fit { background:var(--surface,#111827); border:1px solid var(--border); border-radius:14px;
+               padding:26px 28px; margin:8px 0 40px; }
+    .cmp-fit p  { color:var(--text-70); font-size:.9rem; line-height:1.7; margin:0 0 14px; }
+    .cmp-fit ul { margin:0; padding-left:20px; }
+    .cmp-fit li { color:var(--text-70); font-size:.88rem; line-height:1.75; margin-bottom:9px; }
+    .cmp-fit strong { color:#e2e8f0; }
+
     /* BOTTOM CTA */
     .cmp-cta { text-align:center; padding:56px 20px 80px; border-top:1px solid var(--border); }
     .cmp-cta h2 { font-family:var(--serif); font-size:2rem; color:#fff; margin-bottom:12px; }
@@ -110,276 +117,89 @@
 
 <!-- HERO -->
 <section class="cmp-hero">
-  <div class="cmp-hero__eyebrow">Independent Comparison · 2026</div>
-  <h1 class="cmp-hero__title">Green Curve vs <em>every other</em><br/>ESG platform for India</h1>
-  <p class="cmp-hero__sub">CRISIL ESG, D&amp;B ESG, EcoVadis, Sustainalytics, and Bloomberg all claim India coverage. We break down exactly what you get — and what you don't — from each platform.</p>
-  <p class="cmp-hero__note">Last updated June 2026. Information is based on publicly available product pages, demos, and community reports. Prices are indicative; contact vendors for exact quotes.</p>
+  <div class="cmp-hero__eyebrow">Buyer’s Guide · 2026</div>
+  <h1 class="cmp-hero__title">How to choose an<br/><em>ESG data provider</em> in India</h1>
+  <p class="cmp-hero__sub">Choosing an ESG data or BRSR compliance platform is mostly a question of fit, not features. This guide sets out the criteria that actually separate providers, the questions to put to any vendor, and how to run a trial that tells you something useful.</p>
+  <p class="cmp-hero__note">We deliberately don’t publish other providers’ pricing or capability claims here. Their commercial terms aren’t public and second-hand figures go stale fast — ask each vendor directly, and hold them to the same criteria below.</p>
 </section>
 
-<!-- VERDICT CARDS -->
 <div class="cmp-wrap">
+
+  <!-- CRITERIA -->
+  <h2 class="cmp-section-title">Seven criteria that actually matter</h2>
   <div class="verdict-cards">
     <div class="verdict-card">
-      <div class="verdict-card__name">Green Curve</div>
-      <div class="verdict-card__verdict">BRSR-native, India-first. AI-powered. Starts free. The only platform built exclusively for NSE/BSE-listed companies.</div>
-      <span class="verdict-card__tag tag-green">Best for India SME/Mid-cap</span>
+      <div class="verdict-card__name">1. Data provenance</div>
+      <div class="verdict-card__verdict">Is every data point traceable to a source document you can open — a filing, a disclosure, a regulator’s database — or is it a modelled estimate? Ask which of the two you are buying, and what share is each.</div>
+      <span class="verdict-card__tag tag-green">Ask: show me the source for this number</span>
     </div>
     <div class="verdict-card">
-      <div class="verdict-card__name">CRISIL ESG</div>
-      <div class="verdict-card__verdict">Reputable Indian brand, strong analyst coverage for large-caps. Sales-led, expensive, limited self-service or AI tools.</div>
-      <span class="verdict-card__tag tag-amber">Best for BSE 100 with big budgets</span>
+      <div class="verdict-card__name">2. Methodology transparency</div>
+      <div class="verdict-card__verdict">Can you reproduce a score from the published methodology? If the weights, normalisation and peer set are not documented, you cannot defend the number to a board or an assurer.</div>
+      <span class="verdict-card__tag tag-green">Ask: can I recompute this myself?</span>
     </div>
     <div class="verdict-card">
-      <div class="verdict-card__name">D&amp;B ESG</div>
-      <div class="verdict-card__verdict">Global supply-chain data leader. India coverage is thin for SME suppliers. No BRSR workflow. Very expensive.</div>
-      <span class="verdict-card__tag tag-amber">Best for global supply-chain due diligence</span>
+      <div class="verdict-card__name">3. Coverage where you need it</div>
+      <div class="verdict-card__verdict">Headline company counts hide the detail. What matters is coverage of <em>your</em> universe — your sector, your market-cap band, your suppliers. Ask for a coverage check against a list you supply.</div>
+      <span class="verdict-card__tag tag-green">Ask: how many of my 40 names do you cover?</span>
     </div>
     <div class="verdict-card">
-      <div class="verdict-card__name">EcoVadis</div>
-      <div class="verdict-card__verdict">Survey-based scorecard — companies fill out a questionnaire. No BRSR mapping. Good for procurement teams, not ESG analysts.</div>
-      <span class="verdict-card__tag tag-amber">Best for procurement/sourcing teams</span>
+      <div class="verdict-card__name">4. Regulatory fit</div>
+      <div class="verdict-card__verdict">A platform built for one disclosure regime rarely maps cleanly onto another. If your obligation is SEBI BRSR, check whether the data model is BRSR-native or mapped across from a different framework — and where that mapping loses fidelity.</div>
+      <span class="verdict-card__tag tag-green">Ask: which regime is this built on?</span>
     </div>
     <div class="verdict-card">
-      <div class="verdict-card__name">Bloomberg ESG</div>
-      <div class="verdict-card__verdict">Deep data for global institutional investors. Terminal licence required (₹20L+/year). India mid-cap coverage patchy.</div>
-      <span class="verdict-card__tag tag-red">Best for global institutional investors only</span>
+      <div class="verdict-card__name">5. Update cadence</div>
+      <div class="verdict-card__verdict">Disclosure data ages on an annual cycle, but regulation moves quarterly. Ask when the dataset was last refreshed, what triggers a refresh, and how you find out that something changed.</div>
+      <span class="verdict-card__tag tag-green">Ask: what is the date on this data?</span>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-card__name">6. Export and lock-in</div>
+      <div class="verdict-card__verdict">Can you get your data and your work out in a usable format if you leave? Check export formats, API access, and whether analysis you build inside the tool is portable.</div>
+      <span class="verdict-card__tag tag-green">Ask: what does my exit look like?</span>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-card__name">7. Total cost of ownership</div>
+      <div class="verdict-card__verdict">List price is rarely the real number. Count seats, refresh fees, onboarding, and the analyst hours needed to make the output usable. A cheaper tool that needs two days of cleanup a month is not cheaper.</div>
+      <span class="verdict-card__tag tag-green">Ask: what will this cost in year two?</span>
     </div>
   </div>
 
-  <!-- MASTER COMPARISON TABLE -->
-  <h2 class="cmp-section-title">Full feature comparison</h2>
-  <div class="cmp-table-scroll">
-    <table class="cmp-table">
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th class="gc-col">Green Curve</th>
-          <th>CRISIL ESG</th>
-          <th>D&amp;B ESG</th>
-          <th>EcoVadis</th>
-          <th>Bloomberg</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Pricing -->
-        <tr class="section-row"><td colspan="6">Pricing &amp; Access</td></tr>
-        <tr>
-          <td>Starting price (single user)</td>
-          <td class="gc-col"><span class="yes hl">Free</span></td>
-          <td><span class="hl">₹3–8L/year</span></td>
-          <td><span class="hl">₹5–12L/year</span></td>
-          <td><span class="hl">₹2–4L/year</span></td>
-          <td><span class="hl">₹20L+/year</span></td>
-        </tr>
-        <tr>
-          <td>Pro/full access (single user)</td>
-          <td class="gc-col"><span class="yes hl">₹2,999/mo</span></td>
-          <td><span class="part">Quote only</span></td>
-          <td><span class="part">Quote only</span></td>
-          <td><span class="part">Quote only</span></td>
-          <td><span class="no">Terminal required</span></td>
-        </tr>
-        <tr>
-          <td>Free tier / trial</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>Self-service sign-up (no sales call)</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-
-        <!-- India Coverage -->
-        <tr class="section-row"><td colspan="6">India Data Coverage</td></tr>
-        <tr>
-          <td>NSE/BSE company universe</td>
-          <td class="gc-col"><span class="yes hl">1,221 companies</span></td>
-          <td><span class="part">~500 large-caps</span></td>
-          <td><span class="part">~300 (global focus)</span></td>
-          <td><span class="part">Survey only</span></td>
-          <td><span class="part">~800 (patchy mid-cap)</span></td>
-        </tr>
-        <tr>
-          <td>BRSR filing status tracking</td>
-          <td class="gc-col"><span class="yes">✓ Weekly</span></td>
-          <td><span class="part">Annual</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="part">Partial</span></td>
-        </tr>
-        <tr>
-          <td>BRSR-native ESG scoring</td>
-          <td class="gc-col"><span class="yes">✓ Built-in</span></td>
-          <td><span class="part">Partial</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>SEBI/NGT/MoEFCC regulatory events</td>
-          <td class="gc-col"><span class="yes">✓ Daily feed</span></td>
-          <td><span class="part">Manual alerts</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="part">Global news only</span></td>
-        </tr>
-        <tr>
-          <td>India-specific emission factors (CEA/CPCB)</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="part">Partial</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-
-        <!-- AI & Analysis -->
-        <tr class="section-row"><td colspan="6">AI &amp; Analysis Tools</td></tr>
-        <tr>
-          <td>AI-powered ESG analysis (LLM)</td>
-          <td class="gc-col"><span class="yes">✓ Claude AI</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="part">Limited</span></td>
-        </tr>
-        <tr>
-          <td>TCFD gap analysis</td>
-          <td class="gc-col"><span class="yes">✓ AI-assisted</span></td>
-          <td><span class="part">Manual</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="part">Partial</span></td>
-        </tr>
-        <tr>
-          <td>Natural language ESG query</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>GHG emissions calculator (free)</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>Peer sector benchmarking</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="yes">✓</span></td>
-          <td><span class="part">Limited</span></td>
-          <td><span class="part">Limited</span></td>
-          <td><span class="yes">✓</span></td>
-        </tr>
-
-        <!-- Workflow Tools -->
-        <tr class="section-row"><td colspan="6">Workflow &amp; Compliance Tools</td></tr>
-        <tr>
-          <td>BRSR report generator</td>
-          <td class="gc-col"><span class="yes">✓ AI-prefilled</span></td>
-          <td><span class="part">Manual templates</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>Corrective Action Plan (CAP) tracker</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="part">Basic</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>Value-chain supplier ESG forms</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="yes">✓ (paid)</span></td>
-          <td><span class="yes">✓ Core feature</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>Watchlist &amp; risk-change alerts</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="part">Email alerts</span></td>
-          <td><span class="part">Alerts available</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="yes">✓ (terminal)</span></td>
-        </tr>
-        <tr>
-          <td>CSV/PDF export</td>
-          <td class="gc-col"><span class="yes">✓ Free</span></td>
-          <td><span class="yes">✓</span></td>
-          <td><span class="yes">✓</span></td>
-          <td><span class="yes">✓</span></td>
-          <td><span class="yes">✓</span></td>
-        </tr>
-
-        <!-- Data &amp; Transparency -->
-        <tr class="section-row"><td colspan="6">Data &amp; Transparency</td></tr>
-        <tr>
-          <td>Methodology published openly</td>
-          <td class="gc-col"><span class="yes">✓ Full</span></td>
-          <td><span class="part">High-level only</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="part">Partial</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-        <tr>
-          <td>Scores based on public filings (not surveys)</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="yes">✓</span></td>
-          <td><span class="part">Mixed</span></td>
-          <td><span class="no">✕ Survey-only</span></td>
-          <td><span class="yes">✓</span></td>
-        </tr>
-        <tr>
-          <td>Anomaly detection (data quality flags)</td>
-          <td class="gc-col"><span class="yes">✓</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-          <td><span class="no">✕</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- USE-CASE GUIDE -->
-  <h2 class="cmp-section-title">Which platform should you use?</h2>
-  <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:56px">
-    <div style="background:var(--surface);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:20px">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px">Listed Companies (BSE 250–1000)</div>
-      <p style="font-size:.84rem;color:var(--text-70);line-height:1.6;margin:0 0 12px">You need to file BRSR, track compliance, and benchmark against peers. You probably don't have a ₹5L/year budget for ESG software.</p>
-      <p style="font-size:.84rem;font-weight:700;color:#e2e8f0;margin:0">→ Green Curve Pro (₹2,999/month)</p>
+  <!-- RUNNING A TRIAL -->
+  <h2 class="cmp-section-title">How to run a trial that tells you something</h2>
+  <div class="verdict-cards">
+    <div class="verdict-card">
+      <div class="verdict-card__name">Bring your own list</div>
+      <div class="verdict-card__verdict">Give every vendor the same 20–40 companies you actually care about. A demo on the vendor’s hand-picked examples tells you nothing about coverage of your universe.</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:8px">Boutique ESG Consultancy</div>
-      <p style="font-size:.84rem;color:var(--text-70);line-height:1.6;margin:0 0 12px">You serve 10–50 clients and need a screener + BRSR workflow + AI analysis you can run on their behalf. White-label available on Enterprise.</p>
-      <p style="font-size:.84rem;font-weight:700;color:#e2e8f0;margin:0">→ Green Curve Enterprise (Contact us)</p>
+    <div class="verdict-card">
+      <div class="verdict-card__name">Chase one number to its source</div>
+      <div class="verdict-card__verdict">Pick a single figure — one company’s Scope 1 emissions, say — and follow it back to the filing it came from. How hard that is tells you more than any feature list.</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:8px">AMC / Institutional Investor</div>
-      <p style="font-size:.84rem;color:var(--text-70);line-height:1.6;margin:0 0 12px">You need deep India coverage alongside global portfolio data. Use Green Curve for BRSR-native Indian analytics alongside Bloomberg for global bonds/equities.</p>
-      <p style="font-size:.84rem;font-weight:700;color:#e2e8f0;margin:0">→ Green Curve + Bloomberg (complementary)</p>
+    <div class="verdict-card">
+      <div class="verdict-card__name">Produce one real deliverable</div>
+      <div class="verdict-card__verdict">Make something you would actually send — a board slide, a peer benchmark, a gap analysis — and count the manual steps. That count is your real running cost.</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px">Procurement / Supply Chain</div>
-      <p style="font-size:.84rem;color:var(--text-70);line-height:1.6;margin:0 0 12px">You need to onboard and score Indian suppliers. Green Curve's value-chain supplier form is India-specific. EcoVadis is better if you manage global supplier networks.</p>
-      <p style="font-size:.84rem;font-weight:700;color:#e2e8f0;margin:0">→ Green Curve (India suppliers) or EcoVadis (global)</p>
+    <div class="verdict-card">
+      <div class="verdict-card__name">Check a company you know well</div>
+      <div class="verdict-card__verdict">Run a company whose disclosures you already understand. Errors you would never catch on an unfamiliar name are obvious on a familiar one.</div>
     </div>
   </div>
-</div>
+
+  <!-- WHERE GREEN CURVE FITS -->
+  <h2 class="cmp-section-title">Where Green Curve fits</h2>
+  <div class="cmp-fit">
+    <p>We are one option among several, and we would rather be judged on the criteria above than on a comparison we wrote ourselves. What we can state plainly about our own product:</p>
+    <ul>
+      <li><strong>BRSR-native.</strong> Scores are built directly on SEBI BRSR XBRL filings rather than mapped across from another framework.</li>
+      <li><strong>Traceable by design.</strong> Every score traces back to the filing it came from — criteria 1 and 2 above are the reason we built it that way.</li>
+      <li><strong>1,221 Indian listed companies</strong> in the published dataset, browsable without an account, so you can run criterion 3 against your own list before you talk to us.</li>
+      <li><strong>Self-service.</strong> A free tier and a published price, so you can evaluate without a sales process.</li>
+      <li><strong>What we are not.</strong> We are not a credit-rating agency or a SEBI-registered ESG Rating Provider, we publish no analyst-written company ratings, and our coverage is India-listed only — if you need global supply-chain or private-company data, we are not the right fit.</li>
+    </ul>
+  </div>
+
+</div><!-- /cmp-wrap -->
 
 <!-- BOTTOM CTA -->
 <section class="cmp-cta">
