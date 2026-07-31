@@ -744,13 +744,17 @@
   </div>
 </section>
 
-<!-- NEWSLETTER -->
+<!-- FOLLOW ALONG
+     Email capture muted 2026-07-31: the signup promised a daily briefing that
+     no scheduled send job exists to produce, so it was collecting addresses
+     for a purpose we weren't fulfilling. Re-enable only alongside a working
+     send job (and refresh the DPDP consent/notice wording at that point). -->
 <section class="newsletter" id="newsletter">
   <div class="container newsletter__inner">
     <div class="newsletter__left">
-      <div class="newsletter__eyebrow">Free · Daily · No spam</div>
-      <h2 class="newsletter__title">ESG intelligence in your inbox every morning</h2>
-      <p class="newsletter__sub">Join compliance officers, ESG analysts, and investors who start their day with Green Curve. Regulatory updates, BRSR insights, and company risk alerts — curated for Indian businesses.</p>
+      <div class="newsletter__eyebrow">Published regularly</div>
+      <h2 class="newsletter__title">ESG intelligence, as it changes</h2>
+      <p class="newsletter__sub">We publish analysis of India's ESG disclosure landscape — read it on the site, or follow along on LinkedIn.</p>
       <ul class="newsletter__bullets">
         <li>New EPR rules &amp; CPCB enforcement actions</li>
         <li>SEBI BRSR filing deadlines &amp; guidance</li>
@@ -759,17 +763,7 @@
       </ul>
     </div>
     <div class="newsletter__right">
-      <form class="newsletter__form" id="newsletterForm" onsubmit="subscribeNewsletter(event)">
-        <label class="newsletter__label" for="nlEmail">Your work email</label>
-        <div class="newsletter__input-row">
-          <input
-            class="newsletter__input" id="nlEmail" type="email"
-            placeholder="you@company.com" required autocomplete="email"/>
-          <button class="newsletter__btn" type="submit" id="nlBtn">Subscribe &rarr;</button>
-        </div>
-        <div class="newsletter__msg" id="nlMsg" aria-live="polite"></div>
-        <p class="newsletter__note">Free forever. Unsubscribe any time. No ads. By subscribing you agree to our <a href="/privacy-policy" style="color:var(--emerald);text-decoration:none">Privacy Policy</a>.</p>
-      </form>
+      <a href="/insights" class="newsletter__btn" style="display:inline-block;text-decoration:none;margin-bottom:18px">Read the latest insights &rarr;</a>
       <div class="newsletter__social">
         <span>Also follow us on</span>
         <a href="https://www.linkedin.com/in/neha-kumari-701872a4/" target="_blank" rel="noopener" class="newsletter__social-link" id="linkedinCompanyLink">
@@ -889,11 +883,7 @@ function gcCopyEmail(btn, who) {
             Not investment advice
           </span>
         </div>
-        <form class="footer-nl-mini" onsubmit="subscribeNewsletter(event)" style="margin-top:20px">
-          <input class="footer-nl-mini__input" type="email" placeholder="Daily ESG in your inbox" required autocomplete="email" aria-label="Email for newsletter"/>
-          <button class="footer-nl-mini__btn" type="submit">Subscribe</button>
-        </form>
-        <p style="font-size:.68rem;color:#334155;margin-top:6px">By subscribing you agree to our <a href="/privacy-policy" style="color:#475569">Privacy Policy</a>.</p>
+        <!-- Newsletter mini-form muted 2026-07-31 — see the note on the #newsletter section. -->
       </div>
 
       <!-- Tools column -->
@@ -1013,45 +1003,8 @@ function gcCopyEmail(btn, who) {
   });
 })();
 </script>
-<script>
-// ── Newsletter subscription → Google Sheets ───────────────────────────────
-// After deploying your Apps Script (see setup instructions), paste the URL below.
-const NEWSLETTER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbywFnBY7wuBWDAwcVVg8jXitJVLSmy3JEmltMl5cSN836OIdXfNGRak7-LqnoomwKKigQ/exec';
-
-async function subscribeNewsletter(e) {
-  e.preventDefault();
-  const form  = e.target;
-  const email = form.querySelector('input[type="email"]').value.trim();
-  const btn   = form.querySelector('button[type="submit"]');
-  const msg   = document.getElementById('nlMsg');
-
-  if (!email) return;
-  if (NEWSLETTER_ENDPOINT === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
-    if (msg) { msg.textContent = 'Subscription not configured yet.'; msg.style.color = '#f87171'; }
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Subscribing…';
-
-  try {
-    const fd = new FormData();
-    fd.append('email', email);
-    // mode:'no-cors' is required — Apps Script doesn't return CORS headers.
-    // Response is opaque but the email IS written to the sheet.
-    await fetch(NEWSLETTER_ENDPOINT, { method: 'POST', mode: 'no-cors', body: fd });
-    form.innerHTML = `
-      <div class="nl-success">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
-        <span>Subscribed! You'll hear from us soon.</span>
-      </div>`;
-  } catch {
-    btn.disabled = false;
-    btn.textContent = 'Subscribe →';
-    if (msg) { msg.textContent = 'Something went wrong — please try again.'; msg.style.color = '#f87171'; }
-  }
-}
-</script>
+<!-- Newsletter subscribe handler removed 2026-07-31 along with the capture forms.
+     The Apps Script endpoint it posted to is no longer referenced from this page. -->
 
 <script src="assets/js/cookie-consent.js"></script>
 </body>

@@ -211,6 +211,27 @@ try:
 except Exception as _e:  # never let the guard itself break the audit
     print(f"    skill-constants check errored (non-fatal): {_e}")
 
+# ── 10. published summary/companies consistency ───────────────────────────────
+# summary.total_companies is what the site's headline counters and
+# tools/build_leaderboard.py read. It is written by the generators but NOT
+# recomputed by tools/clean_published.py, so any step that drops a company
+# leaves the counter stale — the site then advertises a company count it can't
+# show. Cheap to check, and a wrong public number is a credibility problem.
+print("\n[10] PUBLISHED summary vs companies array")
+if pub_path.exists():
+    _doc = json.loads(pub_path.read_text(encoding="utf-8"))
+    _n = len(_doc.get("companies", []))
+    _claimed = _doc.get("summary", {}).get("total_companies")
+    print(f"    companies array: {_n}    summary.total_companies: {_claimed}")
+    if _claimed != _n:
+        failures.append(
+            f"summary.total_companies ({_claimed}) != len(companies) ({_n}) in "
+            f"esg_quotient.json — the published counter is stale")
+    else:
+        print("    OK — counter matches the array")
+else:
+    print("    esg_quotient.json not found — skipping")
+
 # ── verdict ───────────────────────────────────────────────────────────────────
 print("\n" + "=" * 78)
 if failures:
