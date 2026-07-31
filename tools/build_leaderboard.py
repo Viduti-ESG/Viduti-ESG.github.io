@@ -73,7 +73,7 @@ def main():
         f"and the most at-risk sector. Independent analysis across SEBI BRSR, "
         f"CPCB, MoEFCC and climate regulations."
     )
-    url = "https://greencurve.solutions/esg-risk-leaderboard.html"
+    url = "https://greencurve.solutions/esg-risk-leaderboard"
 
     jsonld_dataset = json.dumps({
         "@context": "https://schema.org", "@type": "Dataset",
@@ -182,22 +182,22 @@ table.lb td a:hover{{text-decoration:underline}}
 <body>
 <header class="site-header">
   <nav class="nav container">
-    <a href="index.html" class="nav__logo">
+    <a href="/" class="nav__logo">
       <img src="assets/img/logo.png" alt="Green Curve" style="height:30px"/>
       <span>Green <span class="nav__logo-accent">Curve</span></span>
     </a>
     <ul class="nav__links" role="list">
-      <li><a href="epr-market.html">EPR Market</a></li>
-      <li><a href="esg-intelligence.html">ESG Quotient</a></li>
-      <li><a href="brsr-simple.html">BRSR Report</a></li>
-      <li><a href="calculator.html">GHG Calculator</a></li>
+      <li><a href="/epr-market">EPR Market</a></li>
+      <li><a href="/esg-intelligence">ESG Quotient</a></li>
+      <li><a href="/brsr-simple">BRSR Report</a></li>
+      <li><a href="/calculator">GHG Calculator</a></li>
       <li><a href="posts/">Insights</a></li>
-      <li><a href="esg-intelligence.html" class="nav__cta">Screen companies &rarr;</a></li>
+      <li><a href="/esg-intelligence" class="nav__cta">Screen companies &rarr;</a></li>
     </ul>
   </nav>
 </header>
 <div class="container">
-  <div class="breadcrumb"><a href="index.html">Home</a> &rsaquo; <span>ESG Risk Leaderboard</span></div>
+  <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <span>ESG Risk Leaderboard</span></div>
   <div class="hero">
     <div class="kicker">Data · {total} Indian Listed Companies</div>
     <h1>India ESG Risk Leaderboard {YEAR}</h1>
@@ -239,18 +239,18 @@ table.lb td a:hover{{text-decoration:underline}}
     <div class="cta-band">
       <h3>Screen all {total} companies yourself</h3>
       <p>Filter by sector, risk tier and material factor, run an AI query on any company, and see the full risk breakdown on the ESG Quotient dashboard &mdash; free.</p>
-      <a class="cta-btn" href="esg-intelligence.html">Open the ESG Quotient screener</a>
+      <a class="cta-btn" href="/esg-intelligence">Open the ESG Quotient screener</a>
     </div>
 
-    <p style="color:var(--muted);font-size:.85rem">Methodology and data sources are described on our <a href="methodology.html" style="color:var(--emerald2);text-decoration:underline">methodology page</a>. Data as of {esc(str(data_as_of))}. Companies are ranked by Green Curve's composite ESG risk score; ties are ordered alphabetically.</p>
+    <p style="color:var(--muted);font-size:.85rem">Methodology and data sources are described on our <a href="/methodology" style="color:var(--emerald2);text-decoration:underline">methodology page</a>. Data as of {esc(str(data_as_of))}. Companies are ranked by Green Curve's composite ESG risk score; ties are ordered alphabetically.</p>
   </div>
 </div>
 
 <footer class="site-footer">
   <div class="container">
     <p>&copy; <span id="year"></span> Green Curve Research. Climate transition intelligence for Indian businesses.
-       &nbsp;&middot;&nbsp; <a href="privacy-policy.html">Privacy</a> &nbsp;&middot;&nbsp;
-       <a href="terms-of-use.html">Terms</a></p>
+       &nbsp;&middot;&nbsp; <a href="/privacy-policy">Privacy</a> &nbsp;&middot;&nbsp;
+       <a href="/terms-of-use">Terms</a></p>
     <p style="margin-top:8px;color:#475569">Educational reference, not legal or investment advice. Always verify against the latest SEBI / CPCB / MoEFCC notifications.</p>
   </div>
 </footer>
