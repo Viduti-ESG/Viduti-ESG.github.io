@@ -104,16 +104,20 @@ Your writing is:
 - Forward-looking: you predict what's coming, not just what happened; you see around corners
 - Commercially grounded: you connect ESG to capital access, export eligibility, supply chain risk, investor relations, and audit exposure
 - Never generic: you write what only an expert with deep Indian ESG context can write
+- Rhythmically varied: median sentence under 24 words. Follow a long analytical sentence with a short verdict. Never write three long sentences in a row. A reader's attention is finite — spend it on the idea, not on carrying the structure.
+- Lede-first: the FIRST sentence of what_changed states what actually changed, in under 30 words. Not who reported it, not background, not a windup.
+- Free of filler: never use significant, signals, robust, landmark, pivotal, crucial, underscores, holistic, seamless, transformative, navigate/navigating, best practice, or "ecosystem" in any figurative sense (a coastal or forest ecosystem is fine; an "EPR ecosystem" is not). Name the actual thing instead.
+- Varied in sentence openings: do not begin more than one sentence per post with "Companies that", "For Indian companies", or "This is not".
 
-You only state facts that appear in the source article; everything else is clearly framed as your analysis. Credit the original reporting source by name. Include the source article URL in your analysis so readers can read the original.
+You only state facts that appear in the source article; everything else is clearly framed as your analysis. Credit the original reporting source by name — in the second or third sentence, never the first. NEVER paste a bare URL inside a sentence; put the source URL on its own line at the end of what_changed, prefixed "Source: ".
 
 Return ONLY valid JSON matching this exact schema — no text before or after:
 {
-  "title": "Precise, expert title — specific and informative, not clickbait",
+  "title": "Precise, expert title — specific and informative, not clickbait. HARD LIMIT 70 characters. The India hook (SEBI/BRSR/CPCB/India/filers) must appear within the first 60 characters, because search results and link cards truncate there. Put the Indian consequence first and the global subject second.",
   "category": "one of: CPCB / EPR | Plastic Waste Rules | E-Waste Rules | Battery Waste Rules | SEBI / BRSR | MoEFCC | BEE / Energy Efficiency | ISSB / IFRS Sustainability | EU CSRD / EFRAG | GHG Protocol | GRI | CDP | SBTi | TNFD | Daily Digest",
   "summary": "2-3 sentence executive brief with the India relevance named explicitly",
   "sections": {
-    "what_changed": "Deep analysis paragraph — what specifically happened, why it matters now, India implications. Attribute the source by name, e.g. 'Reporting by ESG Today...'",
+    "what_changed": "Deep analysis paragraph — what specifically happened, why it matters now, India implications. Open with WHAT CHANGED in under 30 words; never open with who reported it. Credit the source by name in the second or third sentence, and vary how you do it. End with the source URL on its own line prefixed 'Source: '.",
     "who_is_affected": ["specific sector", "company type or listing status", "specific role: CFO, CSO, risk manager", "investors or lenders with exposure"],
     "key_obligations": ["specific obligation + timeline where known", "specific obligation + who must comply"],
     "climate_angle": "How this connects to transition pathways, supply chain decarbonisation, or capital flows — specific to Indian business and named frameworks",
@@ -450,6 +454,53 @@ def repair_post(client, item: dict, body: str, post: dict, issues: list[dict]) -
     return _parse_post_json(msg.content[0].text.strip())
 
 
+#: Craft rules the writer prompt now states. Measured against the 179-post
+#: corpus on 2026-08-01, every one of these was being broken (median title 122
+#: chars, median lede 36 words, 47% of ledes opening with attribution, 28%
+#: carrying a bare URL). The prompt asks; this reports whether it worked.
+#:
+#: DELIBERATELY NON-BLOCKING. Craft is not truth. A 74-character title is worth
+#: knowing about, not worth spending the day's budget and publishing nothing
+#: over -- that is what ReviewRejected is for, and it stays reserved for
+#: fabrication. Findings print to stdout, which is journalctl under the
+#: gc-daily-blog timer. Corpus-level drift is caught separately by
+#: writing_audit.py --check in the writing-greencurve-blogs skill.
+TITLE_CHARS_MAX = 70
+TITLE_HOOK_BY_CHAR = 60
+LEDE_WORDS_MAX = 30
+_INDIA_HOOK = re.compile(r"India|SEBI|BRSR|CPCB|MoEFCC|CCTS|LODR|filer", re.I)
+_LEDE_ATTRIBUTION = re.compile(
+    r"^(reporting by|according to|as reported|in an? (article|report)|per )\b", re.I)
+_BARE_URL = re.compile(r"https?://\S+")
+
+
+def craft_warnings(post: dict) -> list[str]:
+    """Report craft-rule breaches in a drafted post. Never raises, never blocks."""
+    out = []
+    title = str(post.get("title", ""))
+    if len(title) > TITLE_CHARS_MAX:
+        out.append(f"title is {len(title)} chars (limit {TITLE_CHARS_MAX})")
+    if _INDIA_HOOK.search(title) and not _INDIA_HOOK.search(title[:TITLE_HOOK_BY_CHAR]):
+        out.append(f"India hook falls after char {TITLE_HOOK_BY_CHAR} of the title "
+                   f"- it is cut off in search results")
+    elif not _INDIA_HOOK.search(title):
+        out.append("title has no India/regulator hook")
+
+    what_changed = str((post.get("sections") or {}).get("what_changed", ""))
+    # The Source: line is required to sit at the end, so exclude it from the lede.
+    prose = re.sub(r"^\s*Source:\s*\S+\s*$", "", what_changed, flags=re.M).strip()
+    parts = [s for s in re.split(r"(?<=[.!?])\s+", prose) if len(s.split()) > 2]
+    if parts:
+        lede = parts[0]
+        if len(lede.split()) > LEDE_WORDS_MAX:
+            out.append(f"lede is {len(lede.split())} words (limit {LEDE_WORDS_MAX})")
+        if _LEDE_ATTRIBUTION.match(lede):
+            out.append("lede opens with attribution instead of the news")
+        if _BARE_URL.search(lede):
+            out.append("lede contains a bare URL")
+    return out
+
+
 def write_and_verify(item: dict, body: str) -> tuple[dict, dict]:
     """Draft -> review -> (repair -> re-review). Returns (post, review).
 
@@ -690,6 +741,8 @@ def main() -> int:
             # Nothing may reach the filesystem that has not come back from
             # write_and_verify — that function is the only publishable path.
             post, _review = write_and_verify(item, body)   # SystemExit(3) if dormant
+            for w in craft_warnings(post):
+                print(f"  CRAFT — {w}")
             pid = f"{_slug(post['title'])}-{int(time.time())}"
             page = render_post_page(post, item, pid, date_iso)
         except SystemExit:
