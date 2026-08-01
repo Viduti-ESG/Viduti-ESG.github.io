@@ -1,0 +1,47 @@
+# Line endings. Committed on purpose -- this file, not a per-machine
+# core.autocrlf setting, is the source of truth.
+#
+# Why this exists: with core.autocrlf=true and no .gitattributes, git expected
+# to check these files out as CRLF while the site generators write them as LF.
+# The index entry could never be reconciled, so `git status` reported 33 root
+# HTML files as permanently modified while `git diff` found nothing in them --
+# they were byte-for-byte identical to HEAD. That permanently-dirty tree made
+# `git pull --rebase` fail on every run of the start_brsr.py tunnel updater.
+# See Ops Book Part 21.7.
+#
+# .gitattributes takes PRECEDENCE over core.autocrlf, and unlike that setting it
+# is committed -- so it applies to every clone, including the Linux prod box,
+# and survives a fresh clone or a wiped config.
+#
+# Verified before committing: 1,544 of the 1,545 tracked text blobs are already
+# stored with LF, and none are mixed. So these rules match what is already in
+# the repo and change no file's content.
+
+* text=auto eol=lf
+
+# Binaries: never touch these.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary
+*.xlsx binary
+*.docx binary
+*.pptx binary
+*.db binary
+*.npz binary
+*.keystore binary
+
+# THE ONE EXCEPTION. assets/css/style.css is the only tracked blob stored with
+# CRLF (2,900 lines). Normalising it is a real 2,900-line content change to a
+# production stylesheet, which is a deliberate decision rather than a side
+# effect of adding this file -- so it is excluded to keep this change zero-diff.
+# To normalise it later: delete this line, run
+#   git add --renormalize assets/css/style.css
+# and commit the resulting EOL-only diff on its own.
+assets/css/style.css -text
