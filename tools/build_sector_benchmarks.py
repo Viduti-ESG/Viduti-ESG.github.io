@@ -8,10 +8,20 @@ Runs AFTER merge_bottlenecks.py (needs energy_mix / safety_metrics / waste_profi
 badge ALWAYS means good, whether the underlying metric is higher-better
 (renewable share) or lower-better (injury rate).
 """
-import json, statistics as st
+import json, statistics as st, sys
 from pathlib import Path
 
 from sector_map import classify_sector
+
+# The Windows console defaults to cp1252 and cannot encode the arrow in the
+# sample line below. That print sits AFTER the artifact is written, so the
+# script was succeeding and then exiting 1 — which reads as a failed pipeline
+# stage and invites an abort or a needless re-run of a step that already
+# worked. Match the other tools and reconfigure stdout.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except AttributeError:
+    pass
 
 QFILE = Path(r"c:/Viduti/esg-site/assets/data/esg_quotient.json")
 MIN_PEERS = 8   # need a real distribution before we claim a percentile

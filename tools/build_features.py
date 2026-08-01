@@ -56,8 +56,23 @@ def text_present(text, local):
     return bool(m and m.group(1).strip())
 
 def text_yes(text, local):
+    """True only when the filing's ANSWER is affirmative.
+
+    BRSR yes/no elements are not a clean boolean enumeration. The assurance
+    question answers "Yes Assurance" / "Yes Assessment" / "No", so an exact
+    match on ("true","yes") matched ZERO of the 1,254 filings and every
+    "assured" company was arriving via the external-agency fallback below —
+    102 companies that filed "No" were coded assured and 20 that filed
+    "Yes Assurance" were not (Coal India, Central Bank of India among them).
+    Match on the affirmative prefix instead, and never on mere presence:
+    `text_present` cannot tell "No" from "Yes" and must not be used for a
+    yes/no question.
+    """
     m = re.search(r'<in-capmkt:' + re.escape(local) + r'\b[^>]*>([^<]+)</in-capmkt:' + re.escape(local) + r'>', text)
-    return bool(m and m.group(1).strip().lower() in ("true", "yes"))
+    if not m:
+        return False
+    v = m.group(1).strip().lower()
+    return v in ("true", "1") or v.startswith("yes")
 
 EW = {"D_Employees", "D_Workers"}  # current-year employee + worker split
 
@@ -77,7 +92,11 @@ for fp in files:
         "waste_total": main_val(t, "TotalWasteGenerated"),
         "waste_recovered": (sum_cy(t, "WasteRecoveredThroughReUsed") or 0) + (sum_cy(t, "WasteRecoveredThroughRecycled") or 0) + (sum_cy(t, "WasteRecoveredThroughOtherRecoveryOperations") or 0),
         "waste_disposed": main_val(t, "TotalWasteDisposed"),
-        "zld": text_present(t, "HasTheEntityImplementedAMechanismForZeroLiquidDischarge"),
+        # text_present here meant "the company answered the ZLD question at all",
+        # so all 1,223 companies were published as having ZLD — 295 filings say
+        # "no" and 212 say "na". It is displayed on company pages, so this was a
+        # false environmental claim about named companies, not just a bad score.
+        "zld": text_yes(t, "HasTheEntityImplementedAMechanismForZeroLiquidDischarge"),
         # S — safety
         "fatalities": sum_ctx(t, "NumberOfFatalities", EW),
         "recordable_injuries": sum_ctx(t, "TotalRecordableWorkRelatedInjuries", EW),
@@ -95,7 +114,9 @@ for fp in files:
         "coi_complaints": (sum_cy(t, "NumberOfComplaintsReceivedInRelationToIssuesOfConflictOfInterestOfTheDirectors") or 0) + (sum_cy(t, "NumberOfComplaintsReceivedInRelationToIssuesOfConflictOfInterestOfTheKMPs") or 0),
         "anti_corruption": text_yes(t, "DoesTheEntityHaveAnAntiCorruptionOrAntiBriberyPolicy"),
         "brsr_assured": text_yes(t, "WhetherTheCompanyHasUndertakenAssessmentOrAssuranceOfTheBRSRCore") or text_present(t, "NameOfTheExternalAgencyThatUndertookIndependentAssessmentOrEvaluationOrAssuranceForGreenHouseGasEmissionsExplanatoryTextBlock"),
-        "csr_applicable": text_present(t, "WhetherCSRIsApplicableAsPerSection135OfCompaniesAct2013"),
+        # same text_present bug as zld (86 filings say "false"); currently
+        # written and never read, fixed before anything starts reading it
+        "csr_applicable": text_yes(t, "WhetherCSRIsApplicableAsPerSection135OfCompaniesAct2013"),
     }
     results[norm(company)] = f
 

@@ -109,12 +109,18 @@ DIMS_FOR_CONF = ["ghg","water","waste","transition","safety","diversity","govern
 for r in rows:
     v = r["v"]
     ghg, water = R["ghg"](v["ghg"]), R["water"](v["water"])
+    # Zero Liquid Discharge is a WATER practice and methodology.html has always
+    # described it as crediting water intensity. It was being subtracted from
+    # energy_transition instead — a category error, and one that was invisible
+    # while the zld flag was true for every company (a constant offset cancels
+    # in any relative ranking). Fixing the flag in build_features.py makes the
+    # credit real, so it has to land on the right dimension first.
+    if water is not None and v["zld"]:
+        water = round(clamp(water - 0.5), 1)
     waste = R["waste"](v["waste"])
     if waste is not None and v["recovery"] is not None:
         waste = round(clamp(waste - 3*v["recovery"]), 1)  # credit circular waste handling (rounded for display)
     transition = round(v["transition"]*10, 1) if v["transition"] is not None else None
-    if transition is not None and v["zld"]:
-        transition = clamp(transition - 0.5)
 
     # SOCIAL: safety + diversity
     safety = None
@@ -135,7 +141,11 @@ for r in rows:
     if compliance_risk is None: compliance_risk = 2.0
 
     # EPR / circularity (keep legacy key, now real: poor recovery + non-renewable)
-    epr_exposure = wavg([(transition, 0.5), (R["waste"](v["waste"]), 0.5)]) or 5.0
+    # `... or 5.0` was a falsy-zero bug: a company scoring the best possible 0.0
+    # on both inputs had that 0.0 replaced by the middling 5.0. It hit 17
+    # companies running ~100% renewable energy with best-in-class waste.
+    _epr = wavg([(transition, 0.5), (R["waste"](v["waste"]), 0.5)])
+    epr_exposure = _epr if _epr is not None else 5.0
 
     # pillars
     environmental = wavg([(ghg, 0.40), (water, 0.25), (waste, 0.20), (transition, 0.15)])
@@ -162,7 +172,8 @@ for r in rows:
         "ohs_system":         True if v["ohs"] else None,
     }
     metrics = {k: val for k, val in metrics_all.items() if val is not None}
-    r["impact"] = wavg([(environmental, 0.65), (social, 0.35)]) or r["score"]
+    _imp = wavg([(environmental, 0.65), (social, 0.35)])   # same falsy-zero trap
+    r["impact"] = _imp if _imp is not None else r["score"]
     r["rb"] = {
         "ghg_intensity": ghg, "water_intensity": water, "waste_intensity": waste,
         "epr_exposure": round(epr_exposure,1), "energy_transition": transition,
@@ -179,17 +190,53 @@ for r in rows:
 by_sec = defaultdict(list)
 for r in rows: by_sec[r["sector"]].append(r)
 overall = sorted(r["score"] for r in rows); N = len(overall)
+# Sectors under 8 members fall back to a WHOLE-MARKET percentile. That is a
+# reasonable fallback, but it used to be written into a field called
+# sector_percentile with nothing marking it — 124 companies across 40 small
+# sectors (10 of them singletons) displayed a market rank labelled as a sector
+# one. The basis and the peer count now travel with the number.
+MIN_SECTOR_N = 8
 for sec, grp in by_sec.items():
-    if len(grp) >= 8:
+    if len(grp) >= MIN_SECTOR_N:
         gs = sorted(grp, key=lambda r: r["score"]); n = len(gs)
-        for i, r in enumerate(gs): r["rb"]["sector_percentile"] = round(100*i/max(n-1,1))
+        for i, r in enumerate(gs):
+            r["rb"]["sector_percentile"] = round(100*i/max(n-1,1))
+            r["rb"]["sector_percentile_basis"] = "sector"
+            r["rb"]["sector_percentile_n"] = n
     else:
-        for r in grp: r["rb"]["sector_percentile"] = round(100*bisect.bisect_left(overall, r["score"])/max(N-1,1))
+        for r in grp:
+            r["rb"]["sector_percentile"] = round(100*bisect.bisect_left(overall, r["score"])/max(N-1,1))
+            r["rb"]["sector_percentile_basis"] = "whole_market"   # sector too small
+            r["rb"]["sector_percentile_n"] = N
 
 # absolute tier bands calibrated to distribution terciles
 cut1, cut2 = overall[N//3], overall[2*N//3]
 def tier(s): return "Low" if s < cut1 else "High" if s >= cut2 else "Medium"
-for r in rows: r["tier"] = tier(r["score"])
+
+# ── non-disclosure must not buy a clean bill of health ────────────────────────
+# wavg() skips None, so an undisclosed dimension does not count against a
+# company — it vanishes and the remaining weights renormalise. Measured on the
+# published artifact: companies with NO carbon intensity (the heaviest input at
+# 40% of E) had a median score of 3.55 and 50% were rated Low, against 4.50 and
+# 28% for companies that disclosed it. Withholding your emissions made you
+# nearly twice as likely to be called low-risk.
+#
+# The fix does NOT invent a penalty number — inventing one would be a guess
+# dressed as data. It withholds the affirmative claim instead: "Low risk" is an
+# assertion the evidence does not support when a material dimension is missing,
+# so such a company is floored at Medium and the reason is published. The score
+# itself is left untouched so sorting and screening still work.
+MATERIAL_DIMS = ("ghg_intensity",)   # carbon: 40% of E, the heaviest single input
+for r in rows:
+    missing = [d for d in MATERIAL_DIMS if r["rb"].get(d) is None]
+    base = tier(r["score"])
+    r["rb"]["material_dims_missing"] = missing
+    if missing and base == "Low":
+        r["tier"] = "Medium"
+        r["rb"]["tier_basis"] = "floored_undisclosed_material_dimension"
+    else:
+        r["tier"] = base
+        r["rb"]["tier_basis"] = "score"
 
 # ── write output ──────────────────────────────────────────────────────────────
 out = {r["name"]: {"sector": r["sector"], "esg_risk_score": r["score"], "risk_tier": r["tier"],
@@ -212,6 +259,23 @@ print("pillar coverage: E", sum(1 for r in rows if r['rb']['environmental'] is n
       "G", sum(1 for r in rows if r['rb']['governance'] is not None))
 cf = [r['rb']['disclosure_confidence'] for r in rows]
 print("confidence: median", st.median(cf), "min", min(cf), "max", max(cf))
+
+# non-disclosure guard: the gap this closes, printed every run so a regression
+# in the underlying extraction shows up here rather than on a company page
+have = [r for r in rows if r["rb"].get("ghg_intensity") is not None]
+miss = [r for r in rows if r["rb"].get("ghg_intensity") is None]
+for lbl, g in (("ghg disclosed", have), ("ghg MISSING ", miss)):
+    if not g:
+        continue
+    lo = sum(1 for r in g if r["tier"] == "Low")
+    print(f"  {lbl}: n={len(g):<5} median {st.median([r['score'] for r in g]):.2f}  "
+          f"Low {100*lo//len(g)}%")
+fl = sum(1 for r in rows if r["rb"].get("tier_basis") == "floored_undisclosed_material_dimension")
+print(f"  tier floored to Medium for undisclosed material dimension: {fl}")
+zl = sum(1 for r in rows if r["v"]["zld"])
+print(f"  zld true: {zl}/{len(rows)} (was 100% before the text_present fix)")
+sb = Counter(r["rb"].get("sector_percentile_basis") for r in rows)
+print(f"  sector_percentile basis: {dict(sb)}")
 print("\nface-validity — leaders (lowest sector %) in 3 sectors:")
 for tgt in ("Power & Utilities","Banking & Finance","Pharmaceuticals"):
     g = sorted([r for r in rows if r["sector"]==tgt], key=lambda r:r["rb"]["sector_percentile"])[:3]
