@@ -43,8 +43,24 @@ MODEL      = "claude-sonnet-4-6"
 # lists (~1,200-2,000 words of JSON-escaped text); the previous 2,500 sat right
 # on that edge and truncated roughly half of all posts. max_tokens is a ceiling,
 # not a charge - raising it costs nothing on posts that already fit.
-MAX_POST_TOKENS = 4000
-MAX_PER_RUN_DEFAULT = int(os.environ.get("GC_BLOG_MAX_PER_RUN", "2"))
+MAX_POST_TOKENS = 8000
+# One post per run by default (2026-08-01, Neha's call): "I don't mind only one
+# blog publishing utilizing all token for that day. Quality, no intention of
+# compromising." Every post now costs a draft + a grounding review + possibly a
+# repair and a re-review, so the budget goes into getting one post right rather
+# than into volume. Override with GC_BLOG_MAX_PER_RUN if that changes.
+MAX_PER_RUN_DEFAULT = int(os.environ.get("GC_BLOG_MAX_PER_RUN", "1"))
+
+# ── Review gate ───────────────────────────────────────────────────────────────
+# This agent publishes straight to a search-indexed site with no human in the
+# loop, so an unsupported claim becomes a public, crawlable Green Curve
+# statement within minutes. The gate below is the thing that stops that. It is
+# deliberately FAIL-CLOSED: if the reviewer is unsure, unreachable, or returns
+# anything unparseable, the post does NOT publish. Publishing nothing is a
+# non-event; publishing an invented statistic under Green Curve's name is not.
+REVIEW_MODEL       = MODEL     # same tier; a stronger reviewer is a cost call
+MAX_REVIEW_TOKENS  = 3000
+MAX_REPAIR_TOKENS  = MAX_POST_TOKENS
 
 HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -105,6 +121,42 @@ Return ONLY valid JSON matching this exact schema — no text before or after:
     "our_take": "Expert view: what this signals for ESG regulation globally and in India over the next 12-36 months. Bold and specific."
   }
 }"""
+
+REVIEW_SYSTEM_PROMPT = """You are a fact-checking editor for Green Curve Solutions, an Indian ESG intelligence firm. A draft blog post has been written from a source news article. Your job is to catch anything that would embarrass Green Curve if published.
+
+You will be given the SOURCE ARTICLE and the DRAFT POST. Judge the draft ONLY against the source article and well-established public regulation. You have no other evidence, and you must not assume a claim is true because it sounds plausible.
+
+FLAG these — they are defects:
+1. FABRICATED SPECIFICS — any number, percentage, monetary amount, date, deadline, company name, person, job title, or quotation that does not appear in the source article. This is the most important category. A figure that is "about right" but not in the source is still fabricated.
+2. INVENTED REGULATORY DETAIL — a named clause, section, rule number, threshold, penalty or compliance date that is not in the source and is not established public regulation. Getting a BRSR/SEBI/CPCB citation wrong is worse than omitting it.
+3. ANALYSIS STATED AS FACT — prediction or opinion written in the grammar of reporting ("this will force...", "companies now must...") when the source supports no such thing. Analysis is allowed and expected, but it must read as Green Curve's view, not as reported fact.
+4. MISATTRIBUTION — anything credited to the source that the source does not say, or a claim implying the source reported something it did not.
+5. GREEN CURVE SELF-CLAIMS — any assertion of a client, customer, certification, accreditation, audit, award, partnership, track record or user count. Green Curve has none of these to claim. Zero tolerance.
+6. OVERSTATED CERTAINTY — "all", "every", "always", "guaranteed", "will definitely" where the source is qualified or partial.
+
+Do NOT flag:
+- Forward-looking analysis clearly framed as Green Curve's view (the "our_take" and "climate_angle" sections exist for exactly this).
+- Connecting a global development to Indian regulation that genuinely exists (BRSR, BRSR Core, SEBI LODR, CPCB EPR, BEE PAT, CCTS, ISSB/IFRS S1-S2, CSRD/ESRS, GHG Protocol, SBTi, TNFD, GRI, CDP) — provided no invented clause number, threshold or deadline is attached.
+- General industry context an informed ESG professional would accept as common knowledge.
+- Editorial judgement about what matters most.
+
+Return ONLY valid JSON, no text before or after:
+{
+  "verdict": "PASS" or "FAIL",
+  "issues": [
+    {
+      "severity": "critical" or "minor",
+      "category": "fabricated_specific | invented_regulation | analysis_as_fact | misattribution | green_curve_claim | overstated_certainty",
+      "location": "which field, e.g. sections.what_changed or title",
+      "quote": "the exact text from the draft that is the problem",
+      "why": "one sentence: what the source actually supports, or that it supports nothing here",
+      "fix": "concrete instruction to correct it — usually delete the specific, or reframe as analysis"
+    }
+  ],
+  "summary": "one sentence overall judgement"
+}
+
+Set verdict to FAIL if there is even ONE critical issue. Use minor only for wording that is defensible but loose. If the draft is clean, return verdict PASS with an empty issues list. Be strict: a false PASS is far more costly here than a false FAIL, because nothing checks you afterwards."""
 
 SECTION_LABELS = {
     "what_changed":    "What Changed",
@@ -266,6 +318,167 @@ def write_post(item: dict, body: str) -> dict:
             ],
         )
         return _parse_post_json(fix.content[0].text.strip())
+
+
+class ReviewRejected(Exception):
+    """The grounding review refused the post. Carries the issues for logging."""
+
+    def __init__(self, message: str, issues: list[dict] | None = None):
+        super().__init__(message)
+        self.issues = issues or []
+
+
+def _client():
+    key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        print("DORMANT: ANTHROPIC_API_KEY not set.")
+        sys.exit(3)
+    import anthropic
+    return anthropic.Anthropic(api_key=key)
+
+
+def _draft_for_review(post: dict) -> str:
+    """Flatten the post to plain text so the reviewer judges the words that will
+    actually be published, not a JSON structure it has to mentally render."""
+    out = [f"TITLE: {post.get('title','')}",
+           f"CATEGORY: {post.get('category','')}",
+           f"SUMMARY: {post.get('summary','')}", ""]
+    for k, label in SECTION_LABELS.items():
+        val = post.get("sections", {}).get(k)
+        if not val:
+            continue
+        if isinstance(val, list):
+            out.append(f"{label}:")
+            out.extend(f"  - {v}" for v in val)
+        else:
+            out.append(f"{label}: {val}")
+        out.append("")
+    return "\n".join(out)
+
+
+def review_post(client, item: dict, body: str, post: dict) -> dict:
+    """Ground every factual claim in the draft against the source article.
+
+    Fail-closed by contract: this raises ReviewRejected on a FAIL verdict AND on
+    any outcome it cannot interpret (unparseable reply, truncation, API error).
+    The caller must treat an exception as "do not publish" -- never as "publish
+    anyway, we tried".
+    """
+    user = (
+        f"SOURCE ARTICLE\n"
+        f"Publication: {item['source']}\n"
+        f"Headline: {item['title']}\n"
+        f"URL: {item['link']}\n"
+        f"RSS summary: {item.get('summary','')}\n\n"
+        f"--- ARTICLE TEXT (may be partial) ---\n{body}\n--- END ARTICLE TEXT ---\n\n"
+        f"DRAFT POST TO REVIEW\n{_draft_for_review(post)}\n\n"
+        "Fact-check the draft against the source article now."
+    )
+    try:
+        msg = client.messages.create(
+            model=REVIEW_MODEL, max_tokens=MAX_REVIEW_TOKENS,
+            system=[{"type": "text", "text": REVIEW_SYSTEM_PROMPT,
+                     "cache_control": {"type": "ephemeral"}}],
+            messages=[{"role": "user", "content": user}],
+        )
+    except Exception as e:                                    # noqa: BLE001
+        raise ReviewRejected(f"reviewer unreachable ({type(e).__name__}: {e})")
+
+    if msg.stop_reason == "max_tokens":
+        # A truncated review is an unknown verdict, and unknown means no.
+        raise ReviewRejected(f"review truncated at max_tokens={MAX_REVIEW_TOKENS}")
+    try:
+        result = _parse_post_json(msg.content[0].text.strip())
+    except Exception as e:                                    # noqa: BLE001
+        raise ReviewRejected(f"unparseable review reply ({type(e).__name__}: {e})")
+
+    verdict = str(result.get("verdict", "")).upper()
+    issues = result.get("issues") or []
+    if verdict not in ("PASS", "FAIL"):
+        raise ReviewRejected(f"reviewer returned no usable verdict ({verdict!r})", issues)
+    critical = [i for i in issues if str(i.get("severity", "")).lower() == "critical"]
+    # Trust the issue list over the verdict label: a reviewer that lists a
+    # critical problem and still says PASS has contradicted itself, and the
+    # safe reading of a contradiction is the stricter one.
+    if verdict == "FAIL" or critical:
+        raise ReviewRejected(
+            f"{len(critical)} critical / {len(issues)} total issue(s)", issues)
+    return result
+
+
+def _print_issues(issues: list[dict], indent: str = "    ") -> None:
+    for i in issues:
+        sev = str(i.get("severity", "?")).upper()
+        print(f"{indent}[{sev}] {i.get('category','?')} @ {i.get('location','?')}")
+        q = str(i.get("quote", ""))[:160]
+        if q:
+            print(f"{indent}  quote: {q!r}")
+        if i.get("why"):
+            print(f"{indent}  why  : {i['why']}")
+
+
+def repair_post(client, item: dict, body: str, post: dict, issues: list[dict]) -> dict:
+    """One corrective pass. The model gets its own draft plus the specific
+    findings, and must fix exactly those without inventing replacements."""
+    findings = "\n".join(
+        f"- [{i.get('severity','?')}] {i.get('category','?')} in {i.get('location','?')}\n"
+        f"  problem text: {str(i.get('quote',''))[:300]!r}\n"
+        f"  why: {i.get('why','')}\n"
+        f"  fix: {i.get('fix','')}"
+        for i in issues) or "- (no itemised findings; the review could not be trusted)"
+
+    user = (
+        f"SOURCE ARTICLE\nPublication: {item['source']}\nHeadline: {item['title']}\n"
+        f"URL: {item['link']}\n\n--- ARTICLE TEXT ---\n{body}\n--- END ---\n\n"
+        f"YOUR DRAFT\n{json.dumps(post, ensure_ascii=False, indent=1)}\n\n"
+        f"A fact-checking editor rejected this draft. Findings:\n{findings}\n\n"
+        "Re-emit the COMPLETE post as valid JSON in the same schema, with every "
+        "finding fixed. Rules for fixing: delete an unsupported specific rather "
+        "than replacing it with a different one; if a claim is your analysis, "
+        "rewrite it so it plainly reads as Green Curve's view; never invent a "
+        "figure, date, clause or quotation to fill a gap; a shorter, fully "
+        "grounded post is the correct outcome. Output the JSON object only."
+    )
+    msg = client.messages.create(
+        model=MODEL, max_tokens=MAX_REPAIR_TOKENS,
+        system=[{"type": "text", "text": NEWS_SYSTEM_PROMPT,
+                 "cache_control": {"type": "ephemeral"}}],
+        messages=[{"role": "user", "content": user}],
+    )
+    if msg.stop_reason == "max_tokens":
+        raise TruncatedReply(f"repair hit max_tokens={MAX_REPAIR_TOKENS}")
+    return _parse_post_json(msg.content[0].text.strip())
+
+
+def write_and_verify(item: dict, body: str) -> tuple[dict, dict]:
+    """Draft -> review -> (repair -> re-review). Returns (post, review).
+
+    Raises ReviewRejected if the post cannot be made publishable. Nothing
+    downstream may publish a post that did not come back from this function.
+    """
+    client = _client()
+    post = write_post(item, body)
+
+    try:
+        review = review_post(client, item, body, post)
+        print("  REVIEW PASS — every claim grounded in the source")
+        return post, review
+    except ReviewRejected as first:
+        print(f"  REVIEW FAIL — {first}")
+        _print_issues(first.issues)
+        if not first.issues:
+            # No actionable findings means there is nothing to repair against;
+            # re-asking would be spend with no defined target.
+            raise
+        # Python unbinds the `as` name when the except block ends, so the
+        # findings have to be carried out explicitly.
+        first_issues = list(first.issues)
+        print("  repairing once against the findings...")
+
+    post = repair_post(client, item, body, post, first_issues)
+    review = review_post(client, item, body, post)   # propagates on second failure
+    print("  REVIEW PASS after repair")
+    return post, review
 
 
 # ── Rendering (format matches the 95 pre-June-12 posts) ───────────────────────
@@ -469,15 +682,28 @@ def main() -> int:
     published = []
     date_iso = datetime.now().strftime("%Y-%m-%d")
     failures = 0
+    rejected = 0
     for item in fresh[: args.max]:
         print(f"Writing: [{item['source']}] {item['title'][:80]}")
         try:
             body = fetch_article_body(item["link"])
-            post = write_post(item, body)      # SystemExit(3) if dormant — never caught here
+            # Nothing may reach the filesystem that has not come back from
+            # write_and_verify — that function is the only publishable path.
+            post, _review = write_and_verify(item, body)   # SystemExit(3) if dormant
             pid = f"{_slug(post['title'])}-{int(time.time())}"
             page = render_post_page(post, item, pid, date_iso)
         except SystemExit:
             raise                              # dormancy is fatal by design
+        except ReviewRejected as e:
+            # Deliberate, not an error: the gate did its job. Mark the item
+            # processed so a post the reviewer already refused is not redrafted
+            # and re-billed every morning.
+            rejected += 1
+            print(f"  NOT PUBLISHED — review gate refused it: {e}")
+            _print_issues(e.issues)
+            processed.add(item["link"])
+            save_processed(processed)
+            continue
         except Exception as e:
             # One malformed post must not take the rest of the run down with it.
             failures += 1
@@ -495,8 +721,9 @@ def main() -> int:
         published.append(f"{SITE_URL}/posts/{pid}.html")
         print(f"  Published: {published[-1]}")
 
-    if failures:
-        print(f"{failures} item(s) skipped after errors; {len(published)} published")
+    if failures or rejected:
+        print(f"{failures} item(s) skipped after errors; "
+              f"{rejected} refused by the review gate; {len(published)} published")
 
     if published:
         try:

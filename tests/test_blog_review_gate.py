@@ -1,0 +1,199 @@
+"""Mutation tests for the blog review gate (tools/climate_agent.py).
+
+This agent publishes straight to a search-indexed site with no human in the
+loop, so the gate is the only thing between a fabricated statistic and a public
+Green Curve statement. A gate nobody has shown capable of refusing is
+decoration -- so every test here asserts a *refusal*, not just a pass.
+
+No model is called: a fake client returns canned replies. That keeps the suite
+free and fast, and it lets us test the cases a real reviewer would rarely
+produce on demand (truncation, garbage, self-contradiction).
+"""
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+SITE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(SITE / "tools"))
+
+import climate_agent as ca  # noqa: E402
+
+
+ITEM = {"source": "ESG Today", "title": "EcoVadis and Novata partner on Scope 3",
+        "link": "https://example.com/a", "summary": "A partnership was announced."}
+BODY = "EcoVadis and Novata announced a partnership to help companies measure Scope 3 emissions."
+
+CLEAN_POST = {
+    "title": "EcoVadis-Novata: what supplier carbon data means for Indian filers",
+    "category": "SEBI / BRSR",
+    "summary": "A partnership on Scope 3 measurement.",
+    "sections": {"what_changed": "Reporting by ESG Today: the two firms announced a partnership.",
+                 "who_is_affected": ["listed Indian companies"],
+                 "key_obligations": ["BRSR Core value-chain disclosure"],
+                 "climate_angle": "In our view this points to supplier data consolidation.",
+                 "what_to_do": ["Ask your top suppliers what data they already hold"],
+                 "our_take": "We expect this to matter for BRSR value-chain reporting."},
+}
+
+
+class FakeMsg:
+    def __init__(self, text, stop_reason="end_turn"):
+        self.content = [type("B", (), {"text": text})()]
+        self.stop_reason = stop_reason
+        self.usage = type("U", (), {"output_tokens": 100})()
+
+
+class FakeClient:
+    """Returns queued replies in order; records the prompts it was given."""
+
+    def __init__(self, *replies):
+        self._replies = list(replies)
+        self.prompts = []
+        self.messages = self
+
+    def create(self, **kw):
+        self.prompts.append(kw["messages"][-1]["content"])
+        if not self._replies:
+            raise AssertionError("FakeClient ran out of queued replies")
+        r = self._replies.pop(0)
+        if isinstance(r, Exception):
+            raise r
+        return r
+
+
+def review_reply(verdict, issues=()):
+    return FakeMsg(json.dumps({"verdict": verdict, "issues": list(issues),
+                               "summary": "test"}))
+
+
+CRITICAL = {"severity": "critical", "category": "fabricated_specific",
+            "location": "sections.what_changed",
+            "quote": "a $350 million deal covering 4,000 suppliers",
+            "why": "no such figure appears in the source",
+            "fix": "delete the figure"}
+
+
+# ── the gate must refuse ──────────────────────────────────────────────────────
+
+def test_fail_verdict_is_refused():
+    with pytest.raises(ca.ReviewRejected):
+        ca.review_post(FakeClient(review_reply("FAIL", [CRITICAL])),
+                       ITEM, BODY, CLEAN_POST)
+
+
+def test_critical_issue_overrides_a_pass_verdict():
+    """A reviewer that lists a critical problem and still says PASS has
+    contradicted itself. The safe reading of a contradiction is the stricter
+    one -- otherwise a single mislabelled field publishes a fabrication."""
+    with pytest.raises(ca.ReviewRejected):
+        ca.review_post(FakeClient(review_reply("PASS", [CRITICAL])),
+                       ITEM, BODY, CLEAN_POST)
+
+
+def test_truncated_review_is_refused_not_assumed_pass():
+    with pytest.raises(ca.ReviewRejected, match="truncated"):
+        ca.review_post(FakeClient(FakeMsg('{"verdict": "PA', "max_tokens")),
+                       ITEM, BODY, CLEAN_POST)
+
+
+def test_unparseable_review_is_refused():
+    with pytest.raises(ca.ReviewRejected, match="unparseable"):
+        ca.review_post(FakeClient(FakeMsg("I couldn't complete that request.")),
+                       ITEM, BODY, CLEAN_POST)
+
+
+def test_reviewer_api_error_is_refused_not_swallowed():
+    with pytest.raises(ca.ReviewRejected, match="unreachable"):
+        ca.review_post(FakeClient(RuntimeError("503 overloaded")),
+                       ITEM, BODY, CLEAN_POST)
+
+
+def test_missing_verdict_is_refused():
+    with pytest.raises(ca.ReviewRejected, match="no usable verdict"):
+        ca.review_post(FakeClient(FakeMsg('{"issues": []}')), ITEM, BODY, CLEAN_POST)
+
+
+# ── the gate must also allow good work through ────────────────────────────────
+
+def test_clean_post_passes():
+    out = ca.review_post(FakeClient(review_reply("PASS")), ITEM, BODY, CLEAN_POST)
+    assert out["verdict"] == "PASS"
+
+
+def test_minor_issues_alone_do_not_block():
+    """If every wording nit blocked publication the gate would be turned off
+    within a week, which is the real failure mode of a strict-but-noisy check."""
+    minor = dict(CRITICAL, severity="minor", category="overstated_certainty")
+    out = ca.review_post(FakeClient(review_reply("PASS", [minor])),
+                         ITEM, BODY, CLEAN_POST)
+    assert out["verdict"] == "PASS"
+
+
+# ── the reviewer must actually be shown the evidence ──────────────────────────
+
+def test_reviewer_receives_both_source_text_and_draft():
+    c = FakeClient(review_reply("PASS"))
+    ca.review_post(c, ITEM, BODY, CLEAN_POST)
+    prompt = c.prompts[0]
+    assert BODY in prompt, "reviewer was not given the source article text"
+    assert CLEAN_POST["title"] in prompt, "reviewer was not given the draft"
+    assert ITEM["link"] in prompt
+
+
+# ── repair path ───────────────────────────────────────────────────────────────
+
+def test_repair_then_pass_publishes(monkeypatch):
+    fixed = json.loads(json.dumps(CLEAN_POST))
+    fixed["sections"]["what_changed"] = "Reporting by ESG Today: a partnership."
+    c = FakeClient(review_reply("FAIL", [CRITICAL]),      # first review
+                   FakeMsg(json.dumps(fixed)),            # repair draft
+                   review_reply("PASS"))                  # second review
+    monkeypatch.setattr(ca, "_client", lambda: c)
+    monkeypatch.setattr(ca, "write_post", lambda i, b: CLEAN_POST)
+    post, review = ca.write_and_verify(ITEM, BODY)
+    assert review["verdict"] == "PASS"
+    assert post["sections"]["what_changed"] == fixed["sections"]["what_changed"]
+
+
+def test_second_failure_after_repair_does_not_publish(monkeypatch):
+    """The repair gets exactly one attempt. A model that cannot ground its
+    claims twice is not going to on the third try, and each retry is spend."""
+    c = FakeClient(review_reply("FAIL", [CRITICAL]),
+                   FakeMsg(json.dumps(CLEAN_POST)),
+                   review_reply("FAIL", [CRITICAL]))
+    monkeypatch.setattr(ca, "_client", lambda: c)
+    monkeypatch.setattr(ca, "write_post", lambda i, b: CLEAN_POST)
+    with pytest.raises(ca.ReviewRejected):
+        ca.write_and_verify(ITEM, BODY)
+
+
+def test_no_actionable_findings_means_no_repair_attempt(monkeypatch):
+    """With nothing to repair against, re-asking is spend with no target."""
+    c = FakeClient(FakeMsg("garbage, not json"))
+    monkeypatch.setattr(ca, "_client", lambda: c)
+    monkeypatch.setattr(ca, "write_post", lambda i, b: CLEAN_POST)
+    with pytest.raises(ca.ReviewRejected):
+        ca.write_and_verify(ITEM, BODY)
+    assert len(c.prompts) == 1, "a repair was attempted with no findings to fix"
+
+
+# ── configuration guards ──────────────────────────────────────────────────────
+
+def test_review_gate_constants_are_sane():
+    assert ca.MAX_POST_TOKENS >= 8000, "truncation was the original failure mode"
+    assert ca.MAX_REVIEW_TOKENS >= 2000
+    assert ca.MAX_PER_RUN_DEFAULT >= 1
+    assert ca.REVIEW_MODEL in ("claude-sonnet-4-6", "claude-opus-5", "claude-haiku-4-5-20251001")
+
+
+def test_publish_path_goes_through_the_gate():
+    """Guards against someone reintroducing a direct write_post call in main().
+    The gate is only a gate if there is no way around it."""
+    src = (SITE / "tools" / "climate_agent.py").read_text(encoding="utf-8")
+    main_src = src[src.index("def main("):]
+    assert "write_and_verify(" in main_src
+    assert "write_post(" not in main_src, \
+        "main() calls write_post directly — that bypasses the review gate"
