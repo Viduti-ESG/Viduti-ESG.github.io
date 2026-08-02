@@ -66,6 +66,21 @@ def add(level, msg):
     findings.append({"level": level, "message": msg})
 
 
+def drop_temp(p: Path):
+    """Remove a temp SQLite file AND its -wal/-shm sidecars.
+
+    Connecting to a copy of a WAL-mode database creates `<name>-wal` and
+    `<name>-shm` alongside it. Unlinking only the main file leaks two sidecars
+    per run forever — the exact unbounded accumulation this script exists to
+    prevent, which is how it was caught on the first scheduled run.
+    """
+    for suffix in ("", "-wal", "-shm", "-journal"):
+        try:
+            Path(str(p) + suffix).unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
 def table_counts(path: Path):
     """Row counts for every table present, read-only."""
     conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
@@ -111,7 +126,7 @@ def make_backup():
             v.close()
         if integrity != "ok":
             add("FAIL", f"backup failed integrity_check ({integrity}) — discarded")
-            tmp.unlink(missing_ok=True)
+            drop_temp(tmp)
             return None
 
         bak_counts = table_counts(tmp)
@@ -121,12 +136,12 @@ def make_backup():
         if drift:
             add("FAIL", f"backup row counts differ from source ({'; '.join(drift)}) "
                         f"— discarded")
-            tmp.unlink(missing_ok=True)
+            drop_temp(tmp)
             return None
 
         with open(tmp, "rb") as fi, gzip.open(final, "wb", compresslevel=6) as fo:
             shutil.copyfileobj(fi, fo)
-        tmp.unlink(missing_ok=True)
+        drop_temp(tmp)
 
         raw = DB.stat().st_size
         gz = final.stat().st_size
@@ -139,7 +154,7 @@ def make_backup():
         return final
     except Exception as e:
         add("FAIL", f"backup failed: {e.__class__.__name__}: {e}")
-        tmp.unlink(missing_ok=True)
+        drop_temp(tmp)
         return None
 
 
@@ -172,7 +187,7 @@ def verify_existing():
             bad.append(f)
         finally:
             if tmp:
-                tmp.unlink(missing_ok=True)
+                drop_temp(tmp)
     print(f"    verified restorable: {len(ok)}/{len(files)}")
     for f in bad:
         print(f"    CORRUPT: {f.name}")
