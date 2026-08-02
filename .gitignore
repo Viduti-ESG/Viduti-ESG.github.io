@@ -33,3 +33,4 @@ tools/raw_features.json
 posts_extracted.json
 blog/
 .climate_agent/
+_db_backups/
