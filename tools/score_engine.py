@@ -73,7 +73,15 @@ for c in slim:
             # (e.g. Nandan Denim = 269200) — null it so it can't skew rank or display.
             "female_kmp": (lambda x: x if (x is not None and 0 <= x <= 1) else None)(f.get("pct_female_kmp")),
             "pay_ratio": pay_ratio,
-            "fines": (f.get("fines_amount")/rev) if (f.get("fines_amount") and rev) else (0.0 if rev else None),
+            # A third falsy-zero bug, and the costliest by headcount.
+            # sum_cy() already distinguishes the two cases — it returns 0.0 for a
+            # filing that answered the fines question with nil, and None for one
+            # that omitted the element entirely. `if fines_amount and rev` treats
+            # both as the same thing, so 784 of 1,254 filings that never disclosed
+            # fines at all were handed 0.0, the BEST possible compliance score.
+            # Only 172 filings actually made a nil return. Absence is now None and
+            # is skipped by wavg rather than rewarded.
+            "fines": (fines_amt / rev) if ((fines_amt := f.get("fines_amount")) is not None and rev) else None,
             "assured": f.get("brsr_assured"), "anti_corrupt": f.get("anti_corruption"),
             "ohs": f.get("ohs_system"), "zld": f.get("zld"),
         },
@@ -137,8 +145,10 @@ for r in rows:
     assurance_risk = (3.0 if v["assured"] else 6.5) if v["assured"] is not None else None
     ethics_risk = 2.0 if v["anti_corrupt"] else 7.0
     governance_risk = wavg([(pay, 0.40), (assurance_risk, 0.30), (ethics_risk, 0.30)])
+    # No default. Imputing 2.0 (a good score) for a company that disclosed
+    # nothing about fines is the same act as imputing 0.0 above, just quieter.
+    # wavg() skips None, so governance is computed from what was actually filed.
     compliance_risk = R["fines"](v["fines"]) if v["fines"] is not None else None
-    if compliance_risk is None: compliance_risk = 2.0
 
     # EPR / circularity (keep legacy key, now real: poor recovery + non-renewable)
     # `... or 5.0` was a falsy-zero bug: a company scoring the best possible 0.0
@@ -177,7 +187,8 @@ for r in rows:
     r["rb"] = {
         "ghg_intensity": ghg, "water_intensity": water, "waste_intensity": waste,
         "epr_exposure": round(epr_exposure,1), "energy_transition": transition,
-        "compliance_risk": round(compliance_risk,1), "hr_risk": hr_risk, "governance_risk": governance_risk,
+        "compliance_risk": round(compliance_risk, 1) if compliance_risk is not None else None,
+        "hr_risk": hr_risk, "governance_risk": governance_risk,
         "environmental": environmental, "social": social, "governance": governance,
         "disclosure_confidence": conf, "metrics": metrics,
     }
@@ -226,7 +237,13 @@ def tier(s): return "Low" if s < cut1 else "High" if s >= cut2 else "Medium"
 # assertion the evidence does not support when a material dimension is missing,
 # so such a company is floored at Medium and the reason is published. The score
 # itself is left untouched so sorting and screening still work.
-MATERIAL_DIMS = ("ghg_intensity",)   # carbon: 40% of E, the heaviest single input
+# All four environmental dimensions. Starting with carbon alone was the
+# cautious first cut; measured, extending to the whole E pillar floors only 2
+# further companies (both missing water intensity) and makes the rule coherent
+# instead of arbitrary: you cannot be called low-risk while withholding ANY
+# material environmental metric, not just the heaviest one.
+MATERIAL_DIMS = ("ghg_intensity", "water_intensity",
+                 "energy_transition", "waste_intensity")
 for r in rows:
     missing = [d for d in MATERIAL_DIMS if r["rb"].get(d) is None]
     base = tier(r["score"])

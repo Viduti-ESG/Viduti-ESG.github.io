@@ -294,6 +294,36 @@ def make_page(c):
     benchmark      = c.get('sector_benchmark') or {}
 
     t_color   = tier_color(tier)
+
+    # The engine records WHY a company holds its tier and which material
+    # dimensions it never disclosed. Both were being computed, published in the
+    # JSON, served by the API — and shown nowhere. A caveat the reader cannot
+    # see is not a caveat, so it renders next to the tier badge that it
+    # qualifies, not buried further down the page.
+    _DIM_LABELS = {"ghg_intensity": "Scope 1+2 emissions",
+                   "water_intensity": "water withdrawal",
+                   "energy_transition": "energy mix",
+                   "waste_intensity": "waste generated"}
+    tier_floored = rb.get('tier_basis') == 'floored_undisclosed_material_dimension'
+    missing_dims = [_DIM_LABELS.get(d, d) for d in (rb.get('material_dims_missing') or [])]
+    tier_note = ''
+    if tier_floored and missing_dims:
+        _list = missing_dims[0] if len(missing_dims) == 1 else \
+                ', '.join(missing_dims[:-1]) + ' and ' + missing_dims[-1]
+        tier_note = (f'<p class="cp-tier-note">Not rated Low Risk: '
+                     f'{esc(name)} did not disclose {esc(_list)}. '
+                     f'A low-risk rating states that the evidence supports it, '
+                     f'so it is withheld rather than assumed. '
+                     f'<a href="../methodology.html#risk-tiers">How tiers work</a></p>')
+
+    # NOTE on risk_breakdown.sector_percentile: it falls back to a whole-market
+    # rank for sectors under 8 members, which is why score_engine now publishes
+    # sector_percentile_basis / _n alongside it. Nothing renders that field —
+    # the user-facing comparison is the "Sector Peer Benchmark" card below,
+    # which states its own peer_count, and benchmark_api.py computes its
+    # percentile independently from a cohort. So there is no user-visible claim
+    # to caveat here; the basis field exists for API consumers. Do not add a
+    # label for a number the page never shows.
     risks_str = ', '.join(top_risks[:3]) if top_risks else 'N/A'
     fy_known   = bool(fy and fy not in ('-', ''))
     # Don't assert a specific reporting year when it isn't actually known.
@@ -555,7 +585,7 @@ def make_page(c):
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../assets/css/style.css?v=7"/>
-  <link rel="stylesheet" href="../assets/css/company-page.css?v=3"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg?v=2"/>
 </head>
 <body>
@@ -579,6 +609,7 @@ def make_page(c):
       </div>
       <h1 class="cp-hero__title">{esc(name)}</h1>
       <p class="cp-hero__sector">{esc(sector)}</p>
+      {tier_note}
       <div class="cp-hero__meta">
         {f'<span>NSE: <strong>{esc(nse)}</strong></span>' if nse else ''}
         {f'<span>CIN: {esc(cin)}</span>' if cin else ''}
@@ -769,7 +800,7 @@ index_html = f"""<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../assets/css/style.css?v=7"/>
-  <link rel="stylesheet" href="../assets/css/company-page.css?v=3"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg?v=2"/>
 </head>
 <body>
@@ -916,7 +947,7 @@ def sector_page(sname, members):
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../../assets/css/style.css?v=7"/>
-  <link rel="stylesheet" href="../../assets/css/company-page.css?v=3"/>
+  <link rel="stylesheet" href="../../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg?v=2"/>
 </head>
 <body>
@@ -1013,7 +1044,7 @@ sectors_hub = f"""<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../assets/css/style.css?v=7"/>
-  <link rel="stylesheet" href="../assets/css/company-page.css?v=3"/>
+  <link rel="stylesheet" href="../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg?v=2"/>
 </head>
 <body>

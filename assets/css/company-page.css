@@ -45,6 +45,21 @@
   margin: 0 0 14px;
   max-width: 560px;
 }
+/* Why a company was withheld from the Low tier. Sits under the sector line,
+   directly beneath the tier badge it qualifies — a caveat placed away from
+   the claim it modifies is not a caveat. */
+.cp-tier-note {
+  color: #cbd5e1;
+  background: rgba(148, 163, 184, .10);
+  border-left: 3px solid #94a3b8;
+  border-radius: 0 6px 6px 0;
+  font-size: .8rem;
+  line-height: 1.55;
+  margin: 0 0 14px;
+  padding: 9px 12px;
+  max-width: 560px;
+}
+.cp-tier-note a { color: #a5b4fc; text-decoration: underline; }
 .cp-hero__meta {
   display: flex;
   flex-wrap: wrap;
@@ -228,6 +243,9 @@
   .cp-hero { background: #fff !important; border-bottom: 2px solid #16a34a; padding: 24px 0 16px; }
   .cp-hero__title { color: #111 !important; font-size: 18pt; }
   .cp-hero__sector { color: #444 !important; }
+  .cp-tier-note { color: #333 !important; background: #f4f4f5 !important;
+                  border-left-color: #666 !important; }
+  .cp-tier-note a { color: #333 !important; }
   .cp-tier-badge { border: 1px solid currentColor !important; }
   .cp-score-ring { border-color: currentColor !important; }
   .cp-score-val, .cp-tier-badge { color: #111 !important; }
