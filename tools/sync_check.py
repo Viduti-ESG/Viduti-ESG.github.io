@@ -146,7 +146,7 @@ def fetch(path, timeout=20):
         return r.status, r.read()
 
 
-def check_api(recs):
+def check_api(recs, doc_ref=None):
     print("\n[3] LIVE API <-> ARTIFACT")
     try:
         code, _ = fetch("/health", timeout=10)
@@ -178,6 +178,28 @@ def check_api(recs):
         add("FAIL", "api",
             f"the API serves {len(by_name)} companies, the artifact has {len(recs)} — "
             f"a sync ran without a restart, or the sync did not cover every row")
+    # The header block is served from esg_meta, NOT computed from the rows, so a
+    # per-company comparison passes while the headline numbers are nonsense.
+    # Missed on the first version of this check: the API was serving
+    # "1227 companies / 36 High / 1190 Medium / 1 Low" against an artifact of
+    # 1221 / 418 / 530 / 273, and every sampled company still matched.
+    if isinstance(payload, dict):
+        art_sum = (doc_ref.get("summary") or {}) if doc_ref else {}
+        api_sum = payload.get("summary") or {}
+        bad = {k: (api_sum.get(k), art_sum.get(k))
+               for k in art_sum if api_sum.get(k) != art_sum.get(k)}
+        for k in ("generated_at", "data_as_of"):
+            if doc_ref and payload.get(k) != doc_ref.get(k):
+                bad[k] = (payload.get(k), doc_ref.get(k))
+        print(f"    header block: {'matches artifact' if not bad else 'DRIFTED'}")
+        for k, (got, want) in list(bad.items())[:6]:
+            print(f"      {k}: api={got!r} artifact={want!r}")
+        if bad:
+            add("FAIL", "api",
+                f"{len(bad)} header field(s) differ between the API and the artifact "
+                f"({', '.join(list(bad)[:4])}). The API reads esg_meta, which is only "
+                f"written by sync_cleaned_to_db.py — re-run it, then restart.")
+
     mismatch = []
     for r in recs[:API_SAMPLE]:
         s = by_name.get(r["company_name"])
@@ -309,7 +331,7 @@ def main():
     if recs:
         check_pages(recs)
         check_db(recs)
-        check_api(recs)
+        check_api(recs, doc)
     check_services()
     check_git()
     if recs:

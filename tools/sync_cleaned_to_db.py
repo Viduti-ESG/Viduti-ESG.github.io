@@ -62,6 +62,53 @@ for c in companies:
         miss.append(name)
 conn.commit()
 print(f"synced {matched} | unmatched {unmatched}")
+
+# ── esg_meta ─────────────────────────────────────────────────────────────────
+# /api/esg/data does NOT compute its header block from the companies table — it
+# reads esg_meta (esg_api.py: _get_meta("data_as_of"), _get_meta("summary"), …).
+# Nothing had ever synced that table, so it drifted from the artifact for weeks:
+# on 2026-08-02 it was still serving generated_at 2026-07-06 and a summary of
+# 1227 companies / 36 High / 1190 Medium / 1 Low against an artifact holding
+# 1221 / 418 / 530 / 273. Every row was correct and the headline numbers were
+# nonsense. Syncing the rows without the meta is only half a sync.
+doc = json.loads(open(json_path, encoding="utf-8").read())
+META_KEYS = [
+    ("generated_at", "generated_at"),
+    ("data_as_of", "data_as_of"),
+    ("summary", "summary"),
+    ("regulations", "regulations"),
+    ("factor_matrix", "factor_matrix"),
+    ("supply_chain_global", "supply_chain"),
+    ("market_summary", "market_summary"),
+    ("knowledge_base", "knowledge_base"),
+]
+meta_written = []
+for meta_key, field in META_KEYS:
+    if field not in doc:
+        continue
+    val = doc[field]
+    cur.execute(
+        "INSERT INTO esg_meta (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value, "
+        "updated_at=CURRENT_TIMESTAMP",
+        (meta_key, json.dumps(val)),
+    )
+    meta_written.append(meta_key)
+conn.commit()
+print(f"esg_meta refreshed: {len(meta_written)} key(s) -> {', '.join(meta_written)}")
+
+# GATE: the meta the API will serve must match the artifact it came from.
+_summary_db = cur.execute("SELECT value FROM esg_meta WHERE key='summary'").fetchone()
+if _summary_db:
+    _db_sum = json.loads(_summary_db[0])
+    _art_sum = doc.get("summary", {})
+    _bad = {k: (_db_sum.get(k), _art_sum.get(k))
+            for k in _art_sum if _db_sum.get(k) != _art_sum.get(k)}
+    if _bad:
+        conn.close()
+        sys.exit(f"FAILED: esg_meta.summary does not match the artifact after sync: {_bad}")
+    print(f"consistency: esg_meta.summary matches artifact "
+          f"(total={_art_sum.get('total_companies')})")
 if miss[:10]:
     print("first unmatched:", miss[:10])
 

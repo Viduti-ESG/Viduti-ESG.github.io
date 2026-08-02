@@ -51,9 +51,15 @@ STATUS_OUT = Path("/var/log/greencurve/stale_check.json")
 FRESHNESS = [
     ("assets/data/esg_quotient.json", 45,
      "the published ESG universe; regenerate via the publishing-esg-data pipeline"),
-    ("assets/data/esg_intelligence.json", 120,
-     "drives the ESG Intelligence status indicator; regenerating calls the PAID "
-     "Anthropic API — get a cost approved before running it"),
+    # ORPHAN — kept in the list only so its orphan status stays visible.
+    # It does NOT drive the ESG Intelligence page: esg-intelligence.js fetches
+    # /api/esg/data (line 112), and grepping the whole repo and the prod tree
+    # finds no other reader. Its only producer, cpcb_agent's run_intelligence(),
+    # now writes to esg_quotient.json instead — so regenerating this file is
+    # both worthless and, via that path, dangerous. Do not "refresh" it.
+    ("assets/data/esg_intelligence.json", 3650,
+     "ORPHAN: nothing reads this file. Its age is not a defect. Candidate for "
+     "deletion, not regeneration"),
     ("assets/data/filing_tracker.json", 14,
      "weekly gc-filing-tracker timer; if stale the timer is failing"),
     ("posts/index.json", 7,
