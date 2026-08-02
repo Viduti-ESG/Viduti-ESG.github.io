@@ -118,8 +118,12 @@ for fp in files:
     company = re.sub(r'_FY\d{2}-\d{2}$', '', fp.stem)
     text = fp.read_text(encoding="utf-8", errors="ignore")
     cin = get_cin(text)
-    if not cin:
-        continue
+    # NOT keyed on CIN, and not skipped when the CIN is missing. Filers submit
+    # template placeholders: Indian Overseas Bank and Canara Bank both filed
+    # U12345KA1234KAA123456, so `results[cin]` silently overwrote one with the
+    # other and Canara's entire ESG extraction was lost — then merge_bottlenecks
+    # served IOB's materiality cards and energy mix on Canara's and PNB's live
+    # pages. The canonical filename is unique per company; the CIN is not.
 
     energy = {
         "elec_renewable":      scalar(text, "TotalElectricityConsumptionFromRenewableSources"),
@@ -185,7 +189,8 @@ for fp in files:
             "NumberOfComplaintsReceivedInRelationToIssuesOfConflictOfInterestOfTheDirectors"),
     }
 
-    results[cin] = {
+    results[company] = {
+        "cin": cin,
         "company_name": company,
         "bottlenecks": material_issues(text),
         "energy_mix": energy,

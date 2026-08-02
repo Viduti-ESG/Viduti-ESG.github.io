@@ -16,7 +16,7 @@ keeps a .bak of the pre-merge file.
 """
 import json, re, shutil
 from pathlib import Path
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 
 import bottleneck_solutions as BS   # same tools/ dir
 
@@ -28,8 +28,17 @@ def norm(name):
     return re.sub(r'[^a-z0-9]', '', (name or "").lower())
 
 extract = json.loads(EXTRACT.read_text(encoding="utf-8"))
-by_cin = {k.upper(): v for k, v in extract.items()}
 by_name = {norm(v["company_name"]): v for v in extract.values()}
+
+# CIN is a FALLBACK, never the primary key, and only when it addresses exactly
+# one record on BOTH sides. Filers submit template placeholders — three banks
+# shared U12345KA1234KAA123456 — so a CIN-first lookup published Indian Overseas
+# Bank's materiality cards, energy mix and iob.in policy links on Punjab
+# National Bank's and Canara Bank's pages. Measured on this corpus: name matches
+# 1,219 of 1,221 companies and is unique; CIN matches 1,192 and is not.
+_cin_uses = Counter((v.get("cin") or "").upper() for v in extract.values())
+by_cin = {(v.get("cin") or "").upper(): v for v in extract.values()
+          if v.get("cin") and _cin_uses[(v.get("cin") or "").upper()] == 1}
 
 doc = json.loads(QFILE.read_text(encoding="utf-8"))
 companies = doc["companies"]
@@ -68,7 +77,7 @@ matched = 0
 stats = {"solutions": 0, "safety": 0, "energy": 0, "waste": 0}
 for c in companies:
     cin = (c.get("cin") or "").upper()
-    rec = by_cin.get(cin) or by_name.get(norm(c.get("company_name")))
+    rec = by_name.get(norm(c.get("company_name"))) or by_cin.get(cin)
     if not rec:
         # clear stale enrichment if unmatched
         for k in ("bottleneck_solutions", "safety_metrics", "energy_mix",

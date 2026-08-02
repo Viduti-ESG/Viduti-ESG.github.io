@@ -14,6 +14,17 @@ Three defects, three actions:
 
 A CIN is accepted iff it matches the MCA structure AND has a plausible incorporation
 year AND a recognised company-class code. Everything else is blanked (never invented).
+
+RUN THIS AS PART OF THE PIPELINE, not as a one-off. It was written in commit
+e1174a50, run once, wired into nothing, and silently reverted by the next run that
+rebuilt esg_quotient.json — so the placeholders were live again on 2026-08-02.
+A repair that is not part of the pipeline is a repair with a shelf life.
+
+Ordering matters: this must run BEFORE merge_bottlenecks.py. While the placeholder
+CINs were live, merge_bottlenecks resolved by CIN first, and three banks sharing
+U12345KA1234KAA123456 meant Indian Overseas Bank's materiality cards, energy mix
+and iob.in policy links were published on Punjab National Bank's and Canara Bank's
+pages.
 """
 import json
 import re

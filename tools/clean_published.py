@@ -172,7 +172,21 @@ def main(dry_run: bool = False) -> int:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     backup = BACKUP_DIR / f"esg_quotient.{stamp}.json.bak"
     shutil.copy2(DATA, backup)
-    doc["data_cleaned_at"] = datetime.now(timezone.utc).date().isoformat()
+    # Freshness stamps must be written by the step that changes the data, never
+    # by hand. Before this, only data_cleaned_at was maintained: generated_at and
+    # data_as_of stayed frozen at 2026-07-06 while the artifact was rebuilt on
+    # 2026-08-02, and build_leaderboard.py published that stale date both as
+    # visible copy ("Data as of …") and as schema.org temporalCoverage — a
+    # machine-readable claim to Google that the dataset was 27 days older than it
+    # was. Three stamps, three different facts:
+    #   generated_at    — when this file was built (every run)
+    #   data_as_of      — the currency of the published dataset, as the site
+    #                     renders it to readers
+    #   data_cleaned_at — when the cleaning guards last ran
+    now = datetime.now(timezone.utc)
+    doc["generated_at"] = now.isoformat(timespec="seconds")
+    doc["data_as_of"] = now.strftime("%d %b %Y")
+    doc["data_cleaned_at"] = now.date().isoformat()
     DATA.write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
     print(f"\nbacked up -> {backup.name}")
     print(f"written   -> {DATA.relative_to(ROOT)}")
