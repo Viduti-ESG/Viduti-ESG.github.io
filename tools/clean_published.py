@@ -20,6 +20,7 @@ Usage:
 import json
 import shutil
 import sys
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -139,6 +140,33 @@ def main(dry_run: bool = False) -> int:
     if dry_run:
         print("\n[dry-run] no files written.")
         return 0
+
+    # The summary block is what the site quotes as headline statistics, and
+    # nothing downstream of scoring was recomputing it — after the 2026-08-02
+    # re-score it still read High 433 / Medium 389 / Low 399 while the array
+    # held 427 / 521 / 273. As the last writer of the published artifact, this
+    # is the right place to make the counters match the data they summarise.
+    # Key names are preserved exactly; refresh_static.py uses a different
+    # schema (`high` vs `high_risk_companies`) and must not be used here.
+    summary = doc.setdefault("summary", {})
+    tiers = Counter((c.get("risk_tier") or "") for c in companies)
+    scored = [c["esg_risk_score"] for c in companies
+              if isinstance(c.get("esg_risk_score"), (int, float))]
+    before = {k: summary.get(k) for k in
+              ("total_companies", "high_risk_companies",
+               "medium_risk_companies", "low_risk_companies", "avg_esg_risk_score")}
+    summary["total_companies"] = len(companies)
+    summary["high_risk_companies"] = tiers.get("High", 0)
+    summary["medium_risk_companies"] = tiers.get("Medium", 0)
+    summary["low_risk_companies"] = tiers.get("Low", 0)
+    if scored:
+        summary["avg_esg_risk_score"] = round(sum(scored) / len(scored), 2)
+    after = {k: summary.get(k) for k in before}
+    if before != after:
+        print("\nsummary counters refreshed:")
+        for k in before:
+            if before[k] != after[k]:
+                print(f"  {k}: {before[k]} -> {after[k]}")
 
     BACKUP_DIR.mkdir(exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")

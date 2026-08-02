@@ -212,23 +212,44 @@ except Exception as _e:  # never let the guard itself break the audit
     print(f"    skill-constants check errored (non-fatal): {_e}")
 
 # ── 10. published summary/companies consistency ───────────────────────────────
-# summary.total_companies is what the site's headline counters and
-# tools/build_leaderboard.py read. It is written by the generators but NOT
-# recomputed by tools/clean_published.py, so any step that drops a company
-# leaves the counter stale — the site then advertises a company count it can't
-# show. Cheap to check, and a wrong public number is a credibility problem.
+# The summary block is what the site's headline counters and
+# tools/build_leaderboard.py read. clean_published.py now recomputes it; this
+# step verifies that it did. Checking only total_companies was not enough — the
+# 2026-08-02 re-score moved 140 companies between tiers and left the TIER
+# counters reading High 433 / Medium 389 / Low 399 against an array holding
+# 427 / 521 / 273, while total_companies matched and the gate stayed green.
+# Every counter the site publishes gets checked, not just the one that broke first.
 print("\n[10] PUBLISHED summary vs companies array")
 if pub_path.exists():
     _doc = json.loads(pub_path.read_text(encoding="utf-8"))
-    _n = len(_doc.get("companies", []))
-    _claimed = _doc.get("summary", {}).get("total_companies")
-    print(f"    companies array: {_n}    summary.total_companies: {_claimed}")
-    if _claimed != _n:
+    _cos = _doc.get("companies", [])
+    _n = len(_cos)
+    _sum = _doc.get("summary", {})
+    _tiers = Counter((c.get("risk_tier") or "") for c in _cos)
+    _checks = [
+        ("total_companies", _sum.get("total_companies"), _n),
+        ("high_risk_companies", _sum.get("high_risk_companies"), _tiers.get("High", 0)),
+        ("medium_risk_companies", _sum.get("medium_risk_companies"), _tiers.get("Medium", 0)),
+        ("low_risk_companies", _sum.get("low_risk_companies"), _tiers.get("Low", 0)),
+    ]
+    for _key, _claimed, _actual in _checks:
+        _mark = "OK" if _claimed == _actual else "STALE"
+        print(f"    {_key:24} summary={_claimed}  actual={_actual}  [{_mark}]")
+        if _claimed != _actual:
+            failures.append(
+                f"summary.{_key} ({_claimed}) != actual ({_actual}) in "
+                f"esg_quotient.json — the published counter is stale")
+    # A tier and its stated basis must not contradict each other.
+    _contra = [c.get("company_name") for c in _cos
+               if c.get("risk_tier") == "Low"
+               and (c.get("risk_breakdown") or {}).get("tier_basis")
+               == "floored_undisclosed_material_dimension"]
+    if _contra:
         failures.append(
-            f"summary.total_companies ({_claimed}) != len(companies) ({_n}) in "
-            f"esg_quotient.json — the published counter is stale")
+            f"{len(_contra)} companies published as Low while their tier_basis says "
+            f"they were floored for undisclosed data, e.g. {_contra[:3]}")
     else:
-        print("    OK — counter matches the array")
+        print("    tier vs tier_basis        no contradictions  [OK]")
 else:
     print("    esg_quotient.json not found — skipping")
 
