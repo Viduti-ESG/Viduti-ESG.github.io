@@ -136,12 +136,56 @@ def main() -> int:
     ap.add_argument("--from-db", action="store_true", help="read companies from greencurve.db instead of esg_quotient.json")
     ap.add_argument("--json", type=Path, default=DEFAULT_JSON)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--model", default=DEFAULT_MODEL)
+    ap.add_argument("--model", default=None,
+                    help="embedding model; defaults to whatever the existing index "
+                         f"was built with, else {DEFAULT_MODEL}")
+    ap.add_argument("--allow-model-change", action="store_true",
+                    help="permit rebuilding with a different model than the existing "
+                         "index (changes search behaviour — see --help notes)")
     ap.add_argument("--out", type=Path, default=OUT_PATH)
     ap.add_argument("--batch-size", type=int, default=16,
                     help="encoder batch size; keep small on low-RAM hosts (ONNX pads to "
                          "the longest doc in a batch, so big batches blow up memory)")
     args = ap.parse_args()
+
+    # A data refresh must not change the search model as a side effect.
+    #
+    # search_api.py loads the encoder named in this file's own metadata
+    # (TextEmbedding(model_name=meta["model"])), so a rebuild with a different
+    # model does NOT error anywhere — the index and the query encoder simply
+    # agree on a different, possibly worse, model and search quality changes
+    # silently. On 2026-08-02 a routine rebuild after a re-score defaulted to
+    # bge-small and produced a 384-dim index to replace a live 768-dim one; the
+    # only visible signal was the file being half its previous size.
+    #
+    # So the default is now "keep whatever the existing index uses", and
+    # changing it has to be asked for explicitly.
+    existing_model = existing_dim = None
+    if args.out.exists():
+        try:
+            with np.load(args.out, allow_pickle=True) as _z:
+                _meta = json.loads(str(_z["meta"].item()))
+            existing_model = _meta.get("model")
+            existing_dim = _meta.get("dim")
+        except Exception as exc:                                  # noqa: BLE001
+            print(f"WARNING: could not read existing index metadata ({exc}); "
+                  f"falling back to {DEFAULT_MODEL}", file=sys.stderr)
+
+    if args.model is None:
+        args.model = existing_model or DEFAULT_MODEL
+        if existing_model:
+            print(f"Model: {args.model} (inherited from the existing index"
+                  f"{f', dim {existing_dim}' if existing_dim else ''})")
+    elif existing_model and args.model != existing_model:
+        if not args.allow_model_change:
+            print(f"ERROR: refusing to replace an index built with "
+                  f"{existing_model} (dim {existing_dim}) using {args.model}.\n"
+                  f"       search_api.py reads the model from this file's metadata, so "
+                  f"this would change\n       search behaviour silently rather than "
+                  f"failing. Re-run with --allow-model-change if that is intended.",
+                  file=sys.stderr)
+            return 1
+        print(f"Model change ALLOWED: {existing_model} -> {args.model}")
 
     if args.from_db:
         if not args.db.exists():
