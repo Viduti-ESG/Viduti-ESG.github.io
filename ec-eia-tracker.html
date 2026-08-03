@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EC / EIA Lifecycle Tracker — Environmental Clearance Process for India | Green Curve</title>
+  <meta name="description" content="Free tracker for India's Environmental Clearance (EC) process under the EIA Notification 2006 — screening, scoping, public consultation, appraisal, EC, and post-clearance compliance reporting. No sign-up." />
+  <meta name="keywords" content="environmental clearance process India, EIA notification 2006, EC tracker, MoEFCC clearance, SEIAA, PARIVESH, environmental impact assessment India" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://greencurve.solutions/ec-eia-tracker" />
+  <meta property="og:type"    content="website" />
+  <meta property="og:url"     content="https://greencurve.solutions/ec-eia-tracker" />
+  <meta property="og:title"   content="EC / EIA Lifecycle Tracker — Environmental Clearance Process for India" />
+  <meta property="og:description" content="Track where your project sits in India's Environmental Clearance process, and what comes next. Free, no sign-up." />
+  <meta property="og:image"   content="https://greencurve.solutions/assets/img/logo.png" />
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS37JR0KK7"></script>
+  <script>gtag('js', new Date()); gtag('config', 'G-VS37JR0KK7');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260803b" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=2"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=2"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=2"/>
+  <link rel="shortcut icon" href="assets/img/favicon.ico?v=2"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png?v=2"/>
+  <link rel="manifest" href="site.webmanifest"/>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"What is the difference between Category A and Category B projects under the EIA Notification 2006?","acceptedAnswer":{"@type":"Answer","text":"Category A projects are appraised at the national level by MoEFCC's Expert Appraisal Committee (EAC). Category B projects are appraised at the state level by the State Environment Impact Assessment Authority (SEIAA) / State Expert Appraisal Committee (SEAC), and are further screened into B1 (needs a full EIA study and public hearing) or B2 (does not). Confirm your project's exact category against the current Schedule to the EIA Notification 2006 (as amended) — thresholds vary by sector and change by amendment."}},
+    {"@type":"Question","name":"Who can prepare an EIA report in India?","acceptedAnswer":{"@type":"Answer","text":"Only a consultant organisation accredited by NABET under the Quality Council of India (QCI) may prepare an EIA report for the statutory process. A report from a non-accredited consultant is not valid for an Environmental Clearance application."}},
+    {"@type":"Question","name":"When is the EC compliance report due after clearance is granted?","acceptedAnswer":{"@type":"Answer","text":"Projects holding an Environmental Clearance must submit a half-yearly compliance report on EC conditions to the MoEFCC Regional Office or SEIAA, due 1 June and 1 December each year, per the EIA Notification 2006."}}
+  ]}
+  </script>
+
+  <style>
+    .ert-hero { background: var(--void); padding: 80px 0 40px; position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
+    .ert-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(34,197,94,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.03) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .ert-hero__orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); width:480px; height:480px; background:radial-gradient(circle,rgba(52,211,153,.14) 0%,transparent 65%); top:-180px; right:-80px; }
+    .ert-hero__content { position:relative; }
+    .ert-hero__back { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; font-weight:500; color:var(--text-70); border:1px solid var(--border-hi); border-radius:100px; padding:6px 16px; transition:all .2s; margin-bottom:22px; }
+    .ert-hero__back:hover { color:var(--cyan); border-color:rgba(34,197,94,.4); }
+    .ert-hero__eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--emerald); margin-bottom:16px; padding:5px 14px; background:rgba(52,211,153,.06); border:1px solid rgba(52,211,153,.22); border-radius:100px; }
+    .ert-hero__title { font-family:var(--serif); font-size:clamp(2rem,4vw,3rem); color:#fff; letter-spacing:-.03em; line-height:1.12; margin-bottom:14px; }
+    .ert-hero__title em { font-style:italic; background:linear-gradient(95deg,var(--emerald),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .ert-hero__sub { font-size:.95rem; color:var(--text-70); line-height:1.75; max-width:640px; }
+
+    .ert-body { background:#f1f5f9; padding:40px 0 80px; }
+    .ert-disclaimer { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:14px 18px; font-size:.82rem; color:#9a3412; line-height:1.6; margin-bottom:26px; }
+    .ert-disclaimer strong { color:#7c2d12; }
+
+    .ert-card { background:#fff; border:1px solid #e2e8f0; border-radius:18px; padding:30px; box-shadow:0 1px 3px rgba(0,0,0,.05); margin-bottom:24px; }
+    .ert-card h2 { font-family:var(--serif); font-size:1.35rem; color:#0f172a; margin:0 0 14px; }
+
+    .ert-catgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:6px; }
+    .ert-cat { background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px; padding:16px; cursor:pointer; transition:all .15s; text-align:left; }
+    .ert-cat:hover { border-color:#34d399; background:#f0fdf4; }
+    .ert-cat--sel { border-color:#0d9488; background:#ecfdf5; }
+    .ert-cat b { display:block; font-size:.92rem; color:#0f172a; margin-bottom:4px; }
+    .ert-cat span { font-size:.78rem; color:#64748b; line-height:1.5; }
+
+    .ert-stagewrap { display:flex; flex-direction:column; gap:0; }
+    .ert-stage { display:flex; gap:16px; padding:16px 0; border-bottom:1px dashed #e2e8f0; cursor:pointer; }
+    .ert-stage:last-child { border-bottom:none; }
+    .ert-stage__dot { flex-shrink:0; width:28px; height:28px; border-radius:50%; border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center; font-size:.74rem; font-weight:800; color:#94a3b8; }
+    .ert-stage--sel .ert-stage__dot { border-color:#0d9488; background:#0d9488; color:#fff; }
+    .ert-stage--past .ert-stage__dot { border-color:#10b981; background:#d1fae5; color:#059669; }
+    .ert-stage__body b { display:block; font-size:.94rem; color:#0f172a; margin-bottom:3px; }
+    .ert-stage__body p { font-size:.82rem; color:#64748b; line-height:1.6; margin:0; }
+    .ert-stage__who { display:inline-block; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#0f766e; background:#f0fdf4; border-radius:6px; padding:2px 8px; margin-top:6px; }
+
+    .ert-next { background:linear-gradient(135deg,#0d1c10,#112315); border-radius:18px; padding:28px 30px; margin-top:4px; }
+    .ert-next__label { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--emerald); margin-bottom:8px; }
+    .ert-next__title { font-family:var(--serif); color:#fff; font-size:1.3rem; margin:0 0 8px; }
+    .ert-next p { color:var(--text-70); font-size:.88rem; line-height:1.7; margin:0 0 6px; }
+    .ert-next a { color:var(--cyan); font-weight:600; }
+
+    .ert-gate { background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px 18px; font-size:.84rem; color:#1e3a8a; line-height:1.6; margin-top:16px; }
+    .ert-gate strong { color:#1e40af; }
+
+    .ert-cta { margin-top:8px; background:linear-gradient(135deg,#0d1c10,#112315); border-radius:18px; padding:32px; text-align:center; }
+    .ert-cta h2 { font-family:var(--serif); color:#fff; font-size:1.5rem; margin:0 0 8px; }
+    .ert-cta p { color:var(--text-70); font-size:.9rem; margin:0 0 18px; }
+    .ert-cta a { display:inline-block; background:linear-gradient(95deg,var(--emerald),var(--cyan)); color:#04140a; font-weight:700; font-size:.88rem; padding:12px 26px; border-radius:100px; text-decoration:none; }
+  </style>
+</head>
+<body class="calc-page-body">
+
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="site-header" id="site-header">
+  <nav class="nav container">
+    <a href="/" class="nav__logo">
+      <img class="logo-mark" src="assets/img/logo-nav.png?v=2" alt="Green Curve" />
+      <span class="nav__logo-text">Green <span class="nav__logo-accent">Curve</span> <span class="nav__logo-sol">Solutions</span></span>
+    </a>
+    <ul class="nav__links" role="list">
+      <li><a href="/">Insights</a></li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">BRSR <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="brsr-generator.html">BRSR Report Builder</a></li>
+          <li><a href="/brsr-simple">Quick BRSR</a></li>
+          <li><a href="/assurance">Core Assurance Checker</a></li>
+          <li><a href="/ccts">CCTS Compliance Tracker</a></li>
+          <li><a href="/tcfd">TCFD Report</a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle">Carbon &amp; GHG <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="/calculator">GHG Calculator</a></li>
+          <li><a href="/data-baseline">Data Baseline Wizard</a></li>
+          <li><a href="/value-chain">Value Chain / Scope 3</a></li>
+          <li><a href="/learn">Carbon Literacy</a></li>
+          <li><a href="/compliance-calendar">Compliance Calendar</a></li>
+          <li><a href="ec-eia-tracker.html">EC / EIA Tracker <span class="nav-new">NEW</span></a></li>
+        </ul>
+      </li>
+      <li class="nav__has-dropdown">
+        <a class="nav__dropdown-toggle" href="/esg-intelligence">ESG Quotient <span class="nav__caret"></span></a>
+        <ul class="nav__dropdown">
+          <li><a href="/esg-intelligence">Overview &amp; Screener</a></li>
+          <li><a href="/esg-health-check">ESG Health Check</a></li>
+          <li><a href="/benchmark">Peer Benchmarking</a></li>
+          <li><a href="/search">Semantic Search</a></li>
+        </ul>
+      </li>
+      <li><a href="/pricing">Pricing</a></li>
+    </ul>
+    <a href="index.html#insights" class="nav__cta">Latest &rarr;</a>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<div class="nav__mobile" id="nav-mobile" role="navigation" aria-label="Mobile navigation">
+  <a href="/">Insights</a>
+  <div class="nav__mobile-group">
+    <div class="nav__mobile-label">Carbon &amp; GHG</div>
+    <a href="/calculator">GHG Calculator</a>
+    <a href="/compliance-calendar">Compliance Calendar</a>
+    <a href="ec-eia-tracker.html">EC / EIA Tracker</a>
+  </div>
+  <a href="/pricing">Pricing</a>
+</div>
+
+<!-- HERO -->
+<main id="main">
+<section class="ert-hero">
+  <div class="ert-hero__orb" aria-hidden="true"></div>
+  <div class="ert-hero__content container">
+    <a href="/" class="ert-hero__back">&larr; Back to Insights</a>
+    <div class="ert-hero__eyebrow">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M5 3v2l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Environmental Clearance Process
+    </div>
+    <h1 class="ert-hero__title">EC / EIA <em>Lifecycle Tracker</em></h1>
+    <p class="ert-hero__sub">See exactly where a project sits in India's Environmental Clearance process under the EIA Notification 2006 — from screening through to post-clearance compliance reporting — and what comes next. Free, no sign-up.</p>
+  </div>
+</section>
+
+<!-- BODY -->
+<section class="ert-body">
+  <div class="container" style="max-width:760px">
+    <div class="ert-disclaimer">
+      <strong>This is process guidance, not a substitute for an accredited EIA consultant.</strong>
+      Under the EIA Notification 2006, only a <strong>NABET/QCI-accredited</strong> consultant may
+      prepare an EIA report, and only MoEFCC or your state SEIAA can grant an Environmental
+      Clearance. Category thresholds are set out in the Schedule to the Notification (as amended) —
+      confirm your project's exact category on <a href="https://parivesh.nic.in/" target="_blank" rel="noopener">PARIVESH</a>
+      or with your accredited consultant; they are not reproduced here as fixed numbers because they
+      vary by sector and change by amendment.
+    </div>
+
+    <div class="ert-card">
+      <h2>1. What category is your project?</h2>
+      <div class="ert-catgrid" id="ert-cats"><!-- rendered by JS --></div>
+    </div>
+
+    <div class="ert-card">
+      <h2>2. Where are you in the process?</h2>
+      <div class="ert-stagewrap" id="ert-stages"><!-- rendered by JS --></div>
+    </div>
+
+    <div class="ert-next" id="ert-next"><!-- rendered by JS --></div>
+
+    <div class="ert-cta">
+      <h2>Track the recurring deadline, too</h2>
+      <p>Once your EC is granted, the half-yearly compliance report (1 June / 1 December) becomes a permanent recurring obligation — the Compliance Calendar tracks that countdown alongside every other India ESG deadline.</p>
+      <a href="/compliance-calendar">Open the Compliance Calendar &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+</main>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="/" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+        </svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>Published daily &bull; Green Curve Research</p>
+      <p style="font-size:.71rem;color:#334155;margin-top:8px;line-height:1.8">
+        <a href="/privacy-policy" style="color:#64748b;text-decoration:none">Privacy Policy</a>
+        &nbsp;&middot;&nbsp;
+        <a href="/terms-of-use" style="color:#64748b;text-decoration:none">Terms of Use</a>
+      </p>
+      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const header = document.getElementById('site-header');
+  const progress = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    if (progress) progress.style.width = pct + '%';
+    if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+</script>
+<script src="assets/js/gc-config.js?v=20260616"></script>
+<script src="assets/js/ec-eia-tracker.js?v=20260729" defer></script>
+<script src="assets/js/cookie-consent.js"></script>
+<script src="assets/js/auth.js"></script>
+</body>
+</html>
