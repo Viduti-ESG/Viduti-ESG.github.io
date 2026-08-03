@@ -2749,7 +2749,11 @@ button:focus:not(:focus-visible) { outline: none; }
 }
 .footer-rich-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  /* FIVE content columns: brand, Tools, Resources, Guides, Coverage. This was
+     declaring four, so Coverage wrapped onto a second row under the brand
+     column -- leaving three quarters of that row empty and a tall gap above
+     it, because row 1's height is set by the 8-item Tools column. */
+  grid-template-columns: 1.6fr repeat(4, 1fr);
   gap: var(--s-12);
   padding-bottom: var(--s-12);
 }
@@ -2816,6 +2820,10 @@ min-width: 0;
   transition: background var(--t-fast);
 }
 .footer-nl-mini__btn:hover { background: rgba(34,197,94,.2); }
+@media (max-width: 1180px) {
+  /* five columns stop being readable before the 2-up fallback kicks in */
+  .footer-rich-grid { grid-template-columns: 1.4fr 1fr 1fr; }
+}
 @media (max-width: 960px) {
   .footer-rich-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
 }
