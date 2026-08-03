@@ -68,7 +68,7 @@
     .tile:active{transform:scale(.985)}
     .tile .ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
       background:var(--cyan-dim);color:var(--cyan);margin-bottom:14px}
-    .tile h3{font-size:1rem;margin-bottom:3px}
+    .tile h2{font-size:1rem;margin-bottom:3px}
     .tile p{font-size:.8rem;color:var(--text-40)}
     .tile.wide{grid-column:1 / -1}
 
@@ -110,7 +110,8 @@
   </div>
 
   <!-- LOGGED OUT -->
-  <section class="view hidden" id="viewOut">
+  <main id="main">
+<section class="view hidden" id="viewOut">
     <div class="hero">
       <img class="mark" src="/assets/img/app-icon-512.png" alt="Green Curve Bookings" />
       <h1>Your booking rooms,<br/>in your pocket.</h1>
@@ -139,12 +140,12 @@
     <div class="tiles">
       <a class="tile" href="/booking-admin">
         <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
-        <h3>Booking Studio</h3>
+        <h2>Booking Studio</h2>
         <p>Manage rooms, sessions &amp; availability</p>
       </a>
       <a class="tile" href="/booking-admin?new=1">
         <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
-        <h3>New room</h3>
+        <h2>New room</h2>
         <p>Spin up a branded booking space</p>
       </a>
     </div>
@@ -159,6 +160,7 @@
     </div>
   </section>
 </div>
+</main>
 
 <script>
 (function () {

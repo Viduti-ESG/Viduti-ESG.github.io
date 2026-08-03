@@ -76,7 +76,7 @@
 <header class="container">
   <div class="logo">G</div>
   <div>
-    <h1 style="margin: 0; font-size: 1.5rem;">Green Curve</h1>
+    <p style="margin: 0; font-size: 1.5rem; font-weight: 700;">Green Curve</p>
     <p style="color: #94a3b8; margin: 0;">BRSR Report Generator</p>
   </div>
   <nav class="nav" style="margin-left: auto;">
@@ -87,6 +87,7 @@
   </nav>
 </header>
 
+<main id="main">
 <div class="container">
   <h1>BRSR Report Generator</h1>
   <p class="subtitle">Generate a SEBI-compliant BRSR report by answering guided questions.</p>
@@ -520,7 +521,7 @@
   </form>
 
   <div id="preview" class="output" style="display:none;">
-    <h3 style="color: #10b981; margin-bottom: 12px;">Report Preview (JSON)</h3>
+    <h2 style="color: #10b981; margin-bottom: 12px; font-size: 1.15rem;">Report Preview (JSON)</h2>
     <pre id="preview-content"></pre>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
       <button class="button download-btn" onclick="downloadJSON()">📥 Download JSON</button>
@@ -858,6 +859,7 @@ function downloadXBRL() {
 
 showStep(0);
 </script>
+</main>
 
 <footer style="border-top:1px solid #1e293b;padding:20px 24px;text-align:center;margin-top:40px">
   <p style="font-size:.72rem;color:#334155;line-height:1.8">

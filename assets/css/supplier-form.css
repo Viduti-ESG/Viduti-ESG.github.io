@@ -30,10 +30,10 @@ body {
 .sf-header {
   background: rgba(12,22,41,.9);
   border-bottom: 1px solid var(--border);
-  padding: 12px 24px;
+  padding: var(--s-3) var(--s-6);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-3);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -42,7 +42,7 @@ body {
 .sf-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
   text-decoration: none;
   color: var(--text);
 }
@@ -61,7 +61,7 @@ body {
 .sf-hero {
   background: linear-gradient(135deg, rgba(34,197,94,.06) 0%, rgba(52,211,153,.04) 100%);
   border-bottom: 1px solid var(--border);
-  padding: 32px 24px 28px;
+  padding: var(--s-8) var(--s-6) 28px;
   text-align: center;
 }
 .sf-hero__badge {
@@ -73,7 +73,7 @@ body {
   font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
-  padding: 4px 12px;
+  padding: var(--s-1) var(--s-3);
   border-radius: 20px;
   margin-bottom: 14px;
 }
@@ -98,7 +98,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: var(--s-5);
   flex-wrap: wrap;
 }
 .sf-hero__meta-item {
@@ -116,7 +116,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: 20px 24px 0;
+  padding: var(--s-5) var(--s-6) 0;
   max-width: 700px;
   margin: 0 auto;
 }
@@ -149,7 +149,7 @@ body {
   font-size: .78rem;
   font-weight: 700;
   color: var(--muted);
-  transition: all .2s;
+  transition: background var(--t-base), border-color var(--t-base), box-shadow var(--t-base), color var(--t-base);
   position: relative;
   z-index: 1;
 }
@@ -170,7 +170,7 @@ body {
 .sf-wrap {
   max-width: 720px;
   margin: 0 auto;
-  padding: 28px 20px 60px;
+  padding: 28px var(--s-5) 60px;
 }
 
 /* ── Section card ──────────────────────────────────────────────────────────── */
@@ -178,14 +178,14 @@ body {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  margin-bottom: 20px;
+  margin-bottom: var(--s-5);
   overflow: hidden;
 }
 .sf-section-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-5);
   background: rgba(255,255,255,.02);
   border-bottom: 1px solid var(--border);
 }
@@ -205,11 +205,11 @@ body {
 .sf-section-icon--d { background: rgba(139,92,246,.12); }
 .sf-section-title { font-size: .92rem; font-weight: 700; color: var(--text); }
 .sf-section-sub   { font-size: .75rem; color: var(--muted); margin-top: 2px; }
-.sf-section-body  { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.sf-section-body  { padding: var(--s-5); display: flex; flex-direction: column; gap: 18px; }
 
 /* ── Field ─────────────────────────────────────────────────────────────────── */
 .sf-field { display: flex; flex-direction: column; gap: 6px; }
-.sf-field--row { flex-direction: row; align-items: center; gap: 16px; flex-wrap: wrap; }
+.sf-field--row { flex-direction: row; align-items: center; gap: var(--s-4); flex-wrap: wrap; }
 .sf-label {
   font-size: .82rem;
   font-weight: 600;
@@ -230,8 +230,7 @@ body {
   font-size: .9rem;
   padding: 10px 14px;
   width: 100%;
-  transition: border-color .15s;
-  outline: none;
+  transition: border-color var(--t-fast);
 }
 .sf-input:focus, .sf-select:focus { border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
 .sf-input:disabled { opacity: .35; cursor: not-allowed; }
@@ -252,7 +251,7 @@ body {
   border-radius: 0 8px 8px 0;
   color: var(--muted);
   font-size: .78rem;
-  padding: 10px 12px;
+  padding: 10px var(--s-3);
   white-space: nowrap;
   line-height: 1;
 }
@@ -263,14 +262,14 @@ body {
 .sf-radio-label, .sf-check-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
   background: rgba(255,255,255,.03);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 9px 16px;
+  padding: 9px var(--s-4);
   cursor: pointer;
   font-size: .85rem;
-  transition: border-color .15s, background .15s;
+  transition: border-color var(--t-fast), background var(--t-fast);
   user-select: none;
 }
 .sf-radio-label:hover, .sf-check-label:hover { border-color: rgba(34,197,94,.25); }
@@ -297,20 +296,20 @@ body {
   color: var(--muted);
   cursor: pointer;
   white-space: nowrap;
-  padding: 8px 0;
+  padding: var(--s-2) 0;
 }
 .sf-nd-label input { accent-color: var(--amber); }
 .sf-nd-label:has(input:checked) { color: var(--amber); }
 
 /* ── Two-column grid ───────────────────────────────────────────────────────── */
-.sf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.sf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); }
 
 /* ── Notice ────────────────────────────────────────────────────────────────── */
 .sf-notice {
   background: rgba(251,191,36,.07);
   border: 1px solid rgba(251,191,36,.18);
   border-radius: 8px;
-  padding: 12px 16px;
+  padding: var(--s-3) var(--s-4);
   font-size: .8rem;
   color: #fbbf24;
   line-height: 1.5;
@@ -321,8 +320,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0 0;
+  gap: var(--s-3);
+  padding: var(--s-2) 0 0;
 }
 .sf-btn-submit {
   background: linear-gradient(135deg, var(--emerald), var(--cyan));
@@ -333,8 +332,8 @@ body {
   font-family: var(--sans);
   font-size: .95rem;
   font-weight: 700;
-  padding: 14px 40px;
-  transition: opacity .15s, transform .1s;
+  padding: 14px var(--s-10);
+  transition: opacity var(--t-fast), transform var(--t-fast);
   min-width: 220px;
 }
 .sf-btn-submit:hover { opacity: .88; transform: translateY(-1px); }
@@ -346,20 +345,20 @@ body {
 .sf-thankyou {
   display: none;
   text-align: center;
-  padding: 60px 24px;
+  padding: 60px var(--s-6);
   max-width: 540px;
   margin: 0 auto;
 }
 .sf-ty__icon {
   font-size: 3rem;
-  margin-bottom: 20px;
+  margin-bottom: var(--s-5);
   line-height: 1;
 }
 .sf-ty__title {
   font-family: var(--serif);
   font-size: 1.8rem;
   color: var(--emerald);
-  margin-bottom: 12px;
+  margin-bottom: var(--s-3);
 }
 .sf-ty__sub {
   color: var(--muted);
@@ -375,7 +374,7 @@ body {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 20px 36px;
+  padding: var(--s-5) 36px;
   margin-bottom: 28px;
 }
 .sf-ty__score-val {
@@ -384,13 +383,13 @@ body {
   line-height: 1;
 }
 .sf-ty__score-lbl { font-size: .78rem; color: var(--muted); }
-.sf-ty__score-tier { font-size: .85rem; font-weight: 600; margin-top: 4px; }
+.sf-ty__score-tier { font-size: .85rem; font-weight: 600; margin-top: var(--s-1); }
 .sf-ty__note { font-size: .78rem; color: var(--muted); line-height: 1.6; max-width: 400px; margin: 0 auto; }
 
 /* ── Footer ────────────────────────────────────────────────────────────────── */
 .sf-footer {
   text-align: center;
-  padding: 20px 24px;
+  padding: var(--s-5) var(--s-6);
   font-size: .74rem;
   color: var(--muted);
   border-top: 1px solid var(--border);
@@ -403,6 +402,15 @@ body {
   .sf-grid-2 { grid-template-columns: 1fr; }
   .sf-hero__title { font-size: 1.4rem; }
   .sf-progress { display: none; }
-  .sf-section-body { padding: 16px; gap: 16px; }
+  .sf-section-body { padding: var(--s-4); gap: var(--s-4); }
 }
 
+/* Keyboard focus ring. This stylesheet is linked AFTER style.css, so an
+   `outline: none` here would beat the site-wide ring in style.css at equal
+   specificity. Declared locally so that cannot happen silently again.
+   WCAG 2.4.7 Focus Visible (AA). */
+:focus-visible {
+  outline: 2px solid rgba(34, 197, 94, .65);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

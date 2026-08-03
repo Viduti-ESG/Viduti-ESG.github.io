@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   background: var(--void);
-  padding: 24px 16px;
+  padding: var(--s-6) var(--s-4);
 }
 
 /* subtle grid overlay */
@@ -28,19 +28,19 @@
   background: var(--surface);
   border: 1px solid var(--border-hi);
   border-radius: var(--r-xl);
-  padding: 40px 36px;
+  padding: var(--s-10) 36px;
   box-shadow: var(--shadow-xl);
 }
 
 /* ── Brand ──────────────────────────────────────────────────────────────────── */
 .auth-brand {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--s-8);
 }
 .auth-brand__logo {
   width: 48px;
   height: 48px;
-  margin: 0 auto 12px;
+  margin: 0 auto var(--s-3);
   display: block;
 }
 .auth-brand__name {
@@ -51,8 +51,8 @@
 }
 .auth-brand__tagline {
   font-size: .78rem;
-  color: var(--text-40);
-  margin-top: 4px;
+  color: var(--text-70);
+  margin-top: var(--s-1);
 }
 
 /* ── Tabs ──────────────────────────────────────────────────────────────────── */
@@ -61,19 +61,19 @@
   gap: 0;
   background: var(--deep);
   border-radius: var(--r-sm);
-  padding: 4px;
+  padding: var(--s-1);
   margin-bottom: 28px;
 }
 .auth-tab {
   flex: 1;
-  padding: 8px 0;
+  padding: var(--s-2) 0;
   text-align: center;
   font-size: .85rem;
   font-weight: 500;
-  color: var(--text-40);
+  color: var(--text-70);
   border-radius: var(--r-xs);
   cursor: pointer;
-  transition: all .2s;
+  transition: background var(--t-base), box-shadow var(--t-base), color var(--t-base);
   border: none;
   background: transparent;
 }
@@ -84,7 +84,7 @@
 }
 
 /* ── Form ──────────────────────────────────────────────────────────────────── */
-.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-form { display: flex; flex-direction: column; gap: var(--s-4); }
 
 .auth-field { display: flex; flex-direction: column; gap: 6px; }
 
@@ -103,8 +103,7 @@
   color: var(--text);
   font-size: .9rem;
   font-family: var(--sans);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  transition: border-color var(--t-base), box-shadow var(--t-base);
   box-sizing: border-box;
 }
 .auth-input:focus {
@@ -117,7 +116,7 @@
 .auth-submit {
   width: 100%;
   padding: 11px;
-  margin-top: 4px;
+  margin-top: var(--s-1);
   background: var(--cyan);
   color: #071a07;
   font-weight: 700;
@@ -125,7 +124,7 @@
   border: none;
   border-radius: var(--r-sm);
   cursor: pointer;
-  transition: opacity .2s, transform .1s;
+  transition: opacity var(--t-base), transform var(--t-fast);
   font-family: var(--sans);
 }
 .auth-submit:hover  { opacity: .88; }
@@ -156,9 +155,9 @@
 /* ── Footer note ─────────────────────────────────────────────────────────────*/
 .auth-footer {
   text-align: center;
-  margin-top: 24px;
+  margin-top: var(--s-6);
   font-size: .75rem;
-  color: var(--text-40);
+  color: var(--text-70);
 }
 .auth-footer a {
   color: var(--cyan);
@@ -166,3 +165,12 @@
 }
 .auth-footer a:hover { text-decoration: underline; }
 
+/* Keyboard focus ring. This stylesheet is linked AFTER style.css, so an
+   `outline: none` here would beat the site-wide ring in style.css at equal
+   specificity. Declared locally so that cannot happen silently again.
+   WCAG 2.4.7 Focus Visible (AA). */
+:focus-visible {
+  outline: 2px solid rgba(34, 197, 94, .65);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

@@ -21,27 +21,27 @@
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--emerald);
-  margin-bottom: 16px;
+  margin-bottom: var(--s-4);
 }
 .meth-hero__title {
   font-family: var(--serif);
   font-size: clamp(2rem, 4vw, 2.8rem);
   color: #f1f5f9;
   line-height: 1.2;
-  margin-bottom: 20px;
+  margin-bottom: var(--s-5);
 }
 .meth-hero__title em { color: var(--emerald); font-style: italic; }
 .meth-hero__sub {
   font-size: 1.05rem;
   color: #94a3b8;
   line-height: 1.7;
-  margin-bottom: 24px;
+  margin-bottom: var(--s-6);
 }
 .meth-hero__sub a { color: var(--emerald); text-decoration: underline; }
 .meth-hero__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
+  gap: var(--s-2) var(--s-5);
   font-size: .78rem;
   color: #475569;
 }
@@ -51,8 +51,8 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 24px 28px;
-  margin: 40px 0 48px;
+  padding: var(--s-6) 28px;
+  margin: var(--s-10) 0 var(--s-12);
   max-width: 480px;
 }
 .meth-toc__title {
@@ -81,19 +81,19 @@
 .meth-main { padding-bottom: 100px; }
 .meth-section {
   margin-bottom: 60px;
-  padding-top: 16px;
+  padding-top: var(--s-4);
   border-top: 1px solid var(--border);
 }
 .meth-h2 {
   font-size: 1.5rem;
   color: #e2e8f0;
-  margin-bottom: 16px;
-  scroll-margin-top: 80px;
+  margin-bottom: var(--s-4);
+  scroll-margin-top: var(--s-20);
 }
 .meth-p {
   color: #94a3b8;
   line-height: 1.8;
-  margin-bottom: 20px;
+  margin-bottom: var(--s-5);
   max-width: 780px;
 }
 
@@ -101,19 +101,19 @@
 .meth-source-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin: 24px 0;
+  gap: var(--s-4);
+  margin: var(--s-6) 0;
 }
 .meth-source-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: var(--s-5);
   display: flex;
-  gap: 16px;
+  gap: var(--s-4);
 }
 .meth-source-icon { font-size: 1.6rem; flex-shrink: 0; margin-top: 2px; }
-.meth-source-title { font-weight: 600; color: #e2e8f0; margin-bottom: 8px; font-size: .95rem; }
+.meth-source-title { font-weight: 600; color: #e2e8f0; margin-bottom: var(--s-2); font-size: .95rem; }
 .meth-source-desc  { font-size: .82rem; color: #64748b; line-height: 1.6; }
 
 /* Callouts */
@@ -126,7 +126,7 @@
   font-size: .85rem;
   color: #fca5a5;
   line-height: 1.6;
-  margin: 20px 0;
+  margin: var(--s-5) 0;
 }
 .meth-callout--blue {
   background: rgba(99,102,241,.07);
@@ -146,9 +146,9 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 24px 0;
-  padding: 20px;
+  gap: var(--s-2);
+  margin: var(--s-6) 0;
+  padding: var(--s-5);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -176,8 +176,8 @@
 .meth-dim-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
 }
 .meth-dim-card {
   background: var(--surface);
@@ -217,7 +217,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: .88rem;
-  margin-top: 8px;
+  margin-top: var(--s-2);
 }
 .meth-table th {
   text-align: left;
@@ -230,7 +230,7 @@
   letter-spacing: .05em;
 }
 .meth-table td {
-  padding: 12px 14px;
+  padding: var(--s-3) 14px;
   color: #94a3b8;
   border-bottom: 1px solid rgba(255,255,255,.04);
   line-height: 1.5;
@@ -256,7 +256,7 @@
   border: 1px solid var(--border);
   border-left: 3px solid var(--emerald);
   border-radius: 8px;
-  padding: 16px 20px;
+  padding: var(--s-4) var(--s-5);
   font-family: 'Courier New', monospace;
   font-size: .85rem;
   color: #34d399;
@@ -268,12 +268,12 @@
 .meth-tier-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
 }
 .meth-tier-card {
   border-radius: 12px;
-  padding: 24px;
+  padding: var(--s-6);
   border: 1px solid;
 }
 .meth-tier-card--high   { background: rgba(248,113,113,.07); border-color: rgba(248,113,113,.25); }
@@ -292,7 +292,7 @@
 
 /* Lists */
 .meth-list {
-  padding-left: 20px;
+  padding-left: var(--s-5);
   color: #94a3b8;
   font-size: .9rem;
   line-height: 1.9;
@@ -303,14 +303,14 @@
 .meth-dm-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin: 20px 0;
+  gap: var(--s-4);
+  margin: var(--s-5) 0;
 }
 .meth-dm-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: var(--s-5);
 }
 .meth-dm-title { font-weight: 600; color: #e2e8f0; margin-bottom: 10px; }
 .meth-dm-card p { font-size: .85rem; color: #64748b; line-height: 1.6; }
@@ -319,8 +319,8 @@
 .meth-update-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  gap: var(--s-4);
+  margin-top: var(--s-5);
 }
 .meth-update-card {
   background: var(--surface);
@@ -328,8 +328,8 @@
   border-radius: 12px;
   padding: 22px;
 }
-.meth-update-icon  { font-size: 1.5rem; margin-bottom: 12px; }
-.meth-update-title { font-weight: 600; color: #e2e8f0; margin-bottom: 8px; }
+.meth-update-icon  { font-size: 1.5rem; margin-bottom: var(--s-3); }
+.meth-update-title { font-weight: 600; color: #e2e8f0; margin-bottom: var(--s-2); }
 .meth-update-desc  { font-size: .82rem; color: #64748b; line-height: 1.6; }
 
 /* Limitations */
@@ -337,22 +337,22 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  margin-top: 20px;
+  margin-top: var(--s-5);
 }
 .meth-limit-item {
   display: flex;
-  gap: 16px;
+  gap: var(--s-4);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: var(--s-5);
 }
 .meth-limit-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
 .meth-limit-item strong { color: #e2e8f0; display: block; margin-bottom: 6px; }
 .meth-limit-item p { font-size: .84rem; color: #64748b; line-height: 1.6; }
 
 /* FAQ */
-.meth-faq { display: flex; flex-direction: column; gap: 4px; margin-top: 20px; }
+.meth-faq { display: flex; flex-direction: column; gap: var(--s-1); margin-top: var(--s-5); }
 .meth-faq-item {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -360,7 +360,7 @@
   overflow: hidden;
 }
 .meth-faq-item summary {
-  padding: 16px 20px;
+  padding: var(--s-4) var(--s-5);
   font-weight: 600;
   color: #cbd5e1;
   cursor: pointer;
@@ -375,11 +375,11 @@
   font-size: 1.2rem;
   color: var(--emerald);
   flex-shrink: 0;
-  margin-left: 12px;
+  margin-left: var(--s-3);
 }
 .meth-faq-item[open] summary::after { content: '−'; }
 .meth-faq-item p {
-  padding: 0 20px 18px;
+  padding: 0 var(--s-5) 18px;
   font-size: .86rem;
   color: #64748b;
   line-height: 1.7;
@@ -390,16 +390,16 @@
 .meth-cta {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-top: 48px;
-  padding-top: 32px;
+  gap: var(--s-5);
+  margin-top: var(--s-12);
+  padding-top: var(--s-8);
   border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
 .meth-cta-btn {
   background: var(--emerald);
   color: #0a0f0a;
-  padding: 12px 24px;
+  padding: var(--s-3) var(--s-6);
   border-radius: 8px;
   font-weight: 700;
   font-size: .9rem;

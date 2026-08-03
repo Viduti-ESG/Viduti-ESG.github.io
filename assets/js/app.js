@@ -29,7 +29,9 @@ document.getElementById('hero-date').textContent =
 window.addEventListener('scroll', () => {
   const s = window.scrollY;
   const max = document.documentElement.scrollHeight - window.innerHeight;
-  if (progress) progress.style.width = (s / max * 100).toFixed(1) + '%';
+  // scaleX, not width: this runs on every scroll event and `width`
+  // would force a layout pass on each one. See .scroll-progress in style.css.
+  if (progress) progress.style.transform = 'scaleX(' + Math.min(1, Math.max(0, s / max)).toFixed(4) + ')';
   header.classList.toggle('scrolled', s > 10);
   if (backTop) backTop.classList.toggle('visible', s > 500);
 }, { passive: true });
@@ -408,7 +410,7 @@ function openModal(post) {
   box.addEventListener('scroll', () => {
     const pct = box.scrollTop / (box.scrollHeight - box.clientHeight) * 100;
     const bar = document.getElementById('modal-read-bar');
-    if (bar) bar.style.width = pct.toFixed(1) + '%';
+    if (bar) bar.style.transform = 'scaleX(' + Math.min(1, Math.max(0, pct / 100)).toFixed(4) + ')';
   }, { passive: true, signal: _modalScrollCtrl.signal });
 
   document.getElementById('modal-copy-btn').addEventListener('click', function () {
