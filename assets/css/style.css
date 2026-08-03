@@ -169,9 +169,13 @@ img, svg { display: block; }
   gap: var(--s-8);
   margin-left: var(--s-10);
 }
+.nav__links li { flex-shrink: 0; }
 .nav__links a {
   font-size: .875rem;
   font-weight: 500;
+  /* Without this "Sign in" breaks onto two lines as soon as the flex row is
+     squeezed -- which it is even at 1440px, because the <li> is shrinkable. */
+  white-space: nowrap;
   color: var(--text-70);
   transition: color var(--t-fast);
   letter-spacing: .01em;
@@ -1717,10 +1721,18 @@ img, svg { display: block; }
   .search-input, .search-input:focus { width: 100%; }
 }
 
-@media (max-width: 640px) {
+/* The desktop nav needs ~1160px once its links cannot wrap. Below that it
+   overflowed the viewport and made the BODY scroll sideways -- measured on
+   prod at 1024px: body scrollWidth 1157 vs clientWidth 1024, with
+   .site-header the sole contributor. The burger has to take over before
+   that, not at 640px. */
+@media (max-width: 1180px) {
   .nav__links  { display: none; }
   .nav__cta    { display: none; }
   .nav__burger { display: flex; }
+}
+
+@media (max-width: 640px) {
   .posts-grid  { grid-template-columns: 1fr; }
   .card--featured { grid-column: span 1; flex-direction: column; }
   .card--featured .card__panel { width: 100%; height: 5px; }
