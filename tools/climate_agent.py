@@ -28,7 +28,7 @@ import subprocess
 import sys
 import time
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 BASE_DIR   = Path(__file__).resolve().parent.parent
@@ -61,6 +61,26 @@ MAX_PER_RUN_DEFAULT = int(os.environ.get("GC_BLOG_MAX_PER_RUN", "1"))
 REVIEW_MODEL       = MODEL     # same tier; a stronger reviewer is a cost call
 MAX_REVIEW_TOKENS  = 3000
 MAX_REPAIR_TOKENS  = MAX_POST_TOKENS
+
+# ── Durable run record ───────────────────────────────────────────────────────
+# The gate's verdicts used to exist only in the systemd journal, which rotates,
+# so "was that post ever reviewed?" became unanswerable within days. This writes
+# the same shape as the three health timers (gc-backup / gc-sync-check /
+# gc-stale-check) so blog runs are auditable the same way. Never fatal: failing
+# to write the log must not stop a good post publishing.
+STATUS_DIR = Path(os.environ.get("GC_STATUS_DIR", "/var/log/greencurve"))
+STATUS_PATH = STATUS_DIR / "blog_review.json"
+
+
+def write_run_status(record: dict) -> None:
+    try:
+        STATUS_DIR.mkdir(parents=True, exist_ok=True)
+        STATUS_PATH.write_text(json.dumps(record, indent=2, ensure_ascii=False),
+                               encoding="utf-8")
+        print(f"  status written: {STATUS_PATH}")
+    except Exception as e:                                    # noqa: BLE001
+        print(f"  status file skipped ({type(e).__name__}: {e})")
+
 
 HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -137,6 +157,10 @@ FLAG these — they are defects:
 4. MISATTRIBUTION — anything credited to the source that the source does not say, or a claim implying the source reported something it did not.
 5. GREEN CURVE SELF-CLAIMS — any assertion of a client, customer, certification, accreditation, audit, award, partnership, track record or user count. Green Curve has none of these to claim. Zero tolerance.
 6. OVERSTATED CERTAINTY — "all", "every", "always", "guaranteed", "will definitely" where the source is qualified or partial.
+7. CHARACTERISATION DRIFT — the number, entity or event IS in the source, but the draft's VERB, QUALIFIER or STATUS WORD is stronger than the source's. This is the subtlest defect and the easiest to miss, because everything checkable looks correct. Two real examples that reached publication:
+   - Source: "82% indicated low or no support" (and 12% actively supported). Draft: "82% of companies oppose". The figure is right; "oppose" is not what was measured.
+   - Source: "has agreed to acquire … subject to regulatory approval". Draft: "has paid" / "completed acquisition" / "now sits inside". The deal is agreed and pending, not done.
+   For EVERY statistic in the draft, check the verb attached to it against the source's own verb. For every transaction, regulation or programme, check the STATUS word: agreed vs completed, proposed vs in force, consultation vs mandate, planned vs live, pilot vs rollout. If the source hedges and the draft does not, that is a critical issue even when the number matches.
 
 Do NOT flag:
 - Forward-looking analysis clearly framed as Green Curve's view (the "our_take" and "climate_angle" sections exist for exactly this).
@@ -150,7 +174,7 @@ Return ONLY valid JSON, no text before or after:
   "issues": [
     {
       "severity": "critical" or "minor",
-      "category": "fabricated_specific | invented_regulation | analysis_as_fact | misattribution | green_curve_claim | overstated_certainty",
+      "category": "fabricated_specific | invented_regulation | analysis_as_fact | misattribution | green_curve_claim | overstated_certainty | characterisation_drift",
       "location": "which field, e.g. sections.what_changed or title",
       "quote": "the exact text from the draft that is the problem",
       "why": "one sentence: what the source actually supports, or that it supports nothing here",
@@ -160,7 +184,43 @@ Return ONLY valid JSON, no text before or after:
   "summary": "one sentence overall judgement"
 }
 
+You may also be given MECHANICAL FLAGS: strong verbs or status words found in the draft whose stem does NOT appear in the source text. These are hints, not verdicts — a legitimate paraphrase will trip them. But you MUST adjudicate every one: for each flag, either raise an issue or state in your summary that the source supports the draft's wording. Silently ignoring a flag is itself a failure.
+
 Set verdict to FAIL if there is even ONE critical issue. Use minor only for wording that is defensible but loose. If the draft is clean, return verdict PASS with an empty issues list. Be strict: a false PASS is far more costly here than a false FAIL, because nothing checks you afterwards."""
+
+# ── Mechanical strength flags (deterministic, no model call) ──────────────────
+# Words whose *strength* is the thing that goes wrong. Each entry is
+# (regex over the draft, stem that must also appear in the source, why).
+# These do not decide anything - they are handed to the reviewer to adjudicate,
+# because a draft may legitimately paraphrase. What they stop is the reviewer
+# never looking at the verb at all, which is how "82% oppose" and "completed
+# acquisition" both got through on 1-2 Aug 2026.
+STRENGTH_TERMS = [
+    (r"\boppos\w+", "oppos", "stance verb"),
+    (r"\breject\w+", "reject", "stance verb"),
+    (r"\bcompleted\b|\bhas acquired\b|\bfinali[sz]ed\b", "complet|acquired|finali",
+     "transaction status"),
+    (r"\bmandat\w+", "mandat", "obligation status"),
+    (r"\bin force\b|\btakes effect\b|\bnow requires\b", "in force|effect|require",
+     "commencement status"),
+    (r"\bbanned?\b|\bprohibit\w+", "ban|prohibit", "prohibition status"),
+    (r"\bunanimous\w*|\boverwhelming\w*", "unanimous|overwhelming", "magnitude word"),
+]
+
+
+def strength_flags(draft_text: str, source_text: str) -> list:
+    """Verbs in the draft whose stem is absent from the source. Hints only."""
+    src = (source_text or "").lower()
+    out = []
+    for pattern, stems, why in STRENGTH_TERMS:
+        m = re.search(pattern, draft_text, re.I)
+        if not m:
+            continue
+        if any(re.search(stem, src) for stem in stems.split("|")):
+            continue                       # source uses the same word - fine
+        out.append({"term": m.group(0), "why": why,
+                    "quote": draft_text[max(0, m.start() - 80):m.end() + 80].strip()})
+    return out
 
 SECTION_LABELS = {
     "what_changed":    "What Changed",
@@ -368,6 +428,16 @@ def review_post(client, item: dict, body: str, post: dict) -> dict:
     The caller must treat an exception as "do not publish" -- never as "publish
     anyway, we tried".
     """
+    draft_text = _draft_for_review(post)
+    flags = strength_flags(draft_text, f"{item.get('title','')} {item.get('summary','')} {body}")
+    flag_block = ""
+    if flags:
+        lines = "\n".join(
+            f"- {f['term']!r} ({f['why']}) — stem absent from the source. Context: …{f['quote']}…"
+            for f in flags)
+        flag_block = (f"\nMECHANICAL FLAGS ({len(flags)}) — adjudicate every one:\n"
+                      f"{lines}\n")
+
     user = (
         f"SOURCE ARTICLE\n"
         f"Publication: {item['source']}\n"
@@ -375,7 +445,8 @@ def review_post(client, item: dict, body: str, post: dict) -> dict:
         f"URL: {item['link']}\n"
         f"RSS summary: {item.get('summary','')}\n\n"
         f"--- ARTICLE TEXT (may be partial) ---\n{body}\n--- END ARTICLE TEXT ---\n\n"
-        f"DRAFT POST TO REVIEW\n{_draft_for_review(post)}\n\n"
+        f"DRAFT POST TO REVIEW\n{draft_text}\n"
+        f"{flag_block}\n"
         "Fact-check the draft against the source article now."
     )
     try:
@@ -407,6 +478,7 @@ def review_post(client, item: dict, body: str, post: dict) -> dict:
     if verdict == "FAIL" or critical:
         raise ReviewRejected(
             f"{len(critical)} critical / {len(issues)} total issue(s)", issues)
+    result["_strength_flags"] = flags
     return result
 
 
@@ -728,19 +800,33 @@ def main() -> int:
     print(f"{len(fresh)} fresh relevant item(s) found")
     if not fresh:
         print("No fresh news — nothing to publish today.")
+        # Still stamp the run, so a stale status file always means a FAILED run
+        # rather than a quiet day.
+        write_run_status({
+            "ran_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "gate": "active", "considered": 0, "published": 0, "refused": 0,
+            "skipped": 0, "strength_flags_raised": 0, "items": [],
+            "note": "no fresh relevant news",
+        })
         return 0
 
     published = []
     date_iso = datetime.now().strftime("%Y-%m-%d")
     failures = 0
     rejected = 0
+    audit = []          # one entry per item considered, published or not
     for item in fresh[: args.max]:
         print(f"Writing: [{item['source']}] {item['title'][:80]}")
+        entry = {"source": item.get("source"), "headline": item.get("title"),
+                 "link": item.get("link"), "outcome": "unknown"}
+        audit.append(entry)
         try:
             body = fetch_article_body(item["link"])
             # Nothing may reach the filesystem that has not come back from
             # write_and_verify — that function is the only publishable path.
             post, _review = write_and_verify(item, body)   # SystemExit(3) if dormant
+            entry["strength_flags"] = (_review or {}).get("_strength_flags") or []
+            entry["review_summary"] = (_review or {}).get("summary")
             for w in craft_warnings(post):
                 print(f"  CRAFT — {w}")
             pid = f"{_slug(post['title'])}-{int(time.time())}"
@@ -752,6 +838,11 @@ def main() -> int:
             # processed so a post the reviewer already refused is not redrafted
             # and re-billed every morning.
             rejected += 1
+            entry["outcome"] = "refused"
+            entry["reason"] = str(e)
+            entry["issues"] = [
+                {k: i.get(k) for k in ("severity", "category", "location", "quote", "why")}
+                for i in (e.issues or [])]
             print(f"  NOT PUBLISHED — review gate refused it: {e}")
             _print_issues(e.issues)
             processed.add(item["link"])
@@ -760,9 +851,12 @@ def main() -> int:
         except Exception as e:
             # One malformed post must not take the rest of the run down with it.
             failures += 1
+            entry["outcome"] = "skipped"
+            entry["reason"] = f"{type(e).__name__}: {e}"
             print(f"  SKIPPED — {type(e).__name__}: {e}")
             continue
         if args.dry_run:
+            entry["outcome"] = "dry_run"
             print(f"  DRY RUN — would publish posts/{pid}.html")
             continue
         (POSTS_DIR / f"{pid}.html").write_text(page, encoding="utf-8")
@@ -772,11 +866,26 @@ def main() -> int:
         processed.add(item["link"])
         save_processed(processed)
         published.append(f"{SITE_URL}/posts/{pid}.html")
+        entry["outcome"] = "published"
+        entry["post_id"] = pid
+        entry["url"] = published[-1]
         print(f"  Published: {published[-1]}")
 
     if failures or rejected:
         print(f"{failures} item(s) skipped after errors; "
               f"{rejected} refused by the review gate; {len(published)} published")
+
+    # Durable record of what the gate did, in the same shape as the health timers.
+    write_run_status({
+        "ran_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "gate": "active",
+        "considered": len(audit),
+        "published": len(published),
+        "refused": rejected,
+        "skipped": failures,
+        "strength_flags_raised": sum(len(a.get("strength_flags") or []) for a in audit),
+        "items": audit,
+    })
 
     if published:
         try:

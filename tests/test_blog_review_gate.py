@@ -197,3 +197,78 @@ def test_publish_path_goes_through_the_gate():
     assert "write_and_verify(" in main_src
     assert "write_post(" not in main_src, \
         "main() calls write_post directly — that bypasses the review gate"
+
+
+# ── characterisation drift: the 1-2 Aug 2026 escape class ─────────────────────
+# Numbers correct, verb wrong. The gate caught fabrication but let these through,
+# so both halves are now tested: the deterministic flagger AND the prompt.
+
+def test_strength_flags_catch_stance_verb_drift():
+    """'82% oppose' where the source says 'low or no support'."""
+    flags = ca.strength_flags(
+        "GHG Protocol consultation: 82% of companies oppose mandatory hourly matching.",
+        "Only 12% of companies said they support hourly matching, and 82% "
+        "indicated low or no support.")
+    assert any(f["why"] == "stance verb" for f in flags), \
+        "'oppose' against a source that never says it must be flagged"
+
+
+def test_strength_flags_catch_transaction_status_drift():
+    """'completed acquisition' where the source says 'agreed to acquire'."""
+    flags = ca.strength_flags(
+        "Schneider Electric announced the completed acquisition of AiDASH.",
+        "Schneider Electric has agreed to acquire AiDASH, subject to regulatory "
+        "approval and customary closing conditions.")
+    assert any(f["why"] == "transaction status" for f in flags)
+
+
+def test_strength_flags_stay_quiet_when_source_uses_the_same_word():
+    """A legitimate paraphrase must not be flagged, or the signal is noise."""
+    flags = ca.strength_flags(
+        "The rule mandates disclosure from FY2026-27.",
+        "The regulator mandates disclosure for the top 1,000 from FY2026-27.")
+    assert not any(f["why"] == "obligation status" for f in flags)
+
+
+def test_strength_flags_are_injected_into_the_review_prompt(monkeypatch):
+    """A flag the reviewer never sees cannot be adjudicated."""
+    drifted = dict(CLEAN_POST)
+    drifted["summary"] = "82% of companies oppose the proposal."
+    c = FakeClient(FakeMsg('{"verdict":"PASS","issues":[],"summary":"ok"}'))
+    monkeypatch.setattr(ca, "_client", lambda: c)
+    ca.review_post(c, ITEM, "82% indicated low or no support.", drifted)
+    assert "MECHANICAL FLAGS" in c.prompts[0], "flags were computed but not sent"
+    assert "oppos" in c.prompts[0].lower()
+
+
+def test_review_prompt_names_characterisation_drift():
+    assert "CHARACTERISATION DRIFT" in ca.REVIEW_SYSTEM_PROMPT
+    assert "characterisation_drift" in ca.REVIEW_SYSTEM_PROMPT
+    assert "agreed vs completed" in ca.REVIEW_SYSTEM_PROMPT
+
+
+# ── durable run record ────────────────────────────────────────────────────────
+
+def test_status_write_is_never_fatal(monkeypatch, tmp_path):
+    """A failed log write must not stop a good post publishing."""
+    monkeypatch.setattr(ca, "STATUS_DIR", tmp_path / "nope" / "deeper")
+    monkeypatch.setattr(ca, "STATUS_PATH", tmp_path / "nope" / "deeper" / "x.json")
+    ca.write_run_status({"ran_at": "now"})          # must not raise
+
+
+def test_status_record_round_trips(monkeypatch, tmp_path):
+    import json as _json
+    monkeypatch.setattr(ca, "STATUS_DIR", tmp_path)
+    monkeypatch.setattr(ca, "STATUS_PATH", tmp_path / "blog_review.json")
+    ca.write_run_status({"ran_at": "2026-08-04T05:30:00+00:00", "published": 1,
+                         "refused": 0, "items": [{"outcome": "published"}]})
+    data = _json.loads((tmp_path / "blog_review.json").read_text(encoding="utf-8"))
+    assert data["published"] == 1 and data["items"][0]["outcome"] == "published"
+
+
+def test_main_writes_a_status_record_on_every_path():
+    """Including the quiet-day path — a stale file must mean a failed run."""
+    src = (SITE / "tools" / "climate_agent.py").read_text(encoding="utf-8")
+    main_src = src[src.index("def main("):]
+    assert main_src.count("write_run_status(") >= 2, \
+        "the no-fresh-news path must also stamp the status file"
