@@ -208,6 +208,85 @@ STRENGTH_TERMS = [
 ]
 
 
+# ── India regulatory ground truth (deterministic, fail-closed) ───────────────
+# THE HOLE THE MODEL REVIEW CANNOT COVER. The reviewer judges the draft against
+# the SOURCE ARTICLE, but every India-side regulatory claim is generated from
+# the model's own memory and has no counterpart in a story about, say, a Spanish
+# solar financing. The prompt even tells the reviewer to allow those claims so
+# long as they are "regulation that genuinely exists" - so an invented threshold
+# or a garbled circular number sails through. On 5 Aug 2026 a post published
+# under the new gate still said the top 1,000 enter BRSR Core from FY2024-25
+# (it is FY2026-27) and cited a circular number that does not exist.
+#
+# These are the facts we have verified against SEBI's own circular. They are
+# checked mechanically, and a violation is CRITICAL - it goes into the same
+# repair loop as any other critical finding, and blocks publication if unfixed.
+BRSR_CORE_GLIDE = {"150": "2023-24", "250": "2024-25",
+                   "500": "2025-26", "1000": "2026-27"}
+BRSR_CORE_CIRCULAR = "SEBI/HO/CFD/CFD-SEC-2/P/CIR/2023/122"      # 12 July 2023
+_TOPN_RE = re.compile(r"top[\s-]+(150|250|500|1,?000)\b", re.I)
+_FY_RE = re.compile(r"FY[\s-]?(20)?(\d{2}[-–]\d{2})", re.I)
+_SEBI_CIR_RE = re.compile(r"SEBI/[A-Z0-9/\-]+/\d{4}/\d+", re.I)
+
+
+def _norm_fy(raw: str) -> str:
+    raw = raw.replace("–", "-")
+    a, b = raw.split("-")
+    return ("20" + a if len(a) == 2 else a) + "-" + b
+
+
+def regulatory_facts_check(draft_text: str) -> list:
+    """Violations of India regulatory facts we have verified. Critical by nature."""
+    out = []
+    for m in _TOPN_RE.finditer(draft_text):
+        tier = m.group(1).replace(",", "")
+        fy = _FY_RE.search(draft_text[m.end():m.end() + 70])
+        if not fy:
+            continue
+        got, want = _norm_fy(fy.group(2)), BRSR_CORE_GLIDE[tier]
+        if got != want:
+            out.append({
+                "severity": "critical", "category": "invented_regulation",
+                "location": "BRSR Core glide path",
+                "quote": draft_text[max(0, m.start() - 60):m.end() + 80].strip(),
+                "why": (f"BRSR Core reasonable assurance applies to the top {tier} "
+                        f"from FY{want}, not FY{got}."),
+                "fix": f"State FY{want} for the top {tier}, or drop the year."})
+
+    for m in re.finditer(r"BRSR Core", draft_text):
+        # Window both ways: "limited assurance ... under BRSR Core" is the same
+        # defect as "BRSR Core ... limited assurance", and the real escape on
+        # 1 Aug 2026 had the assurance word FIRST.
+        win = draft_text[max(0, m.start() - 240):m.start() + 240]
+        if re.search(r"limited assurance", win, re.I):
+            out.append({
+                "severity": "critical", "category": "invented_regulation",
+                "location": "BRSR Core assurance level", "quote": win.strip()[:220],
+                "why": "BRSR Core requires REASONABLE assurance, not limited assurance.",
+                "fix": "Say reasonable assurance."})
+        if re.search(r"\b(mandat\w+|requir\w+|must)\b", win, re.I) and \
+                re.search(r"physical (climate )?risk", win, re.I):
+            out.append({
+                "severity": "critical", "category": "invented_regulation",
+                "location": "BRSR Core scope", "quote": win.strip()[:220],
+                "why": ("Physical climate risk is not one of BRSR Core's nine assured "
+                        "attributes (GHG, water, energy, circularity, employee wellbeing, "
+                        "gender diversity, inclusive development, customer fairness, "
+                        "openness of business)."),
+                "fix": "Remove the claim that BRSR Core mandates physical climate risk."})
+
+    for m in _SEBI_CIR_RE.finditer(draft_text):
+        cited = m.group(0)
+        if cited.upper() != BRSR_CORE_CIRCULAR.upper():
+            out.append({
+                "severity": "critical", "category": "invented_regulation",
+                "location": "SEBI circular reference", "quote": cited,
+                "why": ("Circular numbers are not verifiable from the source article. "
+                        f"The only one on our allow-list is {BRSR_CORE_CIRCULAR}."),
+                "fix": "Remove the circular number, or use the allow-listed one."})
+    return out
+
+
 def strength_flags(draft_text: str, source_text: str) -> list:
     """Verbs in the draft whose stem is absent from the source. Hints only."""
     src = (source_text or "").lower()
@@ -584,6 +663,15 @@ def write_and_verify(item: dict, body: str) -> tuple[dict, dict]:
 
     try:
         review = review_post(client, item, body, post)
+        # The model review is judged against the source article, which can say
+        # nothing about Indian regulation. Facts we have verified ourselves are
+        # checked here, AFTER a PASS, so a clean-looking post cannot carry an
+        # invented threshold or circular number to the site.
+        facts = regulatory_facts_check(_draft_for_review(post))
+        if facts:
+            raise ReviewRejected(
+                f"{len(facts)} critical / {len(facts)} total issue(s) "
+                f"— India regulatory ground truth", facts)
         print("  REVIEW PASS — every claim grounded in the source")
         return post, review
     except ReviewRejected as first:
@@ -600,6 +688,12 @@ def write_and_verify(item: dict, body: str) -> tuple[dict, dict]:
 
     post = repair_post(client, item, body, post, first_issues)
     review = review_post(client, item, body, post)   # propagates on second failure
+    facts = regulatory_facts_check(_draft_for_review(post))
+    if facts:
+        # One repair only. Still wrong on a fact we hold ourselves = do not publish.
+        raise ReviewRejected(
+            f"{len(facts)} critical / {len(facts)} total issue(s) "
+            f"— India regulatory ground truth survived repair", facts)
     print("  REVIEW PASS after repair")
     return post, review
 

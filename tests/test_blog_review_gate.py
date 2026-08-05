@@ -272,3 +272,79 @@ def test_main_writes_a_status_record_on_every_path():
     main_src = src[src.index("def main("):]
     assert main_src.count("write_run_status(") >= 2, \
         "the no-fresh-news path must also stamp the status file"
+
+
+# ── India regulatory ground truth ─────────────────────────────────────────────
+# The model review is judged against the SOURCE ARTICLE, which can say nothing
+# about Indian regulation. On 5 Aug 2026 a post published under the new gate
+# still put the top 1,000 in BRSR Core from FY2024-25 and cited a circular
+# number that does not exist. These facts are checked mechanically instead.
+
+def test_wrong_glide_path_year_is_critical():
+    out = ca.regulatory_facts_check(
+        "BRSR Core, mandatory for the top 150 from FY2023-24 and extended to "
+        "the top 1,000 from FY2024-25, requires assured disclosures.")
+    assert any("top 1000" in i["why"] for i in out)
+    assert all(i["severity"] == "critical" for i in out)
+
+
+def test_correct_glide_path_does_not_flag():
+    """A true statement must pass, or the check gets switched off."""
+    assert ca.regulatory_facts_check(
+        "BRSR Core applies to the top 150 from FY2023-24, the top 250 from "
+        "FY2024-25, the top 500 from FY2025-26 and the top 1,000 from FY2026-27."
+    ) == []
+
+
+def test_limited_assurance_on_brsr_core_is_critical():
+    out = ca.regulatory_facts_check(
+        "Engage your limited assurance provider on BRSR Core before filing.")
+    assert any("REASONABLE assurance" in i["why"] for i in out)
+
+
+def test_physical_risk_attributed_to_brsr_core_is_critical():
+    out = ca.regulatory_facts_check(
+        "BRSR Core mandates physical climate risk disclosure for large filers.")
+    assert any("nine assured" in i["why"] for i in out)
+
+
+def test_unknown_sebi_circular_number_is_critical():
+    out = ca.regulatory_facts_check(
+        "See SEBI circular SEBI/HO/CFD/CMD-2/CIR/P/2023/122 for the format.")
+    assert any(i["location"] == "SEBI circular reference" for i in out)
+
+
+def test_the_real_circular_number_is_allowed():
+    assert ca.regulatory_facts_check(
+        "See SEBI/HO/CFD/CFD-SEC-2/P/CIR/2023/122 dated 12 July 2023.") == []
+
+
+def test_facts_check_blocks_a_post_the_model_review_passed(monkeypatch):
+    """The exact 5 Aug 2026 escape: reviewer says PASS, facts say no."""
+    bad = dict(CLEAN_POST)
+    bad["summary"] = ("BRSR Core is mandatory for the top 1,000 listed entities "
+                      "from FY2024-25.")
+    # 3 replies: first review PASS, the repair, then the re-review PASS. The
+    # model is happy throughout - only our own facts stop it.
+    c = FakeClient(FakeMsg('{"verdict":"PASS","issues":[],"summary":"clean"}'),
+                   FakeMsg(json.dumps(bad)),
+                   FakeMsg('{"verdict":"PASS","issues":[],"summary":"clean"}'))
+    monkeypatch.setattr(ca, "_client", lambda: c)
+    monkeypatch.setattr(ca, "write_post", lambda i, b: bad)
+    with pytest.raises(ca.ReviewRejected) as e:
+        ca.write_and_verify(ITEM, BODY)
+    assert "ground truth" in str(e.value)
+
+
+def test_facts_check_runs_again_after_repair(monkeypatch):
+    """A repair that reintroduces the error must not publish."""
+    bad = dict(CLEAN_POST)
+    bad["summary"] = "BRSR Core covers the top 500 from FY2029-30."
+    c = FakeClient(FakeMsg('{"verdict":"PASS","issues":[],"summary":"clean"}'),
+                   FakeMsg('{"verdict":"PASS","issues":[],"summary":"clean"}'))
+    monkeypatch.setattr(ca, "_client", lambda: c)
+    monkeypatch.setattr(ca, "write_post", lambda i, b: bad)
+    monkeypatch.setattr(ca, "repair_post", lambda *a, **k: bad)   # repair no-ops
+    with pytest.raises(ca.ReviewRejected) as e:
+        ca.write_and_verify(ITEM, BODY)
+    assert "survived repair" in str(e.value)
