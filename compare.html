@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260803b"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=20260807a"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=2"/>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=2"/>
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=2"/>
@@ -209,6 +209,35 @@
   <a href="/login#register" class="btn-primary" style="font-size:.9rem;padding:13px 36px">Create Free Account →</a>
 </section>
 </main>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <a href="/" class="footer__logo">
+        <svg viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 17 Q9 3 25 5" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25" cy="5" r="2" fill="#4ade80"/>
+        </svg>
+        Green Curve
+      </a>
+      <p>Climate transition intelligence for Indian businesses.</p>
+    </div>
+    <div class="footer__right">
+      <p>Data sourced from companies&#39; publicly filed SEBI BRSR annual disclosures &amp; CPCB public portal. Risk scores are Green Curve&#39;s own analytical output — not ratings issued by any SEBI-registered ESG Rating Provider.</p>
+      <p style="font-size:.72rem;color:#94a3b8;margin-top:6px">Not investment advice. Always verify against original company filings.</p>
+      <p style="font-size:.71rem;color:#94a3b8;margin-top:8px;line-height:1.8">
+        <a href="/contact" style="color:#94a3b8;text-decoration:none">Contact</a>
+        &nbsp;&middot;&nbsp;
+        <a href="/privacy-policy" style="color:#94a3b8;text-decoration:none">Privacy Policy</a>
+        &nbsp;&middot;&nbsp;
+        <a href="/terms-of-use" style="color:#94a3b8;text-decoration:none">Terms of Use</a>
+      </p>
+      <p class="footer__copy">&copy; <span id="year"></span> Green Curve. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>(function(){var y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();})();</script>
 
 <script src="assets/js/cookie-consent.js"></script>
 </body>

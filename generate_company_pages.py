@@ -256,7 +256,16 @@ FOOTER = f"""
     </div>
     <div class="footer__right">
       <p>Data sourced from companies' publicly filed SEBI BRSR annual disclosures. Scores are Green Curve's own analytical output — not ratings issued by any SEBI-registered ESG Rating Provider.</p>
-      <p style="font-size:.72rem;color:#475569;margin-top:6px">Not investment advice. Always verify against original company filings.</p>
+      <p style="font-size:.72rem;color:#94a3b8;margin-top:6px">Not investment advice. Always verify against original company filings.</p>
+      <!-- Root-absolute so the same row works from company/ and company/sector/;
+           FOOTER2's ../ -> ../../ rewrite must not touch these. -->
+      <p style="font-size:.71rem;color:#94a3b8;margin-top:8px;line-height:1.8">
+        <a href="/contact" style="color:#94a3b8;text-decoration:none">Contact</a>
+        &nbsp;&middot;&nbsp;
+        <a href="/privacy-policy" style="color:#94a3b8;text-decoration:none">Privacy Policy</a>
+        &nbsp;&middot;&nbsp;
+        <a href="/terms-of-use" style="color:#94a3b8;text-decoration:none">Terms of Use</a>
+      </p>
       <p class="footer__copy">&copy; {date.today().year} Green Curve. All rights reserved.</p>
     </div>
   </div>
@@ -820,7 +829,7 @@ index_html = f"""<!DOCTYPE html>
       <tbody>{rows_html}</tbody>
     </table>
   </div>
-  <p style="margin-top:24px;font-size:.78rem;color:#475569">Scores derived from companies' own SEBI BRSR filings. Not investment advice. Not a SEBI-registered ESG Rating Provider output.</p>
+  <p style="margin-top:24px;font-size:.78rem;color:#94a3b8">Scores derived from companies' own SEBI BRSR filings. Not investment advice. Not a SEBI-registered ESG Rating Provider output.</p>
 </div>
 {FOOTER}
 <script>
@@ -976,7 +985,7 @@ def sector_page(sname, members):
     </table>
   </div>
   <p style="margin-top:24px"><a href="../sectors.html" style="color:var(--emerald,#10b981)">&larr; Browse all sectors</a></p>
-  <p style="margin-top:10px;font-size:.78rem;color:#475569">Scores derived from companies' own SEBI BRSR filings. Lower score = lower assessed ESG risk. Not investment advice. Not a SEBI-registered ESG Rating Provider output.</p>
+  <p style="margin-top:10px;font-size:.78rem;color:#94a3b8">Scores derived from companies' own SEBI BRSR filings. Lower score = lower assessed ESG risk. Not investment advice. Not a SEBI-registered ESG Rating Provider output.</p>
 </div>
 {FOOTER2}
 <script>
@@ -1109,6 +1118,7 @@ STATIC_PAGES = [
     ("issb-ifrs-india",              "monthly", "0.8"),
     ("carbon-credit-trading-scheme", "monthly", "0.8"),
     ("compare",               "monthly", "0.8"),
+    ("contact",               "monthly", "0.7"),
     ("methodology",           "monthly", "0.7"),
     ("learn",                 "weekly",  "0.7"),
     ("tcfd",                  "weekly",  "0.7"),
