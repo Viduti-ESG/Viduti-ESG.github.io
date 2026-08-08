@@ -593,7 +593,7 @@ def make_page(c):
   <script type="application/ld+json">{schema}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css?v=7"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260807a"/>
   <link rel="stylesheet" href="../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg?v=2"/>
 </head>
@@ -808,7 +808,7 @@ index_html = f"""<!DOCTYPE html>
   <link rel="canonical" href="{BASE_URL}/company/"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css?v=7"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260807a"/>
   <link rel="stylesheet" href="../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg?v=2"/>
 </head>
@@ -955,7 +955,7 @@ def sector_page(sname, members):
   }}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../../assets/css/style.css?v=7"/>
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20260807a"/>
   <link rel="stylesheet" href="../../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg?v=2"/>
 </head>
@@ -1052,7 +1052,7 @@ sectors_hub = f"""<!DOCTYPE html>
   <meta property="og:image" content="{BASE_URL}/assets/img/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/style.css?v=7"/>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260807a"/>
   <link rel="stylesheet" href="../assets/css/company-page.css?v=4"/>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg?v=2"/>
 </head>
