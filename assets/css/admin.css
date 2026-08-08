@@ -151,7 +151,7 @@ body {
 }
 .admin-table tr:hover td { background: rgba(255,255,255,.02); }
 .admin-table .co-name { color: var(--text); font-weight: 500; }
-.admin-table .co-cin  { font-size: .75rem; color: var(--text-20); }
+.admin-table .co-cin  { font-size: .75rem; color: var(--text-40); }
 
 .risk-pill {
   display: inline-block;
@@ -226,7 +226,7 @@ body {
 .admin-form-input:focus,
 .admin-form-textarea:focus  { border-color: var(--cyan); }
 .admin-form-textarea { min-height: 80px; resize: vertical; }
-.admin-form-hint { font-size: .72rem; color: var(--text-20); margin-top: 3px; }
+.admin-form-hint { font-size: .72rem; color: var(--text-40); margin-top: 3px; }
 .admin-modal-footer {
   display: flex;
   justify-content: flex-end;

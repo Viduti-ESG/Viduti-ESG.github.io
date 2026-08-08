@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260807a"/>
+  <link rel="stylesheet" href="assets/css/style.css?v=20260808a"/>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=2"/>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=2"/>
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=2"/>
@@ -104,7 +104,7 @@
 
     .ep-info { background:rgba(52,211,153,.05); border:1px solid rgba(52,211,153,.2); border-radius:10px; padding:14px 16px; font-size:.82rem; color:var(--text-70); line-height:1.7; }
     .ep-info strong { color:var(--emerald); }
-    .ep-disclaimer { font-size:.7rem; color:var(--text-20); line-height:1.6; margin-top:8px; }
+    .ep-disclaimer { font-size:.7rem; color:var(--text-40); line-height:1.6; margin-top:8px; }
 
     /* dashboard bars */
     .ep-bar-row { display:grid; grid-template-columns:90px 1fr 56px; gap:10px; align-items:center; margin-bottom:9px; font-size:.78rem; }
@@ -313,7 +313,7 @@
         </div>
 
         <div class="ep-field" id="epr-done-field" style="display:none">
-          <label class="ep-label">Already collected / recycled this year (tonnes) <span style="color:var(--text-20)">— optional</span></label>
+          <label class="ep-label">Already collected / recycled this year (tonnes) <span style="color:var(--text-40)">— optional</span></label>
           <input type="number" class="ep-input" id="epr-done" min="0" step="any" placeholder="0"/>
         </div>
 
@@ -355,9 +355,9 @@
           <div class="ep-card-title">Targets &amp; Price Bands by Category <span class="ep-badge">Indicative</span></div>
           <table class="ep-tbl" id="epr-ref-tbl">
             <thead><tr><th>Category</th><th>Target</th><th>Price ₹/kg</th></tr></thead>
-            <tbody id="epr-ref-tbody"><tr><td colspan="3" style="color:var(--text-20)">Select a stream to see categories…</td></tr></tbody>
+            <tbody id="epr-ref-tbody"><tr><td colspan="3" style="color:var(--text-40)">Select a stream to see categories…</td></tr></tbody>
           </table>
-          <p style="font-size:.66rem;color:var(--text-20);margin-top:10px;line-height:1.5">Targets are the recycling/collection obligation as a share of quantity placed on market. Price bands are indicative 2025 trading ranges, not official quotes.</p>
+          <p style="font-size:.66rem;color:var(--text-40);margin-top:10px;line-height:1.5">Targets are the recycling/collection obligation as a share of quantity placed on market. Price bands are indicative 2025 trading ranges, not official quotes.</p>
         </div>
         <div class="ep-info" style="margin-top:18px">
           <strong>How the cost works.</strong> Obligation (t) = quantity placed on market × target%. Procurement cost = obligation shortfall × certificate price. <strong>Environmental Compensation (EC)</strong> is what CPCB levies on the unmet portion &mdash; designed to be higher than the cost of genuine compliance, so buying certificates is almost always cheaper than defaulting.
@@ -409,7 +409,7 @@
       <div class="ep-card">
         <div class="ep-card-title">Target vs Credits Procured (tonnes)</div>
         <canvas id="epr-metal-chart" height="240"></canvas>
-        <p style="font-size:.66rem;color:var(--text-20);margin-top:12px;line-height:1.5">Source: CPCB Battery EPR national dashboard (public statistics, June 2026). Lithium fulfilment remains under 1% &mdash; a structural shortfall that signals strong forward demand for lithium-battery recycling certificates.</p>
+        <p style="font-size:.66rem;color:var(--text-40);margin-top:12px;line-height:1.5">Source: CPCB Battery EPR national dashboard (public statistics, June 2026). Lithium fulfilment remains under 1% &mdash; a structural shortfall that signals strong forward demand for lithium-battery recycling certificates.</p>
       </div>
     </div>
     <div class="ep-info" style="margin-top:18px">
@@ -636,7 +636,7 @@ function onStreamChange(){
   });
   document.getElementById('epr-calc-btn').style.display = show ? '' : 'none';
   document.getElementById('epr-result').classList.remove('show');
-  if (!show){ document.getElementById('epr-ref-tbody').innerHTML = '<tr><td colspan="3" style="color:var(--text-20)">Select a stream to see categories…</td></tr>'; return; }
+  if (!show){ document.getElementById('epr-ref-tbody').innerHTML = '<tr><td colspan="3" style="color:var(--text-40)">Select a stream to see categories…</td></tr>'; return; }
   const s = EPR[stream];
   document.getElementById('epr-qty-label').textContent = s.qtyLabel;
   const catSel = document.getElementById('epr-cat');

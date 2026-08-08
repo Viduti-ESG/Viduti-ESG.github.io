@@ -110,7 +110,7 @@
   border-color: var(--cyan);
   box-shadow: 0 0 0 3px rgba(34,197,94,.12);
 }
-.auth-input::placeholder { color: var(--text-20); }
+.auth-input::placeholder { color: var(--text-40); }
 
 /* ── Submit button ──────────────────────────────────────────────────────────── */
 .auth-submit {
